@@ -28,13 +28,13 @@ app.configure(function(){
 
 app.configure('development', function(){
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-    mongoose.connect('mongodb://localhost/leaflet_dev');
+    mongoose.connect('mongodb://localhost/forms-ng_dev');
 });
 
 app.configure('production', function(){
     console.log('Production mode');
     app.use(express.errorHandler());
-    mongoose.connect('mongodb://leaflet:Jl9goGmwOsfT@linus.mongohq.com:10052/leaflet');
+    mongoose.connect('mongodb://theworld:7gY^tr5^ERf$r@linus.mongohq.com:10053/forms-ng');
 });
 
 //// Bootstrap models

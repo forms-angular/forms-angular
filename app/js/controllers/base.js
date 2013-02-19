@@ -189,7 +189,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         // Remove an element from an array
         var fieldName = fieldInfo.$parent.field.name;
         var fieldParts = fieldName.split('.');
-        arrayField = $scope.record;
+        var arrayField = $scope.record;
         for (var i = 0, l = fieldParts.length; i < l; i++) {
             arrayField = arrayField[fieldParts[i]];
         }

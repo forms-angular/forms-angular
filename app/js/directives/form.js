@@ -42,7 +42,7 @@ angular.module('formsAngular.form', [])
                                         '<fieldset>'+
                                             '<div class="row">'+
                                                 '<div class="span6">'+
-                                                    '<form-input ng-repeat="field in formSchema[$parent.$index].schema" info="{{field}}" schema="true"></form-input>'+
+                                                    '<form-input ng-repeat="field in formSchema['+ scope.$index +'].schema" info="{{field}}" schema="true"></form-input>'+
                                                 '</div>' +
                                                 '<div class="span1">'+
                                                     '<i ng-click="remove(this,$index)" class="icon-minus-sign"></i>' +
