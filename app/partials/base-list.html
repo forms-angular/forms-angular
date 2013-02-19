@@ -1,0 +1,25 @@
+<div ng-controller="BaseCtrl" class="row">
+    <div class="hero-unit">
+        <div class="row">
+            <div class="pull-left">
+            <h1>{{modelNameDisplay}}</h1>
+            </div>
+            <div class="pull-right">
+                <div>
+                <form class="navbar-search pull-right">
+                    <input ng-model="recordFilter" class="search-query" placeholder="Filter">
+                </form>
+            </div>
+                <div>
+                    <br />
+                    <br />
+                    <button class="btn pull-right" ng-click="new()"><i class="icon-plus"></i> New</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a ng-repeat="record in recordList | filter:recordFilter" href="/#/{{modelName}}/{{record['_id']}}/edit"><div class="well well-small">
+        <span ng-repeat="field in listSchema">{{record[field.name]}} </span>
+    </div></a>
+</div>
+

@@ -1,0 +1,24 @@
+.form-horizontal.compact .control-group {
+    margin-bottom: 2px;
+}
+
+.form-horizontal.compact hr {
+    margin: 8px 0;
+}
+
+.form-horizontal button.form-btn {
+    width: 6em;
+}
+
+.form-horizontal fieldset {
+    border: 1px solid #eee;
+    padding: 5px;
+}
+
+.form-horizontal fieldset .control-label {
+    width: 120px;
+}
+
+.form-horizontal fieldset .controls {
+    margin-left: 135px;
+}

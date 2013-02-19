@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" ng-app="myApp">
+<head>
+    <meta charset="utf-8">
+    <title>forms-angular</title>
+    <script src="lib/jquery/jquery-1.9.0.js"></script>
+    <script src="lib/jquery-ui/jquery-ui-1.10.0.custom.js"></script>
+    <link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular/angular-resource.js"></script>
+    <script src="lib/angular/angular-cookies.js"></script>
+    <script src="lib/bootstrap.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-responsive.css">
+    <script src="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.js"></script>
+    <link rel="stylesheet" href="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.css" >
+
+    <script src="js/controllers/base.js"></script>
+    <script src="js/controllers/model.js"></script>
+    <script src="js/directives/form.js"></script>
+    <script src="js/app.js"></script>
+
+    <link rel="stylesheet" href="css/app.css">
+
+    <!--[if lt IE 9]>
+    <script src="lib/html5_shiv.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+   <div class="row">
+       <div class="span1"><a href="/"><i class="icon-home"></i>Home</a></div>
+       <div class="span11" ng-view></div>
+   </div>
+</body>
+</html>

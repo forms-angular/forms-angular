@@ -1,0 +1,19 @@
+<div data-ng-controller="BaseCtrl">
+    <form name="myForm" class="form-horizontal compact">
+        <div class="row form-fixed well">
+            <div class="span8">
+                <h4>{{modelNameDisplay}} : <span ng-repeat="field in listSchema">{{record[field.name]}} </span></h4>
+            </div>
+            <div class="span2">
+                <div form-buttons></div>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
+            </div>
+        </div>
+    </form>
+    <!--<pre>{{record}}</pre>-->
+</div>
+

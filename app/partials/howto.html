@@ -1,0 +1,25 @@
+<div ng-controller="ModelCtrl">
+<h1>Welcome to forms-angular</h1>
+
+<p>This demo application uses the following models:</p>
+<ul>
+    <li ng-repeat="model in models | orderBy:'resource_name'">{{model.resource_name}}     [<a href="/#/{{model.resource_name}}/new">New</a>][<a href="/#/{{model.resource_name}}">List</a>]</li>
+</ul>
+
+<p>For each model the following routes are supported:</p>
+
+<ol>
+    <li><strong>/#/:model</strong> which lists the documents in the collection, with links to the form for editing them</li>
+    <li><strong>/#/:model/new</strong> which enables the user to create a new document using the default form for the collection</li>
+    <li><strong>/#/:model/:id/edit</strong> which enables the user to edit a document</li>
+</ol>
+
+<p>The Angular controllers make use of the following API calls:</p>
+    
+<ol>
+    <li><strong>/api/models</strong> returns an array of all the models that are available to forms-angular</li>
+    <li><strong>/api/schema/:model</strong> returns the schema for a model</li>
+    <li><strong>/api/:model</strong> returns an array of all the documents in a model (needs pagination)</li>
+    <li><strong>/api/:model/:id</strong> returns a single document from the collection</li>
+</ol>
+</div>
