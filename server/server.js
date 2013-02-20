@@ -5,6 +5,7 @@
 var express = require('express')
     , fs = require('fs')
     , mongoose = require('mongoose')
+    , exec = require('child_process').exec
     , https = require('https');
 
 
@@ -13,17 +14,17 @@ var app = module.exports = express();
 // Configuration
 
 app.configure(function(){
-
-    app.use(express.bodyParser({
-        uploadDir: __dirname + '/../app/tmp',
-        keepExtensions: true
-    }));
     app.use(express.methodOverride());
-
     app.use(app.router);
     app.use(express.static(__dirname + '/../app'));
 
-
+    // Copy the schemas to somewhere they can be served
+    exec('cp '+__dirname+'/../server/models/* '+__dirname+'/../app/code/',
+        function (error, stdout, stderr) {
+            if (error !== null) {
+                console.log('Error copying models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
+            }
+        });
 });
 
 app.configure('development', function(){

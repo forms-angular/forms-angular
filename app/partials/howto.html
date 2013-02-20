@@ -1,9 +1,18 @@
 <div ng-controller="ModelCtrl">
 <h1>Welcome to forms-angular</h1>
 
+<p>All the input forms in the demo application use a very simple one line view:</p>
+<pre>&ltform-input ng-repeat="field in formSchema" info="{{field}}"&gt&lt/form-input&gt</pre>
+<p>which generates the forms on the client using the Mongoose schemas, optionally fine-tuned by hand.</p>
+
 <p>This demo application uses the following models:</p>
 <ul>
-    <li ng-repeat="model in models | orderBy:'resource_name'">{{model.resource_name}}     [<a href="/#/{{model.resource_name}}/new">New</a>][<a href="/#/{{model.resource_name}}">List</a>]</li>
+    <li ng-repeat="model in models | orderBy:'resource_name'">
+        {{model.resource_name}}
+        [<a href="/#/{{model.resource_name}}/new">New</a>]
+        [<a href="/#/{{model.resource_name}}">List</a>]
+        [<a href="/code/{{model.resource_name}}.js">View</a>]
+    </li>
 </ul>
 
 <p>For each model the following routes are supported:</p>

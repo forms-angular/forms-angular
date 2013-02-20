@@ -1,4 +1,4 @@
-// This part of angular-form borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
+// This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 
 var _ = require('underscore');
 var util = require('util');
@@ -95,7 +95,7 @@ DataForm.prototype.preprocess = function (paths) {
         }
     }
     return outPath;
-}
+};
 
 DataForm.prototype.schema = function() {
     return _.bind(function(req, res, next) {

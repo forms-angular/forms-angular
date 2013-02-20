@@ -1,0 +1,15 @@
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+
+var BSchema = new Schema({
+    surname: {type: String, list:{}},                        // this field appears in a listing and the default edit form header
+    forename:  {type: String, list:true},                    // this field appears in a listing and the default edit form header
+    weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
+    dateOfBirth: Date,
+    accepted: Boolean,
+    interviewScore:{type:Number,form:{hidden:true},list:{}}  // this field does not appear on the form or listings, even though list is defined - not sure about this
+});
+
+var B = mongoose.model('B', BSchema);
+
+module.exports = B;
