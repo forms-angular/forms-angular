@@ -3,7 +3,7 @@ Angular / Bootstrap / Express application.
 
 All the heavy lifting is shared between a controller (which speaks to the server
 and converts the Mongoose schema to an internal schema) and a directive (which
-generates the html for the form.
+generates the html for the form).
 
 There is a demonstration application with several example schemas running at
 http://forms-ng.herokuapp.com
