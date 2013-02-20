@@ -34,7 +34,7 @@ app.configure('development', function(){
 app.configure('production', function(){
     console.log('Production mode');
     app.use(express.errorHandler());
-    mongoose.connect('mongodb://theworld:7gY^tr5^ERf$r@linus.mongohq.com:10053/forms-ng');
+    mongoose.connect('mongodb://theworld:k12gYth6t4g7YT@linus.mongohq.com:10053/formsng');
 });
 
 //// Bootstrap models
