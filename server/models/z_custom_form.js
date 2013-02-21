@@ -2,13 +2,13 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ASchema = new Schema({
-    surname: {type:String, required:true},
+    surname: String,
     forename: String,
     weight: Number,
     dateOfBirth: Date,
     accepted: Boolean
 });
 
-var A = mongoose.model('A', ASchema);
+var Z = mongoose.model('Z', ASchema);
 
-module.exports = A;
+module.exports = Z;

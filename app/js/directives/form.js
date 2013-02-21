@@ -18,13 +18,22 @@ angular.module('formsAngular.form', [])
                                     modelString = 'record.'+fieldInfo.name;
                                 }
                             }
-                            var value;
+                            var value
+                                , requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
                             if (fieldInfo.type == 'select') {
                                 value = '<select ng-model="' + modelString + '" id="' + idString + '">';
                                 value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                                 value += '</select>';
+                            } else if (fieldInfo.type == 'textarea') {
+                                value = '<textarea ' + (fieldInfo.rows ? 'rows = "'+ fieldInfo.rows +'" ':'') + 'ng-model="' + modelString + '"' + (idString ? ' id="'+ idString + '"': '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + ' />';
                             } else {
-                                value = '<input type="' + info.type + '" ng-model="' + modelString + '"' + (idString ? ' id="'+ idString + '"': '') + (isRequired ? " required" : '') + (fieldInfo.add ? fieldInfo.add : '') + '/>';
+                                value = '<input type="' + info.type + '" ng-model="' + modelString + '"' + (idString ? ' id="'+ idString + '"': '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + '/>';
+                            }
+                            if (fieldInfo.helpInline) {
+                                value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
+                            }
+                            if (fieldInfo.help) {
+                                value += '<span class="help-block">' + fieldInfo.help + '</span>';
                             }
                             return value;
                         };

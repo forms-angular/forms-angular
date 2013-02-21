@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ASchema = new Schema({
-    surname: String,
+    surname: {type:String, required:true},
     forename: String,
     weight: Number,
     dateOfBirth: Date,

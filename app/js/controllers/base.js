@@ -31,7 +31,10 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             mongooseType = mongooseType.caster;
         }
         if (mongooseType.instance == 'String') {
-            formInstructions.type = 'text';
+            if (!formInstructions.type) {
+                // leave specified types as they are - textarea is supported
+                formInstructions.type = 'text';
+            }
         } else if (mongooseType.instance == 'ObjectID') {
             formInstructions.type = 'select';
             formInstructions.options = formInstructions.id + 'Options';
@@ -46,15 +49,17 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         } else {
             throw new Error("Field " + formInstructions.name + " is of unsupported type " + mongooseType.instance);
         }
+        if (mongooseOptions.required) {
+            formInstructions.required = true;
+        }
         return formInstructions;
     };
 
     var basicInstructions = function(field, formData, prefix) {
-        return {
-            name: prefix+field,
-            id:formData.id || 'f_' + prefix+field,
-            label: (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || titleCase(field))
-        };
+        formData.name = prefix+field;
+        formData.id = formData.id || 'f_' + prefix+field;
+        formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || titleCase(field));
+        return formData;
     };
 
     var handleListInfo = function(destList, listOptions, field) {

@@ -9,7 +9,7 @@ var myApp = angular.module('myApp', services).
         $routeProvider.
             when('/index', {templateUrl: 'partials/howto.html'} ).
             when('/404', {templateUrl: 'partials/404.html'} ).
-            when('/z_custom/new', {templateUrl: 'partials/custom-edit.html', controller: BaseCtrl}).   // example view override
+            when('/z_custom_form/new', {templateUrl: 'partials/custom-edit.html', controller: BaseCtrl}).   // example view override
             when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html', controller: BaseCtrl}).
             when('/:model/new', {templateUrl: 'partials/base-edit.html', controller: BaseCtrl}).
             when('/:model', {templateUrl: 'partials/base-list.html', controller: BaseCtrl}).
