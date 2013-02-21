@@ -53,7 +53,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         return {
             name: prefix+field,
             id:formData.id || 'f_' + prefix+field,
-            label:formData.label || titleCase(field)
+            label: (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || titleCase(field))
         };
     };
 

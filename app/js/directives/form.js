@@ -30,7 +30,11 @@ angular.module('formsAngular.form', [])
                         };
 
                         var generateLabel = function(fieldInfo, addButton) {
-                            return '<label class="control-label" for="'+fieldInfo.id+'">'+fieldInfo.label + (addButton || '')+'</label>';
+                            var labelHTML = '';
+                            if (fieldInfo.label !== '' || addButton) {
+                                labelHTML = '<label class="control-label" for="'+fieldInfo.id+'">'+fieldInfo.label + (addButton || '')+'</label>';
+                            }
+                            return labelHTML;
                         };
 
                         var handleField = function(info) {
