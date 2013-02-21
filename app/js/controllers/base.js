@@ -11,7 +11,18 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     $scope.formSchema = [];
     $scope.listSchema = [];
     $scope.recordList = [];
-    $scope.modelName = $routeParams.model;
+    // Process RouteParams / Location
+    if ($routeParams.model) {
+        $scope.modelName = $routeParams.model;
+        $scope.id = $routeParams.id
+    } else {
+        // Support using the base controller with override views
+        $scope.location = $location.$$path.split('/');
+        $scope.modelName = $scope.location[1];
+        if ($scope.location[2] !== 'new') {
+            $scope.id = $scope.location[2];
+        }
+    }
     $scope.modelNameDisplay = titleCase($scope.modelName);
 
     var handleFieldType = function(formInstructions, mongooseType, mongooseOptions) {
@@ -70,7 +81,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             // If it is still blank then just use the first field
             destList.push({name:destForm[0].name});
         }
-    }
+    };
 
     var handleSchema = function(source, destForm, destList, prefix, doRecursion) {
         for (var field in source) {
@@ -102,11 +113,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     };
 
-    $http.get('api/schema/' + $routeParams.model).success(function (data) {
+    $http.get('api/schema/' + $scope.modelName).success(function (data) {
         handleSchema(data, $scope.formSchema, $scope.listSchema, '',true);
 
-        if ($routeParams.id) {
-            $http.get('api/' + $routeParams.model + '/' + $routeParams.id).success(function (data) {
+        if ($scope.id) {
+            $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
                 if (data.success === false) {
                     $location.path("/404");
                 }
@@ -117,7 +128,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     $location.path("/404");
                 });
         } else if ($location.$$path.slice(1) == $scope.modelName) {
-            $http.get('api/' + $routeParams.model).success(function (data) {
+            $http.get('api/' + $scope.modelName).success(function (data) {
                 $scope.recordList = data;
             });
         }
@@ -135,27 +146,27 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
         var dataToSave = convertToMongoModel(angular.copy($scope.record));
         if ($scope.record._id) {
-            $http.post('api/' + $routeParams.model + '/' + $routeParams.id, dataToSave).success(function () {
+            $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function () {
                 master = $scope.record;
                 $scope.cancel();
             });
         } else {
-            $http.post('api/' + $routeParams.model, dataToSave).success(function (doc) {
-                $location.path('/' + $routeParams.model + '/' + doc._id + '/edit');
+            $http.post('api/' + $scope.modelName, dataToSave).success(function (doc) {
+                $location.path('/' + $scope.modelName + '/' + doc._id + '/edit');
             });
         }
     };
 
     $scope.new = function () {
-        $location.path('/' + $routeParams.model + '/new');
+        $location.path('/' + $scope.modelName + '/new');
     };
 
     $scope.delete = function () {
         if ($scope.record._id) {
             //TODO: When we upgrade to Twitter Bootstrap 2.2.2 get a confirm using http://bootboxjs.com/
-            $http.delete('api/' + $routeParams.model + '/' + $routeParams.id);
+            $http.delete('api/' + $scope.modelName + '/' + $scope.id);
         }
-        $location.path('/' + $routeParams.model);
+        $location.path('/' + $scope.modelName);
     };
 
     $scope.isCancelDisabled = function () {
@@ -282,7 +293,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
         $http.get('api/schema/' + lookupCollection).success(function (data) {
             var listInstructions = [], unusedFormSchema = [];
-            handleSchema(data,unusedFormSchema,listInstructions, '',false)
+            handleSchema(data,unusedFormSchema,listInstructions, '',false);
             $http.get('api/' + lookupCollection).success(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var option = '';

@@ -1,0 +1,17 @@
+<div data-ng-controller="BaseCtrl">
+    <form name="myForm" class="form-horizontal compact">
+        <div class="row form-fixed well">
+            <div class="span8">
+                <h3>This is a custom form to collect new data</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
+            </div>
+        </div>
+    </form>
+    <!--<pre>{{record}}</pre>-->
+</div>
+
+
