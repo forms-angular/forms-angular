@@ -10,7 +10,7 @@ if [ $1 ]; then
 	    cp $BASE_DIR/../app/js/directives/form.js $BASE_DIR/../../$1/app/js/directives/form.js
 	    cp $BASE_DIR/../app/partials/base-edit.html $BASE_DIR/../../$1/app/partials/base-edit.html
 	    cp $BASE_DIR/../app/partials/base-list.html $BASE_DIR/../../$1/app/partials/base-list.html
-	    cp $BASE_DIR/../server/lib/data_form.js $BASE_DIR/../../$1/app/partials/data_form.js
+	    cp $BASE_DIR/../server/lib/data_form.js $BASE_DIR/../../$1/server/lib/data_form.js
 
 		clear
 	    echo ""
