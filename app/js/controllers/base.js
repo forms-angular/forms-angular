@@ -231,18 +231,28 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         $scope.record = angular.copy(master);
     };
 
-    $scope.save = function () {
-        //Convert the lookup values into ids
+    $scope.save = function (options) {
+        options = options || {};
 
+        //Convert the lookup values into ids
         var dataToSave = convertToMongoModel(angular.copy($scope.record));
+
         if ($scope.record._id) {
             $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function () {
-                master = $scope.record;
-                $scope.cancel();
+                if (options.redirect) {
+                    window.location = options.redirect;
+                } else {
+                    master = $scope.record;
+                    $scope.cancel();
+                }
             });
         } else {
             $http.post('api/' + $scope.modelName, dataToSave).success(function (doc) {
-                $location.path('/' + $scope.modelName + '/' + doc._id + '/edit');
+                if (options.redirect) {
+                    window.location = options.redirect
+                } else {
+                    $location.path('/' + $scope.modelName + '/' + doc._id + '/edit');
+                }
             });
         }
     };

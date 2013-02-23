@@ -7,11 +7,17 @@
         </div>
         <div class="row">
             <div>
+                <p>When the users clicks on Submit they are redirected to a confirmation page.  The button markup is of the form: </p>
+                <pre>&ltbutton type="button" ng-click="save({'redirect':'/thank-you.html'})"&gtSubmit&lt/button&gt</pre>
+            </div>
+            <div>
                 <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
             </div>
         </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary" ng-click="save({'redirect':'/thank-you.html'})">Submit</button>
+        </div>
     </form>
-    <!--<pre>{{record}}</pre>-->
 </div>
 
 

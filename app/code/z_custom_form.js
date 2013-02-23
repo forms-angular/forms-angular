@@ -6,7 +6,7 @@ var ASchema = new Schema({
     forename: String,
     weight: Number,
     dateOfBirth: Date,
-    accepted: Boolean
+    termsAccepted: Boolean
 });
 
 var Z = mongoose.model('Z', ASchema);

@@ -152,7 +152,7 @@ DataForm.prototype.collectionPost = function() {
         var doc = new req.resource.model(epured_body);
 
         doc.save(function(err) {
-            if (err) { error(err); return; }
+            if (err) { throw new Error(err); return; }
             res.send(doc);
         });
     }, this);

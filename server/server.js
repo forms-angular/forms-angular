@@ -54,6 +54,8 @@ models_files.forEach(function(file){
     }
 });
 
+console.log(app.routes);
+
 app.get('/api/models', function(req, res){
     res.send(DataFormHandler.resources);
 });

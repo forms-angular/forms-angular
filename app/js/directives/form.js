@@ -106,7 +106,7 @@ angular.module('formsAngular.form', [])
             restrict: 'A',
             compile: function(){
                 return function ($scope, $element) {
-                    var template = '<div class="btn-group btn-group pull-right">'+
+                    var template = '<div class="btn-group pull-right">'+
                         '<button id="saveButton" class="btn btn-mini btn-primary form-btn" ng-click="save()" '+
                         'ng-disabled="isSaveDisabled()"><i class="icon-ok"></i> Save</button>' +
                         '<button id="cancelButton" class="btn btn-mini btn-warning form-btn" ng-click="cancel()" ' +

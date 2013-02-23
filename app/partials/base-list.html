@@ -1,5 +1,5 @@
 <div ng-controller="BaseCtrl" class="row">
-    <div class="hero-unit">
+    <div class="hero-unit span11">
         <div class="row">
             <div class="pull-left">
             <h1>{{modelNameDisplay}}</h1>
@@ -18,8 +18,12 @@
             </div>
         </div>
     </div>
-    <a ng-repeat="record in recordList | filter:recordFilter" href="/#/{{modelName}}/{{record['_id']}}/edit"><div class="well well-small">
-        <span ng-repeat="field in listSchema">{{record[field.name]}} </span>
-    </div></a>
+    <div class="span10">
+        <a ng-repeat="record in recordList | filter:recordFilter" href="/#/{{modelName}}/{{record['_id']}}/edit">
+            <div class="well well-small">
+                <span ng-repeat="field in listSchema">{{record[field.name]}} </span>
+            </div>
+        </a>
+    </div>
 </div>
 
