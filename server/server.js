@@ -14,6 +14,10 @@ var app = module.exports = express();
 // Configuration
 
 app.configure(function(){
+    app.use(express.bodyParser({
+        uploadDir: __dirname + '/../app/tmp',
+        keepExtensions: true
+    }));
     app.use(express.methodOverride());
     app.use(app.router);
     app.use(express.static(__dirname + '/../app'));
