@@ -66,6 +66,32 @@ describe('BaseCtrl', function(){
         });
     });
 
+    describe('handles simple conditional display fields', function() {
+
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/collection').respond(
+                {"name":{"instance":"String"},
+                 "hide_me":{"instance":"String", "options":{"form":{"showIf":{"lhs":0,"comp":"eq","rhs":1}}}},
+                 "show_me":{"instance":"String", "options":{"form":{"showIf":{"lhs":1,"comp":"eq","rhs":1}}}}
+                }
+
+            );
+            $routeParams.model = 'collection';
+            scope = $rootScope.$new();
+            ctrl = $controller(BaseCtrl, {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('can hide fields', function() {
+            expect(scope.formSchema.length).toBe(2);
+            expect(scope.formSchema[0].label).toBe('Name');
+            expect(scope.formSchema[1].label).toBe('Show Me');
+        });
+    });
+
     describe('converts models', function() {
         var scope, ctrl;
 

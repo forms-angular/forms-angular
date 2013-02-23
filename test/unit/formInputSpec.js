@@ -16,10 +16,10 @@ describe('formInput', function() {
             scope.schema = {name: "desc",  id:"desc_id", label: "Description", type:"text"};
             $compile(elm)(scope);
             scope.$digest();
-            console.log(elm);
         }));
 
         it('should have a label', function() {
+            dump(elm);
             var label = elm.find('label');
             expect(label.text()).toBe('Description');
             expect(label.attr('for')).toBe('desc_id');

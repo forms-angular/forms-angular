@@ -47,7 +47,7 @@ angular.module('formsAngular.form', [])
                         };
 
                         var handleField = function(info) {
-                            var template = '<div class="control-group">';
+                            var template = '<div class="control-group" id="cg_'+info.id+'">';
                             if (info.schema) {
                                 //schemas (which means they are arrays in Mongoose)
                                 template += generateLabel(info, ' <i id="add_' + info.id + ' " ng-click="add(this)" class="icon-plus-sign"></i>') +
@@ -85,12 +85,16 @@ angular.module('formsAngular.form', [])
                         };
 
                         // without the "if" below I was sometimes getting the inputs repeated
-                        //TODO: could presumably to an optimised search using element
                         if ($('#'+attrs.field).length == 0) {
                             var info = JSON.parse(attrs.info);
                             var template = handleField(info);
 
                             element.replaceWith($compile(template)(scope));
+
+                            if (scope.updateDataDependentDisplay) {
+                                // If this is not a test force the data dependent updates to the DOM
+                                scope.updateDataDependentDisplay(scope.record, null, true);
+                            }
                         }
                     });
                 };

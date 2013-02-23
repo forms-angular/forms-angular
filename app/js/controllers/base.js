@@ -11,6 +11,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     $scope.formSchema = [];
     $scope.listSchema = [];
     $scope.recordList = [];
+    $scope.dataDependencies = {};
     // Process RouteParams / Location
     if ($routeParams.model) {
         $scope.modelName = $routeParams.model;
@@ -88,6 +89,82 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     };
 
+    var evaluateConditional = function(condition, data) {
+
+        function evaluateSide(side) {
+            var result = side;
+            if (typeof side === "string" && side.slice(0,1) === '$') {
+                result = data[side.slice(1)]
+            }
+            return result;
+        }
+
+        var lhs = evaluateSide(condition.lhs)
+            , rhs = evaluateSide(condition.rhs)
+            , result;
+
+        switch (condition.comp) {
+            case 'eq' :
+                result = (lhs === rhs);
+                break;
+            case 'ne' :
+                result = (lhs !== rhs);
+                break;
+            default :
+                throw new Error("Unsupported comparator " + condition.comp);
+        }
+        return result;
+    };
+
+//    Conditionals
+//    $scope.dataDependencies is of the form {fieldName1: [fieldId1, fieldId2], fieldName2:[fieldId2]}
+
+    var handleConditionals = function(condInst, id) {
+
+        var dependency = 0;
+
+        function handleVar(theVar) {
+            if (typeof theVar === "string" && theVar.slice(0,1) === '$') {
+                var fieldName = theVar.slice(1);
+                var fieldDependencies = $scope.dataDependencies[fieldName] || [];
+                fieldDependencies.push(id);
+                $scope.dataDependencies[fieldName] = fieldDependencies;
+                dependency += 1;
+            }
+        }
+
+        var display = true;
+        if (condInst) {
+            handleVar(condInst.lhs);
+            handleVar(condInst.rhs);
+            if (dependency === 0 && !evaluateConditional(condInst)) {
+                display = false;
+            }
+        }
+        return display;
+    };
+
+    $scope.updateDataDependentDisplay = function(curValue, oldValue, force) {
+        for (var field in $scope.dataDependencies) {
+            if ($scope.dataDependencies.hasOwnProperty(field) && (force || (curValue[field] != oldValue[field]))) {
+                var depends = $scope.dataDependencies[field];
+                for (var i = 0; i < depends.length ; i+=1) {
+                    var id = depends[i];
+                    for (var j = 0; j < $scope.formSchema.length;  j+= 1) {
+                        if ($scope.formSchema[j].id === id) {
+                            var control = $('#cg_' + id);
+                            if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
+                                control.show();
+                            } else {
+                                control.hide();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
     var handleSchema = function(source, destForm, destList, prefix, doRecursion) {
         for (var field in source) {
             if (field !== '_id' && source.hasOwnProperty(field)) {
@@ -102,12 +179,12 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         sectionInstructions.schema = schemaSchema;
                         destForm.push(sectionInstructions);
                     } else {
-
                         var formInstructions = basicInstructions(field, formData, prefix);
-                        destForm.push(handleFieldType(formInstructions, mongooseType, mongooseOptions));
-
+                        if (handleConditionals(formInstructions.showIf, formInstructions.id)) {
+                            destForm.push(handleFieldType(formInstructions, mongooseType, mongooseOptions));
+                        }
                         if (destList) {
-                            handleListInfo(destList, mongooseOptions.list, field)
+                            handleListInfo(destList, mongooseOptions.list, field);
                         }
                     }
                 }
@@ -121,26 +198,34 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     $http.get('api/schema/' + $scope.modelName).success(function (data) {
         handleSchema(data, $scope.formSchema, $scope.listSchema, '',true);
 
-        if ($scope.id) {
-            $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
-                if (data.success === false) {
-                    $location.path("/404");
-                }
-                master = convertToAngularModel(data);
-                $scope.cancel();
-            })
-                .error(function () {
-                    $location.path("/404");
-                });
-        } else if ($location.$$path.slice(1) == $scope.modelName) {
+        if ($location.$$path.slice(1) == $scope.modelName) {
             $http.get('api/' + $scope.modelName).success(function (data) {
                 $scope.recordList = data;
-            });
+                }).error(function () {
+                    $location.path("/404");
+                });
+        } else {
+            $scope.$watch('record', function(newValue, oldValue) {
+                $scope.updateDataDependentDisplay(newValue, oldValue, false)
+            },true);
+//
+
+
+            if ($scope.id) {
+                $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
+                    if (data.success === false) {
+                        $location.path("/404");
+                    }
+                    master = convertToAngularModel(data);
+                    $scope.cancel();
+                }).error(function () {
+                    $location.path("/404");
+                });
+            }
         }
-    })
-        .error(function () {
+    }).error(function () {
             $location.path("/404");
-        });
+    });
 
     $scope.cancel = function () {
         $scope.record = angular.copy(master);
