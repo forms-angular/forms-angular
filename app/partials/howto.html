@@ -6,14 +6,14 @@
 <p>which generates the forms on the client using the Mongoose schemas, optionally fine-tuned by hand.</p>
 
 <p>This demo application uses the following models:</p>
-<ul>
-    <li ng-repeat="model in models | orderBy:'resource_name'">
-        {{model.resource_name}}
-        [<a href="/#/{{model.resource_name}}/new">New</a>]
-        [<a href="/#/{{model.resource_name}}">List</a>]
-        [<a href="/code/{{model.resource_name}}.js">View</a>]
-    </li>
-</ul>
+<table class="table table-striped table-condensed">
+    <tr ng-repeat="model in models | orderBy:'resource_name'">
+        <td>{{model.resource_name}}</td>
+        <td><a href="/code/{{model.resource_name}}.js">View schema</a></td>
+        <td><a href="/#/{{model.resource_name}}/new">New</a></td>
+        <td><a href="/#/{{model.resource_name}}">List</a></td>
+    </tr>
+</table>
 
 <p>For each model the following routes are supported:</p>
 

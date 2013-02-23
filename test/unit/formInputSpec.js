@@ -19,7 +19,6 @@ describe('formInput', function() {
         }));
 
         it('should have a label', function() {
-            dump(elm);
             var label = elm.find('label');
             expect(label.text()).toBe('Description');
             expect(label.attr('for')).toBe('desc_id');
