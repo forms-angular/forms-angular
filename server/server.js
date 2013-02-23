@@ -42,8 +42,20 @@ app.configure('production', function(){
     mongoose.connect('mongodb://theworld:k12gYth6t4g7YT@linus.mongohq.com:10053/formsng');
 });
 
+
+var ensureAuthenticated = function (req, res, next) {
+    // Here you can do authentication using things like
+    //      req.ip
+    //      req.route
+    //      req.url
+    if (true) { return next(); }
+    res.status(401).send('No Authentication Provided');
+};
+
 //// Bootstrap models
 var DataFormHandler = new (require(__dirname + '/lib/data_form.js'))(app, {urlPrefix : '/api/'});
+// Or if you want to do some form of authentication...
+// var DataFormHandler = new (require(__dirname + '/lib/data_form.js'))(app, {urlPrefix : '/api/', authentication : ensureAuthenticated});
 
 var models_path = __dirname + '/models';
 var models_files = fs.readdirSync(models_path);
@@ -53,8 +65,6 @@ models_files.forEach(function(file){
         DataFormHandler.addResource(file.slice(0,-3), require(fname));
     }
 });
-
-console.log(app.routes);
 
 app.get('/api/models', function(req, res){
     res.send(DataFormHandler.resources);

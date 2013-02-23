@@ -23,21 +23,30 @@ module.exports = exports = DataForm;
  */
 DataForm.prototype.registerRoutes = function() {
 
-    this.app.get(this.options.urlPrefix + 'schema/:resourceName', this.schema());
+    function processArgs(options, array) {
+        if (options.authentication) {
+           array.splice(1,0,options.authentication)
+        }
+        array[0] = options.urlPrefix + array[0];
+        return array;
+    }
 
-    this.app.all(this.options.urlPrefix + ':resourceName', this.collection());
-    this.app.get(this.options.urlPrefix + ':resourceName', this.collectionGet());
 
-    this.app.post(this.options.urlPrefix + ':resourceName', this.collectionPost());
+    this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName', this.schema()]));
 
-    this.app.all(this.options.urlPrefix + ':resourceName/:id', this.entity());
-    this.app.get(this.options.urlPrefix + ':resourceName/:id', this.entityGet());
+    this.app.all.apply(this.app, processArgs(this.options, [':resourceName', this.collection()]));
+    this.app.get.apply(this.app, processArgs(this.options, [':resourceName', this.collectionGet()]));
+
+    this.app.post.apply(this.app, processArgs(this.options, [':resourceName', this.collectionPost()]));
+
+    this.app.all.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entity()]));
+    this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityGet()]));
 
     // You can POST or PUT to update data
-    this.app.post(this.options.urlPrefix + ':resourceName/:id', this.entityPut());
-    this.app.put(this.options.urlPrefix + ':resourceName/:id', this.entityPut());
+    this.app.post.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityPut()]));
+    this.app.put.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityPut()]));
 
-    this.app.delete(this.options.urlPrefix + ':resourceName/:id', this.entityDelete());
+    this.app.delete.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityDelete()]));
 };
 
 DataForm.prototype.addResource = function(resource_name, model, options) {
@@ -152,7 +161,7 @@ DataForm.prototype.collectionPost = function() {
         var doc = new req.resource.model(epured_body);
 
         doc.save(function(err) {
-            if (err) { throw new Error(err); return; }
+            if (err) { throw new Error(err); }
             res.send(doc);
         });
     }, this);
