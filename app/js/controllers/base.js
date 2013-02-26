@@ -229,7 +229,29 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
     $scope.cancel = function () {
         $scope.record = angular.copy(master);
+//        if ($scope.myForm) {
+//            console.log('Calling set pristine')
+//            $scope.myForm.$setPristine();
+//        } else {
+//            console.log("No form");
+//        }
     };
+
+//    window.onbeforeunload = function() {
+//        if ($('.ng-dirty').length > 0) {
+//            return 'You have unsaved changes!';
+//        } else {
+//            return null;
+//        }
+//    }
+
+//    $scope.$on('$locationChangeStart', function (event, next, current) {
+//        console.log('changed = ' + $scope.isCancelDisabled())
+////        event.preventDefault();
+////        if ( !$scope.isCancelDisabled() && ! confirm("Are you sure you want to leave this page?") ) {
+////            event.preventDefault();
+////        }
+//    });
 
     $scope.save = function (options) {
         options = options || {};
@@ -252,6 +274,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     window.location = options.redirect
                 } else {
                     $location.path('/' + $scope.modelName + '/' + doc._id + '/edit');
+//                    reset?
                 }
             });
         }

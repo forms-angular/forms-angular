@@ -161,15 +161,18 @@ DataForm.prototype.collectionPost = function() {
         var doc = new req.resource.model(epured_body);
 
         doc.save(function(err) {
-            if (err) { throw new Error(err); }
-            res.send(doc);
+            if (err) {
+                res.send(400, {'status':'err','message':err.message});
+            } else {
+                res.send(doc);
+            }
         });
     }, this);
 };
 
 /**
  * Generate an object of fields to not expose
- */
+**/
 DataForm.prototype.generateHiddenFields = function(resource) {
     var hidden_fields = {};
 

@@ -60,10 +60,12 @@ describe('formInput', function() {
             expect(input).toHaveClass('ng-pristine');
             expect(input).toHaveClass('ng-valid');
             expect(input.attr('id')).toBe('1');
+            expect(input.attr('autofocus')).toBe('autofocus');
             expect(input.attr('type')).toBe('text');
             input = elm.find('input:last');
             expect(input.attr('id')).toBe('2');
             expect(input.attr('type')).toBe('text');
+            expect(input.attr('autofocus')).toBe(undefined);
         });
 
         it('should have 2 labels', function() {
@@ -75,6 +77,147 @@ describe('formInput', function() {
             label = elm.find('label:last');
             expect(label.text()).toBe('Colour of Eyes');
             expect(label.attr('for')).toBe('2');
+        });
+
+    });
+
+    describe('does not generate label element when label is blank', function() {
+
+        beforeEach(inject(function($rootScope, $controller, $compile) {
+
+            elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '</form>');
+
+            scope = $rootScope;
+            scope.schema = [
+                {name: "name",  id:"1", label: "Name", type:"text"},
+                {name: "eyecolour",  id:"2", label: "", type:"text"}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have 2 inputs', function() {
+            var input = elm.find('input');
+            expect(input.length).toBe(2);
+            input = elm.find('input:first');
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input.attr('id')).toBe('1');
+            expect(input.attr('type')).toBe('text');
+            input = elm.find('input:last');
+            expect(input.attr('id')).toBe('2');
+            expect(input.attr('type')).toBe('text');
+        });
+
+        it('should have 1 label', function() {
+            var label = elm.find('label');
+            expect(label.length).toBe(1);
+            expect((label).text()).toBe('Name');
+            expect(label.attr('for')).toBe('1');
+        });
+
+    });
+
+    describe('generates "required" attribute when appropriate', function() {
+
+        beforeEach(inject(function($rootScope, $controller, $compile) {
+
+            elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '</form>');
+
+            scope = $rootScope;
+            scope.schema = [
+                {name: "name",  id:"1", label: "Name", type:"text", required:true},
+                {name: "eyecolour",  id:"2", label: "", type:"text"}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have correct inputs', function() {
+            var input = elm.find('input');
+            expect(input.length).toBe(2);
+            input = elm.find('input:first');
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-invalid');
+            expect(input.attr('id')).toBe('1');
+            expect(input.attr('required')).toBe("required");
+            expect(input.attr('type')).toBe('text');
+            input = elm.find('input:last');
+            expect(input.attr('id')).toBe('2');
+            expect(input.attr('required')).toBe(undefined);
+            expect(input.attr('type')).toBe('text');
+        });
+
+    });
+
+    describe('generates help elements', function() {
+
+        beforeEach(inject(function($rootScope, $controller, $compile) {
+
+            elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '</form>');
+
+            scope = $rootScope;
+            scope.schema = [
+                {name: "name",  id:"1", label: "Name", type:"text", help:"This is some help"},
+                {name: "eyecolour",  id:"2", label: "", type:"text", helpInline:"This is some inline help"}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have correct help blocks', function() {
+            var help = elm.find('span');
+            expect(help.length).toBe(2);
+            help = elm.find('span:first');
+            expect(help).toHaveClass('help-block');
+            expect(help.text()).toBe('This is some help');
+            help = elm.find('span:last');
+            expect(help).toHaveClass('help-inline');
+            expect(help.text()).toBe('This is some inline help');
+        });
+
+    });
+
+    describe('generates textarea inputs', function() {
+
+        beforeEach(inject(function($rootScope, $controller, $compile) {
+
+            elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '</form>');
+
+            scope = $rootScope;
+            scope.schema = [
+                {name: "name",  id:"1", label: "Name", type:"text"},
+                {name: "description",  id:"2", label: "Desc", type:"textarea", rows:10}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have correct textarea', function() {
+            var input = elm.find('input');
+            expect(input.length).toBe(1);
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input.attr('id')).toBe('1');
+            expect(input.attr('type')).toBe('text');
+            input = elm.find('textarea');
+            expect(input.length).toBe(1);
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input.attr('id')).toBe('2');
+            expect(input.attr('rows')).toBe('10');
         });
 
     });

@@ -32,6 +32,17 @@ describe('BaseCtrl', function(){
                 expect($location.path()).toBe('/404');
             });
         });
+
+        it('should allow for override screens', function() {
+            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller, _$location_) {
+                $httpBackend = _$httpBackend_;
+                _$location_.path('/someModel/new');
+                $httpBackend.when('GET','api/schema/someModel').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
+                scope = $rootScope.$new();
+                ctrl = $controller(BaseCtrl, {$scope: scope, $location:_$location_});
+                $httpBackend.flush();
+            });
+        });
     });
 
     describe('converts model schema to form schema', function() {
@@ -64,6 +75,63 @@ describe('BaseCtrl', function(){
             });
 
         });
+    });
+
+    describe('handles null labels', function() {
+
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/collection').respond(
+                {"name":{"instance":"String"},"noLabel":{"instance":"String", "options":{"form":{"label":null}}}}
+            );
+            $routeParams.model = 'collection';
+            scope = $rootScope.$new();
+            ctrl = $controller(BaseCtrl, {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('creates a schema element', function() {
+            expect(scope.formSchema.length).toBe(2);
+        });
+
+        describe('generate defaults', function() {
+
+            it('sets up id', function() {
+                expect(scope.formSchema[1].id).toBe('f_noLabel');
+            });
+
+            it('generates an empty label', function() {
+                expect(scope.formSchema[1].label).toBe('');
+            });
+
+        });
+    });
+
+    describe('handles required fields', function() {
+
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/collection').respond(
+                {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[[null,"required"]],"setters":[],"getters":[],"options":{"required":true},"_index":null,"isRequired":true},
+                    "town":{"instance":"String"}}
+            );
+            $routeParams.model = 'collection';
+            scope = $rootScope.$new();
+            ctrl = $controller(BaseCtrl, {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('creates correct elements', function() {
+            expect(scope.formSchema.length).toBe(2);
+            expect(scope.formSchema[0].hasOwnProperty('required')).toBe(true);
+            expect(scope.formSchema[0].required).toBe(true);
+            expect(scope.formSchema[1].hasOwnProperty('required')).toBe(false);
+        });
+
     });
 
     describe('handles simple conditional display fields', function() {

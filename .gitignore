@@ -36,6 +36,10 @@ app/lib/angular-ui/angular-ui-0.4.0/*.
 app/lib/angular-ui/angular-ui-0.4.0/LICENSE
 app/lib/angular-ui/angular-ui-0.4.0/.gitignore
 
+app/lib/angular/docs
+app/lib/angular/i18n
+app/lib/angular.1.0
+
 .vagrant
 Vagrantfile
 

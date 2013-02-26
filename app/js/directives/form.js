@@ -6,7 +6,9 @@ angular.module('formsAngular.form', [])
             compile: function(){
                 return function (scope, element, attrs){
                     scope.$watch(attrs.formInput, function(){
+
                         var generateInput = function(fieldInfo, modelString, isRequired, idString) {
+                            var focusStr = '';
                             if (!modelString) {
                                 if (fieldInfo.name.indexOf('.') != -1 && element[0].outerHTML.indexOf('schema="true"') != -1) {
                                     // Schema handling - need to massage the ngModel and the id
@@ -16,18 +18,22 @@ angular.module('formsAngular.form', [])
                                     idString = modelString.replace(/\./g,'-')
                                 } else {
                                     modelString = 'record.'+fieldInfo.name;
+                                    if (scope.$index === 0) {
+                                        focusStr = "autofocus ";
+                                    }
                                 }
                             }
                             var value
                                 , requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
+
                             if (fieldInfo.type == 'select') {
-                                value = '<select ng-model="' + modelString + '" id="' + idString + '">';
+                                value = '<select ' + focusStr + 'ng-model="' + modelString + '" id="' + idString + '">';
                                 value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                                 value += '</select>';
                             } else if (fieldInfo.type == 'textarea') {
-                                value = '<textarea ' + (fieldInfo.rows ? 'rows = "'+ fieldInfo.rows +'" ':'') + 'ng-model="' + modelString + '"' + (idString ? ' id="'+ idString + '"': '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + ' />';
+                                value = '<textarea ' + focusStr + (fieldInfo.rows ? 'rows = "'+ fieldInfo.rows +'" ':'') + 'ng-model="' + modelString + '"' + (idString ? ' id="'+ idString + '"': '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + ' />';
                             } else {
-                                value = '<input type="' + info.type + '" ng-model="' + modelString + '"' + (idString ? ' id="'+ idString + '"': '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + '/>';
+                                value = '<input ' + focusStr + 'type="' + info.type + '" ng-model="' + modelString + '"' + (idString ? ' id="'+ idString + '"': '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + '/>';
                             }
                             if (fieldInfo.helpInline) {
                                 value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
@@ -100,8 +106,7 @@ angular.module('formsAngular.form', [])
                 };
             }
         };
-    })
-    .directive('formButtons', function ($compile) {
+    }).directive('formButtons', function ($compile) {
         return {
             restrict: 'A',
             compile: function(){
