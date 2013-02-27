@@ -273,6 +273,76 @@ describe('BaseCtrl', function(){
 
     });
 
+    describe('handles complex models', function() {
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+            $httpBackend = _$httpBackend_;
+
+            $httpBackend.whenGET('api/schema/collection').respond( {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":{}},"_index":null},"forename":{"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true},"_index":null},"address.street":{"enumValues":[],"regExp":null,"path":"address.street","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"address.town":{"enumValues":[],"regExp":null,"path":"address.town","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"studies.courses":{"schema":{"subject":{"enumValues":[],"regExp":null,"path":"subject","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"grade":{"enumValues":[],"regExp":null,"path":"grade","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"teachers":{"schema":{"teacher":{"path":"teacher","instance":"ObjectID","validators":[],"setters":[],"getters":[],"options":{"ref":"teachers"},"_index":null},"room":{"path":"room","instance":"Number","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}},"studies.exams":{"schema":{"subject":{"enumValues":[],"regExp":null,"path":"subject","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"examDate":{"path":"examDate","instance":"Date","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"score":{"path":"score","instance":"Number","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"result":{"enumValues":["distinction","merit","pass","fail"],"regExp":null,"path":"result","instance":"String","validators":[[null,"enum"]],"setters":[],"getters":[],"options":{"enum":["distinction","merit","pass","fail"]},"_index":null},"grader":{"path":"grader","instance":"ObjectID","validators":[],"setters":[],"getters":[],"options":{"ref":"teachers"},"_index":null},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}} );
+            $httpBackend.whenGET('api/schema/teachers').respond( {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[[null,"required"]],"setters":[],"getters":[],"options":{"required":true,"list":{}},"_index":null,"isRequired":true},"forename":{"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true},"_index":null},"address.line1":{"enumValues":[],"regExp":null,"path":"address.line1","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Address"}},"_index":null},"address.line2":{"enumValues":[],"regExp":null,"path":"address.line2","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":null}},"_index":null},"address.line3":{"enumValues":[],"regExp":null,"path":"address.line3","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":null}},"_index":null},"address.town":{"enumValues":[],"regExp":null,"path":"address.town","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Town"}},"_index":null},"address.postcode":{"enumValues":[],"regExp":null,"path":"address.postcode","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Postcode","help":"Enter your postcode or zip code"}},"_index":null},"weight":{"path":"weight","instance":"Number","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Weight (lbs)"}},"_index":null},"dateOfBirth":{"path":"dateOfBirth","instance":"Date","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"accepted":{"path":"accepted","instance":"boolean","validators":[],"setters":[],"getters":[],"options":{"form":{"helpInline":"Did we take them?"}},"_index":null},"interviewScore":{"path":"interviewScore","instance":"Number","validators":[],"setters":[],"getters":[],"options":{"form":{"hidden":true},"list":{}},"_index":null},"freeText":{"enumValues":[],"regExp":null,"path":"freeText","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"type":"textarea","rows":5}},"_index":null},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}});
+
+            $httpBackend.whenGET('api/teachers').respond(
+              [ {"_id": "Smithy", "forename": "John", "surname": "Smith" },
+                { "surname": "Jenkins", "forename": "Nicky", "_id": "Jenks"} ]);
+
+            $httpBackend.whenGET('api/collection/3').respond({"surname":"Thompson","forename":"Chris","address":{"street":"4 High Street","town":"Bolton"},
+                "studies":{
+                    "courses":[{"subject":"French","grade":"A","teachers":[{"teacher":"Smithy","room":1},{"teacher":"Jenks","room":3}]},{"subject":"German","grade":"B","teachers":["Smithy"]}],
+                    "exams":[{"subject":"French","examDate":"2013-02-12T00:00:00.000Z","score":56,"result":"pass","grader":"Smithy"},{"subject":"English","examDate":"2013-02-04T00:00:00.000Z","score":56,"result":"pass","grader":"Smithy"}]}});
+
+            $routeParams.model = 'collection';
+            $routeParams.id = 3;
+            scope = $rootScope.$new();
+            ctrl = $controller(BaseCtrl, {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        describe('reading lookups', function() {
+
+            it('sets up options', function() {
+                expect(scope.f_studies_exams_graderOptions).toEqual(['Smith John','Jenkins Nicky']);
+                expect(scope.f_teachers_teacherOptions).toEqual(['Smith John','Jenkins Nicky']);
+            });
+
+        });
+
+//        describe('mongo to front end', function() {
+//
+//            it('converts string array to object array', function() {
+//                expect(scope.record.arrayOfString).toEqual([ { x : 'string' }, { x : 'rope' }, { x : 'cord' } ]);
+//            });
+//
+//            it('converts id array to list strings array', function() {
+//                expect(scope.record.arrayOfLookup).toEqual([ { x : 'Social services' }, { x : 'Continuing Health Care' }, { x : 'Website' } ]);
+//            });
+//        });
+//
+//        describe('front end to mongo', function() {
+//
+//            it('converts object array to string array', function() {
+//                scope.record.arrayOfString[2].x = 'ribbon';
+//                $httpBackend.when('POST','api/collection',
+//                    {"textField":"This is some text","lookupField":"123456789","arrayOfString":["string","rope","ribbon"],"arrayOfLookup":["1","2","4"]}
+//                ).respond(200,'SUCCESS');
+//                scope.save();
+//                $httpBackend.flush();
+//            });
+//
+//            it('converts strings array to object ids array', function() {
+//                scope.record.arrayOfLookup[2].x = 'GP';
+//                $httpBackend.when('POST','api/collection',
+//                    {"textField":"This is some text","lookupField":"123456789","arrayOfString":["string","rope","cord"],"arrayOfLookup":["1","2","3"]}
+//                ).respond(200,'SUCCESS');
+//                scope.save();
+//                $httpBackend.flush();
+//            });
+//        });
+
+
+    });
+
+
 //   Cannot get this test to work, but the code seems to....
 //    describe('handles sub documents', function() {
 //        var scope, ctrl, compile, elm;

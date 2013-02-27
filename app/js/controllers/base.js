@@ -1,16 +1,5 @@
 var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
-    var titleCase = function(str) {
-        return str.replace(/_/g,' ').replace(/[A-Z]/g,' $&').replace(/\w\S*/g, function (txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
-    };
-
-    var suffixCleanId = function (inst, suffix) {
-        return inst.id.replace('.','_')+suffix;
-    };
-
-
     var master = {};
     $scope.record = {};
     $scope.formSchema = [];
@@ -29,7 +18,18 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             $scope.id = $scope.location[2];
         }
     }
+
+    var titleCase = function(str) {
+        return str.replace(/_/g,' ').replace(/[A-Z]/g,' $&').replace(/\w\S*/g, function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    };
+
     $scope.modelNameDisplay = titleCase($scope.modelName);
+
+    var suffixCleanId = function (inst, suffix) {
+        return inst.id.replace(/\./g,'_')+suffix;
+    };
 
     var handleFieldType = function(formInstructions, mongooseType, mongooseOptions) {
 
@@ -347,8 +347,10 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         for (var i = 0; i < schema.length; i++) {
             var fieldname = schema[i].name.slice(prefixLength);
             if (schema[i].schema) {
-                for (var j = 0; j < anObject[fieldname].length ; j++) {
-                    anObject[fieldname][j] = convertToAngularModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
+                if (anObject[fieldname]) {
+                    for (var j = 0; j < anObject[fieldname].length ; j++) {
+                        anObject[fieldname][j] = convertToAngularModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
+                    }
                 }
             } else {
 
@@ -390,8 +392,10 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         for (var i = 0; i < schema.length; i++) {
             var fieldname = schema[i].name.slice(prefixLength);
             if (schema[i].schema) {
-                for (var j = 0; j < anObject[fieldname].length ; j++) {
-                    anObject[fieldname][j] = convertToMongoModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
+                if (anObject[fieldname]) {
+                    for (var j = 0; j < anObject[fieldname].length ; j++) {
+                        anObject[fieldname][j] = convertToMongoModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
+                    }
                 }
             } else {
 
@@ -453,12 +457,19 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     optionsList.push(option.trim());
                     idList.push(data[i]._id);
                 }
+//                updateRecordWithLookupValues(schemaElement.name);
                 if (master[fieldName] && master[fieldName].length) {
                     master[fieldName] = convertForeignKeys(schemaElement, master[fieldName], $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]);
                     $scope.record[fieldName] = master[fieldName];
                 }
             })
         })
-    }
+    };
 
+//    var updateRecordWithLookupValues = function() {}
+//    if (master[fieldName] && master[fieldName].length) {
+//        master[fieldName] = convertForeignKeys(schemaElement, master[fieldName], $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]);
+//        $scope.record[fieldName] = master[fieldName];
+//    }
+    
 };
