@@ -160,10 +160,13 @@ DataForm.prototype.collectionPost = function() {
         var epured_body = this.epureRequest(req.body, req.resource);
         var doc = new req.resource.model(epured_body);
 
-        doc.save(function(err) {
+        console.log(doc);
+        doc.save(function(err, doc2) {
             if (err) {
+                console.log("collectionPost error :" + err);
                 res.send(400, {'status':'err','message':err.message});
             } else {
+                console.log(doc2);
                 res.send(doc);
             }
         });

@@ -4,7 +4,9 @@ var Schema = mongoose.Schema;
 var ExamsSchema = new Schema({
     subject: String,
     examDate: Date,
-    score: Number
+    score: Number,
+    result: {type: String, enum:['distinction','merit','pass','fail']},
+    grader: { type: Schema.Types.ObjectId, ref: 'b_using_options'}
 });
 
 var FSchema = new Schema({

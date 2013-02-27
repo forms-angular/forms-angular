@@ -109,11 +109,18 @@ describe('BaseCtrl', function(){
             $httpBackend.flush();
         }));
 
-        it('generates options and ids', function() {
+        it('puts options list in schema', function() {
             expect(scope.formSchema[2].options).toBe('f_arrayOfLookupOptions');
+        });
+
+        it('populates options list', function() {
             expect(scope.f_arrayOfLookupOptions[0]).toBe('Social services');
+        });
+
+        it('populates ids list', function() {
             expect(scope.f_arrayOfLookup_ids[0]).toBe('1');
         });
+
     });
 
     describe('handles null labels', function() {
