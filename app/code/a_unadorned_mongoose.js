@@ -5,6 +5,7 @@ var ASchema = new Schema({
     surname: {type:String, required:true},
     forename: String,
     weight: Number,
+    eyeColour: {type: String, enum:['Blue','Brown','Green','Hazel']},
     dateOfBirth: Date,
     accepted: Boolean
 });

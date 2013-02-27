@@ -222,5 +222,80 @@ describe('formInput', function() {
 
     });
 
+    describe('generates selects for enumerated lists', function() {
+
+        beforeEach(inject(function($rootScope, $controller, $compile) {
+
+            elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '</form>');
+
+            scope = $rootScope;
+            scope.f_eyeColourOptions = ["Blue","Brown","Green","Hazel"];
+            scope.schema = [
+                {name: "name",  id:"1", label: "Name", type:"text"},
+                {"name":"eyeColour","id":"f_eyeColour","label":"Eye Colour","type":"select","options":"f_eyeColourOptions"}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have combobox', function() {
+            var input = elm.find('select');
+            expect(input.length).toBe(1);
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input.attr('id')).toBe('f_eyeColour');
+            input = elm.find('option');
+            expect(input.length).toBe(5);
+            input = elm.find('option:first');
+            expect(input.attr('value')).toBe("? undefined:undefined ?");
+            expect(input.text()).toBe("");
+            input = elm.find('option:last');
+            expect(input.attr('value')).toBe("Hazel");
+            expect(input.text()).toBe("Hazel");
+        });
+
+    });
+
+
+    describe('generates selects for reference lookups', function() {
+
+        beforeEach(inject(function($rootScope, $controller, $compile) {
+
+            elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '</form>');
+
+            scope = $rootScope;
+            scope.f_eyeColourOptions = ["Blue","Brown","Green","Hazel"];
+            scope.f_eyeColour_ids = ["1234","5678","90ab","cdef"];
+            scope.schema = [
+                {name: "name",  id:"1", label: "Name", type:"text"},
+                {"name":"eyeColour","id":"f_eyeColour","label":"Eye Colour","type":"select","options":"f_eyeColourOptions","ids":"f_eyeColour_ids"}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have combobox', function() {
+            var input = elm.find('select');
+            expect(input.length).toBe(1);
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input.attr('id')).toBe('f_eyeColour');
+            input = elm.find('option');
+            expect(input.length).toBe(5);
+            input = elm.find('option:first');
+            expect(input.attr('value')).toBe("? undefined:undefined ?");
+            expect(input.text()).toBe("");
+            input = elm.find('option:last');
+            expect(input.text()).toBe("Hazel");
+        });
+
+    });
+
 });
 

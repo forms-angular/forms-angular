@@ -32,7 +32,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             mongooseType = mongooseType.caster;
         }
         if (mongooseType.instance == 'String') {
-            if (!formInstructions.type) {
+            if (mongooseOptions.enum) {
+                formInstructions.type = 'select';
+                formInstructions.options = formInstructions.id + 'Options';
+                $scope[formInstructions.options] = mongooseOptions.enum;
+            } else if (!formInstructions.type) {
                 // leave specified types as they are - textarea is supported
                 formInstructions.type = 'text';
             }

@@ -77,6 +77,45 @@ describe('BaseCtrl', function(){
         });
     });
 
+    describe('handles references', function() {
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/collection').respond(
+                {"textField":{"path":"textField","instance":"String","options":{"form":{"label":"Organisation Name"},"list":true},"_index":null},
+                    "lookupField":{"path":"lookupField","instance":"ObjectID","options":{"ref":"Person","form":{"hidden":true}},"_index":null},
+                    "arrayOfString":{"caster":{"instance":"String"},"path":"arrayOfString", "options":{"type":[null]},"_index":null},
+                    "arrayOfLookup":{"caster":{"path":null,"instance":"ObjectID","options":{},"_index":null},"path":"arrayOfLookup","options":{"type":[null],"ref":"referral_format","form":{"label":"Referral Format"}},"_index":null}}
+            );
+            $httpBackend.whenGET('api/schema/referral_format').respond(
+                {"description":{"enumValues":[],"regExp":null,"path":"description","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true},"_index":null},
+                    "module":{"enumValues":[],"regExp":null,"path":"module","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"hidden":true}},"_index":null},
+                    "_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}
+            );
+            $httpBackend.whenGET('api/collection/3').respond({
+                "textField":"This is some text","lookupField":"123456789","arrayOfString":["string","rope","cord"],"arrayOfLookup":["1","2","4"]
+            });
+            $httpBackend.whenGET('api/referral_format').respond(
+                [{"description":"Social services","module":"anything","_id":"1"},
+                    {"description":"Continuing Health Care","module":"anything","_id":"2"},
+                    {"description":"GP","module":"anything","_id":"3"},
+                    {"description":"Website","module":"anything","_id":"4"}]
+            );
+            $routeParams.model = 'collection';
+            $routeParams.id = 3;
+            scope = $rootScope.$new();
+            ctrl = $controller(BaseCtrl, {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('generates options and ids', function() {
+            expect(scope.formSchema[2].options).toBe('f_arrayOfLookupOptions');
+            expect(scope.f_arrayOfLookupOptions[0]).toBe('Social services');
+            expect(scope.f_arrayOfLookup_ids[0]).toBe('1');
+        });
+    });
+
     describe('handles null labels', function() {
 
         var scope, ctrl;
