@@ -33,6 +33,7 @@ DataForm.prototype.registerRoutes = function() {
 
 
     this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName', this.schema()]));
+    this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName/:formName', this.schema()]));
 
     this.app.all.apply(this.app, processArgs(this.options, [':resourceName', this.collection()]));
     this.app.get.apply(this.app, processArgs(this.options, [':resourceName', this.collectionGet()]));
@@ -73,7 +74,7 @@ DataForm.prototype.redirect = function (address, req, res) {
     res.send(address);
 };
 
-DataForm.prototype.preprocess = function (paths) {
+DataForm.prototype.preprocess = function (paths, formSchema) {
     var outPath = {};
     for (var element in paths) {
         if (paths.hasOwnProperty(element)) {
@@ -103,6 +104,17 @@ DataForm.prototype.preprocess = function (paths) {
             }
         }
     }
+    if (formSchema) {
+        var vanilla = outPath;
+        outPath = {};
+        for (var fld in formSchema) {
+            if (formSchema.hasOwnProperty(fld)) {
+                outPath[fld] = vanilla[fld];
+                outPath[fld].options = outPath[fld].options || {};
+                outPath[fld].options.form = formSchema[fld];
+            }
+        }
+    }
     return outPath;
 };
 
@@ -111,7 +123,11 @@ DataForm.prototype.schema = function() {
         if (!(req.resource = this.getResource(req.params.resourceName))) {
             return next();
         }
-        var paths = this.preprocess(req.resource.model.schema.paths);
+        var formSchema = null;
+        if (req.params.formName) {
+            formSchema = req.resource.model.schema.statics['form'](req.params.formName)
+        }
+        var paths = this.preprocess(req.resource.model.schema.paths, formSchema);
         res.send(JSON.stringify(paths));
     }, this);
 };

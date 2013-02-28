@@ -20,4 +20,15 @@ var BSchema = new Schema({
 
 var B = mongoose.model('B', BSchema);
 
+// Alternative form schemas can be defined as shown below
+BSchema.statics.form = function(layout) {
+    var formSchema = '';
+    switch (layout) {
+        case 'justname' :
+            formSchema = {forename:{}, surname:{label:"Family Name"}};  // the object overrides the form object in the schema
+            break;
+    }
+    return formSchema;
+};
+
 module.exports = B;

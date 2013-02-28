@@ -9,13 +9,26 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     // Process RouteParams / Location
     if ($routeParams.model) {
         $scope.modelName = $routeParams.model;
+        $scope.formName = $routeParams.form;
         $scope.id = $routeParams.id
     } else {
         // Support using the base controller with override views
         $scope.location = $location.$$path.split('/');
         $scope.modelName = $scope.location[1];
-        if ($scope.location[2] !== 'new') {
-            $scope.id = $scope.location[2];
+
+        var locationParts = $scope.location.length;
+        var lastPart = $scope.location[locationParts - 1];
+        if (lastPart === 'new') {
+            if (locationParts === 4) {
+                $scope.formName = $scope.location[2];
+            }
+        } else {
+            if (locationParts === 5) {
+                $scope.formName = $scope.location[2];
+                $scope.id = $scope.location[3];
+            } else {
+                $scope.id = $scope.location[2];
+            }
         }
     }
 
@@ -206,7 +219,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     };
 
-    $http.get('api/schema/' + $scope.modelName).success(function (data) {
+    $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/'+$scope.formName : '')).success(function (data) {
         handleSchema(data, $scope.formSchema, $scope.listSchema, '',true);
 
         if ($location.$$path.slice(1) == $scope.modelName) {

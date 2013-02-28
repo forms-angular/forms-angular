@@ -2,10 +2,14 @@
     <form name="myForm" class="form-horizontal">
         <div class="row">
             <div class="span8 well">
-                <h3>This is a custom form to edit data</h3>
+                <h3>This is a custom form to collect new data</h3>
             </div>
         </div>
         <div class="row">
+            <div>
+                <p>When the users clicks on Submit they are redirected to a confirmation page.  The button markup is of the form: </p>
+                <pre>&ltbutton type="button" ng-click="save({'redirect':'/thank-you.html'})"&gtSubmit&lt/button&gt</pre>
+            </div>
             <div>
                 <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
             </div>
