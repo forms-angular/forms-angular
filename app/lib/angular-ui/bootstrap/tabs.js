@@ -1,8 +1,9 @@
 angular.module('ui.bootstrap.tabs', [])
+
     .controller('TabsController', ['$scope', '$element', function($scope, $element) {
     var panes = $scope.panes = [];
 
-    $scope.select = function selectPane(pane) {
+    this.select = $scope.select = function selectPane(pane) {
         angular.forEach(panes, function(pane) {
             pane.selected = false;
         });
@@ -27,35 +28,55 @@ angular.module('ui.bootstrap.tabs', [])
 }])
     .directive('tabs', function() {
         return {
-            restrict: 'E',
+            restrict: 'EA',
             transclude: true,
             scope: {},
             controller: 'TabsController',
-            template:
-                '<div class="tabbable">' +
-                   '<ul class="nav nav-tabs">' +
-                     '<li ng-repeat="pane in panes" ng-class="{active:pane.selected}">'+
-                       '<a href="" ng-click="select(pane)">{{pane.title}}</a>' +
-                     '</li>' +
-                   '</ul>' +
-                   '<div class="tab-content" ng-transclude></div>' +
-                '</div>',
+//            templateUrl: 'template/tabs/tabs.html',
+            template: '<div class="tabbable"><ul class="nav nav-tabs"><li ng-repeat="pane in panes" ng-class="{active:pane.selected}">' +
+                '<a href="" ng-click="select(pane)">{{pane.heading}}</a></li></ul><div class="tab-content" ng-transclude></div></div>',
+
             replace: true
         };
     })
-    .directive('pane', function() {
-        return {
-            require: '^tabs',
-            restrict: 'E',
-            transclude: true,
-            scope: { title: '@' },
-            link: function(scope, element, attrs, tabsCtrl) {
-                tabsCtrl.addPane(scope);
-                scope.$on('$destroy', function() {
-                    tabsCtrl.removePane(scope);
-                });
-            },
-            template: '<div class="tab-pane" ng-class="{active: selected}" ng-show="selected" ng-transclude></div>',
-            replace: true
-        };
-    });
+    .directive('pane', ['$parse', function($parse) {
+    return {
+        require: '^tabs',
+        restrict: 'EA',
+        transclude: true,
+        scope:{
+            heading:'@'
+        },
+        link: function(scope, element, attrs, tabsCtrl) {
+            var getSelected, setSelected;
+            scope.selected = false;
+            if (attrs.active) {
+                getSelected = $parse(attrs.active);
+                setSelected = getSelected.assign;
+                scope.$watch(
+                    function watchSelected() {return getSelected(scope.$parent);},
+                    function updateSelected(value) {scope.selected = value;}
+                );
+                scope.selected = getSelected ? getSelected(scope.$parent) : false;
+            }
+            scope.$watch('selected', function(selected) {
+                if(selected) {
+                    tabsCtrl.select(scope);
+                }
+                if(setSelected) {
+                    setSelected(scope.$parent, selected);
+                }
+            });
+
+            tabsCtrl.addPane(scope);
+            scope.$on('$destroy', function() {
+                tabsCtrl.removePane(scope);
+            });
+        },
+//        templateUrl: 'template/tabs/pane.html',
+        // Had to modify this to use the template rather than the template URL.
+        // If I did the latter it it ended up with tabs that said "{{pane.title}}"
+        template: '<div class="tab-pane" ng-class="{active: selected}" ng-show="selected" ng-transclude></div>',
+        replace: true
+    };
+}]);

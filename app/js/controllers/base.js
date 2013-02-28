@@ -1,8 +1,8 @@
 var BaseCtrl = function ($scope, $routeParams, $location, $http) {
-
     var master = {};
     $scope.record = {};
     $scope.formSchema = [];
+    $scope.panes = [];
     $scope.listSchema = [];
     $scope.recordList = [];
     $scope.dataDependencies = {};
@@ -205,7 +205,28 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     } else {
                         var formInstructions = basicInstructions(field, formData, prefix);
                         if (handleConditionals(formInstructions.showIf, formInstructions.id)) {
-                            destForm.push(handleFieldType(formInstructions, mongooseType, mongooseOptions));
+                            var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
+                            if (formInst.pane) {
+                                var paneTitle = angular.copy(formInst.pane)
+                                var pane = _.find($scope.panes, function(aPane){return aPane.title === paneTitle });
+                                if (!pane) {
+                                    var active = false;
+                                    if ($scope.panes.length === 0) {
+                                        if ($scope.formSchema.length > 0) {
+                                            $scope.panes.push({title:'Main', content:[], active: true});
+                                            pane = $scope.panes[0];
+                                            for (var i= 0; i< $scope.formSchema.length; i++) {
+                                                pane.content.push($scope.formSchema[i])
+                                            }
+                                        } else {
+                                            active = true;
+                                        }
+                                    }
+                                    pane = $scope.panes[$scope.panes.push({title: formInst.pane, content:[], active:active})-1]
+                                }
+                                pane.content.push(formInst);
+                            }
+                            destForm.push(formInst);
                         }
                         if (destList) {
                             handleListInfo(destList, mongooseOptions.list, field);
@@ -484,5 +505,5 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 //        master[fieldName] = convertForeignKeys(schemaElement, master[fieldName], $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]);
 //        $scope.record[fieldName] = master[fieldName];
 //    }
-    
+
 };

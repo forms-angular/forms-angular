@@ -1,4 +1,5 @@
 angular.module('formsAngular.form', [])
+
     .directive('formInput', function($compile){
         return {
             restrict: 'E',
@@ -106,7 +107,9 @@ angular.module('formsAngular.form', [])
                 };
             }
         };
-    }).directive('formButtons', function ($compile) {
+    })
+
+    .directive('formButtons', function ($compile) {
         return {
             restrict: 'A',
             compile: function(){

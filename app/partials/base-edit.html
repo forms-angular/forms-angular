@@ -9,13 +9,22 @@
             </div>
         </div>
         <div class="row">
-            <div>
+            <div ng-hide="panes.length">
                 <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
             </div>
+            <tabs ng-show="panes.length">
+                <pane ng-repeat="pane in panes" heading="{{pane.title}}" active="pane.active">
+                    <form-input ng-repeat="field in pane.content" info="{{field}}"></form-input>
+                </pane>
+            </tabs>
         </div>
     </form>
+    Record
     <pre>{{record}}</pre>
+    FormSchema
     <pre>{{formSchema}}</pre>
+    Panes
+    <pre>{{panes}}</pre>
     Valid? {{myForm.valid}}
 </div>
 

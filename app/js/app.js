@@ -2,7 +2,7 @@
 
 /* App Module */
 
-var services = ['ui','formsAngular.form'];
+var services = ['ui','formsAngular.form','ui.bootstrap.tabs'];
 
 var myApp = angular.module('myApp', services).
     config(['$routeProvider', function($routeProvider) {
