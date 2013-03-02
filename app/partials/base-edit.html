@@ -1,14 +1,16 @@
 <div data-ng-controller="BaseCtrl">
     <form name="myForm" class="form-horizontal compact">
-        <div class="row">
-            <div class="span8 well">
-                <h4>{{modelNameDisplay}} : <span ng-repeat="field in listSchema">{{record[field.name]}} </span></h4>
-            </div>
-            <div class="span2">
-                <div form-buttons></div>
+        <div class="row-fluid">
+            <div class="span12 well">
+                <div class="span11">
+                    <h4>{{modelNameDisplay}} : <span ng-repeat="field in listSchema">{{record[field.name]}} </span></h4>
+                </div>
+                <div class="span1">
+                    <div form-buttons></div>
+                </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row-fluid">
             <div ng-hide="panes.length">
                 <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
             </div>

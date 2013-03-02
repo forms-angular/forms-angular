@@ -1,0 +1,33 @@
+.form-horizontal.compact .control-group {
+    margin-bottom: 2px;
+}
+
+.form-horizontal.compact hr {
+    margin: 8px 0;
+}
+
+.form-horizontal button.form-btn {
+    width: 8em;
+    height: 2em;
+}
+
+.form-horizontal .schema-head {
+     margin-top: 15px;
+     margin-bottom: 5px;
+     border: 1px solid #ddd;
+     padding: 4px 180px;
+}
+
+.form-horizontal .sub-doc {
+    padding: 5px 0;
+    margin-bottom: 3px;
+}
+
+.form-horizontal .sub-doc-btns {
+    margin-left: 15px;
+}
+
+.form-horizontal .schema-foot {
+    padding: 5px 180px;
+    margin: 5px 0;
+}

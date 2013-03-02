@@ -57,18 +57,23 @@ angular.module('formsAngular.form', [])
                             var template = '<div class="control-group" id="cg_'+info.id+'">';
                             if (info.schema) {
                                 //schemas (which means they are arrays in Mongoose)
-                                template += generateLabel(info, ' <i id="add_' + info.id + ' " ng-click="add(this)" class="icon-plus-sign"></i>') +
-                                    '<div class="controls" id="' + info.id + 'List" ng-repeat="subDoc in record.' + info.name + '">' +
-                                        '<fieldset>'+
-                                            '<div class="row">'+
-                                                '<div class="span6">'+
-                                                    '<form-input ng-repeat="field in formSchema['+ scope.$index +'].schema" info="{{field}}" schema="true"></form-input>'+
-                                                '</div>' +
-                                                '<div class="span1">'+
-                                                    '<i ng-click="remove(this,$index)" class="icon-minus-sign"></i>' +
-                                                '</div> '+
+                                template += '<div class="schema-head well">'+info.label+'</div>'+
+                                    '<div class="sub-doc well" id="' + info.id + 'List" ng-repeat="subDoc in record.' + info.name + '">' +
+                                        '<div class="row-fluid">'+
+                                            '<div class="pull-left">'+
+                                                '<form-input ng-repeat="field in formSchema['+ scope.$index +'].schema" info="{{field}}" schema="true"></form-input>'+
                                             '</div>' +
-                                        '</fieldset>' +
+                                            '<div class="pull-left sub-doc-btns">'+
+                                                '<button id="remove_'+info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(this,$index)">'+
+                                                    '<i class="icon-minus"></i> Remove'+
+                                                '</button>'+
+                                            '</div> '+
+                                        '</div>' +
+                                    '</div>'+
+                                    '<div class = "schema-foot well">' +
+                                        '<button id="add_'+info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(this)">'+
+                                            '<i class="icon-plus"></i> Add'+
+                                        '</button>'+
                                     '</div>';
 
                             } else {

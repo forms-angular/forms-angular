@@ -99,7 +99,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     };
 
-    var handleEmptyList = function(destList, destForm) {
+    var handleEmptyList = function(description,destList, destForm) {
         // If no list fields specified use the first non hidden string field
         for (var i= 0, l=destForm.length; i<l; i++) {
             if (destForm[i].type == 'text') {
@@ -109,7 +109,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
         if (destList.length === 0) {
             // If it is still blank then just use the first field
-            destList.push({name:destForm[0].name});
+            if (destForm.length === 0) {
+                throw new Error("No fields found looking for list field in "+description)
+            } else {
+                destList.push({name:destForm[0].name});
+            }
         }
     };
 
@@ -189,19 +193,21 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     };
 
-    var handleSchema = function(source, destForm, destList, prefix, doRecursion) {
+    var handleSchema = function(description, source, destForm, destList, prefix, doRecursion) {
         for (var field in source) {
             if (field !== '_id' && source.hasOwnProperty(field)) {
                 var mongooseType = source[field],
                     mongooseOptions = mongooseType.options || {};
                 var formData = mongooseOptions.form || {};
                 if (!formData.hidden) {
-                    if (mongooseType.schema && doRecursion) {
-                        var schemaSchema = [];
-                        handleSchema(mongooseType.schema, schemaSchema, null, field+'.',true);
-                        var sectionInstructions = basicInstructions(field, formData, prefix);
-                        sectionInstructions.schema = schemaSchema;
-                        destForm.push(sectionInstructions);
+                    if (mongooseType.schema) {
+                        if (doRecursion) {
+                            var schemaSchema = [];
+                            handleSchema('Nested '+field,mongooseType.schema, schemaSchema, null, field+'.',true);
+                            var sectionInstructions = basicInstructions(field, formData, prefix);
+                            sectionInstructions.schema = schemaSchema;
+                            destForm.push(sectionInstructions);
+                        }
                     } else {
                         var formInstructions = basicInstructions(field, formData, prefix);
                         if (handleConditionals(formInstructions.showIf, formInstructions.id)) {
@@ -236,12 +242,12 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             }
         }
         if (destList && destList.length === 0) {
-            handleEmptyList(destList,destForm);
+            handleEmptyList(description,destList,destForm);
         }
     };
 
     $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/'+$scope.formName : '')).success(function (data) {
-        handleSchema(data, $scope.formSchema, $scope.listSchema, '',true);
+        handleSchema('Main '+$scope.modelName,data, $scope.formSchema, $scope.listSchema, '',true);
 
         if ($location.$$path.slice(1) == $scope.modelName) {
             $http.get('api/' + $scope.modelName).success(function (data) {
@@ -481,7 +487,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
         $http.get('api/schema/' + lookupCollection).success(function (data) {
             var listInstructions = [], unusedFormSchema = [];
-            handleSchema(data,unusedFormSchema,listInstructions, '',false);
+            handleSchema('Lookup ' + lookupCollection, data,unusedFormSchema,listInstructions, '',false);
             $http.get('api/' + lookupCollection).success(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var option = '';

@@ -22,7 +22,7 @@
     <script src="js/directives/form.js"></script>
     <script src="js/app.js"></script>
 
-    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/forms-ng.css">
 
     <!--[if lt IE 9]>
     <script src="lib/html5_shiv.js"></script>
@@ -43,9 +43,10 @@
 </head>
 <body>
 <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0;"></a>
-    <div class="row">
+    <div class="row-fluid">
         <div class="span1"><a href="/"><i class="icon-home"></i>Home</a></div>
-        <div class="span11" ng-view></div>
+        <div class="span9" ng-view></div>
+        <!-- leave a gap for the fork me on Github -->
     </div>
 </body>
 </html>
