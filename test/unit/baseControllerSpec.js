@@ -307,39 +307,6 @@ describe('BaseCtrl', function(){
 
         });
 
-//        describe('mongo to front end', function() {
-//
-//            it('converts string array to object array', function() {
-//                expect(scope.record.arrayOfString).toEqual([ { x : 'string' }, { x : 'rope' }, { x : 'cord' } ]);
-//            });
-//
-//            it('converts id array to list strings array', function() {
-//                expect(scope.record.arrayOfLookup).toEqual([ { x : 'Social services' }, { x : 'Continuing Health Care' }, { x : 'Website' } ]);
-//            });
-//        });
-//
-//        describe('front end to mongo', function() {
-//
-//            it('converts object array to string array', function() {
-//                scope.record.arrayOfString[2].x = 'ribbon';
-//                $httpBackend.when('POST','api/collection',
-//                    {"textField":"This is some text","lookupField":"123456789","arrayOfString":["string","rope","ribbon"],"arrayOfLookup":["1","2","4"]}
-//                ).respond(200,'SUCCESS');
-//                scope.save();
-//                $httpBackend.flush();
-//            });
-//
-//            it('converts strings array to object ids array', function() {
-//                scope.record.arrayOfLookup[2].x = 'GP';
-//                $httpBackend.when('POST','api/collection',
-//                    {"textField":"This is some text","lookupField":"123456789","arrayOfString":["string","rope","cord"],"arrayOfLookup":["1","2","3"]}
-//                ).respond(200,'SUCCESS');
-//                scope.save();
-//                $httpBackend.flush();
-//            });
-//        });
-
-
     });
 
 

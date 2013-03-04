@@ -4,6 +4,7 @@ angular.module('formsAngular.form', [])
         return {
             restrict: 'E',
             replace: true,
+            priority: 1,
             compile: function(){
                 return function (scope, element, attrs){
                     scope.$watch(attrs.formInput, function(){
@@ -57,6 +58,7 @@ angular.module('formsAngular.form', [])
                             var template = '<div class="control-group" id="cg_'+info.id+'">';
                             if (info.schema) {
                                 //schemas (which means they are arrays in Mongoose)
+                                console.log(info);
                                 template += '<div class="schema-head well">'+info.label+'</div>'+
                                     '<div class="sub-doc well" id="' + info.id + 'List" ng-repeat="subDoc in record.' + info.name + '">' +
                                         '<div class="row-fluid">'+
@@ -96,8 +98,8 @@ angular.module('formsAngular.form', [])
                             return template;
                         };
 
-                        // without the "if" below I was sometimes getting the inputs repeated
-                        if ($('#'+attrs.field).length == 0) {
+//                        // without the "if" below I was sometimes getting the inputs repeated
+//                        if ($('#'+attrs.field).length == 0) {
                             var info = JSON.parse(attrs.info);
                             var template = handleField(info);
 
@@ -107,7 +109,7 @@ angular.module('formsAngular.form', [])
                                 // If this is not a test force the data dependent updates to the DOM
                                 scope.updateDataDependentDisplay(scope.record, null, true);
                             }
-                        }
+//                        }
                     });
                 };
             }

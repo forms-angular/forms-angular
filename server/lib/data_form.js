@@ -152,10 +152,16 @@ DataForm.prototype.collectionGet = function() {
         if (!req.resource) {
             return next();
         }
-
+        var findParam = {},
+            options = decodeURIComponent(req._parsedUrl.query).split('&');
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].slice(0,2).toLowerCase() === 'q=') {
+                findParam = JSON.parse(options[i].slice(2));
+            }
+        }
         var self = this;
         var hidden_fields = this.generateHiddenFields(req.resource);
-        var query = req.resource.model.find().select(hidden_fields);
+        var query = req.resource.model.find(findParam).select(hidden_fields);
 
         query.exec(function(err, docs) {
             if (err) {
@@ -176,13 +182,11 @@ DataForm.prototype.collectionPost = function() {
         var epured_body = this.epureRequest(req.body, req.resource);
         var doc = new req.resource.model(epured_body);
 
-        console.log(doc);
         doc.save(function(err, doc2) {
             if (err) {
                 console.log("collectionPost error :" + err);
                 res.send(400, {'status':'err','message':err.message});
             } else {
-                console.log(doc2);
                 res.send(doc);
             }
         });

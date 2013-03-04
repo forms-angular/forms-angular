@@ -23,6 +23,9 @@
     <li><strong>/#/:model/:id/edit</strong> which enables the user to edit a document</li>
 </ol>
 
+<p>The first of these supports queries, such as</p>
+<a href="/#/b_using_options?q=%7B%22surname%22:%22Smith%22%7D"><pre>/#/b_using_options?q={"surname":"Smith"}</pre></a>
+
 <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the fields
     to include and any options.  See the static in <a href="/code/b_using_options.js">this example</a>.
     The custom form schemas are invoked as follows:

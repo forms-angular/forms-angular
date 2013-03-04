@@ -250,7 +250,8 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         handleSchema('Main '+$scope.modelName,data, $scope.formSchema, $scope.listSchema, '',true);
 
         if ($location.$$path.slice(1) == $scope.modelName) {
-            $http.get('api/' + $scope.modelName).success(function (data) {
+            var queryString = $routeParams.q ? '?q=' + $routeParams.q : ''
+            $http.get('api/' + $scope.modelName + queryString).success(function (data) {
                 $scope.recordList = data;
                 }).error(function () {
                     $location.path("/404");
@@ -259,8 +260,6 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             $scope.$watch('record', function(newValue, oldValue) {
                 $scope.updateDataDependentDisplay(newValue, oldValue, false)
             },true);
-//
-
 
             if ($scope.id) {
                 $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
@@ -369,7 +368,6 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         arrayField.push({});
     };
 
-
     $scope.remove = function (fieldInfo, value) {
         // Remove an element from an array
         var fieldName = fieldInfo.$parent.field.name;
@@ -379,6 +377,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             arrayField = arrayField[fieldParts[i]];
         }
         arrayField.splice(value,1);
+        $scope.$apply();
     };
 
     // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
