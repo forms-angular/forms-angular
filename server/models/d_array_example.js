@@ -7,7 +7,7 @@ var DSchema = new Schema({
     weight: {type : Number, form:{label:"Weight (lbs)"}},
     dateOfBirth: Date,
     accepted: Boolean,
-    specialSubjects: [String],
+    specialSubjects: [String]
 });
 
 var D = mongoose.model('D', DSchema);

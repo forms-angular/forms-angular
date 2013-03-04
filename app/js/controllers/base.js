@@ -213,7 +213,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         if (handleConditionals(formInstructions.showIf, formInstructions.id)) {
                             var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
                             if (formInst.pane) {
-                                var paneTitle = angular.copy(formInst.pane)
+                                var paneTitle = angular.copy(formInst.pane);
                                 var pane = _.find($scope.panes, function(aPane){return aPane.title === paneTitle });
                                 if (!pane) {
                                     var active = false;
@@ -250,7 +250,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         handleSchema('Main '+$scope.modelName,data, $scope.formSchema, $scope.listSchema, '',true);
 
         if ($location.$$path.slice(1) == $scope.modelName) {
-            var queryString = $routeParams.q ? '?q=' + $routeParams.q : ''
+            var queryString = $routeParams.q ? '?q=' + $routeParams.q : '';
             $http.get('api/' + $scope.modelName + queryString).success(function (data) {
                 $scope.recordList = data;
                 }).error(function () {
