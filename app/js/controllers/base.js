@@ -7,18 +7,19 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     $scope.recordList = [];
     $scope.dataDependencies = {};
     // Process RouteParams / Location
+    $scope.location = $location.$$path.split('/');
+    var locationParts = $scope.location.length;
+    var lastPart = $scope.location[locationParts - 1];
+    $scope.newRecord = $scope.newRecord || (lastPart === 'new');
     if ($routeParams.model) {
         $scope.modelName = $routeParams.model;
         $scope.formName = $routeParams.form;
         $scope.id = $routeParams.id
     } else {
         // Support using the base controller with override views
-        $scope.location = $location.$$path.split('/');
         $scope.modelName = $scope.location[1];
 
-        var locationParts = $scope.location.length;
-        var lastPart = $scope.location[locationParts - 1];
-        if (lastPart === 'new') {
+        if ($scope.newRecord) {
             if (locationParts === 4) {
                 $scope.formName = $scope.location[2];
             }
@@ -31,6 +32,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             }
         }
     }
+    $scope.formPlusSlash = $scope.formName ? $scope.formName+'/' : '';
 
     var titleCase = function(str) {
         return str.replace(/_/g,' ').replace(/[A-Z]/g,' $&').replace(/\w\S*/g, function (txt) {
@@ -249,7 +251,8 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/'+$scope.formName : '')).success(function (data) {
         handleSchema('Main '+$scope.modelName,data, $scope.formSchema, $scope.listSchema, '',true);
 
-        if ($location.$$path.slice(1) == $scope.modelName) {
+
+        if (!$scope.id && !$scope.newRecord) {
             var queryString = $routeParams.q ? '?q=' + $routeParams.q : '';
             $http.get('api/' + $scope.modelName + queryString).success(function (data) {
                 $scope.recordList = data;

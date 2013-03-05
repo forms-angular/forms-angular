@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="row-fluid">
-        <a ng-repeat="record in recordList | filter:recordFilter" href="/#/{{modelName}}/{{record['_id']}}/edit">
+        <a ng-repeat="record in recordList | filter:recordFilter" href="/#/{{modelName}}/{{formPlusSlash}}{{record['_id']}}/edit">
             <div class="well well-small">
                 <span ng-repeat="field in listSchema">{{record[field.name]}} </span>
             </div>

@@ -15,6 +15,7 @@ describe('BaseCtrl', function(){
                 $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                 $routeParams.model = 'collection';
                 scope = $rootScope.$new();
+                scope.newRecord = true;
                 ctrl = $controller(BaseCtrl, {$scope: scope});
                 $httpBackend.flush();
             });
@@ -56,6 +57,7 @@ describe('BaseCtrl', function(){
             );
             $routeParams.model = 'collection';
             scope = $rootScope.$new();
+            scope.newRecord = true;
             ctrl = $controller(BaseCtrl, {$scope: scope});
             $httpBackend.flush();
         }));
@@ -134,6 +136,7 @@ describe('BaseCtrl', function(){
             );
             $routeParams.model = 'collection';
             scope = $rootScope.$new();
+            scope.newRecord = true;
             ctrl = $controller(BaseCtrl, {$scope: scope});
             $httpBackend.flush();
         }));
@@ -167,6 +170,7 @@ describe('BaseCtrl', function(){
             );
             $routeParams.model = 'collection';
             scope = $rootScope.$new();
+            scope.newRecord = true;
             ctrl = $controller(BaseCtrl, {$scope: scope});
             $httpBackend.flush();
         }));
@@ -195,6 +199,7 @@ describe('BaseCtrl', function(){
             );
             $routeParams.model = 'collection';
             scope = $rootScope.$new();
+            scope.newRecord = true;
             ctrl = $controller(BaseCtrl, {$scope: scope});
             $httpBackend.flush();
         }));

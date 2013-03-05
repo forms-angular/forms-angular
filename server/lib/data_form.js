@@ -111,7 +111,14 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
             if (formSchema.hasOwnProperty(fld)) {
                 outPath[fld] = vanilla[fld];
                 outPath[fld].options = outPath[fld].options || {};
-                outPath[fld].options.form = formSchema[fld];
+                for (var override in formSchema[fld]) {
+                    if (formSchema[fld].hasOwnProperty(override)) {
+                        if (!outPath[fld].options.form) {
+                            outPath[fld].options.form = {};
+                        }
+                        outPath[fld].options.form[override] = formSchema[fld][override];
+                    }
+                }
             }
         }
     }
@@ -187,7 +194,7 @@ DataForm.prototype.collectionPost = function() {
                 console.log("collectionPost error :" + err);
                 res.send(400, {'status':'err','message':err.message});
             } else {
-                res.send(doc);
+                res.send(doc2);
             }
         });
     }, this);
