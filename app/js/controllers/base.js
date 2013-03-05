@@ -32,6 +32,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             }
         }
     }
+
     $scope.formPlusSlash = $scope.formName ? $scope.formName+'/' : '';
 
     var titleCase = function(str) {
@@ -172,6 +173,14 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             }
         }
         return display;
+    };
+
+    $scope.getListData = function(record, fieldName) {
+        var nests = fieldName.split('.');
+        for (var i = 0; i < nests.length; i++) {
+            record = record[nests[i]];
+        }
+        return record;
     };
 
     $scope.updateDataDependentDisplay = function(curValue, oldValue, force) {

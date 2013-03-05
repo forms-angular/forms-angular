@@ -3,7 +3,7 @@
         <div class="row-fluid">
             <div class="span12 well">
                 <div class="span11">
-                    <h4>{{modelNameDisplay}} : <span ng-repeat="field in listSchema">{{record[field.name]}} </span></h4>
+                    <h4>{{modelNameDisplay}} : <span ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span></h4>
                 </div>
                 <div class="span1">
                     <div form-buttons></div>
