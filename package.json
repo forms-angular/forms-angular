@@ -1,17 +1,35 @@
 {
-  "name": "forms-angular",
-  "version": "0.0.1",
-  "private": true,
-	"engines": {
-		"node": "0.8.x",
-		"npm": "1.1.x"
+	"name":"forms-angular",
+	"author":"Mark Chapman <support@reallycare.org>",
+	"description":"A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose",
+	"version":"0.0.1",
+	"engines":{
+		"node":"0.8.x",
+		"npm":"1.1.x"
 	},
-  "dependencies": {
-    "express": "= 3.0.6",
-    "mongoose": "= 3.2.1",
-	"underscore": "= 1.3.3"
-  },
-  "scripts": {
-	"test": "scripts/testrun.sh"
-  }
+	"dependencies":{
+		"express":"= 3.0.6",
+		"mongoose":"= 3.2.1",
+		"underscore":"= 1.3.3"
+	},
+	"scripts":{
+		"start":"node ./server/server.js",
+		"test":"scripts/testrun.sh"
+	},
+	"main":"./server/server.js",
+	"repository":{
+		"type":"git",
+		"url":"https://github.com/mchapman/forms-angular"
+	},
+	"keywords":[
+		"angular",
+		"mongoose",
+		"twitter bootstrap",
+		"express",
+		"form builder"
+	],
+	"devDependencies":{
+		"testacular":"0.6.x"
+	},
+	"license":"MIT"
 }
