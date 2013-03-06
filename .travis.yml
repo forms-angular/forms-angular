@@ -2,4 +2,3 @@
  before_script: npm install --dev
  node_js:
    - "0.8"
-   - "0.6"
