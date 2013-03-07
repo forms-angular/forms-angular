@@ -178,9 +178,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     $scope.getListData = function(record, fieldName) {
         var nests = fieldName.split('.');
         for (var i = 0; i < nests.length; i++) {
-            record = record[nests[i]];
+            if (record !== undefined) {
+                record = record[nests[i]];
+            }
         }
-        return record;
+        return record  === undefined ? "": record;
     };
 
     $scope.updateDataDependentDisplay = function(curValue, oldValue, force) {
@@ -494,12 +496,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     var setUpSelectOptions = function (lookupCollection, schemaElement) {
         var optionsList = $scope[schemaElement.options] = [];
         var idList = $scope[schemaElement.ids] = [];
-        var fieldName = schemaElement.name;
 
         $http.get('api/schema/' + lookupCollection).success(function (data) {
             var listInstructions = [], unusedFormSchema = [];
             handleSchema('Lookup ' + lookupCollection, data,unusedFormSchema,listInstructions, '',false);
-            $http.get('api/' + lookupCollection).success(function (data) {
+            $http.get('api/' + lookupCollection,{cache:false}).success(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var option = '';
                     for (var j = 0; j < listInstructions.length; j++) {
@@ -508,19 +509,58 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     optionsList.push(option.trim());
                     idList.push(data[i]._id);
                 }
-//                updateRecordWithLookupValues(schemaElement.name);
-                if (master[fieldName] && master[fieldName].length) {
-                    master[fieldName] = convertForeignKeys(schemaElement, master[fieldName], $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]);
-                    $scope.record[fieldName] = master[fieldName];
-                }
+                updateRecordWithLookupValues(schemaElement);
             })
         })
     };
 
-//    var updateRecordWithLookupValues = function() {}
+    var updateRecordWithLookupValues = function(schemaElement) {
+
 //    if (master[fieldName] && master[fieldName].length) {
 //        master[fieldName] = convertForeignKeys(schemaElement, master[fieldName], $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]);
 //        $scope.record[fieldName] = master[fieldName];
 //    }
 
+        // Split a field name into the next level and all following levels
+        function splitFieldName (aFieldName) {
+            var nesting = aFieldName.split('.'),
+                result = [nesting[0]];
+
+            if (nesting.length > 1) {
+                result.push(nesting.slice(1).join('.'));
+            }
+
+            return result;
+        }
+
+        function updateObject(aFieldName, portion) {
+            var fieldDetails = splitFieldName(aFieldName);
+
+            if (fieldDetails.length > 1) {
+                updateArrayOrObject(fieldDetails[1], portion[fieldDetails[0]]);
+            } else {
+                portion[fieldDetails[0]] = convertForeignKeys(schemaElement, portion[fieldDetails[0]], $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]);
+            }
+        }
+
+        function updateArrayOrObject(aFieldName, portion) {
+            if (portion !== undefined) {
+                if ($.isArray(portion)) {
+                    for (var i=0 ; i< portion.length; i++) {
+                        updateObject(aFieldName, portion[i]);
+                    }
+                } else {
+                    updateObject(aFieldName, portion);
+                }
+            }
+        }
+
+        // Update the master and the record with the lookup values
+        if (angular.equals(master, $scope.record)) {
+            updateObject(schemaElement.name, master);
+            $scope.record = angular.copy(master);
+        } else {
+            throw new Error("Cannot convert lookup values in changed record")
+        }
+    };
 };

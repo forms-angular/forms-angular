@@ -1,8 +1,5 @@
 #!/bin/bash
-BASE_DIR=`dirname $0`
-echo ""
-echo ""
-echo "Starting Testacular Server (http://vojtajina.github.com/testacular)"
-echo "-------------------------------------------------------------------"
-echo ""
-testacular start $BASE_DIR/../config/testacular.conf.js --no-auto-watch --single-run $*
+#./scripts/web-server.js > /dev/null &
+#sleep 1 # give server time to start
+testacular start config/testacular.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
+testacular start config/testacular-e2e.conf.js --reporters=dots --browsers=PhantomJS

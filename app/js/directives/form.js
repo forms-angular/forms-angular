@@ -58,7 +58,6 @@ angular.module('formsAngular.form', [])
                             var template = '<div class="control-group" id="cg_'+info.id+'">';
                             if (info.schema) {
                                 //schemas (which means they are arrays in Mongoose)
-                                console.log(info);
                                 template += '<div class="schema-head well">'+info.label+'</div>'+
                                     '<div class="sub-doc well" id="' + info.id + 'List" ng-repeat="subDoc in record.' + info.name + '">' +
                                         '<div class="row-fluid">'+

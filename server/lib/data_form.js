@@ -282,7 +282,6 @@ DataForm.prototype.entityGet = function() {
         if (!req.resource) {
             return next();
         }
-
         return res.send(req.doc);
     }, this);
 };
