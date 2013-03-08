@@ -33,8 +33,9 @@ app.configure(function(){
 
 app.configure('development', function(){
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-//    mongoose.connect('mongodb://localhost/forms-ng_dev');
-    mongoose.connect('mongodb://theworld:k12gYth6t4g7YT@linus.mongohq.com:10053/formsng');
+    mongoose.connect('mongodb://localhost/forms-ng_dev');
+//    mongoose.connect('mongodb://theworld:k12gYth6t4g7YT@linus.mongohq.com:10053/formsng');
+//    console.log('************    Using LIVE data  ***************')
 });
 
 app.configure('production', function(){
