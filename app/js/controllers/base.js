@@ -317,6 +317,10 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 ////        }
 //    });
 
+    var showError = function(errString, alertTitle) {
+        $('.form-header').append('<div class="span6 offset3 alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><h4>' + (alertTitle ? alertTitle : "Error!") + '</h4>'+ errString +'</div>');
+    };
+
     $scope.save = function (options) {
         options = options || {};
 
@@ -324,22 +328,36 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         var dataToSave = convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0);
 
         if ($scope.record._id) {
-            $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function () {
-                if (options.redirect) {
-                    window.location = options.redirect;
+            $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
+                if (data.success !== false) {
+                    if (options.redirect) {
+                        window.location = options.redirect;
+                    } else {
+                        master = $scope.record;
+                        $scope.cancel();
+                    }
                 } else {
-                    master = $scope.record;
-                    $scope.cancel();
+                    // TODO - Set error class on all fields....
+                    showError(data.err.message);
                 }
-            });
+            }).error(function(data,status){
+                    showError(status + ' ' + JSON.stringify(data));
+                });
         } else {
-            $http.post('api/' + $scope.modelName, dataToSave).success(function (doc) {
-                if (options.redirect) {
-                    window.location = options.redirect
+            $http.post('api/' + $scope.modelName, dataToSave).success(function (data) {
+                if (data.success !== false) {
+                    if (options.redirect) {
+                        window.location = options.redirect
+                    } else {
+                        $location.path('/' + $scope.modelName + '/' + data._id + '/edit');
+    //                    reset?
+                    }
                 } else {
-                    $location.path('/' + $scope.modelName + '/' + doc._id + '/edit');
-//                    reset?
+                    // TODO - Set error class on all fields....
+                    showError(data.err.message);
                 }
+            }).error(function(data,status){
+                    showError(status + ' ' + JSON.stringify(data));
             });
         }
     };
