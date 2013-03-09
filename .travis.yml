@@ -1,4 +1,4 @@
  language: node_js
- before_script: npm install --dev
+ services: mongodb
  node_js:
    - "0.8"

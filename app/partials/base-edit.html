@@ -1,32 +1,33 @@
-<div data-ng-controller="BaseCtrl">
-    <form name="myForm" class="form-horizontal compact">
-        <div class="row-fluid form-header">
-            <div class="span12 well">
-                <div class="span11">
-                    <h4>{{modelNameDisplay}} : <span ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span></h4>
-                </div>
-                <div class="span1">
-                    <div form-buttons></div>
-                </div>
+<form name="myForm" class="form-horizontal compact" ng-controller="BaseCtrl">
+    <div class="row-fluid form-header">
+        <div class="span12 well">
+            <div class="span11">
+                <h4>{{modelNameDisplay}} : <span
+                        ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span></h4>
+            </div>
+            <div class="span1">
+                <div form-buttons></div>
             </div>
         </div>
-        <div class="row-fluid">
-            <div ng-hide="panes.length">
-                <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
-            </div>
-            <tabs ng-show="panes.length">
-                <pane ng-repeat="pane in panes" heading="{{pane.title}}" active="pane.active">
-                    <form-input ng-repeat="field in pane.content" info="{{field}}"></form-input>
-                </pane>
-            </tabs>
+    </div>
+    <div class="row-fluid">
+        <div ng-hide="panes.length">
+            <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
         </div>
-    </form>
+        <tabs ng-show="panes.length">
+            <pane ng-repeat="pane in panes" heading="{{pane.title}}" active="pane.active">
+                <form-input ng-repeat="field in pane.content" info="{{field}}"></form-input>
+            </pane>
+        </tabs>
+    </div>
+    <!--Valid? {{myForm.$valid}}<br/>-->
+    <!--Pristine? {{myForm.$pristine}}-->
     <!--Record-->
     <!--<pre>{{record}}</pre>-->
     <!--FormSchema-->
     <!--<pre>{{formSchema}}</pre>-->
     <!--Panes-->
     <!--<pre>{{panes}}</pre>-->
-    <!--Valid? {{myForm.valid}}-->
-</div>
+</form>
+
 

@@ -191,7 +191,6 @@ DataForm.prototype.collectionPost = function() {
 
         doc.save(function(err, doc2) {
             if (err) {
-                console.log("collectionPost error :" + err);
                 res.send(400, {'status':'err','message':err.message});
             } else {
                 res.send(doc2);
