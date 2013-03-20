@@ -97,8 +97,6 @@ angular.module('formsAngular.form', [])
                             return template;
                         };
 
-//                        // without the "if" below I was sometimes getting the inputs repeated
-//                        if ($('#'+attrs.field).length == 0) {
                         var info = JSON.parse(attrs.info);
                         var template = handleField(info);
 
@@ -108,7 +106,6 @@ angular.module('formsAngular.form', [])
                             // If this is not a test force the data dependent updates to the DOM
                             scope.updateDataDependentDisplay(scope.record, null, true);
                         }
-//                        }
                     });
                 };
             }
