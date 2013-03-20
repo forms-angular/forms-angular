@@ -409,7 +409,6 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             arrayField = arrayField[fieldParts[i]];
         }
         arrayField.splice(value,1);
-        $scope.$apply();
     };
 
     // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
