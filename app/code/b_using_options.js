@@ -9,7 +9,8 @@ var BSchema = new Schema({
         line2: {type: String, form:{label: null}},           // null label - gives a blank label
         line3: {type: String, form:{label: null}},
         town: {type: String, form:{label: 'Town'}},
-        postcode: {type: String, form:{label: 'Postcode', help:'Enter your postcode or zip code'}}  // help displays on the line under the control
+        postcode: {type: String, form:{label: 'Postcode', help:'Enter your postcode or zip code'}},  // help displays on the line under the control
+        country: {type: String, form:{label:"Country", hidden:true}}
     },
     weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
     dateOfBirth: Date,
@@ -24,8 +25,13 @@ var B = mongoose.model('B', BSchema);
 BSchema.statics.form = function(layout) {
     var formSchema = '';
     switch (layout) {
-        case 'justname' :
-            formSchema = {forename:{}, surname:{label:"Family Name"}};  // the object overrides the form object in the schema
+        case 'justnameandpostcode' :
+            // the object overrides the form object in the schema
+            formSchema = {
+                surname:{label:"Family Name"},
+                "address.postcode":{},
+                "address.country": {}   // fields that are hidden by default but specified in the override schema are not hidden
+            };
             break;
     }
     return formSchema;

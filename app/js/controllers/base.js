@@ -212,7 +212,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                 var mongooseType = source[field],
                     mongooseOptions = mongooseType.options || {};
                 var formData = mongooseOptions.form || {};
-                if (!formData.hidden) {
+                if (!formData.hidden || $scope.formName) {
                     if (mongooseType.schema) {
                         if (doRecursion) {
                             var schemaSchema = [];
