@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var ASchema = new Schema({
+var ZSchema = new Schema({
     surname: String,
     forename: String,
     weight: Number,
@@ -9,6 +9,6 @@ var ASchema = new Schema({
     termsAccepted: Boolean
 });
 
-var Z = mongoose.model('Z', ASchema);
+var Z = mongoose.model('Z', ZSchema);
 
 module.exports = Z;
