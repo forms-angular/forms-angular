@@ -8,6 +8,7 @@ if [ $1 ]; then
 	    cp $BASE_DIR/../app/js/controllers/base.js $BASE_DIR/../../$1/app/js/controllers/base.js
 	    cp $BASE_DIR/../app/js/controllers/model.js $BASE_DIR/../../$1/app/js/controllers/model.js
 	    cp $BASE_DIR/../app/js/directives/form.js $BASE_DIR/../../$1/app/js/directives/form.js
+	    cp $BASE_DIR/../app/lib/angular/angular.js $BASE_DIR/../../$1/app/lib/angular/angular.js
 	    cp $BASE_DIR/../app/css/forms-ng.css $BASE_DIR/../../$1/app/css/forms-ng.css
 	    cp $BASE_DIR/../app/partials/base-edit.html $BASE_DIR/../../$1/app/partials/base-edit.html
 	    cp $BASE_DIR/../app/partials/base-list.html $BASE_DIR/../../$1/app/partials/base-list.html

@@ -52,6 +52,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         if (mongooseType.caster) {
             formInstructions.array = true;
             mongooseType = mongooseType.caster;
+            $.extend(mongooseOptions,mongooseType.options)
         }
         if (mongooseType.instance == 'String') {
             if (mongooseOptions.enum) {
@@ -212,9 +213,9 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                 var mongooseType = source[field],
                     mongooseOptions = mongooseType.options || {};
                 var formData = mongooseOptions.form || {};
-                if (!formData.hidden || $scope.formName) {
+                if (!formData.hidden || (destForm && $scope.formName)) {
                     if (mongooseType.schema) {
-                        if (doRecursion) {
+                        if (doRecursion && destForm) {
                             var schemaSchema = [];
                             handleSchema('Nested '+field,mongooseType.schema, schemaSchema, null, field+'.',true);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
@@ -222,30 +223,32 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                             destForm.push(sectionInstructions);
                         }
                     } else {
-                        var formInstructions = basicInstructions(field, formData, prefix);
-                        if (handleConditionals(formInstructions.showIf, formInstructions.id)) {
-                            var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
-                            if (formInst.pane) {
-                                var paneTitle = angular.copy(formInst.pane);
-                                var pane = _.find($scope.panes, function(aPane){return aPane.title === paneTitle });
-                                if (!pane) {
-                                    var active = false;
-                                    if ($scope.panes.length === 0) {
-                                        if ($scope.formSchema.length > 0) {
-                                            $scope.panes.push({title:'Main', content:[], active: true});
-                                            pane = $scope.panes[0];
-                                            for (var i= 0; i< $scope.formSchema.length; i++) {
-                                                pane.content.push($scope.formSchema[i])
+                        if (destForm) {
+                            var formInstructions = basicInstructions(field, formData, prefix);
+                            if (handleConditionals(formInstructions.showIf, formInstructions.id)) {
+                                var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
+                                if (formInst.pane) {
+                                    var paneTitle = angular.copy(formInst.pane);
+                                    var pane = _.find($scope.panes, function(aPane){return aPane.title === paneTitle });
+                                    if (!pane) {
+                                        var active = false;
+                                        if ($scope.panes.length === 0) {
+                                            if ($scope.formSchema.length > 0) {
+                                                $scope.panes.push({title:'Main', content:[], active: true});
+                                                pane = $scope.panes[0];
+                                                for (var i= 0; i< $scope.formSchema.length; i++) {
+                                                    pane.content.push($scope.formSchema[i])
+                                                }
+                                            } else {
+                                                active = true;
                                             }
-                                        } else {
-                                            active = true;
                                         }
+                                        pane = $scope.panes[$scope.panes.push({title: formInst.pane, content:[], active:active})-1]
                                     }
-                                    pane = $scope.panes[$scope.panes.push({title: formInst.pane, content:[], active:active})-1]
+                                    pane.content.push(formInst);
                                 }
-                                pane.content.push(formInst);
+                                destForm.push(formInst);
                             }
-                            destForm.push(formInst);
                         }
                         if (destList) {
                             handleListInfo(destList, mongooseOptions.list, field);
@@ -513,10 +516,9 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     var setUpSelectOptions = function (lookupCollection, schemaElement) {
         var optionsList = $scope[schemaElement.options] = [];
         var idList = $scope[schemaElement.ids] = [];
-
         $http.get('api/schema/' + lookupCollection).success(function (data) {
-            var listInstructions = [], unusedFormSchema = [];
-            handleSchema('Lookup ' + lookupCollection, data,unusedFormSchema,listInstructions, '',false);
+            var listInstructions = [];
+            handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '',false);
             $http.get('api/' + lookupCollection,{cache:false}).success(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var option = '';
@@ -555,7 +557,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
             if (fieldDetails.length > 1) {
                 updateArrayOrObject(fieldDetails[1], portion[fieldDetails[0]]);
-            } else {
+            } else if (portion[fieldDetails[0]]) {
                 portion[fieldDetails[0]] = convertForeignKeys(schemaElement, portion[fieldDetails[0]], $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]);
             }
         }

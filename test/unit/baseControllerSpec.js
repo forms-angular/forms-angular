@@ -284,12 +284,16 @@ describe('BaseCtrl', function(){
         beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
             $httpBackend = _$httpBackend_;
 
-            $httpBackend.whenGET('api/schema/collection').respond( {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":{}},"_index":null},"forename":{"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true},"_index":null},"address.street":{"enumValues":[],"regExp":null,"path":"address.street","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"address.town":{"enumValues":[],"regExp":null,"path":"address.town","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"studies.courses":{"schema":{"subject":{"enumValues":[],"regExp":null,"path":"subject","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"grade":{"enumValues":[],"regExp":null,"path":"grade","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"teachers":{"schema":{"teacher":{"path":"teacher","instance":"ObjectID","validators":[],"setters":[],"getters":[],"options":{"ref":"teachers"},"_index":null},"room":{"path":"room","instance":"Number","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}},"studies.exams":{"schema":{"subject":{"enumValues":[],"regExp":null,"path":"subject","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"examDate":{"path":"examDate","instance":"Date","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"score":{"path":"score","instance":"Number","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"result":{"enumValues":["distinction","merit","pass","fail"],"regExp":null,"path":"result","instance":"String","validators":[[null,"enum"]],"setters":[],"getters":[],"options":{"enum":["distinction","merit","pass","fail"]},"_index":null},"grader":{"path":"grader","instance":"ObjectID","validators":[],"setters":[],"getters":[],"options":{"ref":"teachers"},"_index":null},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}} );
+            $httpBackend.whenGET('api/schema/collection').respond( {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":{}},"_index":null},"forename":{"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true},"_index":null},"address.street":{"enumValues":[],"regExp":null,"path":"address.street","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"address.town":{"enumValues":[],"regExp":null,"path":"address.town","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"studies.courses":{"schema":{"subject":{"enumValues":[],"regExp":null,"path":"subject","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"grade":{"enumValues":[],"regExp":null,"path":"grade","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"teachers":{"schema":{"teacher":{"path":"teacher","instance":"ObjectID","validators":[],"setters":[],"getters":[],"options":{"ref":"teachers"},"_index":null},"room":{"path":"room","instance":"Number","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}},"studies.exams":{"schema":{"subject":{"enumValues":[],"regExp":null,"path":"subject","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"examDate":{"path":"examDate","instance":"Date","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"score":{"path":"score","instance":"Number","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"result":{"enumValues":["distinction","merit","pass","fail"],"regExp":null,"path":"result","instance":"String","validators":[[null,"enum"]],"setters":[],"getters":[],"options":{"enum":["distinction","merit","pass","fail"]},"_index":null},"grader":{"path":"grader","instance":"ObjectID","validators":[],"setters":[],"getters":[],"options":{"ref":"teachers"},"_index":null},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}}},"assistants":{"caster":{"path":null,"instance":"ObjectID","validators":[],"setters":[],"getters":[],"options":{"ref":"assistants"},"_index":null},"path":"assistants","validators":[],"setters":[],"getters":[],"options":{"type":[{"ref":"assistants"}]},"_index":null}, "_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}} );
             $httpBackend.whenGET('api/schema/teachers').respond( {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[[null,"required"]],"setters":[],"getters":[],"options":{"required":true,"list":{}},"_index":null,"isRequired":true},"forename":{"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true},"_index":null},"address.line1":{"enumValues":[],"regExp":null,"path":"address.line1","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Address"}},"_index":null},"address.line2":{"enumValues":[],"regExp":null,"path":"address.line2","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":null}},"_index":null},"address.line3":{"enumValues":[],"regExp":null,"path":"address.line3","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":null}},"_index":null},"address.town":{"enumValues":[],"regExp":null,"path":"address.town","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Town"}},"_index":null},"address.postcode":{"enumValues":[],"regExp":null,"path":"address.postcode","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Postcode","help":"Enter your postcode or zip code"}},"_index":null},"weight":{"path":"weight","instance":"Number","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Weight (lbs)"}},"_index":null},"dateOfBirth":{"path":"dateOfBirth","instance":"Date","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"accepted":{"path":"accepted","instance":"boolean","validators":[],"setters":[],"getters":[],"options":{"form":{"helpInline":"Did we take them?"}},"_index":null},"interviewScore":{"path":"interviewScore","instance":"Number","validators":[],"setters":[],"getters":[],"options":{"form":{"hidden":true},"list":{}},"_index":null},"freeText":{"enumValues":[],"regExp":null,"path":"freeText","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"type":"textarea","rows":5}},"_index":null},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}});
+            $httpBackend.whenGET('api/schema/assistants').respond( {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[[null,"required"]],"setters":[],"getters":[],"options":{"required":true,"list":{}},"_index":null,"isRequired":true},"forename":{"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true},"_index":null},"address.line1":{"enumValues":[],"regExp":null,"path":"address.line1","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Address"}},"_index":null},"address.line2":{"enumValues":[],"regExp":null,"path":"address.line2","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":null}},"_index":null},"address.line3":{"enumValues":[],"regExp":null,"path":"address.line3","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":null}},"_index":null},"address.town":{"enumValues":[],"regExp":null,"path":"address.town","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Town"}},"_index":null},"address.postcode":{"enumValues":[],"regExp":null,"path":"address.postcode","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Postcode","help":"Enter your postcode or zip code"}},"_index":null},"weight":{"path":"weight","instance":"Number","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Weight (lbs)"}},"_index":null},"dateOfBirth":{"path":"dateOfBirth","instance":"Date","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"accepted":{"path":"accepted","instance":"boolean","validators":[],"setters":[],"getters":[],"options":{"form":{"helpInline":"Did we take them?"}},"_index":null},"interviewScore":{"path":"interviewScore","instance":"Number","validators":[],"setters":[],"getters":[],"options":{"form":{"hidden":true},"list":{}},"_index":null},"freeText":{"enumValues":[],"regExp":null,"path":"freeText","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"type":"textarea","rows":5}},"_index":null},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null}});
 
             $httpBackend.whenGET('api/teachers').respond(
               [ {"_id": "Smithy", "forename": "John", "surname": "Smith" },
                 { "surname": "Jenkins", "forename": "Nicky", "_id": "Jenks"} ]);
+            $httpBackend.whenGET('api/assistants').respond(
+                [ {"_id": "ASmithy", "forename": "John", "surname": "AsstSmith" },
+                    { "surname": "AsstJenkins", "forename": "Nicky", "_id": "AJenks"} ]);
 
             $httpBackend.whenGET('api/collection/3').respond({"surname":"Thompson","forename":"Chris","address":{"street":"4 High Street","town":"Bolton"},
                 "studies":{
@@ -308,8 +312,152 @@ describe('BaseCtrl', function(){
             it('sets up options', function() {
                 expect(scope.f_studies_exams_graderOptions).toEqual(['Smith John','Jenkins Nicky']);
                 expect(scope.f_teachers_teacherOptions).toEqual(['Smith John','Jenkins Nicky']);
+                expect(scope.f_assistantsOptions).toEqual(['AsstSmith John','AsstJenkins Nicky']);
             });
 
+        });
+
+    });
+
+    describe('handles circular references', function() {
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/person').respond({
+                    givenName: {
+                        enumValues: [ ],
+                        regExp: null,
+                        path: "givenName",
+                        instance: "String",
+                        validators: [ ],
+                        setters: [ ],
+                        getters: [ ],
+                        options: {
+                            list: true,
+                            form: {
+                                label: "Forename"
+                            }
+                        },
+                        _index: null
+                    },
+                    familyName: {
+                        enumValues: [ ],
+                        regExp: null,
+                        path: "familyName",
+                        instance: "String",
+                        validators: [
+                            [
+                                null,
+                                "required"
+                            ]
+                        ],
+                        setters: [ ],
+                        getters: [ ],
+                        options: {
+                            required: true,
+                            list: true,
+                            form: {
+                                label: "Surname"
+                            }
+                        },
+                        _index: null,
+                        isRequired: true
+                    },
+            "organisation": {
+                caster: {
+                    path: null,
+                        instance: "ObjectID",
+                        validators: [ ],
+                        setters: [ ],
+                        getters: [ ],
+                        options: {
+                        ref: "organisation",
+                            form: {
+                            hidden: true
+                        }
+                    },
+                    _index: null
+                },
+                path: "appData.accessToOrgs",
+                    validators: [ ],
+                    setters: [ ],
+                    getters: [ ],
+                    options: {
+                    type: [
+                        {
+                            ref: "organisation",
+                            form: {
+                                hidden: true
+                            }
+                        }
+                    ],
+                        form: {
+                        label: "Organisations"
+                    }
+                },
+                _index: null
+            },
+            _id: {
+                path: "_id",
+                    instance: "ObjectID",
+                    validators: [ ],
+                    setters: [
+                    null
+                ],
+                    getters: [ ],
+                    options: {
+                    auto: true
+                },
+                _index: null
+            }
+        });
+            $httpBackend.whenGET('api/schema/organisation').respond({
+                name: {
+                    enumValues: [ ],
+                    regExp: null,
+                    path: "name",
+                    instance: "String",
+                    validators: [ ],
+                    setters: [ ],
+                    getters: [ ],
+                    options: {
+                        form: {
+                            label: "Organisation Name"
+                        },
+                        list: true
+                    },
+                    _index: null
+                },
+                accountContact: {
+                    path: "accountContact",
+                    instance: "ObjectID",
+                    validators: [ ],
+                    setters: [ ],
+                    getters: [ ],
+                    options: {
+                        ref: "person",
+                        form: {
+                            hidden: true
+                        }
+                    },
+                    _index: null
+                }});
+            $httpBackend.whenGET('api/organisation').respond( [
+                    {
+                        _id: "5",
+                        name: "Tesco"
+                    }
+                ] );
+            $routeParams.model = 'person';
+            scope = $rootScope.$new();
+            scope.newRecord = true;
+            ctrl = $controller(BaseCtrl, {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('sets up options', function() {
+            expect(scope.f_organisationOptions).toEqual(['Tesco']);
         });
 
     });

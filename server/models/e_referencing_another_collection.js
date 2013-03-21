@@ -7,7 +7,8 @@ var ESchema = new Schema({
     weight: {type : Number, form:{label:"Weight (lbs)"}},
     dateOfBirth: Date,
     accepted: Boolean,
-    teacher: { type: Schema.Types.ObjectId, ref: 'b_using_options'}
+    teacher: { type: Schema.Types.ObjectId, ref: 'b_using_options'},
+    assistants: [{ type: Schema.Types.ObjectId, ref: 'a_unadorned_mongoose'}]
 });
 
 var E = mongoose.model('E', ESchema);
