@@ -30,7 +30,8 @@ var HSchema = new Schema({
     studies : {
         courses: [CourseSchema],
         exams: [ExamsSchema]
-    }
+    },
+    assistants: [{ type: Schema.Types.ObjectId, ref: 'b_using_options'}]
 });
 
 var H = mongoose.model('H', HSchema);

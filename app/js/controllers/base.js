@@ -103,20 +103,31 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     };
 
-    var handleEmptyList = function(description,destList, destForm) {
+    var handleEmptyList = function(description,destList, destForm,source) {
         // If no list fields specified use the first non hidden string field
-        for (var i= 0, l=destForm.length; i<l; i++) {
-            if (destForm[i].type == 'text') {
-                destList.push({name:destForm[i].name});
-                break;
+        if (destForm) {
+            for (var i= 0, l=destForm.length; i<l; i++) {
+                if (destForm[i].type == 'text') {
+                    destList.push({name:destForm[i].name});
+                    break;
+                }
+            }
+            if (destList.length === 0 && destForm.length !== 0) {
+                // If it is still blank then just use the first field
+                destList.push({name:destForm[0].name});
             }
         }
+
         if (destList.length === 0) {
-            // If it is still blank then just use the first field
-            if (destForm.length === 0) {
-                throw new Error("No fields found looking for list field in "+description)
-            } else {
-                destList.push({name:destForm[0].name});
+            // If it is still blank then just use the first field from source
+            for (var field in source) {
+                if (field !== '_id' && source.hasOwnProperty(field)) {
+                    destList.push({name:field});
+                    break;
+                }
+            }
+            if (destList.length === 0) {
+                throw new Error ("Unable to generate a title for "+description)
             }
         }
     };
@@ -176,6 +187,9 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         return display;
     };
 
+    // TODO: Think about nested arrays
+    // This doesn't handle things like :
+    // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
     $scope.getListData = function(record, fieldName) {
         var nests = fieldName.split('.');
         for (var i = 0; i < nests.length; i++) {
@@ -258,7 +272,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             }
         }
         if (destList && destList.length === 0) {
-            handleEmptyList(description,destList,destForm);
+            handleEmptyList(description,destList,destForm,source);
         }
     };
 
@@ -329,7 +343,6 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
         //Convert the lookup values into ids
         var dataToSave = convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0);
-
         if ($scope.record._id) {
             $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
                 if (data.success !== false) {
@@ -341,6 +354,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     }
                 } else {
                     // TODO - Set error class on all fields....
+                    console.log(data);
                     showError(data.err.message);
                 }
             }).error(function(data,status){
@@ -385,7 +399,6 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         return $scope.myForm.$invalid || angular.equals(master, $scope.record);
     };
 
-
     $scope.add = function (elementInfo) {
         var fieldName = elementInfo.field.name, arrayField;
         var fieldParts = fieldName.split('.');
@@ -414,6 +427,42 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         arrayField.splice(value,1);
     };
 
+    // Split a field name into the next level and all following levels
+    function splitFieldName (aFieldName) {
+        var nesting = aFieldName.split('.'),
+            result = [nesting[0]];
+
+        if (nesting.length > 1) {
+            result.push(nesting.slice(1).join('.'));
+        }
+
+        return result;
+    }
+
+    function updateObject(aFieldName, portion, fn) {
+        var fieldDetails = splitFieldName(aFieldName);
+
+        if (fieldDetails.length > 1) {
+            updateArrayOrObject(fieldDetails[1], portion[fieldDetails[0]], fn);
+        } else if (portion[fieldDetails[0]]) {
+            var theValue = portion[fieldDetails[0]];
+            portion[fieldDetails[0]] = fn((typeof theValue === 'Object') ? theValue.x : theValue)
+        }
+    }
+
+    function updateArrayOrObject(aFieldName, portion, fn) {
+        if (portion !== undefined) {
+            if ($.isArray(portion)) {
+                for (var i=0 ; i< portion.length; i++) {
+                    updateObject(aFieldName, portion[i], fn);
+                }
+            } else {
+                updateObject(aFieldName, portion, fn);
+            }
+        }
+    }
+
+
     // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
     // Which is what we need for use in the browser
     var convertToAngularModel = function (schema, anObject, prefixLength) {
@@ -436,13 +485,47 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
                 // Convert {lookup:'012abcde'} to {lookup:'List description for 012abcde'}
                 var idList = $scope[suffixCleanId(schema[i],'_ids')];
-                if (idList && idList.length > 0) {
+                if (idList && idList.length > 0 && anObject[fieldname]) {
                     anObject[fieldname] = convertForeignKeys(schema[i], anObject[fieldname], $scope[suffixCleanId(schema[i],'Options')], idList);
                 }
             }
         }
         return anObject;
     };
+
+    // Reverse the process of convertToAngularModel
+    var convertToMongoModel = function (schema, anObject, prefixLength) {
+
+        for (var i = 0; i < schema.length; i++) {
+            var fieldname = schema[i].name.slice(prefixLength);
+            if (schema[i].schema) {
+                var thisField = $scope.getListData(anObject, fieldname);
+                if (thisField) {
+                    for (var j = 0; j < thisField.length ; j++) {
+                        thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length);
+                    }
+                }
+            } else {
+
+                // Convert {array:[{x:'item 1'}]} to {array:['item 1']}
+                if (schema[i].array && schema[i].type == 'text' && anObject[fieldname]) {
+                    for (var k = 0; k < anObject[fieldname].length; k++) {
+                        anObject[fieldname][k] = anObject[fieldname][k].x
+                    }
+                }
+
+                // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
+                var idList = $scope[suffixCleanId(schema[i],'_ids')];
+                if (idList && idList.length > 0) {
+                    updateObject(fieldname, anObject, function(value) {
+                        return( convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i],'Options')], idList) );
+                    });
+                }
+            }
+        }
+        return anObject;
+    };
+
 
     // Convert foreign keys into their display for selects
     // Called when the model is read and when the lookups are read
@@ -460,47 +543,26 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     }
 
-    // Reverse the process of convertToAngularModel
-    var convertToMongoModel = function (schema, anObject, prefixLength) {
-        for (var i = 0; i < schema.length; i++) {
-            var fieldname = schema[i].name.slice(prefixLength);
-            if (schema[i].schema) {
-                if (anObject[fieldname]) {
-                    for (var j = 0; j < anObject[fieldname].length ; j++) {
-                        anObject[fieldname][j] = convertToMongoModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
-                    }
-                }
-            } else {
+    // Convert ids into their foreign keys
+    // Called when saving the model
 
-                // Convert {array:[{x:'item 1'}]} to {array:['item 1']}
-                if (schema[i].array && schema[i].type == 'text' && anObject[fieldname]) {
-                    for (var k = 0; k < anObject[fieldname].length; k++) {
-                        anObject[fieldname][k] = anObject[fieldname][k].x
-                    }
-                }
-
-                // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
-                var idList = $scope[suffixCleanId(schema[i],'_ids')];
-                if (idList && idList.length > 0) {
-                    if (schema[i].array) {
-                        if (anObject[fieldname]) {
-                            for (var m = 0; m < anObject[fieldname].length; m++) {
-                                anObject[fieldname][m] = convertListValueToId(anObject[fieldname][m].x, $scope[suffixCleanId(schema[i],'Options')], idList)
-                            }
-                        }
-                    } else {
-                        anObject[fieldname] = convertListValueToId(anObject[fieldname], $scope[suffixCleanId(schema[i],'Options')], idList, fieldname);
-                    }
-                }
+    // No support for nested schemas here as it is called from convertToMongoModel which does that
+    function convertToForeignKeys(schemaElement, input, values, ids) {
+        if (schemaElement.array) {
+            var returnArray = [];
+            for (var j = 0; j < input.length; j++) {
+                returnArray.push(convertListValueToId(input[j].x, values, ids));
             }
+            return returnArray;
+        } else {
+            return convertListValueToId(input, values, ids, schemaElement.name);
         }
-        return anObject;
-    };
+    }
 
     var convertIdToListValue = function (id, idsArray, valuesArray) {
         var index = idsArray.indexOf(id);
         if (index === -1) {
-            throw new Error("Invalid data - id " + id + " not found in " + idsArray)
+            throw new Error("convertIdToListValue: Invalid data - id " + id + " not found in " + idsArray)
         }
         return valuesArray[index];
     };
@@ -508,7 +570,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     var convertListValueToId = function (value, valuesArray, idsArray, fname) {
         var index = valuesArray.indexOf(value);
         if (index === -1) {
-            throw new Error("Invalid data - value " + value + " not found in " + valuesArray + " processing " + fname)
+            throw new Error("convertListValueToId: Invalid data - value " + value + " not found in " + valuesArray + " processing " + fname)
         }
         return idsArray[index];
     };
@@ -534,49 +596,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     };
 
     var updateRecordWithLookupValues = function(schemaElement) {
-
-//    if (master[fieldName] && master[fieldName].length) {
-//        master[fieldName] = convertForeignKeys(schemaElement, master[fieldName], $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]);
-//        $scope.record[fieldName] = master[fieldName];
-//    }
-
-        // Split a field name into the next level and all following levels
-        function splitFieldName (aFieldName) {
-            var nesting = aFieldName.split('.'),
-                result = [nesting[0]];
-
-            if (nesting.length > 1) {
-                result.push(nesting.slice(1).join('.'));
-            }
-
-            return result;
-        }
-
-        function updateObject(aFieldName, portion) {
-            var fieldDetails = splitFieldName(aFieldName);
-
-            if (fieldDetails.length > 1) {
-                updateArrayOrObject(fieldDetails[1], portion[fieldDetails[0]]);
-            } else if (portion[fieldDetails[0]]) {
-                portion[fieldDetails[0]] = convertForeignKeys(schemaElement, portion[fieldDetails[0]], $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]);
-            }
-        }
-
-        function updateArrayOrObject(aFieldName, portion) {
-            if (portion !== undefined) {
-                if ($.isArray(portion)) {
-                    for (var i=0 ; i< portion.length; i++) {
-                        updateObject(aFieldName, portion[i]);
-                    }
-                } else {
-                    updateObject(aFieldName, portion);
-                }
-            }
-        }
-
         // Update the master and the record with the lookup values
         if (angular.equals(master, $scope.record)) {
-            updateObject(schemaElement.name, master);
+            updateObject(schemaElement.name, master, function(value) {
+                return( convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]));
+            });
             $scope.record = angular.copy(master);
         } else {
             throw new Error("Cannot convert lookup values in changed record")

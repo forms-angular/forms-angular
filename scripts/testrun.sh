@@ -1,5 +1,6 @@
 #!/bin/bash
-node server/server.js > /dev/null &
-sleep 1 # give server time to start
-testacular start config/testacular.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
-testacular start config/testacular-e2e.conf.js --reporters=dots --browsers=PhantomJS
+
+#node server/server.js > /dev/null &
+#sleep 1 # give server time to start
+karma start config/karma.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
+#karma start config/karma-e2e.conf.js --reporters=dots --browsers=PhantomJS

@@ -29,7 +29,7 @@
 		"form builder"
 	],
 	"devDependencies":{
-		"testacular":"0.6.x"
+		"karma":"0.8.x"
 	},
 	"license":"MIT"
 }

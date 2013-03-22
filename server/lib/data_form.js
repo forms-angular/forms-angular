@@ -291,7 +291,7 @@ DataForm.prototype.entityPut = function() {
         if (!req.resource) { next(); return; }
 
         if (!req.body) throw new Error('Nothing submitted.');
-
+console.log(JSON.stringify(req.body));
         var epured_body = this.epureRequest(req.body, req.resource);
 
         // Merge
@@ -299,11 +299,13 @@ DataForm.prototype.entityPut = function() {
             req.doc[name] = value;
         });
 
-        req.doc.save(function(err) {
+        req.doc.save(function(err, doc2) {
             if (err) {
-                return res.send({success:false});
+                console.log(err);
+                return res.send(400, {'status':'err','message':err.message});
+            } else {
+                return res.send(doc2);
             }
-            return res.send(req.doc);
         });
 
     }, this);
