@@ -594,8 +594,10 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     for (var j = 0; j < listInstructions.length; j++) {
                         option += data[i][listInstructions[j].name] + ' ';
                     }
-                    optionsList.push(option.trim());
-                    idList.push(data[i]._id);
+                    option = option.trim();
+                    var pos = _.sortedIndex(optionsList,option);
+                    optionsList.splice(pos,0,option);
+                    idList.splice(pos,0,data[i]._id);
                 }
                 updateRecordWithLookupValues(schemaElement);
             })
