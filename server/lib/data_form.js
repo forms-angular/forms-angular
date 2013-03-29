@@ -50,12 +50,24 @@ DataForm.prototype.registerRoutes = function() {
     this.app.delete.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityDelete()]));
 };
 
+//    Add a resource, specifying the model and any options.
+//    Models may include their own options, which means they can be passed through from the model file
 DataForm.prototype.addResource = function(resource_name, model, options) {
     var resource = {
         resource_name: resource_name,
-        model: model,
-        options : options || null
+        options : options || {}
     };
+
+    if (typeof model === "function") {
+        resource.model = model;
+    } else {
+        resource.model = model.model;
+        for (var prop in model) {
+            if (model.hasOwnProperty(prop) && prop !== "model") {
+                resource.options[prop] = model[prop];
+            }
+        }
+    }
 
     this.resources.push(resource);
 };
@@ -168,7 +180,12 @@ DataForm.prototype.collectionGet = function() {
         }
         var self = this;
         var hidden_fields = this.generateHiddenFields(req.resource);
-        var query = req.resource.model.find(findParam).select(hidden_fields);
+        var query;
+        if (req.resource.options.findFunc) {
+            query = req.resource.options.findFunc(findParam).select(hidden_fields);
+        } else {
+            query = req.resource.model.find(findParam).select(hidden_fields);
+        }
 
         query.exec(function(err, docs) {
             if (err) {
@@ -205,7 +222,7 @@ DataForm.prototype.collectionPost = function() {
 DataForm.prototype.generateHiddenFields = function(resource) {
     var hidden_fields = {};
 
-    if (resource.options == null || typeof resource.options['hide'] == 'undefined')
+    if (typeof resource.options['hide'] == 'undefined')
         return {};
 
     resource.options.hide.forEach(function(dt) {
@@ -221,7 +238,7 @@ DataForm.prototype.generateHiddenFields = function(resource) {
 DataForm.prototype.epureRequest = function(req_data, resource) {
 
 
-    if (resource.options == null || typeof resource.options['hide'] == 'undefined')
+    if (typeof resource.options['hide'] == 'undefined')
         return req_data;
 
     var hidden_fields = resource.options.hide;

@@ -14,7 +14,7 @@ var BSchema = new Schema({
     },
     weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
     dateOfBirth: Date,
-    accepted: {type: Boolean, form:{helpInline: 'Did we take them?'}},   // helpInline displays to the right of the input control
+    accepted: {type: Boolean, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
     interviewScore:{type:Number,form:{hidden:true},list:{}},  // this field does not appear on the form or listings, even though list is defined - not sure about this
     freeText: {type: String, form:{type: 'textarea', rows:5}}
 });
@@ -37,4 +37,14 @@ BSchema.statics.form = function(layout) {
     return formSchema;
 };
 
-module.exports = B;
+BSchema.statics.findAccepted = function(req,conditions,cb) {
+    // Only show the accepted items
+    return B.find().where('accepted', true).find(conditions,cb);
+};
+
+module.exports = {
+    model : B,                                  // pass the mode in an object if you want to add options
+    findFunc: BSchema.statics.findAccepted      // this can be used to 'pre' filter selections.
+                                                // A common use case is to restrict a user to only see their own records
+                                                // as described in https://groups.google.com/forum/?fromgroups=#!topic/mongoose-orm/TiR5OXR9mAM
+};
