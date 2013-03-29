@@ -284,7 +284,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             var queryString = $routeParams.q ? '?q=' + $routeParams.q : '';
             $http.get('api/' + $scope.modelName + queryString).success(function (data) {
                 $scope.recordList = data;
-                }).error(function () {
+            }).error(function () {
                     $location.path("/404");
                 });
         } else {
@@ -300,13 +300,13 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     master = convertToAngularModel($scope.formSchema, data,0);
                     $scope.cancel();
                 }).error(function () {
-                    $location.path("/404");
-                });
+                        $location.path("/404");
+                    });
             }
         }
     }).error(function () {
             $location.path("/404");
-    });
+        });
 
     $scope.cancel = function () {
         $scope.record = angular.copy(master);
@@ -334,8 +334,20 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 ////        }
 //    });
 
+    var handleError = function(data, status) {
+        if ([200,400].indexOf(status) !== -1) {
+            showError(data.message);
+        } else {
+            showError(status + ' ' + JSON.stringify(data));
+        }
+    };
+
     var showError = function(errString, alertTitle) {
-        $('.form-header').append('<div class="span6 offset3 alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><h4>' + (alertTitle ? alertTitle : "Error!") + '</h4>'+ errString +'</div>');
+        if (!alertTitle) {
+            alertTitle = "Error!";
+        }
+        $('.alert').remove();
+        $('.form-header').append('<div class="span6 offset3 alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><h4>' + alertTitle + '</h4>'+ errString +'</div>');
     };
 
     $scope.save = function (options) {
@@ -354,12 +366,9 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     }
                 } else {
                     // TODO - Set error class on all fields....
-                    console.log(data);
-                    showError(data.err.message);
+                    showError(data);
                 }
-            }).error(function(data,status){
-                    showError(status + ' ' + JSON.stringify(data));
-                });
+            }).error(handleError);
         } else {
             $http.post('api/' + $scope.modelName, dataToSave).success(function (data) {
                 if (data.success !== false) {
@@ -367,15 +376,13 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         window.location = options.redirect
                     } else {
                         $location.path('/' + $scope.modelName + '/' + data._id + '/edit');
-    //                    reset?
+                        //                    reset?
                     }
                 } else {
                     // TODO - Set error class on all fields....
-                    showError(data.err.message);
+                    showError(data);
                 }
-            }).error(function(data,status){
-                    showError(status + ' ' + JSON.stringify(data));
-            });
+            }).error(handleError)
         }
     };
 
