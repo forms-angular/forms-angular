@@ -180,21 +180,31 @@ DataForm.prototype.collectionGet = function() {
         }
         var self = this;
         var hidden_fields = this.generateHiddenFields(req.resource);
-        var query;
+        //TODO: DRY this code
         if (req.resource.options.findFunc) {
-            query = req.resource.options.findFunc(findParam).select(hidden_fields);
+            req.resource.options.findFunc(req, function(err, query) {
+                query = query.find(findParam).select(hidden_fields);
+                query.exec(function(err, docs) {
+                    if (err) {
+                        return self.renderError(err, null, req, res, next);
+                    }
+                    else {
+                        res.send(docs);
+                    }
+                });
+            });
         } else {
+            var query;
             query = req.resource.model.find(findParam).select(hidden_fields);
+            query.exec(function(err, docs) {
+                if (err) {
+                    return self.renderError(err, null, req, res, next);
+                }
+                else {
+                    res.send(docs);
+                }
+            });
         }
-
-        query.exec(function(err, docs) {
-            if (err) {
-                return self.renderError(err, null, req, res, next);
-            }
-            else {
-                res.send(docs);
-            }
-        });
     }, this);
 };
 
