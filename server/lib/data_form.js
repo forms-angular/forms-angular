@@ -183,7 +183,12 @@ DataForm.prototype.collectionGet = function() {
         //TODO: DRY this code
         if (req.resource.options.findFunc) {
             req.resource.options.findFunc(req, function(err, query) {
-                query = query.find(findParam).select(hidden_fields);
+
+                if (Object.keys(findParam).length > 0) {
+                    query = query.where(findParam);
+                }
+                query = query.select(hidden_fields);
+
                 query.exec(function(err, docs) {
                     if (err) {
                         return self.renderError(err, null, req, res, next);
