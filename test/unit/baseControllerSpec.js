@@ -116,11 +116,11 @@ describe('BaseCtrl', function(){
         });
 
         it('populates options list', function() {
-            expect(scope.f_arrayOfLookupOptions[0]).toBe('Social services');
+            expect(scope.f_arrayOfLookupOptions[0]).toBe('Continuing Health Care');
         });
 
         it('populates ids list', function() {
-            expect(scope.f_arrayOfLookup_ids[0]).toBe('1');
+            expect(scope.f_arrayOfLookup_ids[0]).toBe('2');
         });
 
     });
@@ -327,13 +327,11 @@ describe('BaseCtrl', function(){
         }));
 
         describe('reading lookups', function() {
-
             it('sets up options', function() {
-                expect(scope.f_studies_exams_graderOptions).toEqual(['Smith John','Jenkins Nicky']);
-                expect(scope.f_teachers_teacherOptions).toEqual(['Smith John','Jenkins Nicky']);
-                expect(scope.f_assistantsOptions).toEqual(['AsstSmith John','AsstJenkins Nicky']);
+                expect(scope.f_studies_exams_graderOptions).toEqual(['Jenkins Nicky','Smith John']);
+                expect(scope.f_teachers_teacherOptions).toEqual(['Jenkins Nicky','Smith John']);
+                expect(scope.f_assistantsOptions).toEqual(['AsstJenkins Nicky','AsstSmith John']);
             });
-
         });
 
     });
@@ -476,7 +474,7 @@ describe('BaseCtrl', function(){
         }));
 
         it('handles circularity', function() {
-            expect(scope.f_appData_accessToOrgsOptions).toEqual([ 'Tesco', 'Sainsbury' ]);
+            expect(scope.f_appData_accessToOrgsOptions).toEqual([ 'Sainsbury', 'Tesco' ]);
         });
 
         it('converts lookups in subDocs', function() {
