@@ -348,6 +348,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
         $('.alert').remove();
         $('.form-header').append('<div class="span6 offset3 alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><h4>' + alertTitle + '</h4>'+ errString +'</div>');
+        $(window).scrollTop($('div.alert').offset().top);
     };
 
     $scope.save = function (options) {
@@ -404,6 +405,12 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
     $scope.isSaveDisabled = function () {
         return $scope.myForm.$invalid || angular.equals(master, $scope.record);
+    };
+
+    $scope.disabledText = function(localStyling) {
+        if ($scope.isSaveDisabled) {
+            return "This button is only enabled when the form is complete and valid.  Make sure all required inputs are filled in. " + localStyling
+        }
     };
 
     $scope.add = function (elementInfo) {
