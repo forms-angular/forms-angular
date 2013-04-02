@@ -58,11 +58,20 @@ angular.module('formsAngular.form', [])
                             var template = '<div class="control-group" id="cg_' + info.id + '">';
                             if (info.schema) {
                                 //schemas (which means they are arrays in Mongoose)
+
+                                var schemaLoop;
+                                if (scope.formSchema[scope.$index] && info.id === scope.formSchema[scope.$index].id) {
+                                    schemaLoop = 'field in formSchema[' + scope.$index + '].schema'
+                                } else {
+                                    // we are in a pane
+                                    schemaLoop = 'field in panes[' + scope.$parent.$index + '].content[' + scope.$index + '].schema'
+                                }
+
                                 template += '<div class="schema-head well">' + info.label + '</div>' +
                                     '<div class="sub-doc well" id="' + info.id + 'List" ng-subdoc-repeat="subDoc in record.' + info.name + '">' +
                                     '<div class="row-fluid">' +
                                     '<div class="pull-left">' +
-                                    '<form-input ng-repeat="field in formSchema[' + scope.$index + '].schema" info="{{field}}" schema="true"></form-input>' +
+                                    '<form-input ng-repeat="' + schemaLoop + '" info="{{field}}" schema="true"></form-input>' +
                                     '</div>' +
                                     '<div class="pull-left sub-doc-btns">' +
                                     '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(this,$index)">' +

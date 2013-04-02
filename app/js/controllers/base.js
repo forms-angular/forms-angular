@@ -222,11 +222,36 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     };
 
     var handleSchema = function(description, source, destForm, destList, prefix, doRecursion) {
+
+        function handlePaneInfo(paneName, thisInst) {
+            var paneTitle = angular.copy(paneName);
+            var pane = _.find($scope.panes, function (aPane) {
+                return aPane.title === paneTitle
+            });
+            if (!pane) {
+                var active = false;
+                if ($scope.panes.length === 0) {
+                    if ($scope.formSchema.length > 0) {
+                        $scope.panes.push({title: 'Main', content: [], active: true});
+                        pane = $scope.panes[0];
+                        for (var i = 0; i < $scope.formSchema.length; i++) {
+                            pane.content.push($scope.formSchema[i])
+                        }
+                    } else {
+                        active = true;
+                    }
+                }
+                pane = $scope.panes[$scope.panes.push({title: paneTitle, content: [], active: active}) - 1]
+            }
+            pane.content.push(thisInst);
+        }
+
         for (var field in source) {
             if (field !== '_id' && source.hasOwnProperty(field)) {
                 var mongooseType = source[field],
                     mongooseOptions = mongooseType.options || {};
                 var formData = mongooseOptions.form || {};
+                // TODO: Fix this bit where hidden fields get shown in a specified form - it is undesirable in subschemas
                 if (!formData.hidden || (destForm && $scope.formName)) {
                     if (mongooseType.schema) {
                         if (doRecursion && destForm) {
@@ -234,6 +259,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                             handleSchema('Nested '+field,mongooseType.schema, schemaSchema, null, field+'.',true);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
+                            if (formData.pane) handlePaneInfo(formData.pane, sectionInstructions);
                             destForm.push(sectionInstructions);
                         }
                     } else {
@@ -241,26 +267,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                             var formInstructions = basicInstructions(field, formData, prefix);
                             if (handleConditionals(formInstructions.showIf, formInstructions.id)) {
                                 var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
-                                if (formInst.pane) {
-                                    var paneTitle = angular.copy(formInst.pane);
-                                    var pane = _.find($scope.panes, function(aPane){return aPane.title === paneTitle });
-                                    if (!pane) {
-                                        var active = false;
-                                        if ($scope.panes.length === 0) {
-                                            if ($scope.formSchema.length > 0) {
-                                                $scope.panes.push({title:'Main', content:[], active: true});
-                                                pane = $scope.panes[0];
-                                                for (var i= 0; i< $scope.formSchema.length; i++) {
-                                                    pane.content.push($scope.formSchema[i])
-                                                }
-                                            } else {
-                                                active = true;
-                                            }
-                                        }
-                                        pane = $scope.panes[$scope.panes.push({title: formInst.pane, content:[], active:active})-1]
-                                    }
-                                    pane.content.push(formInst);
-                                }
+                                if (formInst.pane) handlePaneInfo(formInst.pane, formInst);
                                 destForm.push(formInst);
                             }
                         }
@@ -549,11 +556,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         if (schemaElement.array) {
             var returnArray = [];
             for (var j = 0; j < input.length; j++) {
-                returnArray.push({x:convertIdToListValue(input[j], ids, values)});
+                returnArray.push({x:convertIdToListValue(input[j], ids, values, schemaElement.name)});
             }
             return returnArray;
         } else {
-            return convertIdToListValue(input, ids, values);
+            return convertIdToListValue(input, ids, values, schemaElement.name);
         }
     }
 
@@ -565,7 +572,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         if (schemaElement.array) {
             var returnArray = [];
             for (var j = 0; j < input.length; j++) {
-                returnArray.push(convertListValueToId(input[j].x, values, ids));
+                returnArray.push(convertListValueToId(input[j].x, values, ids, schemaElement.name));
             }
             return returnArray;
         } else {
@@ -573,10 +580,10 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     }
 
-    var convertIdToListValue = function (id, idsArray, valuesArray) {
+    var convertIdToListValue = function (id, idsArray, valuesArray,fname) {
         var index = idsArray.indexOf(id);
         if (index === -1) {
-            throw new Error("convertIdToListValue: Invalid data - id " + id + " not found in " + idsArray)
+            throw new Error("convertIdToListValue: Invalid data - id " + id + " not found in " + idsArray + " processing " + fname)
         }
         return valuesArray[index];
     };
