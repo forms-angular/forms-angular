@@ -1,7 +1,8 @@
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 
-var _ = require('underscore');
-var util = require('util');
+var _ = require('underscore'),
+    util = require('util'),
+    extend = require('node.extend');
 
 var DataForm = function(app, options) {
     this.app = app;
@@ -25,7 +26,7 @@ DataForm.prototype.registerRoutes = function() {
 
     function processArgs(options, array) {
         if (options.authentication) {
-           array.splice(1,0,options.authentication)
+            array.splice(1,0,options.authentication)
         }
         array[0] = options.urlPrefix + array[0];
         return array;
@@ -94,7 +95,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
             if (paths[element].schema) {
                 outPath[element] = {schema : this.preprocess(paths[element].schema.paths)};
                 if (paths[element].options.form) {
-                    outPath[element].options = {form: paths[element].options.form};
+                    outPath[element].options = {form: extend(true,{},paths[element].options.form)};
                 }
             } else {
                 // check for arrays
@@ -112,7 +113,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
                         }
                     }
                 }
-                outPath[element] = paths[element];
+                outPath[element] = extend(true,{},paths[element]);
             }
         }
     }
@@ -233,7 +234,7 @@ DataForm.prototype.collectionPost = function() {
 
 /**
  * Generate an object of fields to not expose
-**/
+ **/
 DataForm.prototype.generateHiddenFields = function(resource) {
     var hidden_fields = {};
 
@@ -323,7 +324,7 @@ DataForm.prototype.entityPut = function() {
         if (!req.resource) { next(); return; }
 
         if (!req.body) throw new Error('Nothing submitted.');
-console.log(JSON.stringify(req.body));
+        console.log(JSON.stringify(req.body));
         var epured_body = this.epureRequest(req.body, req.resource);
 
         // Merge
