@@ -20,7 +20,7 @@ if [ $1 ]; then
 	    echo ""
 	    cat $BASE_DIR/../app/js/app.js
 	    echo ""
-	    echo Check you are using correct version of tabs.js is you are using panes (lib/angular-ui/bootstrap)
+	    echo Check you are using correct version of tabs.js if you are using panes lib/angular-ui/bootstrap
 	    echo ""
 	else
         echo ""
