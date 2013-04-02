@@ -37,9 +37,9 @@ BSchema.statics.form = function(layout) {
     return formSchema;
 };
 
-BSchema.statics.findAccepted = function(req,conditions,cb) {
+BSchema.statics.findAccepted = function(req,cb) {
     // Only show the accepted items
-    return B.find().where('accepted', true).find(conditions,cb);
+    cb(null, B.find().where('accepted', true));
 };
 
 module.exports = {
