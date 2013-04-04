@@ -31,3 +31,14 @@
     padding: 5px 180px;
     margin: 5px 0;
 }
+
+.form-horizontal input[type="checkbox"].ng-invalid-required:after {
+    content:"*";
+    font-weight: bold;
+    color: red;
+    padding-left: 5px
+}
+
+.form-horizontal input.ng-invalid-required {
+    background-color: rgba(255, 0, 0, 0.10);
+}
