@@ -144,7 +144,6 @@ angular.module('formsAngular.form', [])
         }
     })
 
-
 // Directive to handle subdocs.  Mostly a copy of ng-repeat, but needed to simplify it a bit to make it work
     .directive('ngSubdocRepeat', function () {
         return {

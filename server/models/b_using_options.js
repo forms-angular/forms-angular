@@ -14,9 +14,18 @@ var BSchema = new Schema({
     },
     weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
     dateOfBirth: Date,
-    accepted: {type: Boolean, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
+    accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
     interviewScore:{type:Number,form:{hidden:true},list:{}},  // this field does not appear on the form or listings, even though list is defined - not sure about this
-    freeText: {type: String, form:{type: 'textarea', rows:5}}
+    freeText: {type: String, form:{type: 'textarea', rows:5, help:'There is some validation on this field to ensure that the word "rude" is not entered.  Try it to see the record level error handling.'}}
+});
+
+BSchema.pre('save', function(next) {
+    // Check for rude words (well, the word "rude", actually) to show an error
+
+    if (this.freeText.indexOf('rude') !== -1) {
+        return next(new Error("Wash your mouth!  You must not use rude words."));
+    }
+    return next();
 });
 
 var B = mongoose.model('B', BSchema);

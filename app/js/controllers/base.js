@@ -350,12 +350,12 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     };
 
     var showError = function(errString, alertTitle) {
-        if (!alertTitle) {
-            alertTitle = "Error!";
-        }
-        $('.alert').remove();
-        $('.form-header').append('<div class="span6 offset3 alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button><h4>' + alertTitle + '</h4>'+ errString +'</div>');
-        $(window).scrollTop($('div.alert').offset().top);
+        $scope.alertTitle = alertTitle ? alertTitle : "Error!";
+        $scope.errorMessage = errString;
+    };
+
+    $scope.dismissError = function() {
+        delete $scope.errorMessage;
     };
 
     $scope.save = function (options) {

@@ -36,7 +36,8 @@
     content:"*";
     font-weight: bold;
     color: red;
-    padding-left: 5px
+/* padding-left is too small at 12 if inline help is not used*/
+    padding-left: 12px
 }
 
 .form-horizontal input.ng-invalid-required {
