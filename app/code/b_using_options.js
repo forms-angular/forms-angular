@@ -12,6 +12,7 @@ var BSchema = new Schema({
         postcode: {type: String, form:{label: 'Postcode', help:'Enter your postcode or zip code'}},  // help displays on the line under the control
         country: {type: String, form:{label:"Country", hidden:true}}
     },
+    email: {type: String, form:{directive: 'email-field'}},
     weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
     dateOfBirth: Date,
     accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
