@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.1.4
+ * @license AngularJS v1.0.5
  * (c) 2010-2012 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -179,6 +179,5 @@ angular.module('ngCookies', ['ng']).
       };
 
     }]);
-
 
 })(window, window.angular);
