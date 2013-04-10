@@ -486,6 +486,43 @@ describe('BaseCtrl', function(){
 
     });
 
+    describe('error message handling', function() {
+
+        it('generates an error message', function() {
+            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+                $httpBackend = _$httpBackend_;
+                $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
+                $routeParams.model = 'collection';
+                scope = $rootScope.$new();
+                scope.newRecord = true;
+                ctrl = $controller(BaseCtrl, {$scope: scope});
+                scope.record = {"familyName":"Chapman", "givenName":"Mark"};
+                $httpBackend.when('POST','api/collection', {"familyName":"Chapman", "givenName":"Mark"}).respond(400,{message: "There is some kind of error",status: "err"});
+                scope.save();
+                $httpBackend.flush();
+                expect(scope.alertTitle).toEqual('Error!');
+                expect(scope.errorMessage).toEqual('There is some kind of error');
+            });
+        });
+
+    });
+
+    describe('extracts custom directives from schemas', function() {
+
+        it('extracts custom directives from schemas', function() {
+            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+                $httpBackend = _$httpBackend_;
+                $httpBackend.whenGET('api/schema/collection').respond({"email":{"enumValues":[],"regExp":null,"path":"email","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"directive":"email-field"}},"_index":null,"$conditionalHandlers":{}}});
+                $routeParams.model = 'collection';
+                scope = $rootScope.$new();
+                scope.newRecord = true;
+                ctrl = $controller(BaseCtrl, {$scope: scope});
+                $httpBackend.flush();
+            });
+
+            expect(scope.formSchema[0].directive).toBe('email-field');
+        });
+    });
 
 //   Cannot get this test to work, but the code seems to....
 //    describe('handles sub documents', function() {

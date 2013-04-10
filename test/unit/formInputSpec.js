@@ -1,31 +1,31 @@
-describe('formInput', function() {
+describe('formInput', function () {
     var elm, scope;
 
     // load the form code
-    beforeEach(module('formsAngular.form'));
+    beforeEach(module('formsAngular.form','formsAngular.bespokeform'));
 
-    describe('simple text input', function() {
+    describe('simple text input', function () {
 
-        beforeEach(inject(function($rootScope, $compile) {
+        beforeEach(inject(function ($rootScope, $compile) {
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact">' +
                     '<form-input info="{{schema}}"></form-input>' +
-                '</form>');
+                    '</form>');
 
             scope = $rootScope;
-            scope.schema = {name: "desc",  id:"desc_id", label: "Description", type:"text"};
+            scope.schema = {name: "desc", id: "desc_id", label: "Description", type: "text"};
             $compile(elm)(scope);
             scope.$digest();
         }));
 
-        it('should have a label', function() {
+        it('should have a label', function () {
             var label = elm.find('label');
             expect(label.text()).toBe('Description');
             expect(label.attr('for')).toBe('desc_id');
             expect(label).toHaveClass('control-label');
         });
 
-        it('should have input', function() {
+        it('should have input', function () {
             var input = elm.find('input');
             expect(input).toHaveClass('ng-pristine');
             expect(input).toHaveClass('ng-valid');
@@ -35,25 +35,25 @@ describe('formInput', function() {
 
     });
 
-    describe('generate inputs from schema', function() {
+    describe('generate inputs from schema', function () {
 
-        beforeEach(inject(function($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $controller, $compile) {
 
             elm = angular.element(
-                        '<form name="myForm" class="form-horizontal compact"> ' +
-                            '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
-                        '</form>');
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '</form>');
 
             scope = $rootScope;
             scope.schema = [
-                {name: "name",  id:"1", label: "Name", type:"text"},
-                {name: "eyecolour",  id:"2", label: "Colour of Eyes", type:"text"}
+                {name: "name", id: "1", label: "Name", type: "text"},
+                {name: "eyecolour", id: "2", label: "Colour of Eyes", type: "text"}
             ];
             $compile(elm)(scope);
             scope.$digest();
         }));
 
-        it('should have 2 inputs', function() {
+        it('should have 2 inputs', function () {
             var input = elm.find('input');
             expect(input.length).toBe(2);
             input = elm.find('input:first');
@@ -68,7 +68,7 @@ describe('formInput', function() {
             expect(input.attr('autofocus')).toBe(undefined);
         });
 
-        it('should have 2 labels', function() {
+        it('should have 2 labels', function () {
             var label = elm.find('label');
             expect(label.length).toBe(2);
             label = elm.find('label:first');
@@ -81,9 +81,9 @@ describe('formInput', function() {
 
     });
 
-    describe('does not generate label element when label is blank', function() {
+    describe('does not generate label element when label is blank', function () {
 
-        beforeEach(inject(function($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $controller, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -92,14 +92,14 @@ describe('formInput', function() {
 
             scope = $rootScope;
             scope.schema = [
-                {name: "name",  id:"1", label: "Name", type:"text"},
-                {name: "eyecolour",  id:"2", label: "", type:"text"}
+                {name: "name", id: "1", label: "Name", type: "text"},
+                {name: "eyecolour", id: "2", label: "", type: "text"}
             ];
             $compile(elm)(scope);
             scope.$digest();
         }));
 
-        it('should have 2 inputs', function() {
+        it('should have 2 inputs', function () {
             var input = elm.find('input');
             expect(input.length).toBe(2);
             input = elm.find('input:first');
@@ -112,7 +112,7 @@ describe('formInput', function() {
             expect(input.attr('type')).toBe('text');
         });
 
-        it('should have 1 label', function() {
+        it('should have 1 label', function () {
             var label = elm.find('label');
             expect(label.length).toBe(1);
             expect((label).text()).toBe('Name');
@@ -121,9 +121,9 @@ describe('formInput', function() {
 
     });
 
-    describe('generates "required" attribute when appropriate', function() {
+    describe('generates "required" attribute when appropriate', function () {
 
-        beforeEach(inject(function($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $controller, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -132,14 +132,14 @@ describe('formInput', function() {
 
             scope = $rootScope;
             scope.schema = [
-                {name: "name",  id:"1", label: "Name", type:"text", required:true},
-                {name: "eyecolour",  id:"2", label: "", type:"text"}
+                {name: "name", id: "1", label: "Name", type: "text", required: true},
+                {name: "eyecolour", id: "2", label: "", type: "text"}
             ];
             $compile(elm)(scope);
             scope.$digest();
         }));
 
-        it('should have correct inputs', function() {
+        it('should have correct inputs', function () {
             var input = elm.find('input');
             expect(input.length).toBe(2);
             input = elm.find('input:first');
@@ -156,9 +156,9 @@ describe('formInput', function() {
 
     });
 
-    describe('generates help elements', function() {
+    describe('generates help elements', function () {
 
-        beforeEach(inject(function($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $controller, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -167,14 +167,14 @@ describe('formInput', function() {
 
             scope = $rootScope;
             scope.schema = [
-                {name: "name",  id:"1", label: "Name", type:"text", help:"This is some help"},
-                {name: "eyecolour",  id:"2", label: "", type:"text", helpInline:"This is some inline help"}
+                {name: "name", id: "1", label: "Name", type: "text", help: "This is some help"},
+                {name: "eyecolour", id: "2", label: "", type: "text", helpInline: "This is some inline help"}
             ];
             $compile(elm)(scope);
             scope.$digest();
         }));
 
-        it('should have correct help blocks', function() {
+        it('should have correct help blocks', function () {
             var help = elm.find('span');
             expect(help.length).toBe(2);
             help = elm.find('span:first');
@@ -187,9 +187,9 @@ describe('formInput', function() {
 
     });
 
-    describe('generates textarea inputs', function() {
+    describe('generates textarea inputs', function () {
 
-        beforeEach(inject(function($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $controller, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -198,14 +198,14 @@ describe('formInput', function() {
 
             scope = $rootScope;
             scope.schema = [
-                {name: "name",  id:"1", label: "Name", type:"text"},
-                {name: "description",  id:"2", label: "Desc", type:"textarea", rows:10}
+                {name: "name", id: "1", label: "Name", type: "text"},
+                {name: "description", id: "2", label: "Desc", type: "textarea", rows: 10}
             ];
             $compile(elm)(scope);
             scope.$digest();
         }));
 
-        it('should have correct textarea', function() {
+        it('should have correct textarea', function () {
             var input = elm.find('input');
             expect(input.length).toBe(1);
             expect(input).toHaveClass('ng-pristine');
@@ -222,9 +222,9 @@ describe('formInput', function() {
 
     });
 
-    describe('generates selects for enumerated lists', function() {
+    describe('generates selects for enumerated lists', function () {
 
-        beforeEach(inject(function($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $controller, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -232,16 +232,16 @@ describe('formInput', function() {
                     '</form>');
 
             scope = $rootScope;
-            scope.f_eyeColourOptions = ["Blue","Brown","Green","Hazel"];
+            scope.f_eyeColourOptions = ["Blue", "Brown", "Green", "Hazel"];
             scope.schema = [
-                {name: "name",  id:"1", label: "Name", type:"text"},
-                {"name":"eyeColour","id":"f_eyeColour","label":"Eye Colour","type":"select","options":"f_eyeColourOptions"}
+                {name: "name", id: "1", label: "Name", type: "text"},
+                {"name": "eyeColour", "id": "f_eyeColour", "label": "Eye Colour", "type": "select", "options": "f_eyeColourOptions"}
             ];
             $compile(elm)(scope);
             scope.$digest();
         }));
 
-        it('should have combobox', function() {
+        it('should have combobox', function () {
             var input = elm.find('select');
             expect(input.length).toBe(1);
             expect(input).toHaveClass('ng-pristine');
@@ -259,10 +259,9 @@ describe('formInput', function() {
 
     });
 
+    describe('generates selects for reference lookups', function () {
 
-    describe('generates selects for reference lookups', function() {
-
-        beforeEach(inject(function($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $controller, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -270,17 +269,17 @@ describe('formInput', function() {
                     '</form>');
 
             scope = $rootScope;
-            scope.f_eyeColourOptions = ["Blue","Brown","Green","Hazel"];
-            scope.f_eyeColour_ids = ["1234","5678","90ab","cdef"];
+            scope.f_eyeColourOptions = ["Blue", "Brown", "Green", "Hazel"];
+            scope.f_eyeColour_ids = ["1234", "5678", "90ab", "cdef"];
             scope.schema = [
-                {name: "name",  id:"1", label: "Name", type:"text"},
-                {"name":"eyeColour","id":"f_eyeColour","label":"Eye Colour","type":"select","options":"f_eyeColourOptions","ids":"f_eyeColour_ids"}
+                {name: "name", id: "1", label: "Name", type: "text"},
+                {"name": "eyeColour", "id": "f_eyeColour", "label": "Eye Colour", "type": "select", "options": "f_eyeColourOptions", "ids": "f_eyeColour_ids"}
             ];
             $compile(elm)(scope);
             scope.$digest();
         }));
 
-        it('should have combobox', function() {
+        it('should have combobox', function () {
             var input = elm.find('select');
             expect(input.length).toBe(1);
             expect(input).toHaveClass('ng-pristine');
@@ -295,6 +294,69 @@ describe('formInput', function() {
             expect(input.text()).toBe("Hazel");
         });
 
+    });
+
+    describe('supports override directives for fields', function () {
+
+        beforeEach(
+            inject(function ($rootScope, $controller, $compile) {
+                elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                '</form>');
+            scope = $rootScope;
+            scope.schema = [
+                {name: "email", id: "1", label: "Email", type: "text", directive: "email-field"}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('field should have prefix', function () {
+            var input = elm.find('input');
+            expect(input.length).toBe(1);
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input.attr('id')).toBe('1');
+            expect(input.attr('type')).toBe('text');
+            var prepend = elm.find('div.input-prepend');
+            expect(prepend.text()).toBe('@');
+        });
+
+    });
+
+    describe('displays error messages', function () {
+
+        beforeEach(
+            inject(function ($rootScope, $controller, $compile) {
+                elm = angular.element(
+                    '<div ng-show="errorMessage" class="row-fluid">'+
+                        '<div class="span6 offset3 alert alert-error">'+
+                            '<button type="button" class="close" ng-click="dismissError()">&times;</button>'+
+                            '<h4>{{alertTitle}}</h4>'+
+                            '<span class="errMsg">{{errorMessage}}</span>'+
+                        '</div>'+
+                    '</div>'+
+                        '<div class="row-fluid">'+
+                           '<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>'+
+                        '</div>'+
+                    '</div>');
+                scope = $rootScope;
+                scope.schema = [
+                    {name: "email", id: "1", label: "Email", type: "text", directive: "email-field"}
+                ];
+                scope.errorMessage = 'Test error';
+                scope.alertTitle = 'Error!';
+                $compile(elm)(scope);
+                scope.$digest();
+            }));
+
+        it('displays appropriatedly', function () {
+            var h4 = elm.find('h4');
+            expect(h4.text()).toBe('Error!');
+            var alert = elm.find('span.errMsg');
+            expect(alert.text()).toBe('Test error');
+        });
     });
 
 });
