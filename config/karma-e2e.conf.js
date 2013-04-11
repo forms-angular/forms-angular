@@ -6,11 +6,13 @@ files = [
   'test/e2e/**/*.js'
 ];
 
-autoWatch = false;
+autoWatch = true;
 
-browsers = ['Chrome'];
+browsers = ['PhantomJS'];
 
-singleRun = true;
+// singleRun = true;
+
+urlRoot = '/__testacular/'; // Stop Testacular server serving it's own page rather than proxing the request.
 
 proxies = {
   '/': 'http://localhost:3001/'
