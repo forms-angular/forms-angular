@@ -19,6 +19,7 @@
 
     <script src="js/controllers/base.js"></script>
     <script src="js/controllers/model.js"></script>
+    <script src="js/controllers/searchbox.js"></script>
     <script src="js/directives/form.js"></script>
     <script src="js/directives/bespoke-field.js"></script>
     <script src="js/app.js"></script>
@@ -44,10 +45,26 @@
 </head>
 <body>
 <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0;"></a>
-    <div class="row-fluid">
-        <div class="span1"><a href="/"><i class="icon-home"></i>Home</a></div>
-        <div class="span9" ng-view></div>
-        <!-- leave a gap for the fork me on Github -->
+<div class="navbar row" ng-controller="searchCtrl">
+    <div class="navbar-inner">
+        <div class="span2">
+            <a class="brand" href="/">Home</a>
+        </div>
+        <div class="span9">
+            <form class="navbar-search pull-right">
+                <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
+            </form>
+            <div class="search-results" ng-show="results.length >= 1">
+                <div ng-repeat="result in results"><a href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.display}}</a></div>
+                <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
+            </div>
+        </div>
     </div>
+</div>
+<div class="container-fluid">
+    <div ng-view></div>
+</div>
+</div>
+
 </body>
 </html>

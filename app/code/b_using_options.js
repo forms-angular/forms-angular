@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var BSchema = new Schema({
-    surname: {type: String, required: true, list:{}},        // this field appears in a listing and the default edit form header
-    forename:  {type: String, list:true},                    // this field appears in a listing and the default edit form header
+    surname: {type:String,required:true,index:true,list:{}}, // this field appears in a listing and the default edit form header
+    forename:  {type: String, list:true, index:true},        // this field appears in a listing and the default edit form header
     address: {
         line1: {type: String, form:{label: 'Address'}},      // this label overrides the one generated from the field name
         line2: {type: String, form:{label: null}},           // null label - gives a blank label

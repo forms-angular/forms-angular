@@ -43,3 +43,19 @@
 .form-horizontal input.ng-invalid-required {
     background-color: rgba(255, 0, 0, 0.10);
 }
+
+.search-results {
+    z-index: 3;
+    border: 1px solid gray;
+    position: absolute;
+    top: 45px;
+    display: inline-block;
+    right: 152px;
+    -webkit-box-shadow: 10px 10px 10px #888;
+    box-shadow: 10px 10px 10px #888;
+    background: white;
+    padding: 5px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
