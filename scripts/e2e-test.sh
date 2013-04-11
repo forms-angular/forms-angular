@@ -6,4 +6,4 @@ echo ""
 echo "Starting Karma Server"
 echo "---------------------"
 
-karma start $BASE_DIR/../config/karma-e2e.conf.js $*
+karma start $BASE_DIR/../config/karma-e2e.conf.js --reporters=dots --browsers=PhantomJS

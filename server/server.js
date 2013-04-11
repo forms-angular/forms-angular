@@ -38,12 +38,31 @@ app.configure('development', function(){
 //    console.log('************    Using LIVE data  ***************')
 });
 
+app.configure('test', function(){
+    mongoose.set('debug',true);
+    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    mongoose.connect('mongodb://localhost/forms-ng_test');
+
+    var data_path = __dirname + '/../test/e2e/data';
+    var data_files = fs.readdirSync(data_path);
+    data_files.forEach(function(file){
+        var fname = data_path+'/'+file;
+        if (fs.statSync(fname).isFile()) {
+            exec('mongoimport --db forms-ng_test --drop --collection '+ file.slice(0,1)+'s --jsonArray < ' + fname,
+                function (error, stdout, stderr) {
+                    if (error !== null) {
+                        console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
+                    }
+                });
+        }
+    });
+});
+
 app.configure('production', function(){
     console.log('Production mode');
     app.use(express.errorHandler());
     mongoose.connect('mongodb://theworld:k12gYth6t4g7YT@linus.mongohq.com:10053/formsng');
 });
-
 
 var ensureAuthenticated = function (req, res, next) {
     // Here you can do authentication using things like
@@ -71,7 +90,6 @@ models_files.forEach(function(file){
 app.get('/api/models', function(req, res){
     res.send(DataFormHandler.resources);
 });
-
 
 var port;
 

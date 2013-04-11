@@ -7,6 +7,4 @@ describe('Forms app demo', function() {
         expect(browser().window().hash()).toMatch('\/index');
     });
 
-//    it('should support schema findFunctions');
-//    it('should allow selections from a global search box')
 });
