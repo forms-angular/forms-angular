@@ -31,7 +31,7 @@
 		"form builder"
 	],
 	"devDependencies":{
-		"karma":"0.8.x"
+		"karma":"0.8.1"
 	},
 	"license":"MIT"
 }
