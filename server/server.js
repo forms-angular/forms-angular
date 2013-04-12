@@ -48,8 +48,8 @@ app.configure('test', function(){
     console.log("dirname",execSync.stdout('ls '+__dirname));
     console.log("app dir",execSync.stdout('ls '+__dirname+'/..'));
     console.log("test",execSync.stdout('ls '+__dirname+'/../test'));
-    console.log("e2e",execSync.stdout('ls '+__dirname+'/../e2e'));
-    console.log("data",execSync.stdout('ls '+__dirname+'/../e2e/data'));
+    console.log("e2e",execSync.stdout('ls '+__dirname+'/../test/e2e'));
+    console.log("data",execSync.stdout('ls '+__dirname+'/../test/e2e/data'));
     var data_path = __dirname + '/../test/e2e/data';
     var data_files = fs.readdirSync(data_path);
     data_files.forEach(function(file){
