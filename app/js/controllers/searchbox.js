@@ -20,7 +20,6 @@ var searchCtrl = function ($scope, $http, $location) {
 
     $scope.$on("$routeChangeStart", function (event, next) {
         $scope.searchTarget = '';
-        console.log("Here");
     });
 
 };
