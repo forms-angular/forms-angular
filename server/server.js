@@ -32,6 +32,7 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
+//    mongoose.set('debug',true);
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
     mongoose.connect('mongodb://localhost/forms-ng_dev');
 //    mongoose.connect('mongodb://theworld:k12gYth6t4g7YT@linus.mongohq.com:10053/formsng');
@@ -39,7 +40,6 @@ app.configure('development', function(){
 });
 
 app.configure('test', function(){
-    mongoose.set('debug',true);
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
     mongoose.connect('mongodb://localhost/forms-ng_test');
 

@@ -29,19 +29,19 @@
     <!--[if lt IE 9]>
     <script src="lib/html5_shiv.js"></script>
     <![endif]-->
-    <script type="text/javascript">
-        if (window.location.hostname != '0.0.0.0') {
-            var _gaq = _gaq || [];
-            _gaq.push(['_setAccount', 'UA-3037487-9']);
-            _gaq.push(['_trackPageview']);
+    <!--This was slowing down tests when offline.  Need to set up mock back end <script type="text/javascript">-->
+        <!--if (window.location.hostname != '0.0.0.0') {-->
+            <!--var _gaq = _gaq || [];-->
+            <!--_gaq.push(['_setAccount', 'UA-3037487-9']);-->
+            <!--_gaq.push(['_trackPageview']);-->
 
-            (function() {
-                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-            })();
-        }
-    </script>
+            <!--(function() {-->
+                <!--var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;-->
+                <!--ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';-->
+                <!--var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);-->
+            <!--})();-->
+        <!--}-->
+    <!--</script>-->
 </head>
 <body>
 <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0;"></a>
