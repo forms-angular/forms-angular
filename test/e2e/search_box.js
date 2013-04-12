@@ -20,4 +20,10 @@ describe('Global search capability', function() {
         expect( repeater( 'a.ng-binding' ).count() ).toEqual(0);
     });
 
+    it('should not find records indexed on a no-search field', function () {
+        browser().navigateTo('/');
+        input('searchTarget').enter('ReportingIndex')
+        expect( repeater( 'a.ng-binding' ).count() ).toEqual(0);
+    });
+
 });

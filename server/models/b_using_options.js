@@ -12,7 +12,13 @@ var BSchema = new Schema({
         postcode: {type: String, form:{label: 'Postcode', help:'Enter your postcode or zip code'}},  // help displays on the line under the control
         country: {type: String, form:{label:"Country", hidden:true}}
     },
-    email: {type: String, form:{directive: 'email-field'}},
+
+    // The email field is indexed, but the noSearch property means the index is not used in the searchBox searches
+    // A use case for this would be an index that is used in reports for grouping which has no meaning in a search.
+    //
+    // The field has a custom directive (which is defined in /app/js/directives/bespoke-field.js)
+    email: {type: String, index:true, noSearch: true, form:{directive: 'email-field'}},
+
     weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
     dateOfBirth: Date,
     accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control

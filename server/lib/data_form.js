@@ -48,7 +48,7 @@ DataForm.prototype.search = function (req, res) {
             }
             for (var path in schema.paths) {
                 if (path != "_id" && schema.paths.hasOwnProperty(path)) {
-                    if (schema.paths[path]._index) {
+                    if (schema.paths[path]._index && !schema.paths[path].options.noSearch) {
                         if (indexedFields.indexOf(path) == -1) {
                             indexedFields.push(path)
                         }
