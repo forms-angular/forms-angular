@@ -29,7 +29,7 @@
     <!--[if lt IE 9]>
     <script src="lib/html5_shiv.js"></script>
     <![endif]-->
-    <!--This was slowing down tests when offline.  Need to set up mock back end -->
+    <!--This slows down tests when offline.  Need to set up mock back end -->
     <script type="text/javascript">
         if (window.location.hostname != '0.0.0.0') {
             var _gaq = _gaq || [];
@@ -53,7 +53,9 @@
         </div>
         <div class="span9">
             <form class="navbar-search pull-right">
-                <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
+                <div id="search-cg" class="control-group" ng-class="errorClass">
+                    <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
+                </div>
             </form>
             <div class="search-results" ng-show="results.length >= 1">
                 <div ng-repeat="result in results"><a href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.display}}</a></div>
