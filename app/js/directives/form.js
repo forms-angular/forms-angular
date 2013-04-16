@@ -1,5 +1,4 @@
 angular.module('formsAngular.form', [])
-
     .directive('formInput', function ($compile) {
         return {
             restrict: 'E',
@@ -69,7 +68,7 @@ angular.module('formsAngular.form', [])
 
                                 template += '<div class="schema-head well">' + info.label + '</div>' +
                                     '<div class="sub-doc well" id="' + info.id + 'List" ng-subdoc-repeat="subDoc in record.' + info.name + '">' +
-// When upgrad eto 1.14 works OK    '<div class="sub-doc well" id="' + info.id + 'List" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
+// When upgrade to 1.14 works OK    '<div class="sub-doc well" id="' + info.id + 'List" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
                                     '<div class="row-fluid">' +
                                     '<div class="pull-left">' +
                                     '<form-input ng-repeat="' + schemaLoop + '" info="{{field}}" schema="true"></form-input>' +
