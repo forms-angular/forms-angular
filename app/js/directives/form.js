@@ -28,7 +28,7 @@ angular.module('formsAngular.form', [])
                                 , requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
 
                             if (fieldInfo.type == 'select') {
-                                value = '<select ui-select2 data-placeholder="-- Select One --" ' + focusStr + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
+                                value = '<select ui-select2 data-placeholder="' + (fieldInfo.placeHolder ? fieldInfo.placeHolder : '-- Select One --') + '" ' + focusStr + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
                                 value += '<option></option>'
                                 value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                                 value += '</select>';

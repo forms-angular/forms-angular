@@ -20,6 +20,9 @@ var BSchema = new Schema({
     email: {type: String, index:true, noSearch: true, form:{directive: 'email-field'}},
 
     weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
+
+    eyeColour: {type: String, enum:['Blue','Brown','Green','Hazel'], form:{placeHolder:"Eye colour"}},
+
     dateOfBirth: Date,
     accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
     interviewScore:{type:Number,form:{hidden:true},list:{}},  // this field does not appear on the form or listings, even though list is defined - not sure about this
