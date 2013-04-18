@@ -3,7 +3,13 @@
 var _ = require('underscore'),
     util = require('util'),
     extend = require('node.extend'),
-    async = require('async');
+    async = require('async'),
+    debug = true;
+
+function logTheAPICalls (req, res, next) {
+    console.log('API     : ' + req.method + ' ' + req.url);
+    next();
+}
 
 function processArgs(options, array) {
     if (options.authentication) {

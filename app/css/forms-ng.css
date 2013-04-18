@@ -59,3 +59,102 @@
     -moz-border-radius: 15px;
     border-radius: 15px;
 }
+
+.form-horizontal .fng-select2 {
+    width: 220px;
+    padding-top: 1px;
+}
+
+/* This section from https://github.com/t0m/select2-bootstrap-css */
+
+.form-horizontal .select2-container {
+    vertical-align:middle;
+}
+
+.form-horizontal .select2-container .select2-choice {
+    border:1px solid #ccc;
+    height:28px;
+    border-radius: 3px;
+    line-height: 29px;
+    background-image:none;
+    filter:none;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.form-horizontal .select2-container .select2-choice div {
+    border-left:none;
+    background:none;
+    background-image:none;
+    filter:none;
+}
+
+.form-horizontal .select2-container-multi .select2-choices {
+    border:1px solid #ccc;
+    border-radius: 3px;
+    background-image:none;
+    filter:none;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.form-horizontal .control-group.error .select2-container-multi .select2-choices {
+    border-color:#B94A48;
+}
+
+.form-horizontal .control-group.error .select2-container .select2-choice {
+    border-color:#B94A48;
+}
+
+.form-horizontal .select2-container-multi .select2-choices .select2-search-field {
+    height:28px;
+    line-height: 27px;
+}
+
+.form-horizontal .select2-container-active .select2-choice,
+.form-horizontal .select2-container-active .select2-choices,
+.form-horizontal .select2-container-multi.select2-container-active .select2-choices {
+    border-color: rgba(82, 168, 236, 0.8);
+    outline: none;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),0 0 8px rgba(82, 168, 236, 0.6);
+    -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(82,168,236,0.6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),0 0 8px rgba(82, 168, 236, 0.6);
+}
+
+.form-horizontal .input-append .select2-container, .input-prepend .select2-container {
+    font-size:14px;
+}
+
+.form-horizontal .input-prepend .select2-container > a.select2-choice,
+.form-horizontal .input-prepend .select2-container-multi .select2-choices {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.form-horizontal .input-append .select2-container > a,
+.form-horizontal .input-append .select2-container-multi .select2-choices {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.form-horizontal .input-prepend .select2-container > a.select2-choice > div,
+.form-horizontal .input-append .select2-container > a.select2-choice > div {
+    display:none;
+}
+
+.form-horizontal .input-append .select2-offscreen,
+.form-horizontal .input-prepend .select2-offscreen {
+    position: absolute;
+}
+
+/**
+ * This stops the quick flash when a native selectbox is shown and
+ * then replaced by a select2 input when javascript kicks in. This can be
+ * removed if javascript is not present
+ */
+.form-horizontal select.select2 {
+    height:28px;
+    visibility:hidden;
+}

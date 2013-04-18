@@ -250,7 +250,7 @@ describe('formInput', function () {
             input = elm.find('option');
             expect(input.length).toBe(5);
             input = elm.find('option:first');
-            expect(input.attr('value')).toBe("? undefined:undefined ?");
+            expect(input.attr('value')).toBe("");
             expect(input.text()).toBe("");
             input = elm.find('option:last');
             expect(input.attr('value')).toBe("Hazel");
@@ -288,7 +288,7 @@ describe('formInput', function () {
             input = elm.find('option');
             expect(input.length).toBe(5);
             input = elm.find('option:first');
-            expect(input.attr('value')).toBe("? undefined:undefined ?");
+            expect(input.attr('value')).toBe("");
             expect(input.text()).toBe("");
             input = elm.find('option:last');
             expect(input.text()).toBe("Hazel");

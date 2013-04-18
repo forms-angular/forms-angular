@@ -28,7 +28,8 @@ angular.module('formsAngular.form', [])
                                 , requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
 
                             if (fieldInfo.type == 'select') {
-                                value = '<select ' + focusStr + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '">';
+                                value = '<select ui-select2 data-placeholder="-- Select One --" ' + focusStr + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
+                                value += '<option></option>'
                                 value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                                 value += '</select>';
                             } else if (fieldInfo.type == 'textarea') {
