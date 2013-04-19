@@ -9,7 +9,7 @@ angular.module('formsAngular.form', [])
                     scope.$watch(attrs.formInput, function () {
 
                         var generateInput = function (fieldInfo, modelString, isRequired, idString) {
-                            var focusStr = '';
+                            var focusStr = '', placeHolder = '';
                             if (!modelString) {
                                 if (fieldInfo.name.indexOf('.') != -1 && element[0].outerHTML.indexOf('schema="true"') != -1) {
                                     // Schema handling - need to massage the ngModel and the id
@@ -28,14 +28,25 @@ angular.module('formsAngular.form', [])
                                 , requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
 
                             if (fieldInfo.type == 'select') {
-                                value = '<select ui-select2 data-placeholder="' + (fieldInfo.placeHolder ? fieldInfo.placeHolder : '-- Select One --') + '" ' + focusStr + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
-                                value += '<option></option>'
-                                value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
-                                value += '</select>';
-                            } else if (fieldInfo.type == 'textarea') {
-                                value = '<textarea ' + focusStr + (fieldInfo.rows ? 'rows = "' + fieldInfo.rows + '" ' : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + ' />';
+                                if (fieldInfo.placeHolder) {placeHolder = 'data-placeholder="' + fieldInfo.placeHolder + '" '}
+                                if (fieldInfo.select2 && fieldInfo.select2.fngAjax) {
+                                    value = '<div class="input-append">';
+                                    value +=   '<input ui-select2="' + fieldInfo.select2.fngAjax +'" ' + focusStr + placeHolder + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
+                                    value +=   '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
+                                    value += '</div>';
+                                } else {
+                                    value = '<select ui-select2="'+ fieldInfo.select2 +'" ' + focusStr + placeHolder + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
+                                    value += '<option></option>';
+                                    value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
+                                    value += '</select>';
+                                }
                             } else {
-                                value = '<input ' + focusStr + 'type="' + info.type + '" ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + '/>';
+                                var placeholder = fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "";
+                                if (fieldInfo.type == 'textarea') {
+                                    value = '<textarea ' + focusStr + placeholder + (fieldInfo.rows ? 'rows = "' + fieldInfo.rows + '" ' : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + ' />';
+                                } else {
+                                    value = '<input ' + focusStr + placeholder + 'type="' + info.type + '" ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + '/>';
+                                }
                             }
                             if (fieldInfo.helpInline) {
                                 value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
@@ -125,13 +136,13 @@ angular.module('formsAngular.form', [])
                                     case 'info' :
                                         var options = JSON.parse(thisAttr.nodeValue);
                                         delete options.directive;
-                                        newElement += ' info="' + JSON.stringify(options).replace(/\"/g,'&quot;') + '"'
+                                        newElement += ' info="' + JSON.stringify(options).replace(/\"/g,'&quot;') + '"';
                                         break;
                                     default :
                                         newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.nodeValue + '"';
                                 }
                             }
-                            newElement += '></' + info.directive + '>'
+                            newElement += '></' + info.directive + '>';
                             element.replaceWith($compile(newElement)(scope));
                         } else {
                             var template = handleField(info);

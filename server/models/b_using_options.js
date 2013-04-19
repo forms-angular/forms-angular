@@ -8,7 +8,7 @@ var BSchema = new Schema({
         line1: {type: String, form:{label: 'Address'}},      // this label overrides the one generated from the field name
         line2: {type: String, form:{label: null}},           // null label - gives a blank label
         line3: {type: String, form:{label: null}},
-        town: {type: String, form:{label: 'Town'}},
+        town: {type: String, form:{label: 'Town', placeHolder: "Post town"}},          // You can specify place holders
         postcode: {type: String, form:{label: 'Postcode', help:'Enter your postcode or zip code'}},  // help displays on the line under the control
         country: {type: String, form:{label:"Country", hidden:true}}
     },
@@ -21,7 +21,7 @@ var BSchema = new Schema({
 
     weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
 
-    eyeColour: {type: String, enum:['Blue','Brown','Green','Hazel'], form:{placeHolder:"Eye colour"}},  // Specify the placeholder in the combo box (default is '-- Select One --')
+    eyeColour: {type: String, enum:['Blue','Brown','Green','Hazel'], form:{placeHolder:"Select eye colour"}},  // Placeholders work in a combo box
 
     dateOfBirth: Date,
     accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
@@ -32,7 +32,7 @@ var BSchema = new Schema({
 BSchema.pre('save', function(next) {
     // Check for rude words (well, the word "rude", actually) to show an error
 
-    if (this.freeText.indexOf('rude') !== -1) {
+    if (this.freeText && this.freeText.indexOf('rude') !== -1) {
         return next(new Error("Wash your mouth!  You must not use rude words."));
     }
     return next();

@@ -17,7 +17,7 @@
     <script src="lib/angular-ui/bootstrap/tabs.js"></script>
     <link href="lib/select2/select2.css" rel="stylesheet"/>
     <script src="lib/select2/select2.js"></script>
-    <link rel="stylesheet" href="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.css" >
+    <link rel="stylesheet" href="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.css">
 
     <script src="js/controllers/base.js"></script>
     <script src="js/controllers/model.js"></script>
@@ -38,16 +38,21 @@
             _gaq.push(['_setAccount', 'UA-3037487-9']);
             _gaq.push(['_trackPageview']);
 
-            (function() {
-                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            (function () {
+                var ga = document.createElement('script');
+                ga.type = 'text/javascript';
+                ga.async = true;
                 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(ga, s);
             })();
         }
     </script>
 </head>
 <body>
-<a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0;"></a>
+<a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png"
+                                                         style="position: fixed; right: 0; top: 0;"></a>
+
 <div class="navbar row" ng-controller="searchCtrl">
     <div class="navbar-inner">
         <div class="span2">
@@ -60,7 +65,7 @@
                 </div>
             </form>
             <div class="search-results" ng-show="results.length >= 1">
-                <div ng-repeat="result in results"><a href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.display}}</a></div>
+                <div ng-repeat="result in results"><a href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.text}}</a></div>
                 <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
             </div>
         </div>
@@ -68,7 +73,6 @@
 </div>
 <div class="container-fluid">
     <div ng-view></div>
-</div>
 </div>
 
 </body>

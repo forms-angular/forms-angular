@@ -15,6 +15,9 @@ function processArgs(options, array) {
     if (options.authentication) {
         array.splice(1, 0, options.authentication)
     }
+    if (debug) {
+        array.splice(1, 0, logTheAPICalls)
+    }
     array[0] = options.urlPrefix + array[0];
     return array;
 }
@@ -27,7 +30,7 @@ var DataForm = function (app, options) {
     this.resources = [ ];
     this.registerRoutes();
 
-    this.app.get.apply(this.app, processArgs(this.options, ['search', this.search()]));
+    this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
 };
 
 /**
@@ -35,65 +38,89 @@ var DataForm = function (app, options) {
  */
 module.exports = exports = DataForm;
 
-DataForm.prototype.search = function (req, res) {
-    return _.bind(function (req, res) {
-        var searches = [],
-            searchFor = this.getSearchParam(req),
-            resourceIndexes = [];
-        // TODO: Strip out the index data when adding the resource
-        for (var i = 0; i < this.resources.length; i++) {
-            var resource = this.resources[i];
-            var schema = resource.model.schema;
-            var indexedFields = [];
-            for (j = 0; j < schema._indexes.length ; j++) {
-                var attributes = schema._indexes[j][0];
-                var field = Object.keys(attributes)[0];
-                if (indexedFields.indexOf(field) == -1) {
-                    indexedFields.push(field)
-                }
-            }
-            for (var path in schema.paths) {
-                if (path != "_id" && schema.paths.hasOwnProperty(path)) {
-                    if (schema.paths[path]._index && !schema.paths[path].options.noSearch) {
-                        if (indexedFields.indexOf(path) == -1) {
-                            indexedFields.push(path)
-                        }
-                    }
-                }
-            }
-            for (m=0; m < indexedFields.length ; m++) {
-                searches.push({resource:resource, field: indexedFields[m] })
+DataForm.prototype.getListFields = function (resource, doc) {
+    var listFields = Object.keys(resource.model.schema.paths);
+    var display = '';
+    for (var listElement = 0 ; listElement < 2; listElement++) {
+        display += doc[listFields[listElement]] + ' ';
+    }
+    return display;
+};
+
+DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, callback) {
+    var searches = [],
+        searchFor = this.getSearchParam(req),
+        resourceCount = resourcesToSearch.length;
+
+    for (var i = 0; i < resourceCount; i++) {
+        var resource = resourcesToSearch[i];
+        var schema = resource.model.schema;
+        var indexedFields = [];
+        for (j = 0; j < schema._indexes.length ; j++) {
+            var attributes = schema._indexes[j][0];
+            var field = Object.keys(attributes)[0];
+            if (indexedFields.indexOf(field) == -1) {
+                indexedFields.push(field)
             }
         }
-        var that = this,
-            results = [],
-            moreCount = 0;
-        async.forEach(
-            searches
-            , function (item, cb) {
-                var searchDoc = {};
-                searchDoc[item.field] = {$regex:'^'+searchFor};
-                that.filteredFind(item.resource, req, searchDoc, 11, null, function(err, docs) {
-                    var listFields = Object.keys(item.resource.model.schema.paths);
-                    if (!err && docs && docs.length > 0) {
-                        for (var k = 0; k < docs.length && results.length < 10; k++) {
-                            var display = '';
-                            for (var listElement = 0 ; listElement < 2; listElement++) {
-                                display += docs[k][listFields[listElement]] + ' ';
-                            }
-                            results.push({resource: item.resource.resource_name, id:docs[k]._id, display: display});
-                        }
-                        if (results.length === 10) {
-                            moreCount += docs.length - k;
-                        }
+        for (var path in schema.paths) {
+            if (path != "_id" && schema.paths.hasOwnProperty(path)) {
+                if (schema.paths[path]._index && !schema.paths[path].options.noSearch) {
+                    if (indexedFields.indexOf(path) == -1) {
+                        indexedFields.push(path)
                     }
-                    cb(err)
-                })
+                }
             }
-            , function (err) {
-                res.send({results:results, moreCount:moreCount});
-            }
-        );
+        }
+        for (m=0; m < indexedFields.length ; m++) {
+            searches.push({resource:resource, field: indexedFields[m] })
+        }
+    }
+    var that = this,
+        results = [],
+        moreCount = 0;
+    async.forEach(
+        searches
+        , function (item, cb) {
+            var searchDoc = {};
+            searchDoc[item.field] = {$regex:'^'+searchFor};
+            that.filteredFind(item.resource, req, searchDoc, 11, null, function(err, docs) {
+                if (!err && docs && docs.length > 0) {
+                    for (var k = 0; k < docs.length && results.length < limit; k++) {
+                        var resultObject = {id:docs[k]._id, text: that.getListFields(item.resource,docs[k])};
+                        if (resourceCount > 1) {resultObject.resource = item.resource.resource_name}
+                        results.push(resultObject);
+                    }
+                    if (results.length === limit) {
+                        moreCount += docs.length - k;
+                    }
+                }
+                cb(err)
+            })
+        }
+        , function (err) {
+            callback({results:results, moreCount:moreCount});
+        }
+    );
+};
+
+DataForm.prototype.search = function (req, res, next) {
+    return _.bind(function (req, res, next) {
+        if (!(req.resource = this.getResource(req.params.resourceName))) {
+            return next();
+        }
+
+        this.internalSearch(req, [req.resource], 10, function(resultsObject) {
+            res.send(resultsObject);
+        });
+    }, this);
+};
+
+DataForm.prototype.searchAll = function (req, res) {
+    return _.bind(function (req, res) {
+        this.internalSearch(req, this.resources, 10, function(resultsObject) {
+            res.send(resultsObject);
+        });
     }, this);
 };
 
@@ -101,6 +128,8 @@ DataForm.prototype.search = function (req, res) {
  * Registers all REST routes with the provided `app` object.
  */
 DataForm.prototype.registerRoutes = function () {
+
+    this.app.get.apply(this.app, processArgs(this.options, ['search/:resourceName', this.search()]));
 
     this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName', this.schema()]));
     this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName/:formName', this.schema()]));
@@ -118,6 +147,10 @@ DataForm.prototype.registerRoutes = function () {
     this.app.put.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityPut()]));
 
     this.app.delete.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityDelete()]));
+
+    // return the List attributes for a record - used by select2
+    this.app.all.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entity()]));
+    this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entityList()]));
 };
 
 //    Add a resource, specifying the model and any options.
@@ -248,7 +281,7 @@ DataForm.prototype.getSearchParam = function (req) {
         }
     }
     return findParam;
-}
+};
 
 /**
  * Renders a view with the list of all docs.
@@ -261,9 +294,7 @@ DataForm.prototype.collectionGet = function () {
         var findParam = this.getSearchParam(req);
         var self = this;
 
-        var docs = [],
-            err;
-        err = this.filteredFind(req.resource, req, findParam, null, null, function(err, docs) {
+        this.filteredFind(req.resource, req, findParam, null, null, function(err, docs) {
             if (err) {
                 return self.renderError(err, null, req, res, next);
             } else {
@@ -450,3 +481,13 @@ DataForm.prototype.entityDelete = function () {
         });
     }, this);
 };
+
+DataForm.prototype.entityList = function () {
+    return _.bind(function (req, res, next) {
+        if (!req.resource) {
+            return next();
+        }
+        return res.send({list:this.getListFields(req.resource, req.doc)});
+    }, this);
+};
+

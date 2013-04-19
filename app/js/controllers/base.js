@@ -33,10 +33,10 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     }
 
-    $scope.formPlusSlash = $scope.formName ? $scope.formName+'/' : '';
+    $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
 
-    var titleCase = function(str) {
-        return str.replace(/_/g,' ').replace(/[A-Z]/g,' $&').replace(/\w\S*/g, function (txt) {
+    var titleCase = function (str) {
+        return str.replace(/_/g, ' ').replace(/[A-Z]/g, ' $&').replace(/\w\S*/g, function (txt) {
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         });
     };
@@ -44,20 +44,20 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     $scope.modelNameDisplay = titleCase($scope.modelName);
 
     var suffixCleanId = function (inst, suffix) {
-        return inst.id.replace(/\./g,'_')+suffix;
+        return inst.id.replace(/\./g, '_') + suffix;
     };
 
-    var handleFieldType = function(formInstructions, mongooseType, mongooseOptions) {
+    var handleFieldType = function (formInstructions, mongooseType, mongooseOptions) {
 
         if (mongooseType.caster) {
             formInstructions.array = true;
             mongooseType = mongooseType.caster;
-            $.extend(mongooseOptions,mongooseType.options)
+            $.extend(mongooseOptions, mongooseType.options)
         }
         if (mongooseType.instance == 'String') {
             if (mongooseOptions.enum) {
                 formInstructions.type = 'select';
-                formInstructions.options = suffixCleanId(formInstructions,'Options');
+                formInstructions.options = suffixCleanId(formInstructions, 'Options');
                 $scope[formInstructions.options] = mongooseOptions.enum;
             } else if (!formInstructions.type) {
                 // leave specified types as they are - textarea is supported
@@ -65,9 +65,44 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             }
         } else if (mongooseType.instance == 'ObjectID') {
             formInstructions.type = 'select';
-            formInstructions.options = suffixCleanId(formInstructions,'Options');
-            formInstructions.ids = suffixCleanId(formInstructions,'_ids');
-            setUpSelectOptions(mongooseOptions.ref, formInstructions);
+            if (formInstructions.select2 && formInstructions.select2.fngAjax) {
+                // create the instructions for select2
+                $scope['ajax'+formInstructions.name] = {
+                    allowClear: true,
+                    minimumInputLength: 2,
+                    initSelection : function (element, callback) {
+                        $http.get('api/' + mongooseOptions.ref + '/' +element.val() + '/list').success(function (data) {
+                            if (data.success === false) {
+                                $location.path("/404");
+                            }
+                            var display = {id: element.val(), text: data.list};
+                            master[formInstructions.name] = display;
+                            callback(display);
+
+                        }).error(function () {
+                                $location.path("/404");
+                            });
+                    },
+                    ajax: {
+                        url: "/api/search/" + mongooseOptions.ref,
+                        data: function (term, page) { // page is the one-based page number tracked by Select2
+                            return {
+                                q: term, //search term
+                                page_limit: 10, // page size
+                                page: page // page number
+                            }
+                        },
+                        results: function (data) {
+                            return {results: data.results, more: data.moreCount > 0};
+                        }
+                    }
+                };
+                formInstructions.select2.fngAjax = 'ajax'+formInstructions.name;
+            } else {
+                formInstructions.options = suffixCleanId(formInstructions, 'Options');
+                formInstructions.ids = suffixCleanId(formInstructions, '_ids');
+                setUpSelectOptions(mongooseOptions.ref, formInstructions);
+            }
         } else if (mongooseType.instance == 'Date') {
             formInstructions.type = 'text';
             formInstructions.add = 'ui-date ui-date-format';
@@ -84,37 +119,37 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         return formInstructions;
     };
 
-    var basicInstructions = function(field, formData, prefix) {
-        formData.name = prefix+field;
-        formData.id = formData.id || 'f_' + prefix+field;
+    var basicInstructions = function (field, formData, prefix) {
+        formData.name = prefix + field;
+        formData.id = formData.id || 'f_' + prefix + field;
         formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || titleCase(field));
         return formData;
     };
 
-    var handleListInfo = function(destList, listOptions, field) {
-        var listData = listOptions || {hidden:true};
+    var handleListInfo = function (destList, listOptions, field) {
+        var listData = listOptions || {hidden: true};
         if (!listData.hidden) {
             if (typeof listData == "object") {
                 listData.name = field;
                 destList.push(listData);
             } else {
-                destList.push({name:field});
+                destList.push({name: field});
             }
         }
     };
 
-    var handleEmptyList = function(description,destList, destForm,source) {
+    var handleEmptyList = function (description, destList, destForm, source) {
         // If no list fields specified use the first non hidden string field
         if (destForm) {
-            for (var i= 0, l=destForm.length; i<l; i++) {
+            for (var i = 0, l = destForm.length; i < l; i++) {
                 if (destForm[i].type == 'text') {
-                    destList.push({name:destForm[i].name});
+                    destList.push({name: destForm[i].name});
                     break;
                 }
             }
             if (destList.length === 0 && destForm.length !== 0) {
                 // If it is still blank then just use the first field
-                destList.push({name:destForm[0].name});
+                destList.push({name: destForm[0].name});
             }
         }
 
@@ -122,21 +157,21 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             // If it is still blank then just use the first field from source
             for (var field in source) {
                 if (field !== '_id' && source.hasOwnProperty(field)) {
-                    destList.push({name:field});
+                    destList.push({name: field});
                     break;
                 }
             }
             if (destList.length === 0) {
-                throw new Error ("Unable to generate a title for "+description)
+                throw new Error("Unable to generate a title for " + description)
             }
         }
     };
 
-    var evaluateConditional = function(condition, data) {
+    var evaluateConditional = function (condition, data) {
 
         function evaluateSide(side) {
             var result = side;
-            if (typeof side === "string" && side.slice(0,1) === '$') {
+            if (typeof side === "string" && side.slice(0, 1) === '$') {
                 result = data[side.slice(1)]
             }
             return result;
@@ -162,12 +197,12 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 //    Conditionals
 //    $scope.dataDependencies is of the form {fieldName1: [fieldId1, fieldId2], fieldName2:[fieldId2]}
 
-    var handleConditionals = function(condInst, id) {
+    var handleConditionals = function (condInst, id) {
 
         var dependency = 0;
 
         function handleVar(theVar) {
-            if (typeof theVar === "string" && theVar.slice(0,1) === '$') {
+            if (typeof theVar === "string" && theVar.slice(0, 1) === '$') {
                 var fieldName = theVar.slice(1);
                 var fieldDependencies = $scope.dataDependencies[fieldName] || [];
                 fieldDependencies.push(id);
@@ -190,23 +225,23 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     // TODO: Think about nested arrays
     // This doesn't handle things like :
     // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
-    $scope.getListData = function(record, fieldName) {
+    $scope.getListData = function (record, fieldName) {
         var nests = fieldName.split('.');
         for (var i = 0; i < nests.length; i++) {
             if (record !== undefined) {
                 record = record[nests[i]];
             }
         }
-        return record  === undefined ? "": record;
+        return record === undefined ? "" : record;
     };
 
-    $scope.updateDataDependentDisplay = function(curValue, oldValue, force) {
+    $scope.updateDataDependentDisplay = function (curValue, oldValue, force) {
         for (var field in $scope.dataDependencies) {
             if ($scope.dataDependencies.hasOwnProperty(field) && (force || (curValue[field] != oldValue[field]))) {
                 var depends = $scope.dataDependencies[field];
-                for (var i = 0; i < depends.length ; i+=1) {
+                for (var i = 0; i < depends.length; i += 1) {
                     var id = depends[i];
-                    for (var j = 0; j < $scope.formSchema.length;  j+= 1) {
+                    for (var j = 0; j < $scope.formSchema.length; j += 1) {
                         if ($scope.formSchema[j].id === id) {
                             var control = $('#cg_' + id);
                             if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
@@ -221,7 +256,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     };
 
-    var handleSchema = function(description, source, destForm, destList, prefix, doRecursion) {
+    var handleSchema = function (description, source, destForm, destList, prefix, doRecursion) {
 
         function handlePaneInfo(paneName, thisInst) {
             var paneTitle = angular.copy(paneName);
@@ -256,7 +291,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     if (mongooseType.schema) {
                         if (doRecursion && destForm) {
                             var schemaSchema = [];
-                            handleSchema('Nested '+field,mongooseType.schema, schemaSchema, null, field+'.',true);
+                            handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
                             if (formData.pane) handlePaneInfo(formData.pane, sectionInstructions);
@@ -279,12 +314,12 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             }
         }
         if (destList && destList.length === 0) {
-            handleEmptyList(description,destList,destForm,source);
+            handleEmptyList(description, destList, destForm, source);
         }
     };
 
-    $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/'+$scope.formName : '')).success(function (data) {
-        handleSchema('Main '+$scope.modelName,data, $scope.formSchema, $scope.listSchema, '',true);
+    $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : '')).success(function (data) {
+        handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
 
 
         if (!$scope.id && !$scope.newRecord) {
@@ -295,16 +330,16 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     $location.path("/404");
                 });
         } else {
-            $scope.$watch('record', function(newValue, oldValue) {
+            $scope.$watch('record', function (newValue, oldValue) {
                 $scope.updateDataDependentDisplay(newValue, oldValue, false)
-            },true);
+            }, true);
 
             if ($scope.id) {
                 $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
                     if (data.success === false) {
                         $location.path("/404");
                     }
-                    master = convertToAngularModel($scope.formSchema, data,0);
+                    master = convertToAngularModel($scope.formSchema, data, 0);
                     $scope.cancel();
                 }).error(function () {
                         $location.path("/404");
@@ -341,20 +376,20 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 ////        }
 //    });
 
-    var handleError = function(data, status) {
-        if ([200,400].indexOf(status) !== -1) {
+    var handleError = function (data, status) {
+        if ([200, 400].indexOf(status) !== -1) {
             showError(data.message);
         } else {
             showError(status + ' ' + JSON.stringify(data));
         }
     };
 
-    var showError = function(errString, alertTitle) {
+    var showError = function (errString, alertTitle) {
         $scope.alertTitle = alertTitle ? alertTitle : "Error!";
         $scope.errorMessage = errString;
     };
 
-    $scope.dismissError = function() {
+    $scope.dismissError = function () {
         delete $scope.errorMessage;
     };
 
@@ -414,7 +449,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         return $scope.myForm.$invalid || angular.equals(master, $scope.record);
     };
 
-    $scope.disabledText = function(localStyling) {
+    $scope.disabledText = function (localStyling) {
         if ($scope.isSaveDisabled) {
             return "This button is only enabled when the form is complete and valid.  Make sure all required inputs are filled in. " + localStyling
         }
@@ -426,7 +461,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         arrayField = $scope.record;
         for (var i = 0, l = fieldParts.length; i < l; i++) {
             if (!arrayField[fieldParts[i]]) {
-                if (i === l-1) {
+                if (i === l - 1) {
                     arrayField[fieldParts[i]] = [];
                 } else {
                     arrayField[fieldParts[i]] = {};
@@ -445,11 +480,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         for (var i = 0, l = fieldParts.length; i < l; i++) {
             arrayField = arrayField[fieldParts[i]];
         }
-        arrayField.splice(value,1);
+        arrayField.splice(value, 1);
     };
 
-    // Split a field name into the next level and all following levels
-    function splitFieldName (aFieldName) {
+// Split a field name into the next level and all following levels
+    function splitFieldName(aFieldName) {
         var nesting = aFieldName.split('.'),
             result = [nesting[0]];
 
@@ -474,7 +509,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     function updateArrayOrObject(aFieldName, portion, fn) {
         if (portion !== undefined) {
             if ($.isArray(portion)) {
-                for (var i=0 ; i< portion.length; i++) {
+                for (var i = 0; i < portion.length; i++) {
                     updateObject(aFieldName, portion[i], fn);
                 }
             } else {
@@ -484,14 +519,14 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     }
 
 
-    // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
-    // Which is what we need for use in the browser
+// Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
+// Which is what we need for use in the browser
     var convertToAngularModel = function (schema, anObject, prefixLength) {
         for (var i = 0; i < schema.length; i++) {
             var fieldname = schema[i].name.slice(prefixLength);
             if (schema[i].schema) {
                 if (anObject[fieldname]) {
-                    for (var j = 0; j < anObject[fieldname].length ; j++) {
+                    for (var j = 0; j < anObject[fieldname].length; j++) {
                         anObject[fieldname][j] = convertToAngularModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
                     }
                 }
@@ -500,21 +535,21 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                 // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
                 if (schema[i].array && schema[i].type == 'text' && anObject[fieldname]) {
                     for (var k = 0; k < anObject[fieldname].length; k++) {
-                        anObject[fieldname][k] = {x:anObject[fieldname][k]}
+                        anObject[fieldname][k] = {x: anObject[fieldname][k]}
                     }
                 }
 
                 // Convert {lookup:'012abcde'} to {lookup:'List description for 012abcde'}
-                var idList = $scope[suffixCleanId(schema[i],'_ids')];
+                var idList = $scope[suffixCleanId(schema[i], '_ids')];
                 if (idList && idList.length > 0 && anObject[fieldname]) {
-                    anObject[fieldname] = convertForeignKeys(schema[i], anObject[fieldname], $scope[suffixCleanId(schema[i],'Options')], idList);
+                    anObject[fieldname] = convertForeignKeys(schema[i], anObject[fieldname], $scope[suffixCleanId(schema[i], 'Options')], idList);
                 }
             }
         }
         return anObject;
     };
 
-    // Reverse the process of convertToAngularModel
+// Reverse the process of convertToAngularModel
     var convertToMongoModel = function (schema, anObject, prefixLength) {
 
         for (var i = 0; i < schema.length; i++) {
@@ -522,7 +557,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             if (schema[i].schema) {
                 var thisField = $scope.getListData(anObject, fieldname);
                 if (thisField) {
-                    for (var j = 0; j < thisField.length ; j++) {
+                    for (var j = 0; j < thisField.length; j++) {
                         thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length);
                     }
                 }
@@ -536,11 +571,13 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                 }
 
                 // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
-                var idList = $scope[suffixCleanId(schema[i],'_ids')];
+                var idList = $scope[suffixCleanId(schema[i], '_ids')];
                 if (idList && idList.length > 0) {
-                    updateObject(fieldname, anObject, function(value) {
-                        return( convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i],'Options')], idList) );
+                    updateObject(fieldname, anObject, function (value) {
+                        return( convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i], 'Options')], idList) );
                     });
+                } else if (schema[i].select2 && schema[i].select2.fngAjax) {
+                    anObject[fieldname] = anObject[fieldname].id;
                 }
             }
         }
@@ -548,15 +585,15 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     };
 
 
-    // Convert foreign keys into their display for selects
-    // Called when the model is read and when the lookups are read
+// Convert foreign keys into their display for selects
+// Called when the model is read and when the lookups are read
 
-    // No support for nested schemas here as it is called from convertToAngularModel which does that
+// No support for nested schemas here as it is called from convertToAngularModel which does that
     function convertForeignKeys(schemaElement, input, values, ids) {
         if (schemaElement.array) {
             var returnArray = [];
             for (var j = 0; j < input.length; j++) {
-                returnArray.push({x:convertIdToListValue(input[j], ids, values, schemaElement.name)});
+                returnArray.push({x: convertIdToListValue(input[j], ids, values, schemaElement.name)});
             }
             return returnArray;
         } else {
@@ -564,10 +601,10 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     }
 
-    // Convert ids into their foreign keys
-    // Called when saving the model
+// Convert ids into their foreign keys
+// Called when saving the model
 
-    // No support for nested schemas here as it is called from convertToMongoModel which does that
+// No support for nested schemas here as it is called from convertToMongoModel which does that
     function convertToForeignKeys(schemaElement, input, values, ids) {
         if (schemaElement.array) {
             var returnArray = [];
@@ -580,7 +617,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         }
     }
 
-    var convertIdToListValue = function (id, idsArray, valuesArray,fname) {
+    var convertIdToListValue = function (id, idsArray, valuesArray, fname) {
         var index = idsArray.indexOf(id);
         if (index === -1) {
             throw new Error("convertIdToListValue: Invalid data - id " + id + " not found in " + idsArray + " processing " + fname)
@@ -601,32 +638,38 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         var idList = $scope[schemaElement.ids] = [];
         $http.get('api/schema/' + lookupCollection).success(function (data) {
             var listInstructions = [];
-            handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '',false);
-            $http.get('api/' + lookupCollection,{cache:false}).success(function (data) {
+            handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
+            $http.get('api/' + lookupCollection, {cache: false}).success(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     var option = '';
                     for (var j = 0; j < listInstructions.length; j++) {
                         option += data[i][listInstructions[j].name] + ' ';
                     }
                     option = option.trim();
-                    var pos = _.sortedIndex(optionsList,option);
-                    optionsList.splice(pos,0,option);
-                    idList.splice(pos,0,data[i]._id);
+                    var pos = _.sortedIndex(optionsList, option);
+                    optionsList.splice(pos, 0, option);
+                    idList.splice(pos, 0, data[i]._id);
                 }
                 updateRecordWithLookupValues(schemaElement);
             })
         })
     };
 
-    var updateRecordWithLookupValues = function(schemaElement) {
+    var updateRecordWithLookupValues = function (schemaElement) {
         // Update the master and the record with the lookup values
-        if (angular.equals(master, $scope.record)) {
-            updateObject(schemaElement.name, master, function(value) {
-                return( convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement,'_ids')]));
+        if (angular.equals(master[schemaElement.name], $scope.record[schemaElement.name])) {
+            updateObject(schemaElement.name, master, function (value) {
+                return( convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement, '_ids')]));
             });
             $scope.record = angular.copy(master);
         } else {
             throw new Error("Cannot convert lookup values in changed record")
         }
     };
+
+    // Open a select2 control from the appended search button
+    $scope.openSelect2 = function(ev) {
+        $('#' + $(ev.currentTarget).data('select2-open')).select2('open')
+    };
+
 };
