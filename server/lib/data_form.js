@@ -2,9 +2,14 @@
 
 var _ = require('underscore'),
     util = require('util'),
-    extend = require('node.extend'),
+    extend = require('node.extend'),// needed for deep copy even though underscore has an extend
     async = require('async'),
+    url = require('url'),
+    mongoose = require('mongoose'),
     debug = true;
+
+mongoose.set('debug',debug);
+
 
 function logTheAPICalls (req, res, next) {
     console.log('API     : ' + req.method + ' ' + req.url);
@@ -49,8 +54,12 @@ DataForm.prototype.getListFields = function (resource, doc) {
 
 DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, callback) {
     var searches = [],
-        searchFor = this.getSearchParam(req),
-        resourceCount = resourcesToSearch.length;
+        resourceCount = resourcesToSearch.length,
+        url_parts = url.parse(req.url, true),
+        searchFor = url_parts.query.q,
+        filter = url_parts.query.f;
+
+    if (filter) {filter = JSON.parse(filter)}
 
     for (var i = 0; i < resourceCount; i++) {
         var resource = resourcesToSearch[i];
@@ -83,13 +92,32 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
         searches
         , function (item, cb) {
             var searchDoc = {};
-            searchDoc[item.field] = {$regex:'^'+searchFor};
-            that.filteredFind(item.resource, req, searchDoc, 11, null, function(err, docs) {
+            if (filter) {
+                extend(searchDoc, filter);
+                if (filter[item.field]) {
+                    delete searchDoc[item.field];
+                    var obj1 = {}, obj2 = {};
+                    obj1[item.field] = filter[item.field];
+                    obj2[item.field] = {$regex:'^'+searchFor};
+                    searchDoc['$and'] = [obj1, obj2];
+                } else {
+                    searchDoc[item.field] = {$regex:'^'+searchFor};
+                }
+            } else {
+                searchDoc[item.field] = {$regex:'^'+searchFor};
+            }
+
+            // The +10 in the next line is an arbitrary safety zone for situations where items that match the string
+            // in more than one index get filtered out.
+            // TODO : Figure out a better way to deal with this
+            that.filteredFind(item.resource, req, searchDoc, limit + 10, null, function(err, docs) {
                 if (!err && docs && docs.length > 0) {
                     for (var k = 0; k < docs.length && results.length < limit; k++) {
                         var resultObject = {id:docs[k]._id, text: that.getListFields(item.resource,docs[k])};
-                        if (resourceCount > 1) {resultObject.resource = item.resource.resource_name}
-                        results.push(resultObject);
+                        if (resourceCount > 1) {resultObject.resource = item.resource.resource_name;}
+                        if (_.find(results,function(obj){ return obj.id.id === resultObject.id.id}) === undefined) {
+                            results.push(resultObject);
+                        }
                     }
                     if (results.length === limit) {
                         moreCount += docs.length - k;
@@ -266,23 +294,6 @@ DataForm.prototype.collection = function () {
     }, this);
 };
 
-DataForm.prototype.getSearchParam = function (req) {
-    var findParam = {},
-        options = decodeURIComponent(req._parsedUrl.query).split('&');
-    for (var i = 0; i < options.length; i++) {
-        if (options[i].slice(0, 2).toLowerCase() === 'q=') {
-            if (options[i].slice(2, 1) === '{') {
-                findParam = JSON.parse(options[i].slice(2));
-                break;
-            } else {
-                findParam = options[i].slice(2);
-                break;
-            }
-        }
-    }
-    return findParam;
-};
-
 /**
  * Renders a view with the list of all docs.
  */
@@ -291,7 +302,9 @@ DataForm.prototype.collectionGet = function () {
         if (!req.resource) {
             return next();
         }
-        var findParam = this.getSearchParam(req);
+
+        var url_parts = url.parse(req.url, true);
+        var findParam = url_parts.query.f || {};
         var self = this;
 
         this.filteredFind(req.resource, req, findParam, null, null, function(err, docs) {

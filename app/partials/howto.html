@@ -24,8 +24,8 @@
     <li><strong>/#/:model/:id/edit</strong> which enables the user to edit a document</li>
 </ol>
 
-<p>The first of these supports queries, such as</p>
-<a href="/#/b_using_options?q=%7B%22surname%22:%22Smith%22%7D"><pre>/#/b_using_options?q={"surname":"Smith"}</pre></a>
+<p>The first of these supports filters, such as</p>
+<a href="/#/b_using_options?f=%7B%22surname%22:%22Smith%22%7D"><pre>/#/b_using_options?f={"surname":"Smith"}</pre></a>
 
 <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the fields
     to include and any options.  See the static in <a href="/code/b_using_options.js">this example</a>.
@@ -44,5 +44,9 @@
     <li><strong>/api/schema/:model</strong> returns the schema for a model</li>
     <li><strong>/api/:model</strong> returns an array of all the documents in a model (needs pagination)</li>
     <li><strong>/api/:model/:id</strong> returns a single document from the collection</li>
+    <li><strong>/api/:model/:id/list</strong> returns how a document should appear in a list</li>
+    <li><strong>/api/search/:model?q=string</strong> returns documents in the specified collection where the string is found at the beginning of an indexed field (also supports filter parameter)</li>
+    <li><strong>/api/search?q=string</strong> returns documents where the string is found at the beginning of an indexed field</li>
+    <li><strong>/api/search?q=string&f={<span><em>filterjson</em></span>}</strong> returns documents where the string is found at the beginning of an indexed field which satisfy the conditions in the filter.</li>
 </ol>
 </div>
