@@ -323,7 +323,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
 
         if (!$scope.id && !$scope.newRecord) {
-            var queryString = $routeParams.q ? '?q=' + $routeParams.q : '';
+            var queryString = $routeParams.f ? '?f=' + $routeParams.f : '';
             $http.get('api/' + $scope.modelName + queryString).success(function (data) {
                 $scope.recordList = data;
             }).error(function () {

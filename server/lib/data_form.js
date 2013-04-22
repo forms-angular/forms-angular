@@ -58,7 +58,6 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
         url_parts = url.parse(req.url, true),
         searchFor = url_parts.query.q,
         filter = url_parts.query.f;
-
     if (filter) {filter = JSON.parse(filter)}
 
     for (var i = 0; i < resourceCount; i++) {
@@ -304,7 +303,7 @@ DataForm.prototype.collectionGet = function () {
         }
 
         var url_parts = url.parse(req.url, true);
-        var findParam = url_parts.query.f || {};
+        var findParam = url_parts.query.f ?  JSON.parse(url_parts.query.f) : {};
         var self = this;
 
         this.filteredFind(req.resource, req, findParam, null, null, function(err, docs) {
