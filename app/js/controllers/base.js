@@ -614,7 +614,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         anObject[fieldname] = anObject[fieldname].id;
                     } else {
                         // It may be OK / good to do this on all fields, not just those handled by a select2....
-                        if (anObject[fieldName] === null) {delete anObject[fieldName]}
+                        if (anObject[fieldname] === null) {delete anObject[fieldname]}
                     }
                 }
 
