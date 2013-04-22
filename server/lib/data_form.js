@@ -354,7 +354,8 @@ DataForm.prototype.collectionPost = function () {
 
         doc.save(function (err, doc2) {
             if (err) {
-                res.send(400, {'status': 'err', 'message': err.message});
+                extend(err, {'status': 'err'});
+                res.send(400, err);
             } else {
                 res.send(doc2);
             }
@@ -469,7 +470,8 @@ DataForm.prototype.entityPut = function () {
 
         req.doc.save(function (err, doc2) {
             if (err) {
-                return res.send(400, {'status': 'err', 'message': err.message});
+                extend(err, {'status': 'err'});
+                res.send(400, err);
             } else {
                 return res.send(doc2);
             }

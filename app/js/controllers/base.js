@@ -57,8 +57,22 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         if (mongooseType.instance == 'String') {
             if (mongooseOptions.enum) {
                 formInstructions.type = 'select';
-                formInstructions.options = suffixCleanId(formInstructions, 'Options');
-                $scope[formInstructions.options] = mongooseOptions.enum;
+                if (formInstructions.select2) {
+                    $scope['select2'+formInstructions.name] = {
+                        query: function (query) {
+                            var data = {results: []};
+                            for (var i = 0; i < mongooseOptions.enum.length ; i++) {
+                                data.results.push({id: i, text: mongooseOptions.enum[i]})
+                            }
+                            query.callback(data);
+                        }
+                    };
+                    _.extend($scope['select2'+formInstructions.name], formInstructions.select2);
+                    formInstructions.select2.s2query = 'select2'+formInstructions.name;
+                } else {
+                    formInstructions.options = suffixCleanId(formInstructions, 'Options');
+                    $scope[formInstructions.options] = mongooseOptions.enum;
+                }
             } else if (!formInstructions.type) {
                 // leave specified types as they are - textarea is supported
                 formInstructions.type = 'text';
@@ -68,7 +82,6 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             if (formInstructions.select2 && formInstructions.select2.fngAjax) {
                 // create the instructions for select2
                 $scope['ajax'+formInstructions.name] = {
-                    allowClear: true,
                     minimumInputLength: 2,
                     initSelection : function (element, callback) {
                         $http.get('api/' + mongooseOptions.ref + '/' +element.val() + '/list').success(function (data) {
@@ -97,6 +110,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         }
                     }
                 };
+                _.extend($scope['ajax'+formInstructions.name], formInstructions.select2);
                 formInstructions.select2.fngAjax = 'ajax'+formInstructions.name;
             } else {
                 formInstructions.options = suffixCleanId(formInstructions, 'Options');
@@ -352,6 +366,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
     $scope.cancel = function () {
         $scope.record = angular.copy(master);
+// TODO: Sort all this pristine stuff
 //        if ($scope.myForm) {
 //            console.log('Calling set pristine')
 //            $scope.myForm.$setPristine();
@@ -378,7 +393,27 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
     var handleError = function (data, status) {
         if ([200, 400].indexOf(status) !== -1) {
-            showError(data.message);
+            var errorMessage = '';
+            for (var errorField in data.errors) {
+                if (data.errors.hasOwnProperty(errorField)) {
+                    errorMessage += '<li><b>'+ titleCase(errorField) +': </b> ';
+                    switch (data.errors[errorField].type) {
+                        case 'enum' :
+                            errorMessage += 'You need to select from the list of values';
+                            break;
+                        default:
+                            errorMessage += data.errors[errorField].message;
+                            break;
+                    }
+                   errorMessage += '</li>'
+                }
+            }
+            if (errorMessage.length > 0) {
+                errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
+            } else {
+                errorMessage = data.message;
+            }
+            showError(errorMessage);
         } else {
             showError(status + ' ' + JSON.stringify(data));
         }
@@ -408,7 +443,6 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         $scope.cancel();
                     }
                 } else {
-                    // TODO - Set error class on all fields....
                     showError(data);
                 }
             }).error(handleError);
@@ -422,7 +456,6 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         //                    reset?
                     }
                 } else {
-                    // TODO - Set error class on all fields....
                     showError(data);
                 }
             }).error(handleError)
@@ -576,9 +609,15 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     updateObject(fieldname, anObject, function (value) {
                         return( convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i], 'Options')], idList) );
                     });
-                } else if (schema[i].select2 && schema[i].select2.fngAjax) {
-                    anObject[fieldname] = anObject[fieldname].id;
+                } else if (schema[i].select2) {
+                    if (schema[i].select2.fngAjax) {
+                        anObject[fieldname] = anObject[fieldname].id;
+                    } else {
+                        // It may be OK / good to do this on all fields, not just those handled by a select2....
+                        if (anObject[fieldName] === null) {delete anObject[fieldName]}
+                    }
                 }
+
             }
         }
         return anObject;

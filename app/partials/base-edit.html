@@ -14,7 +14,7 @@
         <div class="span6 offset3 alert alert-error">
             <button type="button" class="close" ng-click="dismissError()">&times;</button>
             <h4>{{alertTitle}}</h4>
-            {{errorMessage}}
+            <div ng-bind-html-unsafe="errorMessage"></div>
         </div>
     </div>
     <div class="row-fluid">
@@ -35,5 +35,3 @@
     <!--Panes-->
     <!--<pre>{{panes}}</pre>-->
 </form>
-
-

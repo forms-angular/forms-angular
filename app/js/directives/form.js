@@ -34,9 +34,11 @@ angular.module('formsAngular.form', [])
                                     value +=   '<input ui-select2="' + fieldInfo.select2.fngAjax +'" ' + focusStr + placeHolder + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
                                     value +=   '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
                                     value += '</div>';
+                                } else if (fieldInfo.select2) {
+                                    value = '<input ui-select2="'+ fieldInfo.select2.s2query +'" ' + focusStr + placeHolder + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
                                 } else {
-                                    value = '<select ui-select2="'+ fieldInfo.select2 +'" ' + focusStr + placeHolder + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
-                                    value += '<option></option>';
+                                    value = '<select ' + focusStr + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '">';
+                                    if (!isRequired) { value += '<option></option>';}
                                     value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                                     value += '</select>';
                                 }
