@@ -107,6 +107,10 @@
     border-color:#B94A48;
 }
 
+.form-horizontal .control-group.fng-invalid-required .select2-container .select2-choice {
+    background-color: rgba(255, 0, 0, 0.10);
+}
+
 .form-horizontal .select2-container-multi .select2-choices .select2-search-field {
     height:28px;
     line-height: 27px;

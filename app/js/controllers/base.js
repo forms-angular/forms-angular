@@ -58,6 +58,16 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             if (mongooseOptions.enum) {
                 formInstructions.type = 'select';
                 if (formInstructions.select2) {
+                    // Hacky way to get required styling working on select2 controls
+                    if (mongooseOptions.required) {
+                        $scope.$watch('record.'+formInstructions.name, function (newValue, oldValue) {
+                            if (newValue) {
+                                $('#cg_'+formInstructions.id).removeClass('fng-invalid-required');
+                            } else {
+                                $('#cg_'+formInstructions.id).addClass('fng-invalid-required');
+                            }
+                        }, true);
+                    }
                     $scope['select2'+formInstructions.name] = {
                         query: function (query) {
                             var data = {results: []};
