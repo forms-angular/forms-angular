@@ -1755,14 +1755,14 @@
         while (element.length) {
             if (value = element.data(name)) return value;
 
-//    element = element.parent();
+    element = element.parent();
 
-            var par = element.parent();
-            if (par.length === 0 && element[0].parentNode && element[0].parentNode.nodeName === "#document-fragment") {
-                element = jqLite(element[0].parentNode.ownerDocument.forms[0]);
-            } else {
-                element = element.parent();
-            }
+//            var par = element.parent();
+//            if (par.length === 0 && element[0].parentNode && element[0].parentNode.nodeName === "#document-fragment") {
+//                element = jqLite(element[0].parentNode.ownerDocument.forms[0]);
+//            } else {
+//                element = element.parent();
+//            }
 
         }
     }
