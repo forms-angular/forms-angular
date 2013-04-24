@@ -6,6 +6,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     $scope.listSchema = [];
     $scope.recordList = [];
     $scope.dataDependencies = {};
+    $scope.select2List = [];
     // Process RouteParams / Location
     $scope.location = $location.$$path.split('/');
     var locationParts = $scope.location.length;
@@ -79,6 +80,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     };
                     _.extend($scope['select2'+formInstructions.name], formInstructions.select2);
                     formInstructions.select2.s2query = 'select2'+formInstructions.name;
+                    $scope.select2List.push(formInstructions.name)
                 } else {
                     formInstructions.options = suffixCleanId(formInstructions, 'Options');
                     $scope[formInstructions.options] = mongooseOptions.enum;
@@ -89,6 +91,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             }
         } else if (mongooseType.instance == 'ObjectID') {
             formInstructions.type = 'select';
+            if (formInstructions.select2) {$scope.select2List.push(formInstructions.name)}
             if (formInstructions.select2 && formInstructions.select2.fngAjax) {
                 // create the instructions for select2
                 $scope['ajax'+formInstructions.name] = {
@@ -196,7 +199,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
         function evaluateSide(side) {
             var result = side;
             if (typeof side === "string" && side.slice(0, 1) === '$') {
-                result = data[side.slice(1)]
+                result = $scope.getListData(data, side.slice(1))
             }
             return result;
         }
@@ -256,7 +259,13 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                 record = record[nests[i]];
             }
         }
-        return record === undefined ? "" : record;
+        if (record && $scope.select2List.indexOf(nests[i-1]) !== -1) {
+            record = record.text;
+        }
+        if (record === undefined) {
+            record = "";
+        }
+        return record;
     };
 
     $scope.updateDataDependentDisplay = function (curValue, oldValue, force) {
@@ -586,6 +595,8 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                 var idList = $scope[suffixCleanId(schema[i], '_ids')];
                 if (idList && idList.length > 0 && anObject[fieldname]) {
                     anObject[fieldname] = convertForeignKeys(schema[i], anObject[fieldname], $scope[suffixCleanId(schema[i], 'Options')], idList);
+                } else if (schema[i].select2 && !schema[i].select2.fngAjax) {
+                    anObject[fieldname] = {id: -1, text: anObject[fieldname]};
                 }
             }
         }
@@ -624,7 +635,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         anObject[fieldname] = anObject[fieldname].id;
                     } else {
                         // It may be OK / good to do this on all fields, not just those handled by a select2....
-                        if (anObject[fieldname] === null) {delete anObject[fieldname]}
+                        if (anObject[fieldname] === null) {
+                            delete anObject[fieldname]
+                        } else {
+                            anObject[fieldname] = anObject[fieldname].text;
+                        }
                     }
                 }
 
