@@ -71,9 +71,12 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                     }
                     $scope['select2'+formInstructions.name] = {
                         query: function (query) {
-                            var data = {results: []};
+                            var data = {results: []},
+                                searchString = query.term.toUpperCase();
                             for (var i = 0; i < mongooseOptions.enum.length ; i++) {
-                                data.results.push({id: i, text: mongooseOptions.enum[i]})
+                                if (mongooseOptions.enum[i].toUpperCase().indexOf(searchString) !== -1) {
+                                    data.results.push({id: i, text: mongooseOptions.enum[i]})
+                                }
                             }
                             query.callback(data);
                         }
