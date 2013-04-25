@@ -97,13 +97,13 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                     delete searchDoc[item.field];
                     var obj1 = {}, obj2 = {};
                     obj1[item.field] = filter[item.field];
-                    obj2[item.field] = {$regex:'^'+searchFor};
+                    obj2[item.field] = {$regex:'^'+searchFor, $options: 'i'};
                     searchDoc['$and'] = [obj1, obj2];
                 } else {
-                    searchDoc[item.field] = {$regex:'^'+searchFor};
+                    searchDoc[item.field] = {$regex:'^'+searchFor, $options: 'i'};
                 }
             } else {
-                searchDoc[item.field] = {$regex:'^'+searchFor};
+                searchDoc[item.field] = {$regex:'^'+searchFor, $options: 'i'};
             }
 
             // The +10 in the next line is an arbitrary safety zone for situations where items that match the string

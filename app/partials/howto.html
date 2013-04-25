@@ -45,7 +45,7 @@
     <li><strong>/api/:model</strong> returns an array of all the documents in a model (needs pagination)</li>
     <li><strong>/api/:model/:id</strong> returns a single document from the collection</li>
     <li><strong>/api/:model/:id/list</strong> returns how a document should appear in a list</li>
-    <li><strong>/api/search/:model?q=string</strong> returns documents in the specified collection where the string is found at the beginning of an indexed field (also supports filter parameter)</li>
+    <li><strong>/api/search/:model?q=string</strong> returns documents in the specified collection where the string is found at the beginning of an indexed field.  Note that the search is case insensitive, so will be inefficient (and to be avoided on large datasets) until Mongo 2.5 comes out.  (See issue <a href="https://jira.mongodb.org/browse/SERVER-90" target="_blank">here</a>)</li>
     <li><strong>/api/search?q=string</strong> returns documents where the string is found at the beginning of an indexed field</li>
     <li><strong>/api/search?q=string&f={<span><em>filterjson</em></span>}</strong> returns documents where the string is found at the beginning of an indexed field which satisfy the conditions in the filter.</li>
 </ol>
