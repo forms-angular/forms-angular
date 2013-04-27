@@ -199,6 +199,8 @@ DataForm.prototype.addResource = function (resource_name, model, options) {
         }
     }
 
+    resource.options.hide = this.preprocess(resource.model.schema.paths, null).hidden;
+
     this.resources.push(resource);
 };
 
@@ -217,12 +219,15 @@ DataForm.prototype.redirect = function (address, req, res) {
 };
 
 DataForm.prototype.preprocess = function (paths, formSchema) {
-    var outPath = {};
+    var outPath = {},
+        hiddenFields = [];
     for (var element in paths) {
         if (paths.hasOwnProperty(element)) {
             // check for schemas
             if (paths[element].schema) {
-                outPath[element] = {schema: this.preprocess(paths[element].schema.paths)};
+                var subSchemaInfo = this.preprocess(paths[element].schema.paths);
+                outPath[element] = {schema: subSchemaInfo.paths};
+//                hiddenFields = _.
                 if (paths[element].options.form) {
                     outPath[element].options = {form: extend(true, {}, paths[element].options.form)};
                 }
@@ -243,6 +248,9 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
                     }
                 }
                 outPath[element] = extend(true, {}, paths[element]);
+                if (paths[element].options.secure) {
+                    hiddenFields.push(element);
+                }
             }
         }
     }
@@ -264,7 +272,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
             }
         }
     }
-    return outPath;
+    return {paths:outPath, hidden:hiddenFields};
 };
 
 DataForm.prototype.schema = function () {
@@ -276,7 +284,7 @@ DataForm.prototype.schema = function () {
         if (req.params.formName) {
             formSchema = req.resource.model.schema.statics['form'](req.params.formName)
         }
-        var paths = this.preprocess(req.resource.model.schema.paths, formSchema);
+        var paths = this.preprocess(req.resource.model.schema.paths, formSchema).paths;
         res.send(JSON.stringify(paths));
     }, this);
 };
@@ -380,7 +388,7 @@ DataForm.prototype.generateHiddenFields = function (resource) {
 
 
 /** Sec issue
- * Epure incoming data to avoid overwritte and POST request forgery
+ * Epure incoming data to avoid overwrite and POST request forgery
  */
 DataForm.prototype.epureRequest = function (req_data, resource) {
 
