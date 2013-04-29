@@ -11,7 +11,8 @@ describe('Base edit form', function() {
     it('should display an error message if field level validation fails', function() {
         browser().navigateTo('/#/b_using_options/new');
         input('record.surname').enter('Smith');
-        input('record.eyeColour').enter('Blue');
+        element('#saveButton').click();
+        expect( element('.alert-error').text()).toMatch(/Accepted/);
         input('record.accepted').check();
         input('record.freeText').enter('this is a rude word');
         element('#saveButton').click();

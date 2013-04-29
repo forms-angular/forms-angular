@@ -70,6 +70,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         }, true);
                     }
                     $scope['select2'+formInstructions.name] = {
+                        allowClear: !mongooseOptions.required,
                         query: function (query) {
                             var data = {results: []},
                                 searchString = query.term.toUpperCase();
@@ -98,6 +99,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             if (formInstructions.select2 && formInstructions.select2.fngAjax) {
                 // create the instructions for select2
                 $scope['ajax'+formInstructions.name] = {
+                    allowClear: !mongooseOptions.required,
                     minimumInputLength: 2,
                     initSelection : function (element, callback) {
                         $http.get('api/' + mongooseOptions.ref + '/' +element.val() + '/list').success(function (data) {

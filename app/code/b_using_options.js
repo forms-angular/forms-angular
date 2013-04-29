@@ -24,7 +24,7 @@ var BSchema = new Schema({
 
     weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
 
-    eyeColour: {type: String, enum:['Blue','Brown','Green','Hazel'], required: true, form:{placeHolder:"Select eye colour", select2: {}}},  // Placeholders work in a combo box
+    eyeColour: {type: String, enum:['Blue','Brown','Green','Hazel'], required: false, form:{placeHolder:"Select eye colour", select2: {}}},  // Placeholders work in a combo box
 
     dateOfBirth: Date,
     accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control

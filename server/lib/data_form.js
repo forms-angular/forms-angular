@@ -290,6 +290,23 @@ DataForm.prototype.schema = function () {
     }, this);
 };
 
+DataForm.prototype.saveAndRespond = function(doc, res) {
+    // There _must_ be a better way of doing this.  Feel free to tell me (ideally with a pull request)
+    doc.save(function (err, doc2) {
+        if (err) {
+            var err2 = {status: 'err'};
+            if (!err.errors) {
+                err2.message = err.message;
+            } else {
+                extend(err2, err);
+            }
+            res.send(400, err2);
+        } else {
+            res.send(doc2);
+        }
+    });
+};
+
 /**
  * All entities REST functions have to go through this first.
  */
@@ -361,15 +378,7 @@ DataForm.prototype.collectionPost = function () {
         var epured_body = this.epureRequest(req.body, req.resource);
         var doc = new req.resource.model(epured_body);
 
-        doc.save(function (err, doc2) {
-            if (err) {
-                if (debug) {console.log("Error in save() : "+JSON.stringify(err))}
-                extend(err, {'status': 'err'});
-                res.send(400, err);
-            } else {
-                res.send(doc2);
-            }
-        });
+        this.saveAndRespond(doc,res);
     }, this);
 };
 
@@ -478,16 +487,7 @@ DataForm.prototype.entityPut = function () {
             req.doc[name] = value;
         });
 
-        req.doc.save(function (err, doc2) {
-            if (err) {
-                if (debug) {console.log("Error in save() : "+JSON.stringify(err))}
-                extend(err, {'status': 'err'});
-                res.send(400, err);
-            } else {
-                return res.send(doc2);
-            }
-        });
-
+        this.saveAndRespond(req.doc, res);
     }, this);
 };
 
