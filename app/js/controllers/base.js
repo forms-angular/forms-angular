@@ -433,7 +433,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             if (errorMessage.length > 0) {
                 errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
             } else {
-                errorMessage = data.message;
+                errorMessage = data.message || "Error!  Sorry - No further details available.";
             }
             showError(errorMessage);
         } else {
