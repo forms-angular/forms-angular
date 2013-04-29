@@ -12,9 +12,10 @@ mongoose.set('debug',debug);
 
 
 function logTheAPICalls (req, res, next) {
-    console.log('API     : ' + req.method + ' ' + req.url);
+    console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
     next();
 }
+
 
 function processArgs(options, array) {
     if (options.authentication) {
