@@ -6,7 +6,7 @@ var _ = require('underscore'),
     async = require('async'),
     url = require('url'),
     mongoose = require('mongoose'),
-    debug = true;
+    debug = false;
 
 mongoose.set('debug',debug);
 
@@ -300,6 +300,7 @@ DataForm.prototype.saveAndRespond = function(doc, res) {
             } else {
                 extend(err2, err);
             }
+            if (debug) { console.log('Error saving record: ' + JSON.stringify(err2))}
             res.send(400, err2);
         } else {
             res.send(doc2);

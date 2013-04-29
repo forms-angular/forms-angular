@@ -4,8 +4,8 @@ var Schema = mongoose.Schema;
 var BSchema = new Schema({
     surname: {type:String,required:true,index:true,list:{}}, // this field appears in a listing and the default edit form header
     forename:  {type: String, list:true, index:true},        // this field appears in a listing and the default edit form header
-    login: {type: String, secure:true},                      // secure prevents the data from being sent by the API
-    passwordHash: {type: String, secure:true},
+    login: {type: String, secure:true, form:{hidden:true}},  // secure prevents the data from being sent by the API, hidden from being shown on the default form
+    passwordHash: {type: String, secure:true, form:{hidden:true}},
     address: {
         line1: {type: String, form:{label: 'Address'}},      // this label overrides the one generated from the field name
         line2: {type: String, form:{label: null}},           // null label - gives a blank label
@@ -13,7 +13,7 @@ var BSchema = new Schema({
         town: {type: String, form:{label: 'Town', placeHolder: "Post town"}},          // You can specify place holders
         postcode: {type: String, form:{label: 'Postcode', help:'Enter your postcode or zip code'}},  // help displays on the line under the control
         country: {type: String, form:{label:"Country", hidden:true}},
-        surveillance: {type: Boolean, secure:true}
+        surveillance: {type: Boolean, secure:true, form:{hidden:true}}
     },
 
     // The email field is indexed, but the noSearch property means the index is not used in the searchBox searches
