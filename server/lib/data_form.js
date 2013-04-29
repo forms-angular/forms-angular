@@ -363,6 +363,7 @@ DataForm.prototype.collectionPost = function () {
 
         doc.save(function (err, doc2) {
             if (err) {
+                if (debug) {console.log("Error in save() : "+JSON.stringify(err))}
                 extend(err, {'status': 'err'});
                 res.send(400, err);
             } else {
@@ -479,6 +480,7 @@ DataForm.prototype.entityPut = function () {
 
         req.doc.save(function (err, doc2) {
             if (err) {
+                if (debug) {console.log("Error in save() : "+JSON.stringify(err))}
                 extend(err, {'status': 'err'});
                 res.send(400, err);
             } else {
