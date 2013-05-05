@@ -46,6 +46,8 @@
 
 .global-search {
     position : relative;
+    float: right;
+    width: 600px;
 }
 
 .search-results {
