@@ -44,13 +44,17 @@
     background-color: rgba(255, 0, 0, 0.10);
 }
 
+.global-search {
+    position : relative;
+}
+
 .search-results {
     z-index: 3;
     border: 1px solid gray;
     position: absolute;
-    top: 45px;
-    display: inline-block;
-    right: 152px;
+    top: 41px;
+    display: absolute;
+    right: 0;
     -webkit-box-shadow: 10px 10px 10px #888;
     box-shadow: 10px 10px 10px #888;
     background: white;

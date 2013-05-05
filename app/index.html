@@ -59,14 +59,16 @@
             <a class="brand" href="/">Home</a>
         </div>
         <div class="span9">
-            <form class="navbar-search pull-right">
-                <div id="search-cg" class="control-group" ng-class="errorClass">
-                    <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
+            <div class="global-search">
+                <form class="navbar-search pull-right">
+                    <div id="search-cg" class="control-group" ng-class="errorClass">
+                        <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
+                    </div>
+                </form>
+                <div class="search-results" ng-show="results.length >= 1">
+                    <div ng-repeat="result in results"><a href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.text}}</a></div>
+                    <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
                 </div>
-            </form>
-            <div class="search-results" ng-show="results.length >= 1">
-                <div ng-repeat="result in results"><a href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.text}}</a></div>
-                <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
             </div>
         </div>
     </div>
