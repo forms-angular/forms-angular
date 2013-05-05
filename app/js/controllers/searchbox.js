@@ -5,13 +5,12 @@ var searchCtrl = function ($scope, $http, $location) {
 
     $scope.$watch('searchTarget', function(newValue) {
         if (newValue && newValue.length > 0) {
-            console.log(newValue);
             $http.get('api/search?q=' + newValue).success(function (data) {
                 $scope.results = data.results;
                 $scope.moreCount = data.moreCount;
                 $scope.errorClass = $scope.results.length === 0 ? "error" : "";
             }).error(function () {
-                console.log("an error happened");
+                console.log("Error in searchbox.js");
             });
         } else {
             $scope.errorClass = "";
