@@ -50,6 +50,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
     var handleFieldType = function (formInstructions, mongooseType, mongooseOptions) {
 
+        var select2ajaxName;
         if (mongooseType.caster) {
             formInstructions.array = true;
             mongooseType = mongooseType.caster;
@@ -98,7 +99,8 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             if (formInstructions.select2) {$scope.select2List.push(formInstructions.name)}
             if (formInstructions.select2 && formInstructions.select2.fngAjax) {
                 // create the instructions for select2
-                $scope['ajax'+formInstructions.name] = {
+                select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g,'');
+                $scope[select2ajaxName] = {
                     allowClear: !mongooseOptions.required,
                     minimumInputLength: 2,
                     initSelection : function (element, callback) {
@@ -128,8 +130,8 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
                         }
                     }
                 };
-                _.extend($scope['ajax'+formInstructions.name], formInstructions.select2);
-                formInstructions.select2.fngAjax = 'ajax'+formInstructions.name;
+                _.extend($scope[select2ajaxName], formInstructions.select2);
+                formInstructions.select2.fngAjax = select2ajaxName;
             } else {
                 formInstructions.options = suffixCleanId(formInstructions, 'Options');
                 formInstructions.ids = suffixCleanId(formInstructions, '_ids');
