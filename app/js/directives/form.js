@@ -18,7 +18,7 @@ angular.module('formsAngular.form', [])
                                     modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$parent.$index + '.' + compoundName.slice(lastPartStart + 1);
                                     idString = modelString.replace(/\./g, '-')
                                 } else {
-                                    modelString = 'record.' + fieldInfo.name;
+                                    modelString = (attrs.model || 'record') + '.' + fieldInfo.name;
                                     if (scope.$index === 0) {
                                         focusStr = "autofocus ";
                                     }
