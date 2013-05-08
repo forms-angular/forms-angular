@@ -2,7 +2,7 @@
 
 /* App Module */
 
-var services = ['ui','formsAngular.form','ui.bootstrap.tabs','formsAngular.bespokeform'];
+var services = ['ui','formsAngular.form','ui.bootstrap.tabs','formsAngular.bespokeform','titleCaseFilter'];
 
 var myApp = angular.module('myApp', services).
     config(['$routeProvider', function($routeProvider) {

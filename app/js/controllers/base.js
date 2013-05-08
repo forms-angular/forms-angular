@@ -1,4 +1,4 @@
-var BaseCtrl = function ($scope, $routeParams, $location, $http) {
+var BaseCtrl = function ($scope, $routeParams, $location, $http, $filter) {
     var master = {};
     $scope.record = {};
     $scope.formSchema = [];
@@ -36,13 +36,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
 
-    var titleCase = function (str) {
-        return str.replace(/_/g, ' ').replace(/[A-Z]/g, ' $&').replace(/\w\S*/g, function (txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
-    };
-
-    $scope.modelNameDisplay = titleCase($scope.modelName);
+    $scope.modelNameDisplay = $filter('titleCase')($scope.modelName);
 
     var suffixCleanId = function (inst, suffix) {
         return inst.id.replace(/\./g, '_') + suffix;
@@ -156,7 +150,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
     var basicInstructions = function (field, formData, prefix) {
         formData.name = prefix + field;
         formData.id = formData.id || 'f_' + prefix + field;
-        formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || titleCase(field));
+        formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || $filter('titleCase')(field));
         return formData;
     };
 
@@ -422,7 +416,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http) {
             var errorMessage = '';
             for (var errorField in data.errors) {
                 if (data.errors.hasOwnProperty(errorField)) {
-                    errorMessage += '<li><b>'+ titleCase(errorField) +': </b> ';
+                    errorMessage += '<li><b>'+ $filter('titleCase')(errorField) +': </b> ';
                     switch (data.errors[errorField].type) {
                         case 'enum' :
                             errorMessage += 'You need to select from the list of values';

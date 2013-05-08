@@ -2,6 +2,10 @@ describe('BaseCtrl', function(){
 
     var $httpBackend;
 
+    beforeEach(function() {
+        module('titleCaseFilter');
+    })
+
     afterEach(function() {
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
