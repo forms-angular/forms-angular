@@ -4,17 +4,11 @@ BASE_DIR=`dirname $0`
 if [ $1 ]; then
 	if [ -d $BASE_DIR/../../$1 ]; then
 
-		# Upgrade these files
-	    cp $BASE_DIR/../app/js/forms-angular.js $BASE_DIR/../../$1/app/js/forms-angular.js
-	    cp $BASE_DIR/../app/js/controllers/base.js $BASE_DIR/../../$1/app/js/controllers/base.js
-	    cp $BASE_DIR/../app/js/controllers/model.js $BASE_DIR/../../$1/app/js/controllers/model.js
-	    cp $BASE_DIR/../app/js/controllers/searchbox.js $BASE_DIR/../../$1/app/js/controllers/searchbox.js
-Don't forget NAV stuff
+		grunt
 
-	    cp $BASE_DIR/../app/js/directives/form.js $BASE_DIR/../../$1/app/js/directives/form.js
-	    cp $BASE_DIR/../app/js/filters/titlecase.js $BASE_DIR/../../$1/app/js/filters/titlecase.js
-	    cp $BASE_DIR/../app/lib/angular/angular.js $BASE_DIR/../../$1/app/lib/angular/angular.js
-	    cp $BASE_DIR/../app/css/forms-ng.css $BASE_DIR/../../$1/app/css/forms-ng.css
+	    cp $BASE_DIR/../js-build/forms-angular.min.js $BASE_DIR/../../$1/app/lib/forms-angular.min.js
+
+	    cp $BASE_DIR/../app/css/forms-angular.css $BASE_DIR/../../$1/app/css/forms-angular.css
 	    cp $BASE_DIR/../app/partials/base-edit.html $BASE_DIR/../../$1/app/partials/base-edit.html
 	    cp $BASE_DIR/../app/partials/base-list.html $BASE_DIR/../../$1/app/partials/base-list.html
 	    cp $BASE_DIR/../server/lib/data_form.js $BASE_DIR/../../$1/server/lib/data_form.js
@@ -24,8 +18,6 @@ Don't forget NAV stuff
 	    echo Set up the main Angular.js file based on the following:
 	    echo ""
 	    cat $BASE_DIR/../app/js/demo.js
-	    echo ""
-	    echo Check you are using correct version of tabs.js if you are using panes lib/angular-ui/bootstrap
 	    echo ""
 	else
         echo ""

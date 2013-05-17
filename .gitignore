@@ -40,6 +40,8 @@ app/lib/angular/docs
 app/lib/angular/i18n
 app/lib/angular.1.0
 
+js-build/forms-angular.js
+
 .vagrant
 Vagrantfile
 

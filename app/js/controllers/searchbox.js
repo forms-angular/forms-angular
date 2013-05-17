@@ -1,4 +1,4 @@
-formsAngular.controller('searchCtrl', function ($scope, $http, $location) {
+formsAngular.controller('searchCtrl', ['$scope', '$http', function ($scope, $http) {
 
     $scope.results = [];
     $scope.moreCount = 0;
@@ -22,4 +22,4 @@ formsAngular.controller('searchCtrl', function ($scope, $http, $location) {
         $scope.searchTarget = '';
     });
 
-});
+}]);

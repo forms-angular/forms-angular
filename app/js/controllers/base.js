@@ -1,4 +1,4 @@
-formsAngular.controller('BaseCtrl', function ($scope, $routeParams, $location, $http, $filter) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', function ($scope, $routeParams, $location, $http, $filter) {
     var master = {};
     $scope.record = {};
     $scope.formSchema = [];
@@ -743,4 +743,4 @@ formsAngular.controller('BaseCtrl', function ($scope, $routeParams, $location, $
         $('#' + $(ev.currentTarget).data('select2-open')).select2('open')
     };
 
-});
+}]);

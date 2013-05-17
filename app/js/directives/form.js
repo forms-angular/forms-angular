@@ -1,5 +1,5 @@
 formsAngular
-    .directive('formInput', function ($compile) {
+    .directive('formInput', ['$compile', function ($compile) {
         return {
             restrict: 'E',
             replace: true,
@@ -123,7 +123,7 @@ formsAngular
                         var info = JSON.parse(attrs.info);
                         if (info.directive) {
                             var newElement = '<' + info.directive;
-                            thisElement = element[0];
+                            var thisElement = element[0];
                             for (var i = 0; i < thisElement.attributes.length; i++) {
                                 var thisAttr = thisElement.attributes[i];
                                 switch (thisAttr.nodeName) {
@@ -159,9 +159,9 @@ formsAngular
                 };
             }
         };
-    })
+    }])
 
-    .directive('formButtons', function ($compile) {
+    .directive('formButtons', ['$compile', function ($compile) {
         return {
             restrict: 'A',
             compile: function () {
@@ -182,10 +182,10 @@ formsAngular
                 }
             }
         }
-    })
+    }])
 
 // Directive to handle subdocs.  Mostly a copy of ng-repeat, but needed to simplify it a bit to make it work
-    .directive('ngSubdocRepeat', function () {
+    .directive('ngSubdocRepeat', [function () {
         return {
             transclude: 'element',
             priority: 1000,
@@ -291,5 +291,5 @@ formsAngular
                 };
             }
         }
-    });
+    }]);
 

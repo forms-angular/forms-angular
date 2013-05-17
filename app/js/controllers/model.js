@@ -1,4 +1,4 @@
-formsAngular.controller('ModelCtrl', function ($scope, $http, $location) {
+formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', function ($scope, $http, $location) {
 
     $scope.models = [];
     $http.get('api/models').success(function (data) {
@@ -7,4 +7,4 @@ formsAngular.controller('ModelCtrl', function ($scope, $http, $location) {
             $location.path("/404");
     });
 
-});
+}]);
