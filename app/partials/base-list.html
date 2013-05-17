@@ -19,8 +19,8 @@
         </div>
     </div>
     <div class="row-fluid">
-        <a ng-repeat="record in recordList | filter:recordFilter" href="/#/{{modelName}}/{{formPlusSlash}}{{record['_id']}}/edit">
-            <div class="well well-small">
+        <a ng-repeat="record in recordList | filter:recordFilter" ng-href="/#/{{modelName}}/{{formPlusSlash}}{{record['_id']}}/edit">
+            <div class="well well-small baselist">
                 <div class="span{{12/listSchema.length}}" ng-repeat="field in listSchema">{{getListData(record, field.name)}} </div>
             </div>
         </a>
