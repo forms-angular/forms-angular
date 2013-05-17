@@ -56,7 +56,7 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http, $filter) {
                 if (formInstructions.select2) {
                     // Hacky way to get required styling working on select2 controls
                     if (mongooseOptions.required) {
-                        $scope.$watch('record.'+formInstructions.name, function (newValue, oldValue) {
+                        $scope.$watch('record.'+formInstructions.name, function (newValue) {
                             if (newValue) {
                                 $('#cg_'+formInstructions.id).removeClass('fng-invalid-required');
                             } else {
@@ -503,9 +503,11 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http, $filter) {
     };
 
     $scope.disabledText = function (localStyling) {
+        var text = "";
         if ($scope.isSaveDisabled) {
-            return "This button is only enabled when the form is complete and valid.  Make sure all required inputs are filled in. " + localStyling
+            text = "This button is only enabled when the form is complete and valid.  Make sure all required inputs are filled in. " + localStyling
         }
+        return text;
     };
 
     $scope.add = function (elementInfo) {
@@ -707,17 +709,19 @@ var BaseCtrl = function ($scope, $routeParams, $location, $http, $filter) {
             var listInstructions = [];
             handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
             $http.get('api/' + lookupCollection, {cache: false}).success(function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    var option = '';
-                    for (var j = 0; j < listInstructions.length; j++) {
-                        option += data[i][listInstructions[j].name] + ' ';
+                if (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        var option = '';
+                        for (var j = 0; j < listInstructions.length; j++) {
+                            option += data[i][listInstructions[j].name] + ' ';
+                        }
+                        option = option.trim();
+                        var pos = _.sortedIndex(optionsList, option);
+                        optionsList.splice(pos, 0, option);
+                        idList.splice(pos, 0, data[i]._id);
                     }
-                    option = option.trim();
-                    var pos = _.sortedIndex(optionsList, option);
-                    optionsList.splice(pos, 0, option);
-                    idList.splice(pos, 0, data[i]._id);
+                    updateRecordWithLookupValues(schemaElement);
                 }
-                updateRecordWithLookupValues(schemaElement);
             })
         })
     };
