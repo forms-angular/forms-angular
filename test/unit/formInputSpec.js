@@ -2,7 +2,7 @@ describe('formInput', function () {
     var elm, scope;
 
     // load the form code
-    beforeEach(module('formsAngular.form','formsAngular.bespokeform'));
+    beforeEach(module('formsAngular','myDemoApp'));
 
     describe('simple text input', function () {
 

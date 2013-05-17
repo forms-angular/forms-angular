@@ -1,6 +1,4 @@
-angular.module('formsAngular.bespokeform', [])
-
-    .directive('emailField', function ($compile) {
+myDemoApp.directive('emailField', function ($compile) {
         return {
             restrict: 'E',
             replace: true,
@@ -26,5 +24,5 @@ angular.module('formsAngular.bespokeform', [])
                 };
             }
         };
-    })
+    });
 

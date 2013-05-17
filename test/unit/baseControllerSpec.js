@@ -1,10 +1,10 @@
-describe('BaseCtrl', function(){
+describe('"BaseCtrl"', function(){
 
     var $httpBackend;
 
     beforeEach(function() {
-        module('titleCaseFilter');
-    })
+        module('formsAngular');
+    });
 
     afterEach(function() {
         $httpBackend.verifyNoOutstandingExpectation();
@@ -20,7 +20,7 @@ describe('BaseCtrl', function(){
                 $routeParams.model = 'collection';
                 scope = $rootScope.$new();
                 scope.newRecord = true;
-                ctrl = $controller(BaseCtrl, {$scope: scope});
+                ctrl = $controller("BaseCtrl", {$scope: scope});
                 $httpBackend.flush();
             });
             expect(scope.formSchema.length).toBe(1);
@@ -32,7 +32,7 @@ describe('BaseCtrl', function(){
                 $httpBackend.when('GET','api/schema/collection').respond(function() {return [404,'Some error',{}]});
                 $routeParams.model = 'collection';
                 scope = $rootScope.$new();
-                ctrl = $controller(BaseCtrl, {$scope: scope});
+                ctrl = $controller("BaseCtrl", {$scope: scope});
                 $httpBackend.flush();
                 expect($location.path()).toBe('/404');
             });
@@ -44,7 +44,7 @@ describe('BaseCtrl', function(){
                 _$location_.path('/someModel/new');
                 $httpBackend.when('GET','api/schema/someModel').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                 scope = $rootScope.$new();
-                ctrl = $controller(BaseCtrl, {$scope: scope, $location:_$location_});
+                ctrl = $controller("BaseCtrl", {$scope: scope, $location:_$location_});
                 $httpBackend.flush();
             });
         });
@@ -62,7 +62,7 @@ describe('BaseCtrl', function(){
             $routeParams.model = 'collection';
             scope = $rootScope.$new();
             scope.newRecord = true;
-            ctrl = $controller(BaseCtrl, {$scope: scope});
+            ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
 
@@ -111,7 +111,7 @@ describe('BaseCtrl', function(){
             $routeParams.model = 'collection';
             $routeParams.id = 3;
             scope = $rootScope.$new();
-            ctrl = $controller(BaseCtrl, {$scope: scope});
+            ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
 
@@ -141,7 +141,7 @@ describe('BaseCtrl', function(){
             $routeParams.model = 'collection';
             scope = $rootScope.$new();
             scope.newRecord = true;
-            ctrl = $controller(BaseCtrl, {$scope: scope});
+            ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
 
@@ -175,7 +175,7 @@ describe('BaseCtrl', function(){
             $routeParams.model = 'collection';
             scope = $rootScope.$new();
             scope.newRecord = true;
-            ctrl = $controller(BaseCtrl, {$scope: scope});
+            ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
 
@@ -204,7 +204,7 @@ describe('BaseCtrl', function(){
             $routeParams.model = 'collection';
             scope = $rootScope.$new();
             scope.newRecord = true;
-            ctrl = $controller(BaseCtrl, {$scope: scope});
+            ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
 
@@ -251,7 +251,7 @@ describe('BaseCtrl', function(){
             $routeParams.model = 'collection';
             $routeParams.id = 3;
             scope = $rootScope.$new();
-            ctrl = $controller(BaseCtrl, {$scope: scope});
+            ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
 
@@ -326,7 +326,7 @@ describe('BaseCtrl', function(){
             $routeParams.model = 'collection';
             $routeParams.id = 3;
             scope = $rootScope.$new();
-            ctrl = $controller(BaseCtrl, {$scope: scope});
+            ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
 
@@ -473,7 +473,7 @@ describe('BaseCtrl', function(){
             $routeParams.model = 'person';
             scope = $rootScope.$new();
             scope.newRecord = true;
-            ctrl = $controller(BaseCtrl, {$scope: scope});
+            ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
 
@@ -499,7 +499,7 @@ describe('BaseCtrl', function(){
                 $routeParams.model = 'collection';
                 scope = $rootScope.$new();
                 scope.newRecord = true;
-                ctrl = $controller(BaseCtrl, {$scope: scope});
+                ctrl = $controller("BaseCtrl", {$scope: scope});
                 scope.record = {"familyName":"Chapman", "givenName":"Mark"};
                 $httpBackend.when('POST','api/collection', {"familyName":"Chapman", "givenName":"Mark"}).respond(400,{message: "There is some kind of error",status: "err"});
                 scope.save();
@@ -520,7 +520,7 @@ describe('BaseCtrl', function(){
                 $routeParams.model = 'collection';
                 scope = $rootScope.$new();
                 scope.newRecord = true;
-                ctrl = $controller(BaseCtrl, {$scope: scope});
+                ctrl = $controller("BaseCtrl", {$scope: scope});
                 $httpBackend.flush();
             });
 
@@ -559,7 +559,7 @@ describe('BaseCtrl', function(){
 //            $routeParams.model = 'collection';
 //            $routeParams.id = '51002970cfc2850222000005';
 //            scope = $rootScope.$new();
-//            ctrl = $controller(BaseCtrl, {$scope: scope});
+//            ctrl = $controller("BaseCtrl", {$scope: scope});
 //
 //            $httpBackend.flush();
 //

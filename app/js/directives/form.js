@@ -1,4 +1,4 @@
-angular.module('formsAngular.form', [])
+formsAngular
     .directive('formInput', function ($compile) {
         return {
             restrict: 'E',

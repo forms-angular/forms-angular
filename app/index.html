@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="myApp">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>forms-angular</title>
@@ -19,14 +19,15 @@
     <script src="lib/select2/select2.js"></script>
     <link rel="stylesheet" href="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.css">
 
+    <script src="js/demo.js"></script>
+    <script src="js/directives/bespoke-field.js"></script>
+
+    <script src="js/forms-angular.js"></script>
     <script src="js/controllers/base.js"></script>
     <script src="js/controllers/model.js"></script>
     <script src="js/controllers/searchbox.js"></script>
     <script src="js/directives/form.js"></script>
-    <script src="js/directives/bespoke-field.js"></script>
-    <script src="js/app.js"></script>
     <script src="js/filters/titlecase.js"></script>
-
     <link rel="stylesheet" href="css/forms-ng.css">
 
     <!--[if lt IE 9]>
@@ -50,7 +51,7 @@
         }
     </script>
 </head>
-<body>
+<body ng-app="myDemoApp">
 <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png"
                                                          style="position: fixed; right: 0; top: 0;"></a>
 
@@ -67,7 +68,7 @@
                     </div>
                 </form>
                 <div class="search-results" ng-show="results.length >= 1">
-                    <div ng-repeat="result in results"><a href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.text}}</a></div>
+                    <div ng-repeat="result in results"><a ng-href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.text}}</a></div>
                     <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
                 </div>
             </div>
