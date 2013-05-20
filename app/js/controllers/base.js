@@ -1,6 +1,6 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', function ($scope, $routeParams, $location, $http, $filter) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', function ($scope, $routeParams, $location, $http, $filter, $data) {
     var master = {};
-    $scope.record = {};
+    $scope.record = $data;
     $scope.formSchema = [];
     $scope.panes = [];
     $scope.listSchema = [];
@@ -385,7 +385,23 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         });
 
     $scope.cancel = function () {
-        $scope.record = angular.copy(master);
+        // would like to do
+        //        $scope.record = angular.copy(master);
+        // but the data may be shared
+        var prop;
+
+        for (prop in $scope.record) {
+            if ($scope.record.hasOwnProperty(prop)) {
+                delete $scope.record[prop];
+            }
+        }
+        for (prop in master) {
+            if (master.hasOwnProperty(prop)) {
+                $scope.record[prop] = master[prop];
+            }
+        }
+
+
 // TODO: Sort all this pristine stuff
 //        if ($scope.myForm) {
 //            console.log('Calling set pristine')

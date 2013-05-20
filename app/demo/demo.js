@@ -21,7 +21,9 @@ myDemoApp.config(['$routeProvider', function($routeProvider) {
             when('/:model/:form', {templateUrl: 'partials/base-list.html', controller: "BaseCtrl"}).           // list page with links to non default form
 
             otherwise({redirectTo: '/index'});
-    }]);
+    }]).run(function() {
+        }
+    );
 
 myDemoApp.value('ui.config', {
     date: {

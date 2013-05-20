@@ -43,7 +43,7 @@ app.configure('test', function(){
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
     mongoose.connect('mongodb://localhost/forms-ng_test');
 
-    var data_path = __dirname + '/../test/e2e/data';
+    var data_path = __dirname + '/../test/e2edata';
     var data_files = fs.readdirSync(data_path);
     data_files.forEach(function(file){
         var fname = data_path+'/'+file;

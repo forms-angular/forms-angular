@@ -3,7 +3,7 @@ describe('"BaseCtrl"', function(){
     var $httpBackend;
 
     beforeEach(function() {
-        module('formsAngular');
+        angular.mock.module('formsAngular');
     });
 
     afterEach(function() {

@@ -2,7 +2,7 @@ describe('formButton', function() {
     var elm, scope;
 
     // load the tabs code
-    beforeEach(module('formsAngular'));
+    beforeEach(angular.mock.module('formsAngular'));
 
     beforeEach(inject(function($rootScope, $compile) {
         elm = angular.element('<div><div form-buttons></div></div>');

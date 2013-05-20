@@ -2,7 +2,7 @@ describe('formInput', function () {
     var elm, scope;
 
     // load the form code
-    beforeEach(module('formsAngular','myDemoApp'));
+    beforeEach(angular.mock.module('formsAngular'));
 
     describe('simple text input', function () {
 
@@ -292,35 +292,6 @@ describe('formInput', function () {
             expect(input.text()).toBe("");
             input = elm.find('option:last');
             expect(input.text()).toBe("Hazel");
-        });
-
-    });
-
-    describe('supports override directives for fields', function () {
-
-        beforeEach(
-            inject(function ($rootScope, $controller, $compile) {
-                elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
-                '</form>');
-            scope = $rootScope;
-            scope.schema = [
-                {name: "email", id: "1", label: "Email", type: "text", directive: "email-field"}
-            ];
-            $compile(elm)(scope);
-            scope.$digest();
-        }));
-
-        it('field should have prefix', function () {
-            var input = elm.find('input');
-            expect(input.length).toBe(1);
-            expect(input).toHaveClass('ng-pristine');
-            expect(input).toHaveClass('ng-valid');
-            expect(input.attr('id')).toBe('1');
-            expect(input.attr('type')).toBe('text');
-            var prepend = elm.find('div.input-prepend');
-            expect(prepend.text()).toBe('@');
         });
 
     });

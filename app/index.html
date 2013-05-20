@@ -15,20 +15,26 @@
     <link rel="stylesheet" href="css/bootstrap-responsive.css">
     <script src="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.js"></script>
     <script src="lib/angular-ui/bootstrap/tabs.js"></script>
+    <script src="lib/angular-ui/bootstrap/ui-bootstrap-custom-tpls-0.4.0-SNAPSHOT.js"></script>
+
     <link href="lib/select2/select2.css" rel="stylesheet"/>
     <script src="lib/select2/select2.js"></script>
     <link rel="stylesheet" href="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.css">
 
-    <script src="js/demo.js"></script>
-    <script src="js/bespoke-field.js"></script>
-
     <script src="js/forms-angular.js"></script>
+    <script src="js/services/location-parse.js"></script>
+    <script src="js/services/data.js"></script>
     <script src="js/controllers/base.js"></script>
     <script src="js/controllers/model.js"></script>
     <script src="js/controllers/searchbox.js"></script>
+    <script src="js/controllers/nav.js"></script>
     <script src="js/directives/form.js"></script>
     <script src="js/filters/titlecase.js"></script>
     <link rel="stylesheet" href="css/forms-angular.css">
+
+    <script src="demo/demo.js"></script>
+    <script src="demo/bespoke-field.js"></script>
+    <script src="demo/b-using-options.js"></script>
 
     <!--[if lt IE 9]>
     <script src="lib/html5_shiv.js"></script>
@@ -57,9 +63,19 @@
 
 <div class="navbar row" ng-controller="searchCtrl">
     <div class="navbar-inner">
-        <div class="span2">
-            <a class="brand" href="/">Home</a>
-        </div>
+        <ul class="nav" ng-controller="NavCtrl">
+            <li><a href="/">Home</a></li>
+            <li ng-show="items.length > 0" class="dropdown" >
+                <a class="dropdown-toggle">
+                    {{contextMenu}}
+                </a>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="choice in items">
+                        <a class="dropdown-option" href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
         <div class="span9">
             <div class="global-search">
                 <form class="navbar-search pull-right">
@@ -68,7 +84,7 @@
                     </div>
                 </form>
                 <div class="search-results" ng-show="results.length >= 1">
-                    <div ng-repeat="result in results"><a ng-href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.text}}</a></div>
+                    <div ng-repeat="result in results"><a class="search-result" ng-href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.text}}</a></div>
                     <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
                 </div>
             </div>

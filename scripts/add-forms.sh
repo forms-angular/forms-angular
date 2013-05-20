@@ -17,7 +17,7 @@ if [ $1 ]; then
 	    echo ""
 	    echo Set up the main Angular.js file based on the following:
 	    echo ""
-	    cat $BASE_DIR/../app/js/demo.js
+	    cat $BASE_DIR/../app/demo/demo.js
 	    echo ""
 	else
         echo ""
