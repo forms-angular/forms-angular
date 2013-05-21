@@ -5,7 +5,7 @@
   "homepage": "http://forms-ng.herokuapp.com/#/index",
   "version": "0.0.1",
   "engines": {
-    "node": "0.8.x",
+    "node": "0.10.6",
     "npm": "1.1.x"
   },
   "dependencies": {
@@ -32,7 +32,7 @@
     "form builder"
   ],
   "devDependencies": {
-    "karma": "~0.8.1",
+    "karma": "= 0.8.1",
     "mocha": "~1.9.0",
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.1.1",
