@@ -1,4 +1,5 @@
 var exec = require('child_process').exec,
+    _ = require('underscore'),
     assert = require('assert');
 
 describe('Data API', function() {
@@ -56,3 +57,27 @@ describe('Data API', function() {
     })
 });
 
+
+describe('Models API', function() {
+
+    var aData;
+
+    before(function (done) {
+        exec('curl 0.0.0.0:3001/api/models',
+            function (error, stdout) {
+                if (error) {throw new Error('curl a failed')}
+                aData = JSON.parse(stdout);
+                done();
+            });
+    });
+
+    it('should send at least two records', function() {
+        assert(aData.length >= 2);
+    });
+
+    it('should send login as a hidden field in b_using_options', function() {
+        assert(_.find(aData, function (resource) {
+            return resource.resource_name === "b_using_options";
+        }).options.hide.indexOf('login') > -1,'must send login as a hidden field');
+    });
+});

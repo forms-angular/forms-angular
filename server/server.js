@@ -87,10 +87,6 @@ models_files.forEach(function(file){
     }
 });
 
-app.get('/api/models', function(req, res){
-    res.send(DataFormHandler.resources);
-});
-
 var port;
 
 port = process.env.PORT || 3001 ;

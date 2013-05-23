@@ -53,6 +53,66 @@ DataForm.prototype.getListFields = function (resource, doc) {
     return display;
 };
 
+/**
+ * Registers all REST routes with the provided `app` object.
+ */
+DataForm.prototype.registerRoutes = function () {
+
+    this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
+    this.app.get.apply(this.app, processArgs(this.options, ['search/:resourceName', this.search()]));
+
+    this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName', this.schema()]));
+    this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName/:formName', this.schema()]));
+
+    this.app.all.apply(this.app, processArgs(this.options, [':resourceName', this.collection()]));
+    this.app.get.apply(this.app, processArgs(this.options, [':resourceName', this.collectionGet()]));
+
+    this.app.post.apply(this.app, processArgs(this.options, [':resourceName', this.collectionPost()]));
+
+    this.app.all.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entity()]));
+    this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityGet()]));
+
+    // You can POST or PUT to update data
+    this.app.post.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityPut()]));
+    this.app.put.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityPut()]));
+
+    this.app.delete.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityDelete()]));
+
+    // return the List attributes for a record - used by select2
+    this.app.all.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entity()]));
+    this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entityList()]));
+};
+
+//    Add a resource, specifying the model and any options.
+//    Models may include their own options, which means they can be passed through from the model file
+DataForm.prototype.addResource = function (resource_name, model, options) {
+    var resource = {
+        resource_name: resource_name,
+        options: options || {}
+    };
+
+    if (typeof model === "function") {
+        resource.model = model;
+    } else {
+        resource.model = model.model;
+        for (var prop in model) {
+            if (model.hasOwnProperty(prop) && prop !== "model") {
+                resource.options[prop] = model[prop];
+            }
+        }
+    }
+
+    resource.options.hide = this.preprocess(resource.model.schema.paths, null).hidden;
+
+    this.resources.push(resource);
+};
+
+DataForm.prototype.getResource = function (name) {
+    return _.find(this.resources, function (resource) {
+        return resource.resource_name === name;
+    });
+};
+
 DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, callback) {
     var searches = [],
         resourceCount = resourcesToSearch.length,
@@ -152,64 +212,12 @@ DataForm.prototype.searchAll = function (req, res) {
     }, this);
 };
 
-/**
- * Registers all REST routes with the provided `app` object.
- */
-DataForm.prototype.registerRoutes = function () {
-
-    this.app.get.apply(this.app, processArgs(this.options, ['search/:resourceName', this.search()]));
-
-    this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName', this.schema()]));
-    this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName/:formName', this.schema()]));
-
-    this.app.all.apply(this.app, processArgs(this.options, [':resourceName', this.collection()]));
-    this.app.get.apply(this.app, processArgs(this.options, [':resourceName', this.collectionGet()]));
-
-    this.app.post.apply(this.app, processArgs(this.options, [':resourceName', this.collectionPost()]));
-
-    this.app.all.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entity()]));
-    this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityGet()]));
-
-    // You can POST or PUT to update data
-    this.app.post.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityPut()]));
-    this.app.put.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityPut()]));
-
-    this.app.delete.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityDelete()]));
-
-    // return the List attributes for a record - used by select2
-    this.app.all.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entity()]));
-    this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entityList()]));
+DataForm.prototype.models = function (req, res, next) {
+    return _.bind(function (req, res, next) {
+        res.send(this.resources)
+    }, this);
 };
 
-//    Add a resource, specifying the model and any options.
-//    Models may include their own options, which means they can be passed through from the model file
-DataForm.prototype.addResource = function (resource_name, model, options) {
-    var resource = {
-        resource_name: resource_name,
-        options: options || {}
-    };
-
-    if (typeof model === "function") {
-        resource.model = model;
-    } else {
-        resource.model = model.model;
-        for (var prop in model) {
-            if (model.hasOwnProperty(prop) && prop !== "model") {
-                resource.options[prop] = model[prop];
-            }
-        }
-    }
-
-    resource.options.hide = this.preprocess(resource.model.schema.paths, null).hidden;
-
-    this.resources.push(resource);
-};
-
-DataForm.prototype.getResource = function (name) {
-    return _.find(this.resources, function (resource) {
-        return resource.resource_name === name;
-    });
-};
 
 DataForm.prototype.renderError = function (err, redirectUrl, req, res) {
     res.send(err);
