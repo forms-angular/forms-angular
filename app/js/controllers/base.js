@@ -1,4 +1,4 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', function ($scope, $routeParams, $location, $http, $filter, $data) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse) {
     var master = {};
     $scope.record = $data;
     $scope.formSchema = [];
@@ -7,35 +7,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.recordList = [];
     $scope.dataDependencies = {};
     $scope.select2List = [];
-    // Process RouteParams / Location
-    $scope.location = $location.$$path.split('/');
-    var locationParts = $scope.location.length;
-    var lastPart = $scope.location[locationParts - 1];
-    $scope.newRecord = $scope.newRecord || (lastPart === 'new');
-    if ($routeParams.model) {
-        $scope.modelName = $routeParams.model;
-        $scope.formName = $routeParams.form;
-        $scope.id = $routeParams.id
-    } else {
-        // Support using the base controller with override views
-        $scope.modelName = $scope.location[1];
 
-        if ($scope.newRecord) {
-            if (locationParts === 4) {
-                $scope.formName = $scope.location[2];
-            }
-        } else {
-            if (locationParts === 5) {
-                $scope.formName = $scope.location[2];
-                $scope.id = $scope.location[3];
-            } else {
-                $scope.id = $scope.location[2];
-            }
-        }
-    }
+    angular.extend($scope, $locationParse($location.$$path));
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
-
     $scope.modelNameDisplay = $filter('titleCase')($scope.modelName);
 
     var suffixCleanId = function (inst, suffix) {
@@ -66,6 +41,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     }
                     $scope['select2'+formInstructions.name] = {
                         allowClear: !mongooseOptions.required,
+                        initSelection: function(element, callback) {
+                            var myVal = element.val();
+                            var display = {id: myVal, text: myVal};
+//                            master[formInstructions.name] = display;
+                            callback(display);
+                        },
                         query: function (query) {
                             var data = {results: []},
                                 searchString = query.term.toUpperCase();
@@ -475,7 +456,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     if (options.redirect) {
                         window.location = options.redirect;
                     } else {
-                        master = $scope.record;
+                        master = data;
                         $scope.cancel();
                     }
                 } else {

@@ -14,12 +14,11 @@ describe('"BaseCtrl"', function(){
     describe('Schema requests', function(){
 
         it('should request a schema', function() {
-            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+            inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                 $httpBackend = _$httpBackend_;
                 $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
-                $routeParams.model = 'collection';
+                $location.$$path = '/collection/new';
                 scope = $rootScope.$new();
-                scope.newRecord = true;
                 ctrl = $controller("BaseCtrl", {$scope: scope});
                 $httpBackend.flush();
             });
@@ -27,10 +26,10 @@ describe('"BaseCtrl"', function(){
         });
 
         it('should handle an invalid model', function() {
-            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
+            inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                 $httpBackend = _$httpBackend_;
                 $httpBackend.when('GET','api/schema/collection').respond(function() {return [404,'Some error',{}]});
-                $routeParams.model = 'collection';
+                $location.$$path = '/collection/new';
                 scope = $rootScope.$new();
                 ctrl = $controller("BaseCtrl", {$scope: scope});
                 $httpBackend.flush();
@@ -39,7 +38,7 @@ describe('"BaseCtrl"', function(){
         });
 
         it('should allow for override screens', function() {
-            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller, _$location_) {
+            inject(function(_$httpBackend_, $rootScope, $controller, _$location_) {
                 $httpBackend = _$httpBackend_;
                 _$location_.path('/someModel/new');
                 $httpBackend.when('GET','api/schema/someModel').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
@@ -54,14 +53,13 @@ describe('"BaseCtrl"', function(){
 
         var scope, ctrl;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
                 {"name":{"instance":"String"},"hide_me":{"instance":"String", "options":{"form":{"hidden":true}}}}
             );
-            $routeParams.model = 'collection';
+            $location.$$path = '/collection/new';
             scope = $rootScope.$new();
-            scope.newRecord = true;
             ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
@@ -86,7 +84,7 @@ describe('"BaseCtrl"', function(){
     describe('handles references', function() {
         var scope, ctrl;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
                 {"textField":{"path":"textField","instance":"String","options":{"form":{"label":"Organisation Name"},"list":true},"_index":null},
@@ -108,8 +106,7 @@ describe('"BaseCtrl"', function(){
                     {"description":"GP","module":"anything","_id":"3"},
                     {"description":"Website","module":"anything","_id":"4"}]
             );
-            $routeParams.model = 'collection';
-            $routeParams.id = 3;
+            $location.$$path = '/collection/3/edit';
             scope = $rootScope.$new();
             ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
@@ -133,14 +130,13 @@ describe('"BaseCtrl"', function(){
 
         var scope, ctrl;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
                 {"name":{"instance":"String"},"noLabel":{"instance":"String", "options":{"form":{"label":null}}}}
             );
-            $routeParams.model = 'collection';
             scope = $rootScope.$new();
-            scope.newRecord = true;
+            $location.$$path = '/collection/new';
             ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
@@ -166,15 +162,14 @@ describe('"BaseCtrl"', function(){
 
         var scope, ctrl;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
                 {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[[null,"required"]],"setters":[],"getters":[],"options":{"required":true},"_index":null,"isRequired":true},
                     "town":{"instance":"String"}}
             );
-            $routeParams.model = 'collection';
             scope = $rootScope.$new();
-            scope.newRecord = true;
+            $location.$$path = '/collection/new';
             ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
@@ -192,7 +187,7 @@ describe('"BaseCtrl"', function(){
 
         var scope, ctrl;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller, $location) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
                 {"name":{"instance":"String"},
@@ -201,9 +196,8 @@ describe('"BaseCtrl"', function(){
                 }
 
             );
-            $routeParams.model = 'collection';
             scope = $rootScope.$new();
-            scope.newRecord = true;
+            $location.$$path = '/collection/new';
             ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
@@ -218,7 +212,7 @@ describe('"BaseCtrl"', function(){
     describe('converts models', function() {
         var scope, ctrl;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller, $location) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
                 {"textField":{"path":"textField","instance":"String","options":{"form":{"label":"Organisation Name"},"list":true},"_index":null},
@@ -248,8 +242,7 @@ describe('"BaseCtrl"', function(){
                     {"description":"GP","module":"anything","_id":"3"},
                     {"description":"Website","module":"anything","_id":"4"}]
             );
-            $routeParams.model = 'collection';
-            $routeParams.id = 3;
+            $location.$$path = '/collection/3/edit';
             scope = $rootScope.$new();
             ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
@@ -288,7 +281,7 @@ describe('"BaseCtrl"', function(){
     describe('handles complex models', function() {
         var scope, ctrl;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller, $location) {
             $httpBackend = _$httpBackend_;
 
             $httpBackend.whenGET('api/schema/collection').respond({
@@ -323,9 +316,8 @@ describe('"BaseCtrl"', function(){
                 { "surname": "Jenkins", "forename": "Nicky", "_id": "Jenks"} ]);
             $httpBackend.whenGET('api/assistants').respond([ {"_id": "ASmithy", "forename": "John", "surname": "AsstSmith" },
                     { "surname": "AsstJenkins", "forename": "Nicky", "_id": "AJenks"} ]);
-            $routeParams.model = 'collection';
-            $routeParams.id = 3;
             scope = $rootScope.$new();
+            $location.$$path = '/collection/3/edit';
             ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
@@ -343,7 +335,7 @@ describe('"BaseCtrl"', function(){
     describe('handles people in orgs with people', function() {
         var scope, ctrl;
 
-        beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $controller, $location) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/person').respond({
                     givenName: {
@@ -470,9 +462,8 @@ describe('"BaseCtrl"', function(){
                     }
 
                 ] );
-            $routeParams.model = 'person';
+            $location.$$path = '/person/new';
             scope = $rootScope.$new();
-            scope.newRecord = true;
             ctrl = $controller("BaseCtrl", {$scope: scope});
             $httpBackend.flush();
         }));
@@ -493,12 +484,11 @@ describe('"BaseCtrl"', function(){
     describe('error message handling', function() {
 
         it('generates an error message', function() {
-            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
                 $httpBackend = _$httpBackend_;
                 $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
-                $routeParams.model = 'collection';
+                $location.$$path = '/collection/new';
                 scope = $rootScope.$new();
-                scope.newRecord = true;
                 ctrl = $controller("BaseCtrl", {$scope: scope});
                 scope.record = {"familyName":"Chapman", "givenName":"Mark"};
                 $httpBackend.when('POST','api/collection', {"familyName":"Chapman", "givenName":"Mark"}).respond(400,{message: "There is some kind of error",status: "err"});
@@ -514,12 +504,11 @@ describe('"BaseCtrl"', function(){
     describe('extracts custom directives from schemas', function() {
 
         it('extracts custom directives from schemas', function() {
-            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
                 $httpBackend = _$httpBackend_;
                 $httpBackend.whenGET('api/schema/collection').respond({"email":{"enumValues":[],"regExp":null,"path":"email","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"directive":"email-field"}},"_index":null,"$conditionalHandlers":{}}});
-                $routeParams.model = 'collection';
+                $location.$$path = '/collection/new';
                 scope = $rootScope.$new();
-                scope.newRecord = true;
                 ctrl = $controller("BaseCtrl", {$scope: scope});
                 $httpBackend.flush();
             });
