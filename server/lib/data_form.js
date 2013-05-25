@@ -6,7 +6,7 @@ var _ = require('underscore'),
     async = require('async'),
     url = require('url'),
     mongoose = require('mongoose'),
-    debug = false;
+    debug = true;
 
 mongoose.set('debug',debug);
 
@@ -15,7 +15,6 @@ function logTheAPICalls (req, res, next) {
     console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
     next();
 }
-
 
 function processArgs(options, array) {
     if (options.authentication) {
@@ -480,7 +479,6 @@ DataForm.prototype.entityGet = function () {
     }, this);
 };
 
-
 DataForm.prototype.entityPut = function () {
     return _.bind(function (req, res, next) {
         if (!req.resource) {
@@ -493,7 +491,7 @@ DataForm.prototype.entityPut = function () {
 
         // Merge
         _.each(epured_body, function (value, name) {
-            req.doc[name] = value;
+            req.doc[name] = (value === "") ? undefined : value;
         });
 
         this.saveAndRespond(req.doc, res);
