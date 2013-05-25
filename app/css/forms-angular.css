@@ -40,8 +40,13 @@
     padding-left: 12px
 }
 
-.form-horizontal input.ng-invalid-required {
+.form-horizontal input.ng-invalid-required,
+.form-horizontal select.fng-invalid-required {
     background-color: rgba(255, 0, 0, 0.10);
+}
+
+.form-horizontal option {
+    background-color: white;
 }
 
 .global-search {

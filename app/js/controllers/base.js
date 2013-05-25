@@ -1,5 +1,6 @@
 formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse) {
     var master = {};
+    const fngInvalidRequired = 'fng-invalid-required';
     $scope.record = $data;
     $scope.formSchema = [];
     $scope.panes = [];
@@ -12,6 +13,15 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = $filter('titleCase')($scope.modelName);
+
+    function updateInvalidClasses(value, id, select2) {
+        var target = '#' + ((select2) ? 'cg_' : '') + id;
+        if (value) {
+            $(target).removeClass(fngInvalidRequired);
+        } else {
+            $(target).addClass(fngInvalidRequired);
+        }
+    }
 
     var suffixCleanId = function (inst, suffix) {
         return inst.id.replace(/\./g, '_') + suffix;
@@ -28,17 +38,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (mongooseType.instance == 'String') {
             if (mongooseOptions.enum) {
                 formInstructions.type = 'select';
+                // Hacky way to get required styling working on select controls
+                if (mongooseOptions.required) {
+
+                    $scope.$watch('record.'+formInstructions.name, function (newValue) {
+                        updateInvalidClasses(newValue, formInstructions.id, formInstructions.select2);
+                    }, true);
+                    setTimeout(function() { updateInvalidClasses($scope.record[formInstructions.name],formInstructions.id, formInstructions.select2);
+                    },0)
+                }
                 if (formInstructions.select2) {
-                    // Hacky way to get required styling working on select2 controls
-                    if (mongooseOptions.required) {
-                        $scope.$watch('record.'+formInstructions.name, function (newValue) {
-                            if (newValue) {
-                                $('#cg_'+formInstructions.id).removeClass('fng-invalid-required');
-                            } else {
-                                $('#cg_'+formInstructions.id).addClass('fng-invalid-required');
-                            }
-                        }, true);
-                    }
                     $scope['select2'+formInstructions.name] = {
                         allowClear: !mongooseOptions.required,
                         initSelection: function(element, callback) {
@@ -596,7 +605,14 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (idList && idList.length > 0 && anObject[fieldname]) {
                     anObject[fieldname] = convertForeignKeys(schema[i], anObject[fieldname], $scope[suffixCleanId(schema[i], 'Options')], idList);
                 } else if (schema[i].select2 && !schema[i].select2.fngAjax) {
-                    anObject[fieldname] = {id: -1, text: anObject[fieldname]};
+                    if (anObject[fieldname]) {
+                        // Might as well use the function we set up to do the search
+                        $scope[schema[i].select2.s2query].query({
+                            term: anObject[fieldname],
+                            callback: function (array) {
+                                anObject[fieldname] = array.results[0];
+                            }});
+                    }
                 }
             }
         }
@@ -637,8 +653,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         }
                     } else {
                         // It may be OK / good to do this on all fields, not just those handled by a select2....
-                        if (anObject[fieldname] === null) {
-                            delete anObject[fieldname]
+                        if (!anObject[fieldname]) {
+                            anObject[fieldname] = "";
                         } else {
                             anObject[fieldname] = anObject[fieldname].text;
                         }

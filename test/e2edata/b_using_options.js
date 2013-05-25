@@ -10,6 +10,8 @@
         email: "someone@somewhere.com",
         weight: 124,
         accepted: false,
+        eyeColour: "Green",
+        hairColour: "Black",
         login: "JohnN",
         passwordHash: "sha1$22b5fc3b$1$60a48af349b5a95cc0ab3f29b4c95a819d944e75",
         interviewScore: 89,
