@@ -368,6 +368,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 }).error(function () {
                         $location.path("/404");
                     });
+            } else {
+                master = {};
+                $scope.cancel();
             }
         }
     }).error(function () {
