@@ -1,6 +1,6 @@
 formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse) {
     var master = {};
-    const fngInvalidRequired = 'fng-invalid-required';
+    var fngInvalidRequired = 'fng-invalid-required';
     $scope.record = $data;
     $scope.formSchema = [];
     $scope.panes = [];
