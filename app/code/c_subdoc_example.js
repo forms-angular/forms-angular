@@ -8,8 +8,8 @@ var CSchema = new Schema({
     dateOfBirth: Date,
     accepted: Boolean,
     interview: {
-        score:{type:Number,form:{label:"Interview Score"}},
-        date:{type:Date, form:{label:"Interview Date"}}
+        score:{type:Number},
+        date:{type:Date}
     }
 });
 
