@@ -1,7 +1,9 @@
 formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
-    $scope.record = $data;
+    var sharedStuff = $data;
+    $scope.record = sharedStuff.record;
+    $scope.disableFunctions = sharedStuff.disableFunctions;
     $scope.formSchema = [];
     $scope.panes = [];
     $scope.listSchema = [];
@@ -504,12 +506,37 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.isCancelDisabled = function () {
-        return angular.equals(master, $scope.record);
+        if (typeof $scope.disableFunctions.isCancelDisabled === "function") {
+            return $scope.disableFunctions.isCancelDisabled($scope.record, master, $scope.myForm);
+        } else {
+            return angular.equals(master, $scope.record) ;
+        }
     };
 
     $scope.isSaveDisabled = function () {
-        return $scope.myForm.$invalid || angular.equals(master, $scope.record);
+        if (typeof $scope.disableFunctions.isSaveDisabled === "function") {
+            return $scope.disableFunctions.isSaveDisabled($scope.record, master, $scope.myForm);
+        } else {
+            return $scope.myForm.$invalid || angular.equals(master, $scope.record);
+        }
     };
+
+    $scope.isDeleteDisabled = function () {
+        if (typeof $scope.disableFunctions.isDeleteDisabled === "function") {
+            return $scope.disableFunctions.isDeleteDisabled($scope.record, master, $scope.myForm);
+        } else {
+            return false;
+        }
+    };
+
+    $scope.isNewDisabled = function () {
+        if (typeof $scope.disableFunctions.isNewDisabled === "function") {
+            return $scope.disableFunctions.isNewDisabled($scope.record, master, $scope.myForm);
+        } else {
+            return false;
+        }
+    };
+
 
     $scope.disabledText = function (localStyling) {
         var text = "";

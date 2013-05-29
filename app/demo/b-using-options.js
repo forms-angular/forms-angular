@@ -1,6 +1,6 @@
 myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', function($scope, $data) {
 
-    $scope.record = $data;
+    $scope.record = $data.record;
 
     $scope.doAlert = function(message, showId) {
         alertMessage = message;

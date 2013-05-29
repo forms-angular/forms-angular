@@ -2,7 +2,10 @@
 
 formsAngular.factory('$data', [function() {
 
-    var sharedData = {};
+    var sharedData = {
+        record: {},
+        disableFunctions: {}
+    };
     return sharedData;
 
 }]);

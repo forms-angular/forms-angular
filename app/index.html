@@ -29,12 +29,15 @@
     <script src="js/controllers/searchbox.js"></script>
     <script src="js/controllers/nav.js"></script>
     <script src="js/directives/form.js"></script>
+    <script src="js/directives/form-buttons.js"></script>
+    <script src="js/directives/subdoc-repeat.js"></script>
     <script src="js/filters/titlecase.js"></script>
     <link rel="stylesheet" href="css/forms-angular.css">
 
     <script src="demo/demo.js"></script>
     <script src="demo/bespoke-field.js"></script>
     <script src="demo/b-using-options.js"></script>
+    <script src="demo/d-array-example.js"></script>
 
     <!--[if lt IE 9]>
     <script src="lib/html5_shiv.js"></script>
@@ -61,7 +64,7 @@
 <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png"
                                                          style="position: fixed; right: 0; top: 0;"></a>
 
-<div class="navbar row" ng-controller="searchCtrl">
+<div class="navbar row">
     <div class="navbar-inner">
         <ul class="nav" ng-controller="NavCtrl">
             <li><a href="/">Home</a></li>
@@ -77,7 +80,7 @@
             </li>
         </ul>
         <div class="span9">
-            <div class="global-search">
+            <div class="global-search" ng-controller="SearchCtrl">
                 <form class="navbar-search pull-right">
                     <div id="search-cg" class="control-group" ng-class="errorClass">
                         <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
