@@ -13,7 +13,7 @@
     "mongoose": "= 3.2.1",
     "underscore": "= 1.4.4",
     "node.extend": "=1.0.0",
-    "async": "=0.2.x"
+    "async": "=0.2.6"
   },
   "scripts": {
     "start": "node ./server/server.js",
