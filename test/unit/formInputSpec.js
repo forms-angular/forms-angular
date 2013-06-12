@@ -322,7 +322,7 @@ describe('formInput', function () {
                 scope.$digest();
             }));
 
-        it('displays appropriatedly', function () {
+        it('displays appropriately', function () {
             var h4 = elm.find('h4');
             expect(h4.text()).toBe('Error!');
             var alert = elm.find('span.errMsg');
