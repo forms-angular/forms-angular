@@ -395,7 +395,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 $scope.record[prop] = master[prop];
             }
         }
-
+        $scope.dismissError();
 
 // TODO: Sort all this pristine stuff
 //        if ($scope.myForm) {
