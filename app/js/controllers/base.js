@@ -344,7 +344,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
     };
 
-    $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : '')).success(function (data) {
+    $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''),{cache:true}).success(function (data) {
         handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
 
 
@@ -748,10 +748,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var setUpSelectOptions = function (lookupCollection, schemaElement) {
         var optionsList = $scope[schemaElement.options] = [];
         var idList = $scope[schemaElement.ids] = [];
-        $http.get('api/schema/' + lookupCollection).success(function (data) {
+        $http.get('api/schema/' + lookupCollection,{cache : true}).success(function (data) {
             var listInstructions = [];
             handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
-            $http.get('api/' + lookupCollection, {cache: false}).success(function (data) {
+            $http.get('api/' + lookupCollection, {cache: true}).success(function (data) {
                 if (data) {
                     for (var i = 0; i < data.length; i++) {
                         var option = '';
