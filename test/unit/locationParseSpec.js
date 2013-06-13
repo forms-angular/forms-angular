@@ -1,6 +1,6 @@
 'use strict';
 
-describe("Unit: Testing Services", function() {
+describe("Location parsing", function() {
 
     beforeEach(angular.mock.module('formsAngular'));
 
