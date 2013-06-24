@@ -1,0 +1,12 @@
+<div ng-controller="ModelCtrl">
+<h1>Welcome</h1>
+<p>This is a minimal deploy of forms-angular, to get you started.</p>
+<h3>Menu</h3>
+<table class="table table-striped table-condensed">
+    <tr ng-repeat="model in models | orderBy:'resource_name'">
+        <td>{{model.resource_name | titleCase}}</td>
+        <td><a href="/#/{{model.resource_name}}/new">New</a></td>
+        <td><a href="/#/{{model.resource_name}}">List</a></td>
+    </tr>
+</table>
+

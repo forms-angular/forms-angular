@@ -1,0 +1,37 @@
+<form name="myForm" class="form-horizontal compact" ng-controller="BaseCtrl">
+    <div class="row-fluid form-header">
+        <div class="span12 well">
+            <div class="span11">
+                <h4>{{modelNameDisplay}} : <span
+                        ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span></h4>
+            </div>
+            <div class="span1">
+                <div form-buttons></div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="errorMessage" class="row-fluid">
+        <div class="span6 offset3 alert alert-error">
+            <button type="button" class="close" ng-click="dismissError()">&times;</button>
+            <h4>{{alertTitle}}</h4>
+            <div ng-bind-html-unsafe="errorMessage"></div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div ng-hide="panes.length">
+            <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
+        </div>
+        <tabs ng-show="panes.length">
+            <pane ng-repeat="pane in panes" heading="{{pane.title}}" active="pane.active">
+                <form-input ng-repeat="field in pane.content" info="{{field}}"></form-input>
+            </pane>
+        </tabs>
+    </div>
+
+    <!--Record-->
+    <!--<pre>{{record}}</pre>-->
+    <!--FormSchema-->
+    <!--<pre>{{formSchema}}</pre>-->
+    <!--Panes-->
+    <!--<pre>{{panes}}</pre>-->
+</form>
