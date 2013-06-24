@@ -1,4 +1,8 @@
-var Long = require('bson').Long;
+var Long = require('bson').Long
+  , timers = require('timers');
+
+// Set processor, setImmediate if 0.10 otherwise nextTick
+var processor = timers.setImmediate ? timers.setImmediate : process.nextTick;
 
 /**
   Reply message from mongo db
@@ -91,9 +95,9 @@ MongoReply.prototype.parseBody = function(binary_reply, bson, raw, callback) {
           }
         }
 
-        // If we hav more documents process NextTick
+        // If we have more documents process NextTick
         if(object_index < _numberReturned) {
-          process.nextTick(processFunction);
+          processor(processFunction);
         } else {
           callback(null);
         }

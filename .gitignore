@@ -1,48 +1,1 @@
-**/.DS_Store
-nbproject
-manifest.mf
-build.xml
-
-.project
-.settings
-node_modules
-
-.idea/*
-
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-
-pids
-logs
-results
-
-npm-debug.log
-
-app/lib/angular-ui/angular-ui-0.4.0/common/*
-app/lib/angular-ui/angular-ui-0.4.0/modules/*
-app/lib/angular-ui/angular-ui-0.4.0/templates/*
-app/lib/angular-ui/angular-ui-0.4.0/test/*
-app/lib/angular-ui/angular-ui-0.4.0/*.md
-app/lib/angular-ui/angular-ui-0.4.0/*.yml
-app/lib/angular-ui/angular-ui-0.4.0/*.js
-app/lib/angular-ui/angular-ui-0.4.0/*.json
-app/lib/angular-ui/angular-ui-0.4.0/*.
-app/lib/angular-ui/angular-ui-0.4.0/LICENSE
-app/lib/angular-ui/angular-ui-0.4.0/.gitignore
-
-app/lib/angular/docs
-app/lib/angular/i18n
-app/lib/angular.1.0
-
-js-build/forms-angular.js
-
-.vagrant
-Vagrantfile
-
-nohup.out
+**/.DS_Storenbprojectmanifest.mfbuild.xml.project.settingsnode_modules.idea/*lib-cov*.seed*.log*.csv*.dat*.out*.pid*.gzpidslogsresultsnpm-debug.logapp/lib/angular-ui/angular-ui-0.4.0/common/*app/lib/angular-ui/angular-ui-0.4.0/modules/*app/lib/angular-ui/angular-ui-0.4.0/templates/*app/lib/angular-ui/angular-ui-0.4.0/test/*app/lib/angular-ui/angular-ui-0.4.0/*.mdapp/lib/angular-ui/angular-ui-0.4.0/*.ymlapp/lib/angular-ui/angular-ui-0.4.0/*.jsapp/lib/angular-ui/angular-ui-0.4.0/*.jsonapp/lib/angular-ui/angular-ui-0.4.0/*.app/lib/angular-ui/angular-ui-0.4.0/LICENSEapp/lib/angular-ui/angular-ui-0.4.0/.gitignoreapp/lib/angular/docsapp/lib/angular/i18napp/lib/angular.1.0js-build/forms-angular.js.vagrantVagrantfilenohup.out

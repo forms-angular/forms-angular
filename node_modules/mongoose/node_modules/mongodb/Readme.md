@@ -20,6 +20,10 @@ Community
 =========
 Check out the google group [node-mongodb-native](http://groups.google.com/group/node-mongodb-native) for questions/answers from users of the driver.
 
+Live Examples
+============
+<a href="https://runnable.com/node-mongodb-native" target="_blank"><img src="https://runnable.com/external/styles/assets/runnablebtn.png" style="width:67px;height:25px;"></a>
+
 Introduction
 ============
 
@@ -28,7 +32,7 @@ This is a node.js driver for MongoDB. It's a port (or close to a port) of the li
 A simple example of inserting a document.
 
 ```javascript
-    var client = new Db('test', new Server("127.0.0.1", 27017, {})),
+    var client = new Db('test', new Server("127.0.0.1", 27017, {}), {w: 1}),
         test = function (err, collection) {
           collection.insert({a:2}, function(err, docs) {
 
@@ -287,7 +291,7 @@ See also: [MongoDB docs for insert](http://www.mongodb.org/display/DOCS/Insertin
 ```javascript
     var mongodb = require('mongodb');
     var server = new mongodb.Server("127.0.0.1", 27017, {});
-    new mongodb.Db('test', server, {}).open(function (error, client) {
+    new mongodb.Db('test', server, {w: 1}).open(function (error, client) {
       if (error) throw error;
       var collection = new mongodb.Collection(client, 'test_collection');
       collection.insert({hello: 'world'}, {safe:true},
@@ -331,7 +335,7 @@ Example for `update`:
 ```javascript
     var mongodb = require('mongodb');
     var server = new mongodb.Server("127.0.0.1", 27017, {});
-    new mongodb.Db('test', server, {}).open(function (error, client) {
+    new mongodb.Db('test', server, {w: 1}).open(function (error, client) {
       if (error) throw error;
       var collection = new mongodb.Collection(client, 'test_collection');
       collection.update({hi: 'here'}, {$set: {hi: 'there'}}, {safe:true},
@@ -377,7 +381,7 @@ Example for `findAndModify`:
 ```javascript
     var mongodb = require('mongodb');
     var server = new mongodb.Server("127.0.0.1", 27017, {});
-    new mongodb.Db('test', server, {}).open(function (error, client) {
+    new mongodb.Db('test', server, {w: 1}).open(function (error, client) {
       if (error) throw error;
       var collection = new mongodb.Collection(client, 'test_collection');
       collection.findAndModify({hello: 'world'}, [['_id','asc']], {$set: {hi: 'there'}}, {},

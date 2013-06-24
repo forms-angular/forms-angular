@@ -1,102 +1,1 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>forms-angular</title>
-    <script src="lib/jquery/jquery-1.9.0.js"></script>
-    <script src="lib/jquery-ui/jquery-ui-1.10.0.custom.js"></script>
-    <link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">
-    <script src="lib/angular/angular.js"></script>
-    <script src="lib/angular/angular-resource.js"></script>
-    <script src="lib/angular/angular-cookies.js"></script>
-    <script src="lib/bootstrap.js"></script>
-    <script src="lib/underscore.js"></script>
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="css/bootstrap-responsive.css">
-    <script src="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.js"></script>
-    <script src="lib/angular-ui/bootstrap/tabs.js"></script>
-    <script src="lib/angular-ui/bootstrap/ui-bootstrap-custom-tpls-0.4.0-SNAPSHOT.js"></script>
-
-    <link href="lib/select2/select2.css" rel="stylesheet"/>
-    <script src="lib/select2/select2.js"></script>
-    <link rel="stylesheet" href="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.css">
-
-    <script src="js/forms-angular.js"></script>
-    <script src="js/services/location-parse.js"></script>
-    <script src="js/services/data.js"></script>
-    <script src="js/controllers/base.js"></script>
-    <script src="js/controllers/model.js"></script>
-    <script src="js/controllers/searchbox.js"></script>
-    <script src="js/controllers/nav.js"></script>
-    <script src="js/directives/form.js"></script>
-    <script src="js/directives/form-buttons.js"></script>
-    <script src="js/directives/subdoc-repeat.js"></script>
-    <script src="js/filters/titlecase.js"></script>
-    <link rel="stylesheet" href="css/forms-angular.css">
-
-    <script src="demo/demo.js"></script>
-    <script src="demo/bespoke-field.js"></script>
-    <script src="demo/b-using-options.js"></script>
-    <script src="demo/d-array-example.js"></script>
-
-    <!--[if lt IE 9]>
-    <script src="lib/html5_shiv.js"></script>
-    <![endif]-->
-    <!--This slows down tests when offline.  Need to set up mock back end -->
-    <script type="text/javascript">
-        if (window.location.hostname != '0.0.0.0') {
-            var _gaq = _gaq || [];
-            _gaq.push(['_setAccount', 'UA-3037487-9']);
-            _gaq.push(['_trackPageview']);
-
-            (function () {
-                var ga = document.createElement('script');
-                ga.type = 'text/javascript';
-                ga.async = true;
-                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                var s = document.getElementsByTagName('script')[0];
-                s.parentNode.insertBefore(ga, s);
-            })();
-        }
-    </script>
-</head>
-<body ng-app="myDemoApp">
-<a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png"
-                                                         style="position: fixed; right: 0; top: 0;"></a>
-
-<div class="navbar row">
-    <div class="navbar-inner">
-        <ul class="nav" ng-controller="NavCtrl">
-            <li><a href="/">Home</a></li>
-            <li ng-show="items.length > 0" class="dropdown" >
-                <a class="dropdown-toggle">
-                    {{contextMenu}}
-                </a>
-                <ul class="dropdown-menu">
-                    <li ng-repeat="choice in items">
-                        <a class="dropdown-option" href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        <div class="span9">
-            <div class="global-search" ng-controller="SearchCtrl">
-                <form class="navbar-search pull-right">
-                    <div id="search-cg" class="control-group" ng-class="errorClass">
-                        <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
-                    </div>
-                </form>
-                <div class="search-results" ng-show="results.length >= 1">
-                    <div ng-repeat="result in results"><a class="search-result" ng-href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.text}}</a></div>
-                    <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="container-fluid">
-    <div ng-view></div>
-</div>
-
-</body>
-</html>
+<!doctype html><html lang="en"><head>    <meta charset="utf-8">    <title>forms-angular</title>    <script src="lib/jquery/jquery-1.9.0.js"></script>    <script src="lib/jquery-ui/jquery-ui-1.10.0.custom.js"></script>    <link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">    <script src="lib/angular/angular.js"></script>    <script src="lib/angular/angular-resource.js"></script>    <script src="lib/angular/angular-cookies.js"></script>    <script src="lib/bootstrap.js"></script>    <script src="lib/underscore.js"></script>    <link rel="stylesheet" href="css/bootstrap.css">    <link rel="stylesheet" href="css/bootstrap-responsive.css">    <script src="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.js"></script>    <script src="lib/angular-ui/bootstrap/tabs.js"></script>    <script src="lib/angular-ui/bootstrap/ui-bootstrap-custom-tpls-0.4.0-SNAPSHOT.js"></script>    <link href="lib/select2/select2.css" rel="stylesheet"/>    <script src="lib/select2/select2.js"></script>    <link rel="stylesheet" href="lib/angular-ui/angular-ui-0.4.0/build/angular-ui.css">    <script src="js/forms-angular.js"></script>    <script src="js/services/location-parse.js"></script>    <script src="js/services/data.js"></script>    <script src="js/controllers/base.js"></script>    <script src="js/controllers/model.js"></script>    <script src="js/controllers/searchbox.js"></script>    <script src="js/controllers/nav.js"></script>    <script src="js/directives/form.js"></script>    <script src="js/directives/form-buttons.js"></script>    <script src="js/directives/subdoc-repeat.js"></script>    <script src="js/filters/titlecase.js"></script>    <link rel="stylesheet" href="css/forms-angular.css">    <script src="demo/demo.js"></script>    <script src="demo/bespoke-field.js"></script>    <script src="demo/b-using-options.js"></script>    <script src="demo/d-array-example.js"></script>    <!--[if lt IE 9]>    <script src="lib/html5_shiv.js"></script>    <![endif]-->    <!--This slows down tests when offline.  Need to set up mock back end -->    <script type="text/javascript">        if (window.location.hostname != '0.0.0.0') {            var _gaq = _gaq || [];            _gaq.push(['_setAccount', 'UA-3037487-9']);            _gaq.push(['_trackPageview']);            (function () {                var ga = document.createElement('script');                ga.type = 'text/javascript';                ga.async = true;                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';                var s = document.getElementsByTagName('script')[0];                s.parentNode.insertBefore(ga, s);            })();        }    </script></head><body ng-app="myDemoApp"><a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png"                                                         style="position: fixed; right: 0; top: 0;"></a><div class="navbar row">    <div class="navbar-inner">        <ul class="nav" ng-controller="NavCtrl">            <li><a href="/">Home</a></li>            <li ng-show="items.length > 0" class="dropdown" >                <a class="dropdown-toggle">                    {{contextMenu}}                </a>                <ul class="dropdown-menu">                    <li ng-repeat="choice in items">                        <a class="dropdown-option" href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>                    </li>                </ul>            </li>        </ul>        <div class="span9">            <div class="global-search" ng-controller="SearchCtrl">                <form class="navbar-search pull-right">                    <div id="search-cg" class="control-group" ng-class="errorClass">                        <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">                    </div>                </form>                <div class="search-results" ng-show="results.length >= 1">                    <div ng-repeat="result in results"><a class="search-result" ng-href="#/{{result.resource}}/{{result.id}}/edit">{{result.resource}} {{result.text}}</a></div>                    <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>                </div>            </div>        </div>    </div></div><div class="container-fluid">    <div ng-view></div></div></body></html>
