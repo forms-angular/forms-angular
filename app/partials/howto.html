@@ -32,6 +32,14 @@
 
 <p>The first of these supports filters, such as</p>
 <a href="/#/b_using_options?f=%7B%22surname%22:%22Smith%22%7D"><pre>/#/b_using_options?f={"surname":"Smith"}</pre></a>
+<p>and calls to the aggregation framework, provided they project to an array of docs that contains an _id property which is used
+to select from the model.  For example the (rather unpalatable)</p>
+<a href="/#/f_nested_schema?a=%5B%7B%22%24unwind%22%3A%22%24exams%22%7D%2C%7B%22%24sort%22%3A%7B%22exams.score%22%3A1%7D%7D%2C%7B%22%24group%22%3A%7B%22_id%22%3A%7B%22id%22%3A%22%24_id%22%7D%2C%22bestSubject%22%3A%7B%22%24last%22%3A%22%24exams.subject%22%7D%7D%7D%2C%7B%22%24match%22%3A%7B%22bestSubject%22%3A%22English%22%7D%7D%2C%7B%22%24project%22%3A%7B%22_id%22%3A%22%24_id.id%22%7D%7D%5D">
+<pre>/#/f_nested_schema?a=[{"$unwind":"$exams"},{"$sort":{"exams.score":1}},{"$group":{"_id":{"id":"$_id"},"bestSubject":{"$last":"$exams.subject"}}},{"$match":{"bestSubject":"English"}},{"$project":{"_id":"$_id.id"}}]</pre></a>
+<p>selects all students who did better in their English exam than any other subject.  To find out how to use the
+    aggregation framework refer to the <a href="http://docs.mongodb.org/manual/core/aggregation/">MongoDB docs</a>.</p>
+
+<p>These can be combined (though there appears to be a problem unless the filter precedes the aggregation).</p>
 
 <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the fields
     to include and any options.  See the static in <a href="/code/b_using_options.js">this example</a>.
