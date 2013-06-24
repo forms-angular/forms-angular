@@ -1,1 +1,19 @@
-<div data-ng-controller="BaseCtrl">    <form name="myForm" class="form-horizontal">        <div class="row">            <div class="span8 well">                <h3>This is a custom form to edit data</h3>            </div>        </div>        <div class="row">            <div>                <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>            </div>        </div>        <div class="form-actions">            <button type="button" class="btn btn-primary" ng-click="save({'redirect':'/thank-you.html'})">Submit</button>        </div>    </form></div>
+<div data-ng-controller="BaseCtrl">
+    <form name="myForm" class="form-horizontal">
+        <div class="row">
+            <div class="span8 well">
+                <h3>This is a custom form to edit data</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary" ng-click="save({'redirect':'/thank-you.html'})">Submit</button>
+        </div>
+    </form>
+</div>
+
+
