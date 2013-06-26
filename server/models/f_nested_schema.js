@@ -10,13 +10,34 @@ var ExamsSchema = new Schema({
 });
 
 var FSchema = new Schema({
-    surname: {type: String, list:{}},
-    forename:  {type: String, list:true},
+    surname: {type: String, index:true, list:{}},
+    forename:  {type: String, index:true, list:true},
     exams: [ExamsSchema]
 });
 
 var F = mongoose.model('F', FSchema);
 
-module.exports = F;
+F.prototype.searchResultFormat = function() {
+
+    // You can set up a function to modify search result display and the
+    // ordering within a collection
+    var weighting;
+
+    weighting = this.forename === 'John' ? 1 : 3;
+
+    return {
+        resource: 'f_nested_schema',
+        resourceText: 'Exams',
+        id: this._id,
+        weighting: weighting,
+        text: this.surname + ', ' + this.forename
+    }
+}
+
+
+module.exports = {
+    model : F,
+    searchResultFormat: F.prototype.searchResultFormat
+};
 
 

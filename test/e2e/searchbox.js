@@ -2,7 +2,11 @@
 
 describe('Global search capability', function() {
 
+// For some reason it appears that the first test that you run in this script takes 17 seconds,
+// even if you vary the order.
+
     it('should find a record', function () {
+        console.log('This one is really slow - if you want to fix it you will find it in test/e2e/searchbox.js.  Be my guest - I am incapable.');
         browser().navigateTo('/');
         input('searchTarget').enter('IsA');
         expect( repeater( '.search-result' ).count() ).toEqual(1);
@@ -48,6 +52,32 @@ describe('Global search capability', function() {
         browser().navigateTo('/');
         input('searchTarget').enter('IsA');
         expect(element('#search-cg').attr('class')).not().toMatch(/error/);
+    });
+
+    it('should support searchResultFormat option', function() {
+        browser().navigateTo('/');
+        input('searchTarget').enter('Br');
+        expect( repeater( '.search-result' ).count() ).toEqual(2);
+        expect( element('.search-result:first').text()).toMatch('Exams')                    // test resourceText
+        expect( element('.search-result:first').attr("href")).toMatch('f_nested_schema')    // test resource
+        expect( element('.search-result:first').text()).toMatch('Brown, ')                  // test text)
+        expect( element('.search-result:first').text()).toMatch('John')                     // test weighting)
+    });
+
+    it('should support searchImportance option', function() {
+        browser().navigateTo('/');
+        input('searchTarget').enter('Smi');
+        expect( repeater( '.search-result' ).count() ).toEqual(10);
+        expect( element('.search-result').text()).not().toMatch('Exams')
+    });
+
+    it('should support searchOrder option', function() {
+        browser().navigateTo('/');
+        input('searchTarget').enter('Smi');
+        expect( repeater( '.search-result' ).count() ).toEqual(10);
+        expect( element('.search-result:first').text()).toMatch('Smith00')
+        expect( element('.search-result:last').text()).toMatch('Smith10')
+        expect( element('.search-result').text()).not().toMatch('John07')
     });
 
 });
