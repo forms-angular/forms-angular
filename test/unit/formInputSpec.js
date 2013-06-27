@@ -9,11 +9,11 @@ describe('formInput', function () {
         beforeEach(inject(function ($rootScope, $compile) {
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact">' +
-                    '<form-input info="{{schema}}"></form-input>' +
+                    '<form-input info="{{formSchema}}"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
-            scope.schema = {name: "desc", id: "desc_id", label: "Description", type: "text"};
+            scope.formSchema = {name: "desc", id: "desc_id", label: "Description", type: "text"};
             $compile(elm)(scope);
             scope.$digest();
         }));
@@ -41,11 +41,11 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
-            scope.schema = [
+            scope.formSchema = [
                 {name: "name", id: "1", label: "Name", type: "text"},
                 {name: "eyecolour", id: "2", label: "Colour of Eyes", type: "text"}
             ];
@@ -80,6 +80,93 @@ describe('formInput', function () {
         });
 
     });
+
+    describe('handles sub schemas', function() {
+
+        describe('default behaviour', function() {
+            beforeEach(inject(function ($rootScope, $controller, $compile) {
+                elm = angular.element(
+                    '<form name="myForm" class="form-horizontal compact"> ' +
+                        '<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>' +
+                        '</form>');
+
+                scope = $rootScope;
+                scope.formSchema = [
+                    {"name":"surname","id":"f_surname","label":"Surname","type":"text"},
+                    {"name":"forename","id":"f_forename","label":"Forename","type":"text"},
+                    {"name":"exams","id":"f_exams","label":"Exams","schema":[
+                        {"name":"exams.subject","id":"f_exams.subject","label":"Subject","type":"text"},
+                        {"name":"exams.score","id":"f_exams.score","label":"Score","type":"number"}
+                        ]}
+                ];
+
+                scope.record = {"surname":"Smith","forename":"Anne","exams":[{"subject":"English","score":83},{"subject":"Maths","score":97}]};
+                $compile(elm)(scope);
+                scope.$digest();
+            }));
+
+            it('has a heading for the Exams section', function() {
+                var thisElm = elm.find('.schema-head');
+                expect(thisElm.length).toBe(1);
+                expect((thisElm).text()).toBe('Exams');
+
+                thisElm = elm.find('.schema-foot');
+                expect(thisElm.length).toBe(1);
+
+                thisElm = elm.find('.schema-foot button');
+                expect(thisElm.length).toBe(1);
+                expect((thisElm).text()).toBe(' Add');
+
+                thisElm = elm.find('.sub-doc')
+                expect(thisElm.length).toBe(2);
+
+                thisElm = elm.find('.sub-doc button:first');
+                expect(thisElm.text()).toBe(' Remove');
+            });
+        });
+
+        describe('Inhibit add and remove', function() {
+            beforeEach(inject(function ($rootScope, $controller, $compile) {
+                elm = angular.element(
+                    '<form name="myForm" class="form-horizontal compact"> ' +
+                        '<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>' +
+                        '</form>');
+
+                scope = $rootScope;
+                scope.formSchema = [
+                    {"name":"surname","id":"f_surname","label":"Surname","type":"text"},
+                    {"name":"forename","id":"f_forename","label":"Forename","type":"text"},
+                    {"name":"exams","id":"f_exams","label":"Exams", "noAdd":true, "noRemove":true, "schema":[
+                        {"name":"exams.subject","id":"f_exams.subject","label":"Subject","type":"text"},
+                        {"name":"exams.score","id":"f_exams.score","label":"Score","type":"number"}
+                    ]}
+                ];
+
+                scope.record = {"surname":"Smith","forename":"Anne","exams":[{"subject":"English","score":83},{"subject":"Maths","score":97}]};
+                $compile(elm)(scope);
+                scope.$digest();
+            }));
+
+            it('has a heading for the Exams section', function() {
+                var thisElm = elm.find('.schema-head');
+                expect(thisElm.length).toBe(1);
+                expect((thisElm).text()).toBe('Exams');
+
+                thisElm = elm.find('.schema-foot');
+                expect(thisElm.length).toBe(1);
+
+                thisElm = elm.find('.schema-foot button');
+                expect(thisElm.length).toBe(0);
+
+                thisElm = elm.find('.sub-doc')
+                expect(thisElm.length).toBe(2);
+
+                thisElm = elm.find('.sub-doc button:first');
+                expect(thisElm.length).toBe(0);
+            });
+        });
+
+    })
 
     describe('does not generate label element when label is blank', function () {
 

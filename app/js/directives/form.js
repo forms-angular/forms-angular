@@ -86,19 +86,25 @@ formsAngular
                                     '<div class="row-fluid">' +
                                     '<div class="pull-left">' +
                                     '<form-input ng-repeat="' + schemaLoop + '" info="{{field}}" schema="true"></form-input>' +
-                                    '</div>' +
-                                    '<div class="pull-left sub-doc-btns">' +
-                                    '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(this,$index)">' +
-                                    '<i class="icon-minus"></i> Remove' +
-                                    '</button>' +
-                                    '</div> ' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<div class = "schema-foot well">' +
-                                    '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(this)">' +
-                                    '<i class="icon-plus"></i> Add' +
-                                    '</button>' +
                                     '</div>';
+
+                                if (!info.noRemove) {
+                                    template += '<div class="pull-left sub-doc-btns">' +
+                                        '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(this,$index)">' +
+                                        '<i class="icon-minus"></i> Remove' +
+                                        '</button>' +
+                                        '</div> '
+                                }
+
+                                template += '</div>' +
+                                    '</div>' +
+                                    '<div class = "schema-foot well">';
+                                if (!info.noAdd) {
+                                    template += '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(this)">' +
+                                        '<i class="icon-plus"></i> Add' +
+                                        '</button>'
+                                }
+                                template += '</div>';
 
                             } else {
                                 // Handle arrays here
