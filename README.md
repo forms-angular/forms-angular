@@ -1,6 +1,6 @@
 # forms-angular
 ## No nonsense forms for the MEAN stack
-[![Build Status](ttps://travis-ci.org/mchapman/forms-angular.png?branch=master)](https://travis-ci.org/mchapman/forms-angular)
+[![Build Status](https://travis-ci.org/mchapman/forms-angular.png?branch=master)](https://travis-ci.org/mchapman/forms-angular)
 
 An example app to demonstrate forms-angular - a way of creating forms on the
 MEAN stack (Mongo - Express - Angular - Node) with the addition of Mongoose 
