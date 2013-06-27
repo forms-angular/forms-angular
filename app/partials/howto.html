@@ -1,9 +1,29 @@
 <div ng-controller="ModelCtrl">
     <h1>Welcome to forms-angular</h1>
-    <!-- This slows down tests when offline.  Need to set up mock back end -->
-    <p><a href="https://travis-ci.org/mchapman/forms-angular"><img
-            src="https://travis-ci.org/mchapman/forms-angular.png?branch=master" alt="Build Status"
-            style="max-width:100%;"></a></p>
+    <div class="row-fluid">
+    <div class="hero-unit span6 big-box">
+    <h4>Turn this...</h4>
+    <pre>var ASchema = new Schema({
+    surname: {type:String, required:true, index:true},
+    forename: {type:String, index:true},
+    weight: Number,
+    eyeColour: {type: String, required:true,
+        enum:['Blue','Brown','Green','Hazel']},
+    dateOfBirth: Date,
+    accepted: Boolean
+});</pre>
+    </div>
+    <div class="hero-unit span6 big-box">
+        <h4>...into this</h4>
+        <img src="/img/screen.png" alt="Screen shot of simple form">
+    </div>
+    </div>
+<h4 class="text-center">...without a line of code!</h4><br />
+
+    <p>Forms-angular is a form builder build on top of the <a href="http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and">MEAN stack</a>
+    (with a little <a href="http://twitter.github.io/bootstrap/">Twitter Bootstrap</a> and <a href="http://mongoosejs.com/">Mongoose</a> thrown in for good measure) that
+    enables you to generate forms super quickly.  At its simplest it takes a mongoose schema and <em>with no effort on your part</em> generates a form, complete with REST routing and bindings.</p>
+
 
     <h3>Forms</h3>
 
@@ -56,8 +76,36 @@
         <li><strong>/#/:model/:formschema/:id/edit</strong></li>
     </ul>
 
-    <h3>Listing</h3>
-    <p>The listing routes (of the format <strong>/#/:model</strong>) support filters, such as</p>
+    <h3>Schema Options</h3>
+
+    <p>The mark-up of generated forms can be influenced by use of the <strong>form</strong> object in the schema type.
+        The form object can have the following keys:
+        <ul>
+            <li><strong>hidden      </strong></li> inhibits this schema key from the generated form.
+            <li><strong>label       </strong></li> overrides the default input label.  label:null suppresses the label altogether.
+            <li><strong>placeHolder </strong></li> adds placeholder text to the input (depending on data type).
+            <li><strong>help        </strong></li> adds help text under the input
+            <li><strong>helpInline  </strong></li> adds help to the right of the input
+            <li><strong>directive   </strong></li> allows you to specify custom behaviour
+            <li><strong>select2     </strong></li> in an enum field or a reference field tells the system to use the select2
+                control rather than a select.  If the number of options is large in a reference field
+                then <strong>select2:{fngAjax:true}</strong> instructs the program to use ajax calls to query
+                the server rather than downloading the table.  The values in the select[2] control come from the <a href="/#/index#listing">listing fields</a>.
+            <strong><li>rows        </strong></li> sets the number of rows in inputs (such as textarea) that support this.
+        </ul>
+
+        <a href="/code/b_using_options.js">This example schema</a> and <a href="/#/b_using_options/new">this form</a> show many of these options in use.
+    </p>
+
+    <h3 id="listing">Listing</h3>
+
+    <p>The listing routes (of the format <strong>/#/:model</strong>) are used to build a page
+        containing a list of documents in the collection, showing the fields that have a truthy <strong>list</strong>
+        key.  If none of the schema objects have a list key the first two string fields are used.
+    </p>
+
+    <p>Listing routes support filters, such as</p>
+
     <a href="/#/b_using_options?f=%7B%22surname%22:%22Smith%22%7D">
         <pre>/#/b_using_options?f={"surname":"Smith"}</pre>
     </a>
@@ -99,7 +147,7 @@
     <h3>Search</h3>
 
     <p>It is easy to incorporate a simple search form, as shown in the Navbar. When you enter text into it the
-        SearchCtrl controller makes a call to the server which looks for matching data by searching all the indexed
+        SearchCtrl controller makes a call to the server which looks for matching data by searching the indexed
         fields in each model for values starting with the search string.
         There are other search API calls as shown below:</p>
     <ul>
@@ -122,7 +170,7 @@
         <li><strong>searchOrder</strong> can be used to set the default ordering of the search results within a model.
             It is normally used in conjunction with searchImportance.</li>
         <li><strong>searchResultFormat</strong> allows fine control of the display of search results.  It points to a
-        function which returns an object with the following properties:
+        function which returns an object which must contain the following:
         <ul>
             <li><strong>resource</strong> the model name (or model/customForm) that the search result will link to</li>
             <li><strong>resourceText</strong> the display name for the resource</li>
@@ -131,6 +179,10 @@
             <li><strong>text</strong> the display text for the item</li>
         </ul></li>
     </ul>
+
+    A truthy <strong>noSearch</strong> key means index on a schema type is not used in the searchBox searches.
+    A use case for this would be an index that is used in reports for grouping which has no meaning in a search.
+
     <h3>Navigation</h3>
 
     <p>The menu can be added to where required by the models. The NavCtrl controller loads menus from "model

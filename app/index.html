@@ -33,6 +33,7 @@
     <script src="js/directives/subdoc-repeat.js"></script>
     <script src="js/filters/titlecase.js"></script>
     <link rel="stylesheet" href="css/forms-angular.css">
+    <link rel="stylesheet" href="css/demo.css">
 
     <script src="demo/demo.js"></script>
     <script src="demo/bespoke-field.js"></script>
@@ -60,13 +61,13 @@
         }
     </script>
 </head>
-<body ng-app="myDemoApp">
+<body ng-app="myDemoApp" ng-controller="NavCtrl">
 <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png"
                                                          style="position: fixed; right: 0; top: 0;"></a>
 
-<div class="navbar row">
+<div class="navbar row" ng-hide="routing.index">
     <div class="navbar-inner">
-        <ul class="nav" ng-controller="NavCtrl">
+        <ul class="nav">
             <li><a href="/">Home</a></li>
             <li ng-show="items.length > 0" class="dropdown" >
                 <a class="dropdown-toggle">

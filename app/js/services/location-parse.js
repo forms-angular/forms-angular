@@ -9,20 +9,24 @@ formsAngular.factory('$locationParse', [function() {
 
             if (location !== lastRoute) {
                 lastRoute = location;
-                lastObject = {newRecord: false};
                 var locationSplit = location.split('/');
                 var locationParts = locationSplit.length;
-                lastObject.modelName = locationSplit[1];
-                var lastPart = locationSplit[locationParts - 1];
-                if (lastPart === "new") {
-                    lastObject.newRecord = true;
-                    locationParts--;
-                } else if (lastPart === "edit") {
-                    locationParts = locationParts - 2
-                    lastObject.id = locationSplit[locationParts];
-                }
-                if (locationParts > 2) {
-                   lastObject.formName = locationSplit[2];
+                if (locationParts == 2 && locationSplit[1] == 'index') {
+                    lastObject = {index: true};
+                } else {
+                    lastObject = {newRecord: false};
+                    lastObject.modelName = locationSplit[1];
+                    var lastPart = locationSplit[locationParts - 1];
+                    if (lastPart === "new") {
+                        lastObject.newRecord = true;
+                        locationParts--;
+                    } else if (lastPart === "edit") {
+                        locationParts = locationParts - 2
+                        lastObject.id = locationSplit[locationParts];
+                    }
+                    if (locationParts > 2) {
+                       lastObject.formName = locationSplit[2];
+                    }
                 }
             }
             return lastObject;
