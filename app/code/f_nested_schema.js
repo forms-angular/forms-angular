@@ -12,7 +12,7 @@ var ExamsSchema = new Schema({
 var FSchema = new Schema({
     surname: {type: String, index:true, list:{}},
     forename:  {type: String, index:true, list:true},
-    exams: [ExamsSchema]
+    exams: {type: [ExamsSchema], form:{noAdd: true, noRemove: true}}
 });
 
 var F = mongoose.model('F', FSchema);
