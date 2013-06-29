@@ -2,11 +2,7 @@
 
 describe('Global search capability', function() {
 
-// For some reason it appears that the first test that you run in this script takes 17 seconds,
-// even if you vary the order.
-
     it('should find a record', function () {
-        console.log('This one is really slow - if you want to fix it you will find it in test/e2e/searchbox.js.  Be my guest - I am incapable.');
         browser().navigateTo('/');
         input('searchTarget').enter('IsA');
         expect( repeater( '.search-result' ).count() ).toEqual(1);
