@@ -3,7 +3,7 @@
     <div class="row-fluid">
     <div class="hero-unit span6 big-box">
     <h4>Turn this...</h4>
-    <pre>var ASchema = new Schema({
+    <pre>var PersonSchema = new Schema({
     surname: {type:String, required:true, index:true},
     forename: {type:String, index:true},
     weight: Number,
@@ -20,10 +20,10 @@
     </div>
     <div class="row-fluid">
     <div class="span8 offset2">
-<h4 class="text-center" >...with three lines of code!</span></h4><br />
+<h4 class="text-center" >...with three lines of code!</h4><p class="text-center">(though you will find it easier to start with the <a href="https://github.com/mchapman/forms-angular/tree/master/minimal" target="_blank">minimal example</a> to understand how they fit in)</p>
     <pre>
         var DataFormHandler = new (require('data_form.js'))(app)
-        DataFormHandler.addResource('modelname',require('myschema.js))
+        DataFormHandler.addResource('Person',require('person_schema.js'))
 
         &ltform-input ng-repeat="field in formSchema" info="{{field}}"&gt&lt/form-input&gt</pre>
     </div>
