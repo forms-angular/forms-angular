@@ -1,6 +1,6 @@
 'use strict';
 
-var formsAngular = angular.module('formsAngular', ['ui','ui.bootstrap.dropdownToggle']);
+var formsAngular = angular.module('formsAngular', ['ui','ui.bootstrap.dropdownToggle','ui.bootstrap.tabs']);
 
 // Ideally would want a config call in here which adds the routes, below, but couldn't get it to work
 //    when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html', controller: "BaseCtrl"}).
