@@ -105,7 +105,7 @@ describe('formInput', function () {
                 scope.$digest();
             }));
 
-            it('has a heading for the Exams section', function() {
+            it('has Exams section', function() {
                 var thisElm = elm.find('.schema-head');
                 expect(thisElm.length).toBe(1);
                 expect((thisElm).text()).toBe('Exams');
@@ -147,7 +147,7 @@ describe('formInput', function () {
                 scope.$digest();
             }));
 
-            it('has a heading for the Exams section', function() {
+            it('has amended Exams section', function() {
                 var thisElm = elm.find('.schema-head');
                 expect(thisElm.length).toBe(1);
                 expect((thisElm).text()).toBe('Exams');
