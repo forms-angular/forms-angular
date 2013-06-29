@@ -1,8 +1,11 @@
 <div ng-controller="ModelCtrl">
-    <h1 id="main-head">Welcome to forms-angular</h1>
+
+<section id="intro">
+    <h1>Welcome to forms-angular</h1>
+
     <div class="row-fluid">
-    <div class="hero-unit span6 big-box">
-    <h4>Turn this...</h4>
+        <div class="hero-unit span6 big-box">
+            <h4>Turn this...</h4>
     <pre>var PersonSchema = new Schema({
     surname: {type:String, required:true, index:true},
     forename: {type:String, index:true},
@@ -12,31 +15,41 @@
     dateOfBirth: Date,
     accepted: Boolean
 });</pre>
-    </div>
-    <div class="hero-unit span6 big-box">
-        <h4>...into this</h4>
-        <img src="/img/screen.png" alt="Screen shot of simple form">
-    </div>
+        </div>
+        <div class="hero-unit span6 big-box">
+            <h4>...into this</h4>
+            <img src="/img/screen.png" alt="Screen shot of simple form">
+        </div>
     </div>
     <div class="row-fluid">
-    <div class="span8 offset2">
-<h4 class="text-center" >...with three lines of code!</h4><p class="text-center">(though you will find it easier to start with the <a href="https://github.com/mchapman/forms-angular/tree/master/minimal" target="_blank">minimal example</a> to understand how they fit in)</p>
+        <div class="span8 offset2">
+            <h4 class="text-center">...with three lines of code!</h4>
+
+            <p class="text-center">(though you will find it easier to start with the <a
+                    href="https://github.com/mchapman/forms-angular/tree/master/minimal" target="_blank">minimal
+                example</a> to understand how they fit in)</p>
     <pre>
         var DataFormHandler = new (require('data_form.js'))(app)
         DataFormHandler.addResource('Person',require('person_schema.js'))
 
         &ltform-input ng-repeat="field in formSchema" info="{{field}}"&gt&lt/form-input&gt</pre>
+        </div>
     </div>
-    </div>
-    <br />
-    <p><strong>forms-angular</strong> is a form builder build on top of the <a href="http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and">MEAN stack</a>
-    (with a little <a href="http://twitter.github.io/bootstrap/">Twitter Bootstrap</a> and <a href="http://mongoosejs.com/">Mongoose</a> thrown in for good measure) that
-    enables you to generate forms super quickly.  At its simplest it takes a mongoose schema and <em>with no effort on your part</em> generates a form, complete with REST routing and bindings.</p>
+    <br/>
 
-    <h3>Forms</h3>
+    <p><strong>forms-angular</strong> is a form builder build on top of the <a
+            href="http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and">MEAN
+        stack</a>
+        (with a little <a href="http://twitter.github.io/bootstrap/">Twitter Bootstrap</a> and <a
+                href="http://mongoosejs.com/">Mongoose</a> thrown in for good measure) that
+        enables you to generate forms super quickly. At its simplest it takes a mongoose schema and <em>with no effort
+            on your part</em> generates a form, complete with REST routing and bindings.</p>
+</section>
+
+<section id="forms"><h3>Forms</h3>
 
     <p>All the input forms in the demo application use a very simple one line view (the third line of code above)
-    which generates the forms on the client using the Mongoose schemas, optionally fine-tuned by hand.</p>
+        which generates the forms on the client using the Mongoose schemas, optionally fine-tuned by hand.</p>
 
     <p>This demo application uses the models in the table below. Have a look at a schema or two and then click on the
         new
@@ -67,8 +80,9 @@
         </li>
         <li><strong>/#/:model/:id/edit</strong> which enables the user to edit a document</li>
     </ul>
+</section>
 
-    <h3>Custom Form Schemas</h3>
+<section id="custom-form-schemas"><h3>Custom Form Schemas</h3>
 
     <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the fields
         to include and any options. See the static in <a href="/code/b_using_options.js">this example</a>.
@@ -82,33 +96,41 @@
         </li>
         <li><strong>/#/:model/:formschema/:id/edit</strong></li>
     </ul>
+</section>
 
-    <h3>Schema Options</h3>
+<section id="schema-options"><h3>Schema Options</h3>
 
     <p>The mark-up of generated forms can be influenced by use of the <strong>form</strong> object in the schema type.
         The form object can have the following keys:
-        <ul>
-            <li><strong>hidden      </strong></li> inhibits this schema key from the generated form.
-            <li><strong>label       </strong></li> overrides the default input label.  label:null suppresses the label altogether.
-            <li><strong>placeHolder </strong></li> adds placeholder text to the input (depending on data type).
-            <li><strong>help        </strong></li> adds help text under the input
-            <li><strong>helpInline  </strong></li> adds help to the right of the input
-            <li><strong>directive   </strong></li> allows you to specify custom behaviour
-            <li><strong>select2     </strong></li> in an enum field or a reference field tells the system to use the select2
-                control rather than a select.  If the number of options is large in a reference field
-                then <strong>select2:{fngAjax:true}</strong> instructs the program to use ajax calls to query
-                the server rather than downloading the table.  The values in the select[2] control come from the <a href="/#/index#listing">listing fields</a>.
-            <strong><li>rows        </strong></li> sets the number of rows in inputs (such as textarea) that support this.
-        </ul>
+    <ul>
+        <li><strong>hidden</strong> inhibits this schema key from appearing on the generated form.</li>
+        <li><strong>label </strong> overrides the default input label. label:null suppresses the label altogether.</li>
+        <li><strong>placeHolder </strong> adds placeholder text to the input (depending on data type).</li>
+        <li><strong>help </strong> adds help text under the input.</li>
+        <li><strong>helpInline </strong> adds help to the right of the input.</li>
+        <li><strong>directive </strong> allows you to specify custom behaviour.</li>
+        <li><strong>select2 </strong> in an enum field or a reference field tells the system to use the select2
+        control rather than a select. If the number of options is large in a reference field
+        then <strong>select2:{fngAjax:true}</strong> instructs the program to use ajax calls to query
+        the server rather than downloading the table. The values in the select[2] control come from the <a
+            href="/#/index#listing">listing fields</a>.</li>
+        <li><strong>rows</strong> sets the number of rows in inputs (such as textarea) that support this.</li>
+        <li><strong>pane</strong> used to divide a large form up into panes accessed by tabs
+            (see <a href="/#/i_tabbed_forms/new">example</a>). This requires using the UI Bootstrap tabs module which
+            is not in the minimal deployment folder (but is in this demo).</li>
+    </ul>
 
-        <a href="/code/b_using_options.js">This example schema</a> and <a href="/#/b_using_options/new">this form</a> show many of these options in use.
+    <a href="/code/b_using_options.js">This example schema</a> and <a href="/#/b_using_options/new">this form</a> show
+    many of these options in use.
     </p>
+</section>
 
-    <h3 id="listing">Listing</h3>
+<section id="listing">
+    <h3>Listing</h3>
 
     <p>The listing routes (of the format <strong>/#/:model</strong>) are used to build a page
         containing a list of documents in the collection, showing the fields that have a truthy <strong>list</strong>
-        key.  If none of the schema objects have a list key the first two string fields are used.
+        key. If none of the schema objects have a list key the first two string fields are used.
     </p>
 
     <p>Listing routes support filters, such as</p>
@@ -130,10 +152,12 @@
 
     <p>These can be combined (though there appears to be a problem unless the filter precedes the aggregation).</p>
 
-    <p>By default the list order is the MongoDB natural order.  The default list order for a table can be set by
-        specifying a <strong>listOrder</strong> option in the model definition (see <a href="/code/g_conditional_fields.js">g_conditional_fields</a> for an example).</p>
+    <p>By default the list order is the MongoDB natural order. The default list order for a table can be set by
+        specifying a <strong>listOrder</strong> option in the model definition (see <a
+                href="/code/g_conditional_fields.js">g_conditional_fields</a> for an example).</p>
+</section>
 
-    <h3>API</h3>
+<section id="api"><h3>API</h3>
 
     <p>The Angular controllers make use of the following API calls:</p>
 
@@ -145,12 +169,17 @@
         <li><strong>/api/:model/:id</strong> returns a single document from the collection</li>
         <li><strong>/api/:model/:id/list</strong> returns how a document should appear in a list</li>
     </ul>
+</section>
 
+<section id="form-buttons">
     <h3>Form Buttons</h3>
     The form button customisation is currently limited to over-riding the default enabled state of the buttons by
     defining
     functions in a controller for the model (or model and form). See <a href="/demo/d-array-example.js">here</a> for an
     example.
+</section>
+
+<section id="search">
     <h3>Search</h3>
 
     <p>It is easy to incorporate a simple search form, as shown in the Navbar. When you enter text into it the
@@ -170,31 +199,40 @@
             string is found at the beginning of an indexed field which satisfy the conditions in the filter.
         </li>
     </ul>
-    <p>There are a number of options that can be added to model exports to modify the search behaviour.  Examples can be found
-    in the model definitions files for <a href="/code/f_nested_schema.js">f_nested_schema</a> and <a href="/code/g_conditional_fields.js">g_conditional_fields</a>.</p>
+    <p>There are a number of options that can be added to model exports to modify the search behaviour. Examples can be
+        found
+        in the model definitions files for <a href="/code/f_nested_schema.js">f_nested_schema</a> and <a
+                href="/code/g_conditional_fields.js">g_conditional_fields</a>.</p>
     <ul>
-        <li><strong>searchImportance</strong> can be used to determine the order of table searches.  There is an example</li>
+        <li><strong>searchImportance</strong> can be used to determine the order of table searches. There is an example
+        </li>
         <li><strong>searchOrder</strong> can be used to set the default ordering of the search results within a model.
-            It is normally used in conjunction with searchImportance.</li>
-        <li><strong>searchResultFormat</strong> allows fine control of the display of search results.  It points to a
-        function which returns an object which must contain the following:
-        <ul>
-            <li><strong>resource</strong> the model name (or model/customForm) that the search result will link to</li>
-            <li><strong>resourceText</strong> the display name for the resource</li>
-            <li><strong>id</strong> the id to link to</li>
-            <li><strong>weighting</strong> specifies the sort ordering</li>
-            <li><strong>text</strong> the display text for the item</li>
-        </ul></li>
+            It is normally used in conjunction with searchImportance.
+        </li>
+        <li><strong>searchResultFormat</strong> allows fine control of the display of search results. It points to a
+            function which returns an object which must contain the following:
+            <ul>
+                <li><strong>resource</strong> the model name (or model/customForm) that the search result will link to
+                </li>
+                <li><strong>resourceText</strong> the display name for the resource</li>
+                <li><strong>id</strong> the id to link to</li>
+                <li><strong>weighting</strong> specifies the sort ordering</li>
+                <li><strong>text</strong> the display text for the item</li>
+            </ul>
+        </li>
     </ul>
 
     A truthy <strong>noSearch</strong> key means index on a schema type is not used in the searchBox searches.
     A use case for this would be an index that is used in reports for grouping which has no meaning in a search.
+</section>
 
-    <h3>Navigation</h3>
+<section id="navigation"><h3>Navigation</h3>
 
     <p>The menu can be added to where required by the models. The NavCtrl controller loads menus from "model
         controllers"
         (see an example <a href="/#/b_using_options">here</a> and the controller source code <a
                 href="/demo/b-using-options.js">here</a>).
         The options can be configured to appear when records are being listed, edited or created.</p>
+</section>
+
 </div>
