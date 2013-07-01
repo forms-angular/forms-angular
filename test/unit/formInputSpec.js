@@ -309,6 +309,33 @@ describe('formInput', function () {
 
     });
 
+    describe('generates readonly inputs', function () {
+
+        beforeEach(inject(function ($rootScope, $controller, $compile) {
+
+            elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '</form>');
+
+            scope = $rootScope;
+            scope.schema = [
+                {name: "name", id: "1", label: "Name", type: "text", readonly: true},
+                {name: "description", id: "2", label: "Desc", type: "textarea", rows: 10, readonly: true}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('text and textarea', function () {
+            var input = elm.find('input:first');
+            expect(input.attr('readonly')).toBe('readonly');
+            input = elm.find('textarea');
+            expect(input.attr('readonly')).toBe('readonly');
+        });
+
+    });
+
     describe('generates selects for enumerated lists', function () {
 
         beforeEach(inject(function ($rootScope, $controller, $compile) {

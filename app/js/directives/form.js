@@ -25,7 +25,8 @@ formsAngular
                                 }
                             }
                             var value
-                                , requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
+                                , requiredStr = (isRequired || fieldInfo.required) ? ' required' : ''
+                                , readonlyStr = fieldInfo.readonly ? ' readonly' : '';
 
                             if (fieldInfo.type == 'select') {
                                 if (fieldInfo.placeHolder) {placeHolder = 'data-placeholder="' + fieldInfo.placeHolder + '" '}
@@ -45,9 +46,9 @@ formsAngular
                             } else {
                                 var placeholder = fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "";
                                 if (fieldInfo.type == 'textarea') {
-                                    value = '<textarea ' + focusStr + placeholder + (fieldInfo.rows ? 'rows = "' + fieldInfo.rows + '" ' : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + ' />';
+                                    value = '<textarea ' + focusStr + placeholder + (fieldInfo.rows ? 'rows = "' + fieldInfo.rows + '" ' : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + (fieldInfo.add ? fieldInfo.add : '') + ' />';
                                 } else {
-                                    value = '<input ' + focusStr + placeholder + 'type="' + info.type + '" ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + (fieldInfo.add ? fieldInfo.add : '') + '/>';
+                                    value = '<input ' + focusStr + placeholder + 'type="' + info.type + '" ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + (fieldInfo.add ? fieldInfo.add : '') + '/>';
                                 }
                             }
                             if (fieldInfo.helpInline) {

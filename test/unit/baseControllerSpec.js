@@ -183,6 +183,31 @@ describe('"BaseCtrl"', function(){
 
     });
 
+    describe('handles read only fields', function() {
+
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/collection').respond(
+                {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","setters":[],"getters":[],"options":{"readonly":true},"_index":null},
+                    "town":{"instance":"String"}}
+            );
+            scope = $rootScope.$new();
+            $location.$$path = '/collection/new';
+            ctrl = $controller("BaseCtrl", {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('creates correct elements', function() {
+            expect(scope.formSchema.length).toBe(2);
+            expect(scope.formSchema[0].hasOwnProperty('readonly')).toBe(true);
+            expect(scope.formSchema[0].readonly).toBe(true);
+        });
+
+    });
+
+
     describe('handles simple conditional display fields', function() {
 
         var scope, ctrl;

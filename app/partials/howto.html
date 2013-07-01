@@ -98,18 +98,19 @@
     </ul>
 </section>
 
-<section id="schema-options"><h3>Schema Options</h3>
+<section id="schema-options" ><h3>Schema Options</h3>
 
     <p>The mark-up of generated forms can be influenced by use of the <strong>form</strong> object in the schema type.
         The form object can have the following keys:
     <ul>
         <li><strong>hidden</strong> inhibits this schema key from appearing on the generated form.</li>
-        <li><strong>label </strong> overrides the default input label. label:null suppresses the label altogether.</li>
-        <li><strong>placeHolder </strong> adds placeholder text to the input (depending on data type).</li>
-        <li><strong>help </strong> adds help text under the input.</li>
-        <li><strong>helpInline </strong> adds help to the right of the input.</li>
-        <li><strong>directive </strong> allows you to specify custom behaviour.</li>
-        <li><strong>select2 </strong> in an enum field or a reference field tells the system to use the select2
+        <li><strong>label</strong> overrides the default input label. label:null suppresses the label altogether.</li>
+        <li><strong>placeHolder</strong> adds placeholder text to the input (depending on data type).</li>
+        <li><strong>help</strong> adds help text under the input.</li>
+        <li><strong>helpInline</strong> adds help to the right of the input.</li>
+        <li><strong>directive</strong> allows you to specify custom behaviour.</li>
+        <li><strong>readonly</strong> adds the readonly attribute to the generated input (doesn't work with date - and perhaps other types).</li>
+        <li><strong>select2</strong> in an enum field or a reference field tells the system to use the select2
         control rather than a select. If the number of options is large in a reference field
         then <strong>select2:{fngAjax:true}</strong> instructs the program to use ajax calls to query
         the server rather than downloading the table. The values in the select[2] control come from the <a
