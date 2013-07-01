@@ -110,11 +110,12 @@
         <li><strong>helpInline</strong> adds help to the right of the input.</li>
         <li><strong>directive</strong> allows you to specify custom behaviour.</li>
         <li><strong>readonly</strong> adds the readonly attribute to the generated input (doesn't work with date - and perhaps other types).</li>
-        <li><strong>select2</strong> in an enum field or a reference field tells the system to use the select2
-        control rather than a select. If the number of options is large in a reference field
-        then <strong>select2:{fngAjax:true}</strong> instructs the program to use ajax calls to query
-        the server rather than downloading the table. The values in the select[2] control come from the <a
-            href="/#/index#listing">listing fields</a>.</li>
+        <li><strong>select2</strong> in an enum field or a reference field tells the system to use the
+            <a href="http://ivaynberg.github.io/select2/"><em>select2</em></a> control rather than a
+            <em>select</em>. If the number of options is large in a reference field then
+            <strong>select2:{fngAjax:true}</strong> instructs the program to use ajax calls to query
+            the server rather than downloading the table. The values in the select[2] control come
+            from the <a href="/#/index#listing">listing fields</a>.</li>
         <li><strong>rows</strong> sets the number of rows in inputs (such as textarea) that support this.</li>
         <li><strong>pane</strong> used to divide a large form up into panes accessed by tabs
             (see <a href="/#/i_tabbed_forms/new">example</a>). This requires using the UI Bootstrap tabs module which
