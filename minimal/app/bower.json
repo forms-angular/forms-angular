@@ -1,0 +1,16 @@
+{
+    "name": "forms-angular",
+    "version": "0.0.0",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "components"
+        ],
+    "dependencies": {
+        "angular-ui-select2": "latest",
+        "underscore": "latest",
+        "angular-ui-bootstrap-bower": "latest",
+        "jquery-ui": "latest",
+        "angular-ui-date": "latest"
+    }
+}
