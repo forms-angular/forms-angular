@@ -28,7 +28,7 @@ formsAngular
                                 , requiredStr = (isRequired || fieldInfo.required) ? ' required' : ''
                                 , readonlyStr = fieldInfo.readonly ? ' readonly' : '';
 
-                            if (fieldInfo.type == 'select') {
+                            if (fieldInfo.type === 'select') {
                                 if (fieldInfo.placeHolder) {placeHolder = 'data-placeholder="' + fieldInfo.placeHolder + '" '}
                                 if (fieldInfo.select2 && fieldInfo.select2.fngAjax) {
                                     value = '<div class="input-append">';
@@ -43,6 +43,8 @@ formsAngular
                                     value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                                     value += '</select>';
                                 }
+                            } else if (fieldInfo.type === 'link') {
+                                value = '<a ng-href="/#/' + fieldInfo.ref + '/{{ ' + modelString  + '}}/edit">' + fieldInfo.linkText + '</a>';
                             } else {
                                 var common = focusStr + (fieldInfo.add ? fieldInfo.add : '') + (fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "") + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                                 if (fieldInfo.type == 'textarea') {
@@ -117,14 +119,10 @@ formsAngular
                                         '</div>';
                                 } else {
                                     // Single fields here
-                                    if (info.link && info.link.textOnly) {
-
-                                    } else {
-                                        template += generateLabel(info) +
-                                            '<div class="controls">' +
-                                            generateInput(info, null, attrs.required, info.id) +
-                                            '</div>';
-                                    }
+                                    template += generateLabel(info) +
+                                        '<div class="controls">' +
+                                        generateInput(info, null, attrs.required, info.id) +
+                                        '</div>';
                                 }
                             }
                             template += '</div>';

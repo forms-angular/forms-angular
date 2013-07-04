@@ -80,83 +80,90 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 formInstructions.type = 'text';
             }
         } else if (mongooseType.instance == 'ObjectID') {
-            formInstructions.type = 'select';
-            if (formInstructions.select2) {
-                $scope.select2List.push(formInstructions.name)
-                if (formInstructions.select2.fngAjax) {
-                    // create the instructions for select2
-                    select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g,'');
-                    $scope[select2ajaxName] = {
-                        allowClear: !mongooseOptions.required,
-                        minimumInputLength: 2,
-                        initSelection : function (element, callback) {
-                            $http.get('api/' + mongooseOptions.ref + '/' +element.val() + '/list').success(function (data) {
-                                if (data.success === false) {
-                                    $location.path("/404");
-                                }
-                                var display = {id: element.val(), text: data.list};
-                                master[formInstructions.name] = display;
-                                callback(display);
-
-                            }).error(function () {
-                                    $location.path("/404");
-                                });
-                        },
-                        ajax: {
-                            url: "/api/search/" + mongooseOptions.ref,
-                            data: function (term, page) { // page is the one-based page number tracked by Select2
-                                return {
-                                    q: term, //search term
-                                    page_limit: 10, // page size
-                                    page: page // page number
-                                }
-                            },
-                            results: function (data) {
-                                return {results: data.results, more: data.moreCount > 0};
-                            }
-                        }
-                    };
-                    _.extend($scope[select2ajaxName], formInstructions.select2);
-                    formInstructions.select2.fngAjax = select2ajaxName;
-                } else {
-                    if (formInstructions.select2 == true) {
-                        formInstructions.select2 = {};
-                    }
-                    $scope['select2'+formInstructions.name] = {
-                        allowClear: !mongooseOptions.required,
-                        initSelection: function(element, callback) {
-                            var myId,
-                                myVal = element.val();
-                            if ($scope[formInstructions.options].length > 0) {
-                                myId = convertListValueToId(myVal, $scope[formInstructions.options], $scope[formInstructions.ids], formInstructions.name)
-                            } else {
-                                myId = myVal;
-                            }
-                            var display = {id: myId, text: myVal};
-                            callback(display);
-                        },
-                        query: function (query) {
-                            var data = {results: []},
-                                searchString = query.term.toUpperCase();
-                            for (var i = 0; i < $scope[formInstructions.options].length ; i++) {
-                                if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
-                                    data.results.push({id: $scope[formInstructions.ids][i], text: $scope[formInstructions.options][i]})
-                                }
-                            }
-                            query.callback(data);
-                        }
-                    };
-                    _.extend($scope['select2'+formInstructions.name], formInstructions.select2);
-                    formInstructions.select2.s2query = 'select2'+formInstructions.name;
+            formInstructions.ref = mongooseOptions.ref;
+            if (formInstructions.link && formInstructions.link.linkOnly) {
+                formInstructions.type = 'link';
+                formInstructions.linkText = formInstructions.link.text;
+                delete formInstructions.link;
+            } else {
+                formInstructions.type = 'select';
+                if (formInstructions.select2) {
                     $scope.select2List.push(formInstructions.name)
+                    if (formInstructions.select2.fngAjax) {
+                        // create the instructions for select2
+                        select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g,'');
+                        $scope[select2ajaxName] = {
+                            allowClear: !mongooseOptions.required,
+                            minimumInputLength: 2,
+                            initSelection : function (element, callback) {
+                                $http.get('api/' + mongooseOptions.ref + '/' +element.val() + '/list').success(function (data) {
+                                    if (data.success === false) {
+                                        $location.path("/404");
+                                    }
+                                    var display = {id: element.val(), text: data.list};
+                                    master[formInstructions.name] = display;
+                                    callback(display);
+
+                                }).error(function () {
+                                        $location.path("/404");
+                                    });
+                            },
+                            ajax: {
+                                url: "/api/search/" + mongooseOptions.ref,
+                                data: function (term, page) { // page is the one-based page number tracked by Select2
+                                    return {
+                                        q: term, //search term
+                                        page_limit: 10, // page size
+                                        page: page // page number
+                                    }
+                                },
+                                results: function (data) {
+                                    return {results: data.results, more: data.moreCount > 0};
+                                }
+                            }
+                        };
+                        _.extend($scope[select2ajaxName], formInstructions.select2);
+                        formInstructions.select2.fngAjax = select2ajaxName;
+                    } else {
+                        if (formInstructions.select2 == true) {
+                            formInstructions.select2 = {};
+                        }
+                        $scope['select2'+formInstructions.name] = {
+                            allowClear: !mongooseOptions.required,
+                            initSelection: function(element, callback) {
+                                var myId,
+                                    myVal = element.val();
+                                if ($scope[formInstructions.options].length > 0) {
+                                    myId = convertListValueToId(myVal, $scope[formInstructions.options], $scope[formInstructions.ids], formInstructions.name)
+                                } else {
+                                    myId = myVal;
+                                }
+                                var display = {id: myId, text: myVal};
+                                callback(display);
+                            },
+                            query: function (query) {
+                                var data = {results: []},
+                                    searchString = query.term.toUpperCase();
+                                for (var i = 0; i < $scope[formInstructions.options].length ; i++) {
+                                    if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
+                                        data.results.push({id: $scope[formInstructions.ids][i], text: $scope[formInstructions.options][i]})
+                                    }
+                                }
+                                query.callback(data);
+                            }
+                        };
+                        _.extend($scope['select2'+formInstructions.name], formInstructions.select2);
+                        formInstructions.select2.s2query = 'select2'+formInstructions.name;
+                        $scope.select2List.push(formInstructions.name)
+                        formInstructions.options = suffixCleanId(formInstructions, 'Options');
+                        formInstructions.ids = suffixCleanId(formInstructions, '_ids');
+                        setUpSelectOptions(mongooseOptions.ref, formInstructions);
+                    }
+                } else {
                     formInstructions.options = suffixCleanId(formInstructions, 'Options');
                     formInstructions.ids = suffixCleanId(formInstructions, '_ids');
                     setUpSelectOptions(mongooseOptions.ref, formInstructions);
                 }
-            } else {
-                formInstructions.options = suffixCleanId(formInstructions, 'Options');
-                formInstructions.ids = suffixCleanId(formInstructions, '_ids');
-                setUpSelectOptions(mongooseOptions.ref, formInstructions);
             }
         } else if (mongooseType.instance == 'Date') {
             formInstructions.type = 'text';
