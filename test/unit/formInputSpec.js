@@ -37,7 +37,7 @@ describe('formInput', function () {
 
     describe('generate inputs from schema', function () {
 
-        beforeEach(inject(function ($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -84,7 +84,7 @@ describe('formInput', function () {
     describe('handles sub schemas', function() {
 
         describe('default behaviour', function() {
-            beforeEach(inject(function ($rootScope, $controller, $compile) {
+            beforeEach(inject(function ($rootScope, $compile) {
                 elm = angular.element(
                     '<form name="myForm" class="form-horizontal compact"> ' +
                         '<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>' +
@@ -126,7 +126,7 @@ describe('formInput', function () {
         });
 
         describe('Inhibit add and remove', function() {
-            beforeEach(inject(function ($rootScope, $controller, $compile) {
+            beforeEach(inject(function ($rootScope, $compile) {
                 elm = angular.element(
                     '<form name="myForm" class="form-horizontal compact"> ' +
                         '<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>' +
@@ -170,7 +170,7 @@ describe('formInput', function () {
 
     describe('does not generate label element when label is blank', function () {
 
-        beforeEach(inject(function ($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -210,7 +210,7 @@ describe('formInput', function () {
 
     describe('generates "required" attribute when appropriate', function () {
 
-        beforeEach(inject(function ($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -245,7 +245,7 @@ describe('formInput', function () {
 
     describe('generates help elements', function () {
 
-        beforeEach(inject(function ($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -276,7 +276,7 @@ describe('formInput', function () {
 
     describe('generates textarea inputs', function () {
 
-        beforeEach(inject(function ($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -311,7 +311,7 @@ describe('formInput', function () {
 
     describe('generates readonly inputs', function () {
 
-        beforeEach(inject(function ($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -338,7 +338,7 @@ describe('formInput', function () {
 
     describe('generates selects for enumerated lists', function () {
 
-        beforeEach(inject(function ($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -375,7 +375,7 @@ describe('formInput', function () {
 
     describe('generates selects for reference lookups', function () {
 
-        beforeEach(inject(function ($rootScope, $controller, $compile) {
+        beforeEach(inject(function ($rootScope, $compile) {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
@@ -413,7 +413,7 @@ describe('formInput', function () {
     describe('displays error messages', function () {
 
         beforeEach(
-            inject(function ($rootScope, $controller, $compile) {
+            inject(function ($rootScope, $compile) {
                 elm = angular.element(
                     '<div ng-show="errorMessage" class="row-fluid">'+
                         '<div class="span6 offset3 alert alert-error">'+

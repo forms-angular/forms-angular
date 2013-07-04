@@ -27,6 +27,7 @@
             postcode: "AB2 3ES"},
         email: "ReportingIndex@somewhere.com",
         weight: 124,
+        eyeColour: "Brown",
         login: "JohnI",
         passwordHash: "sha1$22b5fc3b$1$60a33af349b5a95cc0ab3f29b4c95a819d944e75",
         accepted: true,
