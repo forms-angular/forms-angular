@@ -6,7 +6,7 @@ var ExamsSchema = new Schema({
     examDate: Date,
     score: Number,
     result: {type: String, enum:['distinction','merit','pass','fail']},
-    grader: { type: Schema.Types.ObjectId, ref: 'b_using_options'}
+    grader: { type: Schema.Types.ObjectId, ref: 'b_using_options', form:{select2:{fngAjax:true}}}
 });
 
 var FSchema = new Schema({
@@ -33,7 +33,6 @@ F.prototype.searchResultFormat = function() {
         text: this.surname + ', ' + this.forename
     }
 }
-
 
 module.exports = {
     model : F,

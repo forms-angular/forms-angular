@@ -819,7 +819,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     var updateRecordWithLookupValues = function (schemaElement) {
         // Update the master and the record with the lookup values
-        if ((schemaElement.select2 && (angular.equals(master[schemaElement.name], $scope.record[schemaElement.name.text]))) ||
+        if ((schemaElement.select2 && (angular.equals(master[schemaElement.name], $scope.record[schemaElement.name].text))) ||
                     (angular.equals(master[schemaElement.name], $scope.record[schemaElement.name]))) {
             updateObject(schemaElement.name, master, function (value) {
                 return( convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement, '_ids')]));
