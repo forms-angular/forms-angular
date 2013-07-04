@@ -44,11 +44,11 @@ formsAngular
                                     value += '</select>';
                                 }
                             } else {
-                                var placeholder = fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "";
+                                var common = focusStr + (fieldInfo.add ? fieldInfo.add : '') + (fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "") + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                                 if (fieldInfo.type == 'textarea') {
-                                    value = '<textarea ' + focusStr + placeholder + (fieldInfo.rows ? 'rows = "' + fieldInfo.rows + '" ' : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + (fieldInfo.add ? fieldInfo.add : '') + ' />';
+                                    value = '<textarea ' + common + (fieldInfo.rows ? 'rows = "' + fieldInfo.rows + '" ' : '') + ' />';
                                 } else {
-                                    value = '<input ' + focusStr + placeholder + 'type="' + info.type + '" ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + (fieldInfo.add ? fieldInfo.add : '') + '/>';
+                                    value = '<input '    + common + 'type="' + info.type + '" />';
                                 }
                             }
                             if (fieldInfo.helpInline) {
@@ -117,10 +117,14 @@ formsAngular
                                         '</div>';
                                 } else {
                                     // Single fields here
-                                    template += generateLabel(info) +
-                                        '<div class="controls">' +
-                                        generateInput(info, null, attrs.required, info.id) +
-                                        '</div>';
+                                    if (info.link && info.link.textOnly) {
+
+                                    } else {
+                                        template += generateLabel(info) +
+                                            '<div class="controls">' +
+                                            generateInput(info, null, attrs.required, info.id) +
+                                            '</div>';
+                                    }
                                 }
                             }
                             template += '</div>';

@@ -22,6 +22,7 @@ lib-cov
 pids
 logs
 results
+app/components
 
 npm-debug.log
 

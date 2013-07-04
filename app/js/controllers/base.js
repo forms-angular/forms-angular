@@ -160,7 +160,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
         } else if (mongooseType.instance == 'Date') {
             formInstructions.type = 'text';
-            formInstructions.add = 'ui-date ui-date-format';
+            formInstructions.add = 'ui-date ui-date-format ';
         } else if (mongooseType.instance == 'boolean') {
             formInstructions.type = 'checkbox';
         } else if (mongooseType.instance == 'Number') {
