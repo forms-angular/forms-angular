@@ -23,6 +23,7 @@ pids
 logs
 results
 app/components
+js-build
 
 npm-debug.log
 

@@ -4,15 +4,7 @@ var formsAngular = angular.module('formsAngular', [
     'ui.select2'
     , 'ui.date'
 
-    // seems a bit silly to do this as all of ui-bootstrap is being loaded, but one day I may want to change that, so this serves as a list
-    , 'ui.bootstrap.dropdownToggle'
-
-    , 'ui.bootstrap.tabs'
-    , 'template/tabs/tab.html'
-    , 'template/tabs/tabset.html'
-
-//    , 'ui.bootstrap.datepicker'
-//    , 'template/datepicker/datepicker.html'
+    , 'ui.bootstrap'
 ]);
 
 // Ideally would want a config call in here which adds the routes, below, but couldn't get it to work
