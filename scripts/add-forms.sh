@@ -6,10 +6,10 @@ if [ $1 ]; then
 
 		grunt
 
-	    cp $BASE_DIR/../js-build/forms-angular.min.js $BASE_DIR/../../$1/app/lib/forms-angular.min.js
-	    cp $BASE_DIR/../js-build/forms-angular.js $BASE_DIR/../../$1/app/lib/forms-angular.js
+	    cp $BASE_DIR/../js-build/forms-angular.min.js $BASE_DIR/../../$1/app/components/angular-forms/forms-angular.min.js
+	    cp $BASE_DIR/../js-build/forms-angular.js $BASE_DIR/../../$1/app/components/angular-forms/forms-angular.js
 
-	    cp $BASE_DIR/../app/css/forms-angular.css $BASE_DIR/../../$1/app/css/forms-angular.css
+	    cp $BASE_DIR/../app/css/forms-angular.css $BASE_DIR/../../$1/app/components/angular-forms/forms-angular.css
 	    cp $BASE_DIR/../app/partials/base-edit.html $BASE_DIR/../../$1/app/partials/base-edit.html
 	    cp $BASE_DIR/../app/partials/base-list.html $BASE_DIR/../../$1/app/partials/base-list.html
 	    cp $BASE_DIR/../server/lib/data_form.js $BASE_DIR/../../$1/server/lib/data_form.js
