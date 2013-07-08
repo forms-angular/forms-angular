@@ -53,7 +53,7 @@ formsAngular.controller('NavCtrl',['$scope', '$location', '$filter', '$locationP
 
     $scope.doClick = function(index) {
         // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
-        var args = $scope.items[index].args,
+        var args = $scope.items[index].args || [],
             fn = $scope.items[index].fn;
         switch (args.length) {
             case  0:
