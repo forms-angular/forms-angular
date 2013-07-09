@@ -11,7 +11,7 @@ var BSchema = new Schema({
         line2: {type: String, form:{label: null}},           // null label - gives a blank label
         line3: {type: String, form:{label: null}},
         town: {type: String, form:{label: 'Town', placeHolder: "Post town"}},          // You can specify place holders
-        postcode: {type: String, form:{label: 'Postcode', help:'Enter your postcode or zip code'}},  // help displays on the line under the control
+        postcode: {type: String, form:{label: 'Postcode', size:'small', help:'Enter your postcode or zip code'}},  // help displays on the line under the control, size adds matching bootstrap input- class
         country: {type: String, form:{label:"Country", hidden:true}},
         surveillance: {type: Boolean, secure:true, form:{hidden:true}}
     },

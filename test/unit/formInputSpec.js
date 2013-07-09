@@ -444,5 +444,30 @@ describe('formInput', function () {
         });
     });
 
+    describe('supports bootstrap control sizing', function () {
+
+        beforeEach(inject(function ($rootScope, $compile) {
+            elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact">' +
+                    '<form-input info="{{formSchema}}"></form-input>' +
+                    '</form>');
+
+            scope = $rootScope;
+            scope.formSchema = {name: "desc", id: "desc_id", label: "Description", size: "small", type: "text"};
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have input', function () {
+            var input = elm.find('input');
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input).toHaveClass('input-small');
+            expect(input.attr('id')).toBe('desc_id');
+            expect(input.attr('type')).toBe('text');
+        });
+
+    });
+
 });
 

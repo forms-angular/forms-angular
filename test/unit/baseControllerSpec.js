@@ -207,7 +207,6 @@ describe('"BaseCtrl"', function(){
 
     });
 
-
     describe('handles simple conditional display fields', function() {
 
         var scope, ctrl;

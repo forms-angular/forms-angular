@@ -26,19 +26,23 @@ formsAngular
                             }
                             var value
                                 , requiredStr = (isRequired || fieldInfo.required) ? ' required' : ''
-                                , readonlyStr = fieldInfo.readonly ? ' readonly' : '';
+                                , readonlyStr = fieldInfo.readonly ? ' readonly' : ''
+                                , common;
 
+                            var common = focusStr + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "");
                             if (fieldInfo.type === 'select') {
-                                if (fieldInfo.placeHolder) {placeHolder = 'data-placeholder="' + fieldInfo.placeHolder + '" '}
-                                if (fieldInfo.select2 && fieldInfo.select2.fngAjax) {
-                                    value = '<div class="input-append">';
-                                    value +=   '<input ui-select2="' + fieldInfo.select2.fngAjax +'" ' + focusStr + placeHolder + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
-                                    value +=   '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
-                                    value += '</div>';
-                                } else if (fieldInfo.select2) {
-                                    value = '<input ui-select2="'+ fieldInfo.select2.s2query +'" ' + focusStr + placeHolder + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '" class="fng-select2">';
+                                if (fieldInfo.select2) {
+                                    common += 'class="fng-select2' + (fieldInfo.size ? 'input-' + fieldInfo.size : '') + '"';
+                                    if ( fieldInfo.select2.fngAjax) {
+                                        value  = '<div class="input-append">';
+                                        value +=   '<input ui-select2="' + fieldInfo.select2.fngAjax +'" ' + common + '>';
+                                        value +=   '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
+                                        value += '</div>';
+                                    } else if (fieldInfo.select2) {
+                                        value = '<input ui-select2="'+ fieldInfo.select2.s2query +'" ' + common + '>';
+                                    }
                                 } else {
-                                    value = '<select ' + focusStr + 'ng-model="' + modelString + '" id="' + idString + '" name="' + idString + '">';
+                                    value = '<select ' + common + (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '')+ '>';
                                     if (!isRequired) { value += '<option></option>';}
                                     value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                                     value += '</select>';
@@ -46,7 +50,7 @@ formsAngular
                             } else if (fieldInfo.type === 'link') {
                                 value = '<a ng-href="/#/' + fieldInfo.ref + '/{{ ' + modelString  + '}}/edit">' + fieldInfo.linkText + '</a>';
                             } else {
-                                var common = focusStr + (fieldInfo.add ? fieldInfo.add : '') + (fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "") + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
+                                common += (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                                 if (fieldInfo.type == 'textarea') {
                                     value = '<textarea ' + common + (fieldInfo.rows ? 'rows = "' + fieldInfo.rows + '" ' : '') + ' />';
                                 } else {
