@@ -25,7 +25,11 @@ formsAngular.controller('NavCtrl',['$scope', '$location', '$filter', '$locationP
             })
         }
         catch(error) {
-            // No such controller
+            if (error.message === "Argument '" + controllerName + "' is not a function, got undefined") {
+                // No such controller - don't care
+            } else {
+                console.log("Unable to instantiate "+controllerName + " - " + error.message);
+            }
         }
     }
 
