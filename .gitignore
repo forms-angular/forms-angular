@@ -23,8 +23,7 @@ pids
 logs
 results
 app/components
-js-build/bower.json
-js-build/forms-angular.css
+js-build
 
 npm-debug.log
 
