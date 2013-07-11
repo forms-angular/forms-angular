@@ -24,7 +24,16 @@ var BSchema = new Schema({
 
     weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
 
-    eyeColour: {type: String, enum:['Blue','Brown','Green','Hazel'], required: false, form:{placeHolder:"Select eye colour", select2: {}}},  // Placeholders work in a combo box
+    eyeColour: {
+        type: String,
+        enum:['Blue','Brown','Green','Hazel'],
+        required: false,
+        form:{
+            placeHolder:"Select eye colour",   // Placeholders work in a combo box
+            select2: {},
+            help:'This control has had an event handler added to it (which looks horrid - sorry!).  See bottom of <a href="/#/index#postprocessing">home page</a> for details.'
+        }
+    },
     dateOfBirth: Date,
     accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
     interviewScore:{type:Number,form:{hidden:true},list:{}},  // this field does not appear on the form or listings, even though list is defined - not sure about this

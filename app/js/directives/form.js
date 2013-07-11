@@ -1,5 +1,5 @@
 formsAngular
-    .directive('formInput', ['$compile', function ($compile) {
+    .directive('formInput', ['$compile', '$rootScope', function ($compile, $rootScope) {
         return {
             restrict: 'E',
             replace: true,
@@ -32,7 +32,7 @@ formsAngular
                             var common = focusStr + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "");
                             if (fieldInfo.type === 'select') {
                                 if (fieldInfo.select2) {
-                                    common += 'class="fng-select2' + (fieldInfo.size ? 'input-' + fieldInfo.size : '') + '"';
+                                    common += 'class="fng-select2' + (fieldInfo.size ? ' input-' + fieldInfo.size : '') + '"';
                                     if ( fieldInfo.select2.fngAjax) {
                                         value  = '<div class="input-append">';
                                         value +=   '<input ui-select2="' + fieldInfo.select2.fngAjax +'" ' + common + '>';
@@ -168,6 +168,8 @@ formsAngular
                             // If this is not a test force the data dependent updates to the DOM
                             scope.updateDataDependentDisplay(scope.record, null, true);
                         }
+                        // Todo - find a better way of communicating with controllers
+                        $rootScope.$broadcast('formInputDone')
                     });
                 };
             }

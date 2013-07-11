@@ -235,13 +235,22 @@
     A use case for this would be an index that is used in reports for grouping which has no meaning in a search.
 </section>
 
-<section id="navigation"><h3>Navigation</h3>
+<section id="customisation"><h3>Customisation</h3>
 
-    <p>The menu can be added to where required by the models. The NavCtrl controller loads menus from "model
-        controllers"
-        (see an example <a href="/#/b_using_options">here</a> and the controller source code <a
-                href="/demo/b-using-options.js">here</a>).
+    Additional functionality can be added by using "model controllers" which have the name of
+    a model followed by <strong>Ctrl</strong> (or the name of the model followed by the name of
+    the custom form followed by Ctrl.  There is an sample model controller <a href="/demo/b-using-options.js">here</a>
+    which is used in the examples in this section. The NavCtrl controller handles the model controllers, so don't remove it.
+
+    <h5>Menu</h5>
+    <p>The menu can be added to where required by the models (see an example <a href="/#/b_using_options">here</a>)
         The options can be configured to appear when records are being listed, edited or created.</p>
+
+    <h5 id="postprocessing">Post form-input generation processing</h5>
+    <p>The form-input directive broadcasts a <strong>formInputDone</strong> message when it has
+    processed a control.  This can be acted on by the model controller.  In our <a href="/#/b_using_options">example</a> we
+    add a change handler to a select2 control which logs event data to the console when the eye colour is
+    changed.</p>
 </section>
 
 </div>
