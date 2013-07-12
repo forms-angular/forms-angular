@@ -826,14 +826,18 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     var updateRecordWithLookupValues = function (schemaElement) {
         // Update the master and the record with the lookup values
-        if ((schemaElement.select2 && (angular.equals(master[schemaElement.name], $scope.record[schemaElement.name].text))) ||
-                    (angular.equals(master[schemaElement.name], $scope.record[schemaElement.name]))) {
+        if (angular.equals(master[schemaElement.name], $scope.record[schemaElement.name]) ||
+            (schemaElement.select2 && angular.equals(master[schemaElement.name], $scope.record[schemaElement.name].text))) {
             updateObject(schemaElement.name, master, function (value) {
                 return( convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement, '_ids')]));
             });
-            $scope.record = angular.copy(master);
-        } else {
-            throw new Error("Cannot convert lookup values in changed record")
+            // TODO This needs a rethink - it is a quick workaround.  See https://trello.com/c/q3B7Usll
+            if (master[schemaElement.name]) {
+                $scope.record[schemaElement.name] = master[schemaElement.name];
+            }
+            // TODO Reintroduce after conversion to Angular 1.1+ and introduction of ng-if
+//        } else {
+//            throw new Error("Record has been changed from "+master[schemaElement.name]+" to "+ $scope.record[schemaElement.name] +" in lookup "+schemaElement.name+".  Cannot convert.")
         }
     };
 
