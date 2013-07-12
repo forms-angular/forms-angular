@@ -169,7 +169,7 @@ formsAngular
                             scope.updateDataDependentDisplay(scope.record, null, true);
                         }
                         // Todo - find a better way of communicating with controllers
-                        $rootScope.$broadcast('formInputDone')
+                        $rootScope.$broadcast('formInputDone',info)
                     });
                 };
             }
