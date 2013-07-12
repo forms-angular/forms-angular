@@ -1,7 +1,5 @@
 myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', function($scope, $data, $timeout) {
 
-    var initialisedEyeColorEvents = false;
-
     $scope.record = $data.record;
 
     $scope.doAlert = function(message, showId) {
@@ -12,22 +10,42 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
         alert(alertMessage);
     };
 
+    $scope.changeCase = function() {
+
+        function changeCaseInt(newCase) {
+            for (var property in $scope.record) {
+                if (property !== '_id' && typeof $scope.record[property] === 'string') {
+                    if (newCase === 'lower') {
+                        $scope.record[property] = $scope.record[property].toLowerCase();
+                    } else {
+                        $scope.record[property] = $scope.record[property].toUpperCase();
+                    }
+                }
+            }
+        }
+
+        if ($scope.record.surname == $scope.record.surname.toLowerCase()) {
+            changeCaseInt('upper');
+        } else {
+            changeCaseInt('lower');
+        }
+    };
+
     $scope.contextMenu = [
         {
             fn : $scope.doAlert,
-            args : ['Processing this record one',true],
+            args : ['Reading the data',true],
             listing: false,
             creating: false,
             editing: true,
-            text:"Process this record one"
+            text:"Demonstrate reading the data"
         },
         {
-            fn : $scope.doAlert,
-            args : ['Processing this record two',true],
+            fn : $scope.changeCase,
             listing: false,
             creating: false,
             editing: true,
-            text:"Process this record two"
+            text:"Demonstrate modifying the data"
         },
         {
             fn : $scope.doAlert,
@@ -39,9 +57,8 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
         }
     ];
 
-    var colours = ['#81B7DB','#C2A369','#6DDB4F','#47820C'];
-
     function setColour(number) {
+        var colours = ['#81B7DB','#C2A369','#6DDB4F','#47820C'];
         if (number != "") {
             $('#cg_f_eyeColour').css('background-color', colours[parseInt(number)]);
         } else {
@@ -49,19 +66,18 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
         }
     };
 
-    $scope.$on('formInputDone', function() {
-        if (!initialisedEyeColorEvents) {
-            var eyeColor = $('#f_eyeColour');
-            if (eyeColor.length > 0) {
-                initialisedEyeColorEvents = true;
+    $scope.$on('formInputDone', function(event, info) {
+        switch (info.id) {
+            case 'f_eyeColour' :
+                var eyeColor = $('#f_eyeColour');
                 eyeColor.on("change", function(e) {
                     console.log("change "+JSON.stringify({val:e.val, added:e.added, removed:e.removed}));
                     setColour(e.val);
                 });
                 $timeout(function(){
                     setColour(eyeColor.select2("val"))
-                });
-            }
+                },100);
+                break;
         }
     })
 }]);
