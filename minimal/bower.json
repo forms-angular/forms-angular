@@ -1,19 +1,19 @@
 {
-    "name": "forms-angular",
-    "version": "0.0.7",
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "components"
-    ],
-    "dependencies": {
-        "angular":"1.0.7",
-        "angular-ui-bootstrap-bower": "0.4.0",
-        "angular-ui-date":"0.0.3",
-        "angular-ui-select2": "0.0.2",
-        "jquery":"1.10.2",
-        "jquery-ui": "1.10.3",
-        "select2":"3.4.1",
-        "underscore": "1.4.4"
-    }
+  "name": "fng-minimal",
+  "version": "0.0.8",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": {
+    "angular": "1.0.7",
+    "angular-ui-bootstrap-bower": "0.4.0",
+    "angular-ui-date": "0.0.3",
+    "angular-ui-select2": "0.0.2",
+    "jquery": "1.10.2",
+    "jquery-ui": "1.10.3",
+    "select2": "3.4.1",
+    "underscore": "1.4.4"
+  }
 }
