@@ -3,10 +3,10 @@
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-ng.herokuapp.com/#/index",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "engines": {
     "node": "0.10.6",
-    "npm": "1.2.x"
+    "npm": "1.x"
   },
   "dependencies": {
     "express": "= 3.x",
