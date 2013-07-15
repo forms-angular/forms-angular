@@ -1,9 +1,9 @@
 {
-  "name": "fng-minimal",
+  "name": "forms-angular",
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A minimal deployment of forms-angular",
   "homepage": "http://forms-ng.herokuapp.com/#/index",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "engines": {
     "node": "0.10.6",
     "npm": "1.2.x"
@@ -16,10 +16,7 @@
     "async": "=0.2.x",
     "bower": ">= 0.9.2"
   },
-  "scripts": {
-    "start": "node ./server/server.js"
-  },
-  "main": "./server/server.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/mchapman/forms-angular"
