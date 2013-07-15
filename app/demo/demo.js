@@ -6,6 +6,7 @@ myDemoApp.config(['$routeProvider', function($routeProvider) {
 
         $routeProvider.
             when('/index', {templateUrl: 'partials/howto.html'} ).
+            when('/build-app', {templateUrl: 'partials/build-app.html'} ).
             when('/404', {templateUrl: 'partials/404.html'} ).
             when('/z_custom_form/new', {templateUrl: 'partials/custom-new.html', controller: "BaseCtrl"}).            // example view override
             when('/z_custom_form/:id/edit', {templateUrl: 'partials/custom-edit.html', controller: "BaseCtrl"}).      // example view override

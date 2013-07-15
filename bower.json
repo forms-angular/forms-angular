@@ -11,6 +11,8 @@
         "angular-ui-bootstrap-bower": "0.4.0",
         "angular-ui-date":"0.0.3",
         "angular-ui-select2": "0.0.2",
+        "bootstrap.css": "2.3.2",
+        "html5shiv-dist": "3.6.2",
         "jquery":"1.10.2",
         "jquery-ui": "1.10.3",
         "select2":"3.4.1",

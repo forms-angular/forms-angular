@@ -3,7 +3,6 @@
 var formsAngular = angular.module('formsAngular', [
     'ui.select2'
     , 'ui.date'
-
     , 'fng.ui.bootstrap'
 ]);
 

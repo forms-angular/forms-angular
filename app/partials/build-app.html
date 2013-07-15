@@ -1,0 +1,198 @@
+<h3>Prepare</h3>
+<p>(if you need to - you may already have these applications / packages installed)</p>
+
+<ul>
+    <li>Install <a href="http://expressjs.com">Express JS</a> - <code>npm install -g express</code></li>
+    <li>Install <a href="http://www.mongodb.org">MongoDB</a> (depends on operating system)</li>
+    <li>Install <a href="http://bower.io">Bower</a> - <code>npm install -g bower</code>
+</ul>
+
+<h3>Create</h3>
+
+In the shell do:
+<pre>
+<code>mkdir myapp
+cd myapp
+express
+npm install
+npm install forms-angular --save
+npm install mongoose --save
+cd public
+bower install forms-angular
+cd ..</code>
+</pre>
+
+<h3>Modify server code</h3>
+Add the following to app.js (use your own <a href="http://mongoosejs.com/docs/guide.html">Mongoose schema</a>):
+<pre><code>var mongoose = require('mongoose');
+var formsAngular = require('forms-angular');
+
+mongoose.connect('mongodb://localhost/mydb');
+
+var Schema = mongoose.Schema;
+
+var ApplicantSchema = new Schema({
+    surname: {type:String, required:true, index:true},
+    forename: {type:String, index:true},
+});
+
+var Applicant = mongoose.model('Applicant', ApplicantSchema),
+
+var DataFormHandler = new (formsAngular)(app);
+DataFormHandler.addResource('applicant', Applicant);   // Create and add more schemas to taste</code></pre>
+
+<h3>Create your front end</h3>
+
+<p>Create the following files:</p>
+        <p><strong>public/index.html</strong></p>
+        <pre><code ng-non-bindable>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;My App&lt;/title&gt;
+
+&lt;script type="text/javascript" src="components/jquery/jquery.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="components/jquery-ui/ui/jquery-ui.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" href="components/jquery-ui/themes/smoothness/jquery-ui.css"&gt;
+&lt;script type="text/javascript" src="components/angular/angular.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="components/underscore/underscore.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" href="components/bootstrap/css/bootstrap.css"&gt;
+&lt;link rel="stylesheet" href="components/bootstrap/css/bootstrap-responsive.css"&gt;
+&lt;script type="text/javascript" src="components/angular-ui-date/src/date.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="components/angular-ui-select2/src/select2.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" href="components/select2/select2.css"&gt;
+&lt;script type="text/javascript" src="components/select2/select2.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="components/forms-angular/forms-angular.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" href="components/forms-angular/forms-angular.css"&gt;
+&lt;!--[if lt IE 9]&gt;
+&lt;script src="components/html5shiv-dist/html5shiv.js"&gt;&lt;/script&gt;
+&lt;![endif]--&gt;
+&lt;script src="myapp.js"&gt;&lt;/script&gt;
+
+&lt;/head&gt;
+
+&lt;body ng-app="myApp" ng-controller="NavCtrl"&gt;
+    &lt;div class="navbar row"&gt;
+        &lt;div class="navbar-inner"&gt;
+            &lt;ul class="nav"&gt;
+                &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+                &lt;li ng-show="items.length &gt; 0" class="dropdown" &gt;
+                    &lt;a class="dropdown-toggle"&gt;
+                        {{contextMenu}}
+                    &lt;/a&gt;
+                    &lt;ul class="dropdown-menu"&gt;
+                        &lt;li ng-repeat="choice in items"&gt;
+                            &lt;a class="dropdown-option" href="{{choice.url}}" ng-click="doClick($index)"&gt;{{choice.text}}&lt;/a&gt;
+                        &lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/li&gt;
+            &lt;/ul&gt;
+            &lt;div class="span9"&gt;
+                &lt;div class="global-search" ng-controller="SearchCtrl"&gt;
+                    &lt;form class="navbar-search pull-right"&gt;
+                        &lt;div id="search-cg" class="control-group" ng-class="errorClass"&gt;
+                            &lt;input type="text" ng-model="searchTarget" class="search-query" placeholder="Search"&gt;
+                        &lt;/div&gt;
+                    &lt;/form&gt;
+                &lt;div class="search-results" ng-show="results.length &gt;= 1"&gt;
+                    &lt;div ng-repeat="result in results"&gt;
+                        &lt;a class="search-result" ng-href="#/{{result.resource}}/{{result.id}}/edit"&gt;
+                            {{result.resourceText}} {{result.text}}
+                        &lt;/a&gt;
+                    &lt;/div&gt;
+                    &lt;div ng-show="moreCount &gt; 0"&gt;(plus more - continue typing to narrow down search...)&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="container-fluid"&gt;
+    &lt;div ng-view&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</code></pre>
+<p><strong>public/myapp.js</strong></p>
+<pre><code>var myApp = angular.module('myApp', ['formsAngular']);
+
+myApp.config(['$routeProvider', function($routeProvider) {
+$routeProvider.
+    when('/index', {templateUrl: 'partials/index.html'} ).
+    when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html', controller: "BaseCtrl"}).
+    when('/:model/new', {templateUrl: 'partials/base-edit.html', controller: "BaseCtrl"}).
+    when('/:model', {templateUrl: 'partials/base-list.html', controller: "BaseCtrl"}).
+    otherwise({redirectTo: '/index'});
+}]);</code></pre>
+<p><strong>public/partials/index.html</strong></p>
+<pre><code ng-non-bindable>&lt;h1&gt;Applicants&lt;/h1&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;Create a new applicant at &lt;code&gt;&lt;a href="http://0.0.0.0:3000/#/applicant/new"&gt;http://0.0.0.0:3000/#/applicant/new&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;List applicants at &lt;code&gt;&lt;a href="http://0.0.0.0:3000/#/applicant"&gt;http://0.0.0.0:3000/#/applicant&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;Edit existing applicants by clicking on the links in the &lt;a href="http://0.0.0.0:3000/#/applicant"&gt;list&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<p><strong>public/partials/base-edit.html</strong></p>
+<pre><code ng-non-bindable>&lt;form name="myForm" class="form-horizontal compact" ng-controller="BaseCtrl"&gt;
+    &lt;div class="row-fluid form-header"&gt;
+        &lt;div class="span12 well"&gt;
+            &lt;div class="span11"&gt;
+                &lt;h4&gt;{{modelNameDisplay}} :
+                    &lt;span ng-repeat="field in listSchema"&gt;{{getListData(record, field.name)}} &lt;/span&gt;
+                &lt;/h4&gt;
+            &lt;/div&gt;
+            &lt;div class="span1"&gt;
+                &lt;div form-buttons&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div ng-show="errorMessage" class="row-fluid"&gt;
+        &lt;div class="span6 offset3 alert alert-error"&gt;
+            &lt;button type="button" class="close" ng-click="dismissError()"&gt;&times;&lt;/button&gt;
+            &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
+            &lt;div ng-bind-html-unsafe="errorMessage"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="row-fluid"&gt;
+        &lt;div ng-hide="panes.length"&gt;
+            &lt;form-input ng-repeat="field in formSchema" info="{{field}}"&gt;&lt;/form-input&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/form&gt;</code></pre>
+<p><strong>public/partials/base-list.html</strong></p>
+<pre><code ng-non-bindable>&lt;div ng-controller="BaseCtrl" class="row-fluid"&gt;
+    &lt;div class="hero-unit span12"&gt;
+        &lt;div class="row-fluid"&gt;
+            &lt;div class="pull-left"&gt;
+                &lt;h1&gt;{{modelNameDisplay}}&lt;/h1&gt;
+            &lt;/div&gt;
+            &lt;div class="pull-right"&gt;
+                &lt;div&gt;
+                    &lt;form class="navbar-search pull-right"&gt;
+                        &lt;input ng-model="recordFilter" class="search-query" placeholder="Filter"&gt;
+                    &lt;/form&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;br/&gt;
+                    &lt;br/&gt;
+                    &lt;button class="btn" ng-click="new()"&gt;&lt;i class="icon-plus"&gt;&lt;/i&gt; New&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="row-fluid"&gt;
+        &lt;a ng-repeat="record in recordList | filter:recordFilter" ng-href="/#/{{modelName}}/{{formPlusSlash}}{{record['_id']}}/edit"&gt;
+        &lt;div class="well well-small list-well"&gt;
+            &lt;div class="span{{12/listSchema.length}}" ng-repeat="field in listSchema"&gt;{{getListData(record, field.name)}} &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;/a&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+<h3>Run</h3>
+<p><code>node app.js</code></p>
+<p>Visit <a href="http://0.0.0.0:3000"><code>http://0.0.0.0:3000</code></a> in your browser.</p>
+
+<h3>Profit</h3>
+I'll get back to you on that...  I am writing various free and open source web sites for the social care sector,
+and profit is not really a what I am doing it for.

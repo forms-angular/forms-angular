@@ -45,9 +45,8 @@
     <script src="demo/d-array-example.js"></script>
 
     <!--[if lt IE 9]>
-    <script src="lib/html5_shiv.js"></script>
+    <script src="components/html5shiv-dist/html5shiv.js"></script>
     <![endif]-->
-    <!--This slows down tests when offline.  Need to set up mock back end -->
     <script type="text/javascript">
         if (window.location.hostname != '0.0.0.0') {
             var _gaq = _gaq || [];
@@ -79,7 +78,7 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li ng-repeat="choice in items">
-                        <a class="dropdown-option" href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                        <a class="dropdown-option" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
                     </li>
                 </ul>
             </li>
