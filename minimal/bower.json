@@ -1,6 +1,6 @@
 {
   "name": "fng-minimal",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "ignore": [
     "**/.*",
     "node_modules",
