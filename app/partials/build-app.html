@@ -36,10 +36,13 @@ var ApplicantSchema = new Schema({
     forename: {type:String, index:true},
 });
 
-var Applicant = mongoose.model('Applicant', ApplicantSchema),
+var Applicant = mongoose.model('Applicant', ApplicantSchema);
 
 var DataFormHandler = new (formsAngular)(app);
 DataFormHandler.addResource('applicant', Applicant);   // Create and add more schemas to taste</code></pre>
+
+<p>and comment out any lines that start with <code>app.get(</code>:</p><pre><code>// app.get('/', routes.index);
+// app.get('/users', user.list);</code></pre>
 
 <h3>Create your front end</h3>
 
@@ -56,8 +59,8 @@ DataFormHandler.addResource('applicant', Applicant);   // Create and add more sc
 &lt;link rel="stylesheet" href="components/jquery-ui/themes/smoothness/jquery-ui.css"&gt;
 &lt;script type="text/javascript" src="components/angular/angular.js"&gt;&lt;/script&gt;
 &lt;script type="text/javascript" src="components/underscore/underscore.js"&gt;&lt;/script&gt;
-&lt;link rel="stylesheet" href="components/bootstrap/css/bootstrap.css"&gt;
-&lt;link rel="stylesheet" href="components/bootstrap/css/bootstrap-responsive.css"&gt;
+&lt;link rel="stylesheet" href="components/bootstrap.css/css/bootstrap.css"&gt;
+&lt;link rel="stylesheet" href="components/bootstrap.css/css/bootstrap-responsive.css"&gt;
 &lt;script type="text/javascript" src="components/angular-ui-date/src/date.js"&gt;&lt;/script&gt;
 &lt;script type="text/javascript" src="components/angular-ui-select2/src/select2.js"&gt;&lt;/script&gt;
 &lt;link rel="stylesheet" href="components/select2/select2.css"&gt;
