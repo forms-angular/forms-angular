@@ -14,6 +14,7 @@ var CSchema = new Schema({
     }
 });
 
-var C = mongoose.model('C', CSchema);
+var C;
+try {C = mongoose.model('C') } catch(e) {C = mongoose.model('C', CSchema)}
 
 module.exports = C;

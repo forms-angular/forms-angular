@@ -9,6 +9,7 @@ var ZSchema = new Schema({
     termsAccepted: Boolean
 });
 
-var Z = mongoose.model('Z', ZSchema);
+var Z;
+try {Z = mongoose.model('Z') } catch(e) {Z = mongoose.model('Z', ZSchema)}
 
 module.exports = Z;

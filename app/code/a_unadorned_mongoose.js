@@ -10,6 +10,8 @@ var ASchema = new Schema({
     accepted: Boolean
 });
 
-var A = mongoose.model('A', ASchema);
+var A;
+
+try {A = mongoose.model('A') } catch(e) {A = mongoose.model('A', ASchema)}
 
 module.exports = A;

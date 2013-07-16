@@ -18,6 +18,7 @@ var ISchema = new Schema({
     freeText: {type: String, form:{type: 'textarea', rows:5, pane:'second'}}
 });
 
-var I = mongoose.model('I', ISchema);
+var I;
+try {I = mongoose.model('I') } catch(e) {I = mongoose.model('I', ISchema)}
 
 module.exports = I;

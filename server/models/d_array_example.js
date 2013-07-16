@@ -10,7 +10,8 @@ var DSchema = new Schema({
     specialSubjects: [String]
 });
 
-var D = mongoose.model('D', DSchema);
+var D;
+try {D = mongoose.model('D') } catch(e) {D = mongoose.model('D', DSchema)}
 
 module.exports = D;
 

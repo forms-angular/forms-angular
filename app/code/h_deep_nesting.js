@@ -34,7 +34,8 @@ var HSchema = new Schema({
     assistants: [{ type: Schema.Types.ObjectId, ref: 'b_using_options'}]
 });
 
-var H = mongoose.model('H', HSchema);
+var H;
+try {H = mongoose.model('H') } catch(e) {H = mongoose.model('H', HSchema)}
 
 module.exports = H;
 

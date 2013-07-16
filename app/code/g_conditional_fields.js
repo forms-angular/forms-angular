@@ -9,7 +9,8 @@ var GSchema = new Schema({
     startingPosition:{type:String, form:{showIf: {lhs: '$accepted', comp: 'eq', rhs: true}}}
 });
 
-var G = mongoose.model('G', GSchema);
+var G;
+try {G = mongoose.model('G') } catch(e) {G = mongoose.model('G', GSchema)}
 
 module.exports = {
     model : G,

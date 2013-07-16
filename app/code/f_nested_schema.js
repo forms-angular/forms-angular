@@ -15,7 +15,8 @@ var FSchema = new Schema({
     exams: {type: [ExamsSchema], form:{noAdd: true, noRemove: true}}
 });
 
-var F = mongoose.model('F', FSchema);
+var F;
+try {F = mongoose.model('F') } catch(e) {F = mongoose.model('F', FSchema)}
 
 F.prototype.searchResultFormat = function() {
 

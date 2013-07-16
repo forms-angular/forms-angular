@@ -11,7 +11,8 @@ var ESchema = new Schema({
     assistants: [{ type: Schema.Types.ObjectId, ref: 'a_unadorned_mongoose'}]
 });
 
-var E = mongoose.model('E', ESchema);
+var E;
+try {E = mongoose.model('E') } catch(e) {E = mongoose.model('E', ESchema)}
 
 module.exports = E;
 
