@@ -6,6 +6,11 @@
     margin: 8px 0;
 }
 
+.form-horizontal.compact input +.help-block {
+    margin-top: 0;
+    margin-bottom: 2px;
+}
+
 .form-horizontal button.form-btn {
     width: 8em;
     height: 2em;
