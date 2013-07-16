@@ -37,7 +37,8 @@ var BSchema = new Schema({
     dateOfBirth: Date,
     accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
     interviewScore:{type:Number,form:{hidden:true},list:{}},  // this field does not appear on the form or listings, even though list is defined - not sure about this
-    freeText: {type: String, form:{type: 'textarea', rows:5, help:'There is some validation on this field to ensure that the word "rude" is not entered.  Try it to see the record level error handling.'}}
+    freeText: {type: String, form:{type: 'textarea', rows:5, help:'There is some validation on this field to ensure that the word "rude" is not entered.  Try it to see the record level error handling.'}},
+    ipAddress: {type: String, form:{hidden:true}}
 });
 
 BSchema.pre('save', function(next) {
@@ -49,7 +50,8 @@ BSchema.pre('save', function(next) {
     return next();
 });
 
-var B = mongoose.model('B', BSchema);
+var B;
+try {B = mongoose.model('B') } catch(e) {B = mongoose.model('B', BSchema)}
 
 // Alternative form schemas can be defined as shown below
 BSchema.statics.form = function(layout) {
@@ -60,9 +62,15 @@ BSchema.statics.form = function(layout) {
             formSchema = {
                 surname:{label:"Family Name"},
                 "address.postcode":{},
-                "address.country": {}   // fields that are hidden by default but specified in the override schema are not hidden
+                "address.country": {hidden:false}
             };
             break;
+        case 'ipAddress' :   // used in testing
+            formSchema = {
+                ipAddress:{hidden:false}
+            };
+            break;
+
     }
     return formSchema;
 };
@@ -72,9 +80,14 @@ BSchema.statics.findAccepted = function(req,cb) {
     cb(null, B.find().where('accepted', true));
 };
 
+BSchema.statics.prepUpdate = function(doc, req) {
+    doc.ipAddress = req.ip;
+};
+
 module.exports = {
-    model : B                                  // pass the model in an object if you want to add options
-    , findFunc: BSchema.statics.findAccepted      // this can be used to 'pre' filter selections.
-                                                // A common use case is to restrict a user to only see their own records
-                                                // as described in https://groups.google.com/forum/?fromgroups=#!topic/mongoose-orm/TiR5OXR9mAM
+    model : B                                           // pass the model in an object if you want to add options
+    , findFunc: BSchema.statics.findAccepted            // this can be used to 'pre' filter selections.
+                                                        // A common use case is to restrict a user to only see their own records
+                                                        // as described in https://groups.google.com/forum/?fromgroups=#!topic/mongoose-orm/TiR5OXR9mAM
+    , onCleanseRequestSync: BSchema.statics.prepUpdate  // a hook that can be used to add something from environment to record before update
 };
