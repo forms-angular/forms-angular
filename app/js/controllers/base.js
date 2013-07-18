@@ -792,8 +792,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     var convertListValueToId = function (value, valuesArray, idsArray, fname) {
-        var textToConvert = _.isObject(value) ? value.text : value;
-        if (textToConvert.match(/^[0-9a-f]{24}$/)) {
+        var textToConvert = _.isObject(value) ? value.x : value;
+        if (textToConvert && textToConvert.match(/^[0-9a-f]{24}$/)) {
             return(textToConvert);  // a plugin probably added this
         } else {
             var index = valuesArray.indexOf(textToConvert);
