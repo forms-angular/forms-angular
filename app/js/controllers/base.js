@@ -88,7 +88,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             } else {
                 formInstructions.type = 'select';
                 if (formInstructions.select2) {
-                    $scope.select2List.push(formInstructions.name)
+                    $scope.select2List.push(formInstructions.name);
                     if (formInstructions.select2.fngAjax) {
                         // create the instructions for select2
                         select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g,'');
@@ -154,7 +154,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         };
                         _.extend($scope['select2'+formInstructions.name], formInstructions.select2);
                         formInstructions.select2.s2query = 'select2'+formInstructions.name;
-                        $scope.select2List.push(formInstructions.name)
+                        $scope.select2List.push(formInstructions.name);
                         formInstructions.options = suffixCleanId(formInstructions, 'Options');
                         formInstructions.ids = suffixCleanId(formInstructions, '_ids');
                         setUpSelectOptions(mongooseOptions.ref, formInstructions);
@@ -775,7 +775,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (schemaElement.array) {
             var returnArray = [];
             for (var j = 0; j < input.length; j++) {
-                returnArray.push(convertListValueToId(input[j].x, values, ids, schemaElement.name));
+                returnArray.push(convertListValueToId(input[j], values, ids, schemaElement.name));
             }
             return returnArray;
         } else {
@@ -793,11 +793,15 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     var convertListValueToId = function (value, valuesArray, idsArray, fname) {
         var textToConvert = _.isObject(value) ? value.text : value;
-        var index = valuesArray.indexOf(textToConvert);
-        if (index === -1) {
-            throw new Error("convertListValueToId: Invalid data - value " + textToConvert + " not found in " + valuesArray + " processing " + fname)
+        if (textToConvert.match(/^[0-9a-f]{24}$/)) {
+            return(textToConvert);  // a plugin probably added this
+        } else {
+            var index = valuesArray.indexOf(textToConvert);
+            if (index === -1) {
+                throw new Error("convertListValueToId: Invalid data - value " + textToConvert + " not found in " + valuesArray + " processing " + fname)
+            }
+            return idsArray[index];
         }
-        return idsArray[index];
     };
 
     var setUpSelectOptions = function (lookupCollection, schemaElement) {
