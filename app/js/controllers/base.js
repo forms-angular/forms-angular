@@ -736,11 +736,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             anObject[fieldname] = anObject[fieldname].id;
                         }
                     } else {
-                        // It may be OK / good to do this on all fields, not just those handled by a select2....
-                        if (!anObject[fieldname]) {
-                            anObject[fieldname] = "";
-                        } else {
+                        if (anObject[fieldname]) {
                             anObject[fieldname] = anObject[fieldname].text;
+                        } else {
+                            delete anObject[fieldname];
                         }
                     }
                 }
