@@ -323,7 +323,8 @@ describe('formInput', function () {
             scope.schema = [
                 {name: "name", id: "1", label: "Name", type: "text", readonly: true},
                 {name: "description", id: "2", label: "Desc", type: "textarea", rows: 10, readonly: true},
-                {"name": "eyeColour", "id": "f_eyeColour", "label": "Eye Colour", "type": "select", "options": "f_eyeColourOptions", readonly: true}
+                {"name": "eyeColour", "id": "f_eyeColour", "label": "Eye Colour", "type": "select", "options": "f_eyeColourOptions", readonly: true},
+                {"name": "eyeColour2", "id": "f_eyeColour2", "label": "Eye Colour2", "type": "select", "options": "f_eyeColourOptions", readonly: true, form:{"select2":{}}}
             ];
             $compile(elm)(scope);
             scope.$digest();
@@ -337,8 +338,12 @@ describe('formInput', function () {
         });
 
         it('select', function () {
-            var input = elm.find('select');
-            dump(input)
+            var input = elm.find('select:first');
+            expect(input.attr('disabled')).toBe('disabled');
+        });
+
+        it('select2', function () {
+            var input = elm.find('select:last');
             expect(input.attr('disabled')).toBe('disabled');
         });
 

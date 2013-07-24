@@ -31,6 +31,7 @@ formsAngular
 
                             var common = focusStr + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "");
                             if (fieldInfo.type === 'select') {
+                                common += (fieldInfo.readonly ? 'disabled ' : '');
                                 if (fieldInfo.select2) {
                                     common += 'class="fng-select2' + (fieldInfo.size ? ' input-' + fieldInfo.size : '') + '"';
                                     if ( fieldInfo.select2.fngAjax) {
@@ -39,10 +40,10 @@ formsAngular
                                         value +=   '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
                                         value += '</div>';
                                     } else if (fieldInfo.select2) {
-                                        value = '<input ui-select2="'+ fieldInfo.select2.s2query +'" ' + common + '>';
+                                        value = '<input ui-select2="'+ fieldInfo.select2.s2query +'" ' + (fieldInfo.readonly ? 'disabled ' : '') + common + '>';
                                     }
                                 } else {
-                                    value = '<select ' + (fieldInfo.readonly ? 'disabled ' : '') + common + (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '')+ '>';
+                                    value = '<select ' + common + (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '')+ '>';
                                     if (!isRequired) { value += '<option></option>';}
                                     value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                                     value += '</select>';
