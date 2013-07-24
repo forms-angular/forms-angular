@@ -653,6 +653,22 @@ describe('confirm positive override of password field and name', function() {
         });
     });
 
+
+
+
+    // describe('should display deletion confirmation modal', function() {
+
+    //     it('should display deletion confirmation modal', function() {
+    //         // element('#deleteButton').click();
+    //         // expect(element('#modal').count().toEqual(1))
+
+    //         // inject(function($rootScope, $routeParams, $controller, $location, $dialog) {
+
+    //         // });
+    //     });
+
+    // });
+
 //   Cannot get this test to work, but the code seems to....
 //    describe('handles sub documents', function() {
 //        var scope, ctrl, compile, elm;
