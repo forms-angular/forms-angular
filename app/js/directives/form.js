@@ -42,7 +42,7 @@ formsAngular
                                         value = '<input ui-select2="'+ fieldInfo.select2.s2query +'" ' + common + '>';
                                     }
                                 } else {
-                                    value = '<select ' + common + (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '')+ '>';
+                                    value = '<select ' + (fieldInfo.readonly ? 'disabled ' : '') + common + (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '')+ '>';
                                     if (!isRequired) { value += '<option></option>';}
                                     value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                                     value += '</select>';

@@ -319,9 +319,11 @@ describe('formInput', function () {
                     '</form>');
 
             scope = $rootScope;
+            scope.f_eyeColourOptions = ["Blue", "Brown", "Green", "Hazel"];
             scope.schema = [
                 {name: "name", id: "1", label: "Name", type: "text", readonly: true},
-                {name: "description", id: "2", label: "Desc", type: "textarea", rows: 10, readonly: true}
+                {name: "description", id: "2", label: "Desc", type: "textarea", rows: 10, readonly: true},
+                {"name": "eyeColour", "id": "f_eyeColour", "label": "Eye Colour", "type": "select", "options": "f_eyeColourOptions", readonly: true}
             ];
             $compile(elm)(scope);
             scope.$digest();
@@ -332,6 +334,12 @@ describe('formInput', function () {
             expect(input.attr('readonly')).toBe('readonly');
             input = elm.find('textarea');
             expect(input.attr('readonly')).toBe('readonly');
+        });
+
+        it('select', function () {
+            var input = elm.find('select');
+            dump(input)
+            expect(input.attr('disabled')).toBe('disabled');
         });
 
     });
