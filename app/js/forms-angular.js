@@ -4,6 +4,7 @@ var formsAngular = angular.module('formsAngular', [
     'ui.select2'
     , 'ui.date'
     , 'fng.ui.bootstrap'
+    , 'ui.bootstrap'
 ]);
 
 // Ideally would want a config call in here which adds the routes, below, but couldn't get it to work
