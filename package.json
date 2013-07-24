@@ -5,7 +5,7 @@
   "homepage": "http://forms-ng.herokuapp.com/#/index",
   "version": "0.0.21",
   "engines": {
-    "node": "0.10.6",
+    "node": "0.10.x",
     "npm": "1.x"
   },
   "dependencies": {
