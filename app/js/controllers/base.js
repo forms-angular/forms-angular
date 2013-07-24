@@ -76,8 +76,43 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     $scope[formInstructions.options] = mongooseOptions.enum;
                 }
             } else if (!formInstructions.type) {
+
+                if (formInstructions.name.toLowerCase().indexOf('password') !== -1) {
+
+                    if (mongooseOptions.form) {
+                        if (mongooseOptions.form.password !== undefined) {
+                            if (mongooseOptions.form.password == true) {
+                                formInstructions.type = 'password';
+                            } else if (mongooseOptions.form.password == false){
+                                formInstructions.type = 'text';
+                            }
+
+                        }
+                    } else  if (mongooseOptions.form === undefined) {
+                        formInstructions.type = 'password';
+                    }
+
+                    } else if (formInstructions.name.toLowerCase().indexOf('password') === -1) {
+
+                        if (mongooseOptions.form) {
+                            if (mongooseOptions.form.password !== undefined) {
+                                if (mongooseOptions.form.password == true) {
+                                    formInstructions.type = 'password';
+                                } else if (mongooseOptions.form.password == false){
+                                    formInstructions.type = 'text';
+                                }
+
+                            }
+                        } else  if (mongooseOptions.form === undefined) {
+                            formInstructions.type = 'text';
+                        }
+                    
+                } else {
                 // leave specified types as they are - textarea is supported
                 formInstructions.type = 'text';
+                }
+
+
             }
         } else if (mongooseType.instance == 'ObjectID') {
             formInstructions.ref = mongooseOptions.ref;
@@ -389,10 +424,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''),{cache:true}).success(function (data) {
+
         handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
 
-
-        if (!$scope.id && !$scope.newRecord) {
+        if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
             var connector = '?';
             var queryString = '';
             if ($routeParams.f) {
