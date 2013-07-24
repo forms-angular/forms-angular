@@ -1,4 +1,4 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$dialog', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $dialog) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -573,13 +573,39 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $location.path('/' + $scope.modelName + '/new');
     };
 
-    $scope.delete = function () {
+    $scope.delete = function() {
+
+        var boxResult;
+
         if ($scope.record._id) {
-            //TODO: When we upgrade to Twitter Bootstrap 2.2.2 get a confirm using http://bootboxjs.com/
-            $http.delete('api/' + $scope.modelName + '/' + $scope.id);
+
+            var msgBox = $dialog.messageBox('Delete Item', 'Are you sure you want to delete this record?', [{
+                label: 'Yes',
+                result: 'yes'
+            }, {
+                label: 'No',
+                result: 'no'
+            }]);
+
+            msgBox.open().then(function(result) {
+
+                if (result === 'yes') {
+                    $http.delete('api/' + $scope.modelName + '/' + $scope.id).success(function() {
+                        $location.path('/' + $scope.modelName);
+                    });
+                }
+
+                if (result === 'no') {
+                    boxResult = result;
+                };
+            });
+            //can't close the msxBox from within itself as it breaks it.
+            if (boxResult === 'no') {
+                msgBox.close();
+            }
         }
-        $location.path('/' + $scope.modelName);
     };
+
 
     $scope.isCancelDisabled = function () {
         if (typeof $scope.disableFunctions.isCancelDisabled === "function") {
