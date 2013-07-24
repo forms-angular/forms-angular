@@ -39,7 +39,7 @@ var BSchema = new Schema({
     interviewScore:{type:Number,form:{hidden:true},list:{}},  // this field does not appear on the form or listings, even though list is defined - not sure about this
     freeText: {type: String, form:{type: 'textarea', rows:5, help:'There is some validation on this field to ensure that the word "rude" is not entered.  Try it to see the record level error handling.'}},
     ipAddress: {type: String, form:{hidden:true}},
-    password: {type: String, form:{password: false}}
+    password: {type: String}
 });
 
 BSchema.pre('save', function(next) {

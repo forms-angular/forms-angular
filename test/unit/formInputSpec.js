@@ -336,6 +336,30 @@ describe('formInput', function () {
 
     });
 
+    describe('generates password inputs', function () {
+
+        beforeEach(inject(function ($rootScope, $compile) {
+
+            elm = angular.element(
+                '<form name="myForm" class="form-horizontal compact"> ' +
+                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '</form>');
+
+            scope = $rootScope;
+            scope.schema = [
+                {name: "password", id: "1", label: "Name", type: "password"}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('creates password field', function () {
+            var input = elm.find('input:first');
+            expect(input.attr('type')).toBe('password');
+        });
+
+    });
+
     describe('generates selects for enumerated lists', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
