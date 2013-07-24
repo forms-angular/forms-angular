@@ -77,37 +77,26 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 }
             } else if (!formInstructions.type) {
 
-                if (formInstructions.name.toLowerCase().indexOf('password') !== -1) {
+                if (mongooseOptions.form !== undefined && mongooseOptions.form.password !== undefined 
+                    && mongooseOptions.form.password == true) {
 
-                    if (mongooseOptions.form) {
-                        if (mongooseOptions.form.password !== undefined) {
-                            if (mongooseOptions.form.password == true) {
-                                formInstructions.type = 'password';
-                            } else if (mongooseOptions.form.password == false){
-                                formInstructions.type = 'text';
-                            }
-
-                        }
-                    } else  if (mongooseOptions.form === undefined) {
-                        formInstructions.type = 'password';
-                    }
-
-                    } else if (formInstructions.name.toLowerCase().indexOf('password') === -1) {
-
-                        if (mongooseOptions.form) {
-                            if (mongooseOptions.form.password !== undefined) {
-                                if (mongooseOptions.form.password == true) {
-                                    formInstructions.type = 'password';
-                                } else if (mongooseOptions.form.password == false){
-                                    formInstructions.type = 'text';
-                                }
-
-                            }
-                        } else  if (mongooseOptions.form === undefined) {
-                            formInstructions.type = 'text';
-                        }
+                    formInstructions.type = 'password';
                     
-                } else {
+                    } 
+            else if 
+
+                ((formInstructions.name.toLowerCase().indexOf('password') !== -1)
+                    && (mongooseOptions.form !== undefined && mongooseOptions.form.password !== undefined 
+                    && mongooseOptions.form.password == false)) {
+                    
+                    formInstructions.type = 'text';
+                    
+                }
+                else if (formInstructions.name.toLowerCase().indexOf('password') !== -1 && mongooseOptions.form === undefined){
+                    formInstructions.type = 'password';
+                }
+
+                 else {
                 // leave specified types as they are - textarea is supported
                 formInstructions.type = 'text';
                 }
