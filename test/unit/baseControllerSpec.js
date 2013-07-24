@@ -207,6 +207,118 @@ describe('"BaseCtrl"', function(){
 
     });
 
+    describe('handles password field when unspecified', function() {
+
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/collection').respond(
+
+
+                {"password":{"enumValues":[],"regExp":null,"path":"password","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null,"$conditionalHandlers":{}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null,"$conditionalHandlers":{}}}
+
+            );
+            scope = $rootScope.$new();
+            $location.$$path = '/collection/new';
+            ctrl = $controller("BaseCtrl", {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('creates correct elements', function() {
+            expect(scope.formSchema.length).toBe(1);
+            expect(scope.formSchema[0].hasOwnProperty('type')).toBe(true);
+            expect(scope.formSchema[0].type).toBe('password');
+        });
+
+    });
+
+    describe('confirm override of password field', function() {
+
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/collection').respond(
+
+
+                {"password":
+                    {"enumValues":[],"regExp":null,"path":"password","instance":"String","validators":[],"setters":[],"getters":[],"options":
+                        {"form":{"password":false}},"_index":null,"$conditionalHandlers":{}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null,"$conditionalHandlers":{}}}
+
+            );
+            scope = $rootScope.$new();
+            $location.$$path = '/collection/new';
+            ctrl = $controller("BaseCtrl", {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('creates correct elements', function() {
+            expect(scope.formSchema.length).toBe(1);
+            expect(scope.formSchema[0].hasOwnProperty('type')).toBe(true);
+            expect(scope.formSchema[0].type).toBe('text');
+        });
+
+    });
+
+    describe('confirm positive override of password field', function() {
+
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/collection').respond(
+
+
+                {"password":
+                    {"enumValues":[],"regExp":null,"path":"password","instance":"String","validators":[],"setters":[],"getters":[],"options":
+                        {"form":{"password":true}},"_index":null,"$conditionalHandlers":{}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null,"$conditionalHandlers":{}}}
+
+            );
+            scope = $rootScope.$new();
+            $location.$$path = '/collection/new';
+            ctrl = $controller("BaseCtrl", {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('creates correct elements', function() {
+            expect(scope.formSchema.length).toBe(1);
+            expect(scope.formSchema[0].hasOwnProperty('type')).toBe(true);
+            expect(scope.formSchema[0].type).toBe('password');
+        });
+
+    });
+
+describe('confirm positive override of password field and name', function() {
+
+    var scope, ctrl;
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
+        $httpBackend = _$httpBackend_;
+        $httpBackend.whenGET('api/schema/collection').respond(
+
+
+            {"secret":
+                {"enumValues":[],"regExp":null,"path":"password","instance":"String","validators":[],"setters":[],"getters":[],"options":
+                    {"form":{"password":true}},"_index":null,"$conditionalHandlers":{}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null,"$conditionalHandlers":{}}}
+
+        );
+        scope = $rootScope.$new();
+        $location.$$path = '/collection/new';
+        ctrl = $controller("BaseCtrl", {$scope: scope});
+        $httpBackend.flush();
+    }));
+
+    it('creates correct elements', function() {
+        expect(scope.formSchema.length).toBe(1);
+        expect(scope.formSchema[0].hasOwnProperty('type')).toBe(true);
+        expect(scope.formSchema[0].type).toBe('password');
+    });
+
+});
+
+
+
     describe('handles simple conditional display fields', function() {
 
         var scope, ctrl;

@@ -38,7 +38,8 @@ var BSchema = new Schema({
     accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
     interviewScore:{type:Number,form:{hidden:true},list:{}},  // this field does not appear on the form or listings, even though list is defined - not sure about this
     freeText: {type: String, form:{type: 'textarea', rows:5, help:'There is some validation on this field to ensure that the word "rude" is not entered.  Try it to see the record level error handling.'}},
-    ipAddress: {type: String, form:{hidden:true}}
+    ipAddress: {type: String, form:{hidden:true}},
+    password: {type: String} //any field containing password will display as a password field (dots). This can be overidden by adding 'form:{password:false}' - also this can be true if the field is NOT called password
 });
 
 BSchema.pre('save', function(next) {
