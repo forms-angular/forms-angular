@@ -233,6 +233,29 @@ describe('"BaseCtrl"', function(){
 
     });
 
+    describe('handles password field when unspecified and unrelated form options exist', function() {
+
+        var scope, ctrl;
+
+        beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
+            $httpBackend = _$httpBackend_;
+            $httpBackend.whenGET('api/schema/collection').respond(
+                {"sysUserData.password":{"enumValues":[],"regExp":null,"path":"sysUserData.password","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"New Password","hidden":false},"default":""},"_index":null,"defaultValue":"","$conditionalHandlers":{}}}
+            );
+            scope = $rootScope.$new();
+            $location.$$path = '/collection/new';
+            ctrl = $controller("BaseCtrl", {$scope: scope});
+            $httpBackend.flush();
+        }));
+
+        it('creates correct elements', function() {
+            expect(scope.formSchema.length).toBe(1);
+            expect(scope.formSchema[0].hasOwnProperty('type')).toBe(true);
+            expect(scope.formSchema[0].type).toBe('password');
+        });
+
+    });
+
     describe('confirm override of password field', function() {
 
         var scope, ctrl;
