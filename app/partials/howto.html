@@ -178,6 +178,9 @@
         <li><strong>/api/:model/:id</strong> returns a single document from the collection</li>
         <li><strong>/api/:model/:id/list</strong> returns how a document should appear in a list</li>
     </ul>
+
+    The calls that return data will strip out any fields that are defined as <strong>secure</strong> - for example
+    <pre><code>passwordHash: {type: String, secure:true, form: {hidden: true}}</code></pre>
 </section>
 
 <section id="form-buttons">
