@@ -24,6 +24,7 @@ pids
 logs
 results
 app/components
+minimal/app/components
 js-build
 
 npm-debug.log
