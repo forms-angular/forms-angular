@@ -57,15 +57,20 @@
 .global-search {
     position : relative;
     float: right;
-    width: 600px;
+    width: 236px;
 }
 
-.search-results {
+.results-container {
+    width: 6000px;
     z-index: 3;
-    border: 1px solid gray;
     position: absolute;
     top: 41px;
     right: 0;
+}
+
+.search-results {
+    float: right;
+    border: 1px solid gray;
     -webkit-box-shadow: 10px 10px 10px #888;
     box-shadow: 10px 10px 10px #888;
     background: white;
