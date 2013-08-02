@@ -554,7 +554,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.new = function () {
-        $location.path('/' + $scope.modelName + '/new');
+        $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
     };
 
     $scope.delete = function() {
