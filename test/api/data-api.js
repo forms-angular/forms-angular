@@ -84,7 +84,6 @@ describe('Update Data API', function () {
                         if (error) {
                             throw new Error('curl b2 failed')
                         }
-                        console.log(stdout);
                         bData = JSON.parse(stdout);
                         assert.equal(bData.forename, "Alfie");
                         // delete
@@ -228,7 +227,7 @@ describe('Secure fields', function () {
         mongoose.connection.close();
     });
 
-    it('Should not send data from secure fields', function (done) {
+    it('should not be transmitted', function (done) {
         exec('curl 0.0.0.0:3001/api/c_subdoc_example', function (err, stdout) {
             if (err) {
                 throw new Error('curl c_subdoc_example failed')
@@ -237,13 +236,13 @@ describe('Secure fields', function () {
             assert.equal(data.length, 1);
             assert.equal(data[0].surname, 'Anderson');
             assert.equal(data[0].passwordHash, undefined);
-            assert.equal(data[0].interview.score, 98);
+            assert.notEqual(data[0].interview.score, undefined);
             assert.equal(data[0].interview.interviewHash, undefined)
             done();
         });
     });
 
-    it('Should not overwite secure fields', function (done) {
+    it('should not be overwritten', function (done) {
         exec('curl -X POST -H "Content-Type: application/json" -d \'{"surname" : "Anderson", "forename" : "John", "weight" : 124, "hairColour" : "Brown", "accepted" : true, "interview" : { "score" : 97, "date" : "23 Mar 2013" } }\' http://0.0.0.0:3001/api/c_subdoc_example/519aaaaab320153869b175e0', function (err, stdout) {
             if (err) {
                 throw new Error('curl c_subdoc_example write failed')
