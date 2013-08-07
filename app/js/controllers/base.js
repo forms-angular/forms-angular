@@ -4,6 +4,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var sharedStuff = $data;
     $scope.record = sharedStuff.record;
     $scope.disableFunctions = sharedStuff.disableFunctions;
+    $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
     $scope.formSchema = [];
     $scope.panes = [];
     $scope.listSchema = [];
@@ -425,6 +426,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     if (data.success === false) {
                         $location.path("/404");
                     }
+                    if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
+                        $scope.dataEventFunctions.onAfterRead(data);
+                    }
                     master = convertToAngularModel($scope.formSchema, data, 0);
                     $scope.cancel();
                 }).error(function () {
@@ -527,6 +531,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if ($scope.record._id) {
             $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
                 if (data.success !== false) {
+                    if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
+                        $scope.dataEventFunctions.onAfterUpdate(data,master)
+                    }
                     if (options.redirect) {
                         window.location = options.redirect;
                     } else {
@@ -540,6 +547,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         } else {
             $http.post('api/' + $scope.modelName, dataToSave).success(function (data) {
                 if (data.success !== false) {
+                    if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
+                        $scope.dataEventFunctions.onAfterCreate(data);
+                    }
                     if (options.redirect) {
                         window.location = options.redirect
                     } else {
@@ -575,6 +585,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
                 if (result === 'yes') {
                     $http.delete('api/' + $scope.modelName + '/' + $scope.id).success(function() {
+                        if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
+                            $scope.dataEventFunctions.onAfterDelete(master);
+                        }
                         $location.path('/' + $scope.modelName);
                     });
                 }
@@ -622,7 +635,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             return false;
         }
     };
-
 
     $scope.disabledText = function (localStyling) {
         var text = "";
