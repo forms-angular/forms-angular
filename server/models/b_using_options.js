@@ -63,6 +63,7 @@ BSchema.statics.form = function(layout) {
             formSchema = {
                 surname:{label:"Family Name"},
                 "address.postcode":{},
+                accepted: {},
                 "address.country": {hidden:false}
             };
             break;

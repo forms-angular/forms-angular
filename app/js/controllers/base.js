@@ -553,7 +553,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     if (options.redirect) {
                         window.location = options.redirect
                     } else {
-                        $location.path('/' + $scope.modelName + '/' + data._id + '/edit');
+                        $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
                         //                    reset?
                     }
                 } else {
