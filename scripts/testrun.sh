@@ -3,7 +3,6 @@
 karma start config/karma.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
 
 A=`lsof -Pnl +M -i4 | grep '3001'`
-echo $A
 
 case ${A:0:4} in
 	node )
