@@ -26,6 +26,7 @@ results
 app/components
 minimal/app/components
 js-build
+test.js
 
 npm-debug.log
 
