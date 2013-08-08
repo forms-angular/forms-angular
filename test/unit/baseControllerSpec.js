@@ -426,7 +426,7 @@ describe('confirm positive override of password field and name', function() {
 
             it('converts object array to string array', function() {
                 scope.record.arrayOfString[2].x = 'ribbon';
-                $httpBackend.when('POST','api/collection',
+                $httpBackend.when('POST','api/collection/3',
                     {"textField":"This is some text","lookupField":123456789,"hiddenField":"12312","arrayOfString":["string","rope","ribbon"],"arrayOfLookup":["1","2","4"]}
                 ).respond(200,'SUCCESS');
                 scope.save();

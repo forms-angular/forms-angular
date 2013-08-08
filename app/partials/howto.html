@@ -254,6 +254,21 @@
     processed a control.  This can be acted on by the model controller.  In our <a href="/#/b_using_options">example</a> we
     add a change handler to a select2 control which changes background color of a control group
     when the eye colour is changed.</p>
+
+    <h5>Data events</h5>
+    <p>There are hooks before and after CRUD events as follows:</p>
+    <ul>
+        <li>onBeforeCreate function(data, callback(err))</li>
+        <li>onAfterCreate function(data)</li>
+        <li>onBeforeRead function(id, callback(err))</li>
+        <li>onAfterRead function(data)</li>
+        <li>onBeforeUpdate function(data, old, callback(err))</li>
+        <li>onAfterUpdate function(data, old)</li>
+        <li>onBeforeDelete function(old, callback(err))</li>
+        <li>onAfterDelete function(old)</li>
+    </ul>
+    <p>In all onBefore... cases passing an error back will stop the event completing.  There is a trivial example of
+    how a data event hook might be used in <a href="/demo/d-array-example.js">this</a> controller.</p>
 </section>
 
 </div>

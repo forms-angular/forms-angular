@@ -7,4 +7,5 @@ describe('Events', function() {
         browser().navigateTo('/#/b_using_options/519a6075b320153869b175e0/edit');
         expect( element( '#cg_f_eyeColour' ).css('background-color')).toEqual("rgb(109, 219, 79)");
     });
+
 });

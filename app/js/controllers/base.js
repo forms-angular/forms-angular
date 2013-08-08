@@ -397,6 +397,21 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
     };
 
+    $scope.readRecord = function() {
+        $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
+            if (data.success === false) {
+                $location.path("/404");
+            }
+            if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
+                $scope.dataEventFunctions.onAfterRead(data);
+            }
+            master = convertToAngularModel($scope.formSchema, data, 0);
+            $scope.cancel();
+        }).error(function () {
+            $location.path("/404");
+        });
+    };
+
     $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''),{cache:true}).success(function (data) {
 
         handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
@@ -422,18 +437,18 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }, true);
 
             if ($scope.id) {
-                $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
-                    if (data.success === false) {
-                        $location.path("/404");
-                    }
-                    if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
-                        $scope.dataEventFunctions.onAfterRead(data);
-                    }
-                    master = convertToAngularModel($scope.formSchema, data, 0);
-                    $scope.cancel();
-                }).error(function () {
-                        $location.path("/404");
+                // Going to read a record
+                if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
+                    $scope.dataEventFunctions.onBeforeRead($scope.id, function(err) {
+                        if (err) {
+                            showError(err);
+                        } else {
+                            $scope.readRecord();
+                        }
                     });
+                } else {
+                    $scope.readRecord();
+                }
             } else {
                 master = {};
                 $scope.cancel();
@@ -523,43 +538,72 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         delete $scope.errorMessage;
     };
 
+    $scope.createNew = function(dataToSave, options) {
+        $http.post('api/' + $scope.modelName, dataToSave).success(function (data) {
+            if (data.success !== false) {
+                if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
+                    $scope.dataEventFunctions.onAfterCreate(dataToSave);
+                }
+                if (options.redirect) {
+                    window.location = options.redirect
+                } else {
+                    $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
+                    //                    reset?
+                }
+            } else {
+                showError(data);
+            }
+        }).error(handleError);
+    }
+
+    $scope.updateDocument = function(dataToSave, options) {
+        $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
+            if (data.success !== false) {
+                if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
+                    $scope.dataEventFunctions.onAfterUpdate(dataToSave,master)
+                }
+                if (options.redirect) {
+                    window.location = options.redirect;
+                } else {
+                    master = data;
+                    $scope.cancel();
+                }
+            } else {
+                showError(data);
+            }
+        }).error(handleError);
+
+    }
+
     $scope.save = function (options) {
         options = options || {};
 
         //Convert the lookup values into ids
         var dataToSave = convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0);
-        if ($scope.record._id) {
-            $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
-                if (data.success !== false) {
-                    if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
-                        $scope.dataEventFunctions.onAfterUpdate(data,master)
-                    }
-                    if (options.redirect) {
-                        window.location = options.redirect;
+        if ($scope.id) {
+            if (typeof $scope.dataEventFunctions.onBeforeUpdate === "function") {
+                $scope.dataEventFunctions.onBeforeUpdate(dataToSave, master, function(err) {
+                    if (err) {
+                        showError(err);
                     } else {
-                        master = data;
-                        $scope.cancel();
+                        $scope.updateDocument(dataToSave, options);
                     }
-                } else {
-                    showError(data);
-                }
-            }).error(handleError);
+                })
+            } else {
+                $scope.updateDocument(dataToSave, options);
+            }
         } else {
-            $http.post('api/' + $scope.modelName, dataToSave).success(function (data) {
-                if (data.success !== false) {
-                    if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
-                        $scope.dataEventFunctions.onAfterCreate(data);
-                    }
-                    if (options.redirect) {
-                        window.location = options.redirect
+            if (typeof $scope.dataEventFunctions.onBeforeCreate === "function") {
+                $scope.dataEventFunctions.onBeforeCreate(dataToSave, null, function(err) {
+                    if (err) {
+                        showError(err);
                     } else {
-                        $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
-                        //                    reset?
+                        $scope.createNew(dataToSave, options);
                     }
-                } else {
-                    showError(data);
-                }
-            }).error(handleError)
+                })
+            } else {
+                $scope.createNew(dataToSave, options);
+            }
         }
     };
 

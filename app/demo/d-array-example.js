@@ -10,7 +10,7 @@ myDemoApp.controller('DArrayExampleCtrl',['$scope', '$data', function($scope, $d
     };
 
     $scope.dataEventFunctions.onAfterCreate = function(data) {
-        alert('A new record was created : ' + JSON.stringify(data))
-    }
+        alert('Here is an example onAfterCreate event. ' + JSON.stringify(data));
+    };
 
 }]);
