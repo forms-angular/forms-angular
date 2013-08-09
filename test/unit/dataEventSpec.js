@@ -23,7 +23,7 @@ describe('Data Events', function(){
                     var scope = $rootScope.$new();
                     var ctrl = $controller("BaseCtrl", {$scope: scope});
 
-                    scope.dataEventFunctions.onBeforeCreate = function(data, old, cb) {
+                    scope.dataEventFunctions.onBeforeCreate = function(data, cb) {
                         data.name = 'Alan';
                         cb();
                     };
@@ -43,7 +43,7 @@ describe('Data Events', function(){
                     var scope = $rootScope.$new();
                     var ctrl = $controller("BaseCtrl", {$scope: scope});
 
-                    scope.dataEventFunctions.onBeforeCreate = function(data, old, cb) {
+                    scope.dataEventFunctions.onBeforeCreate = function(data, cb) {
                         data.name = 'Alan';
                         cb(new Error("Something wrong"));
                     };
