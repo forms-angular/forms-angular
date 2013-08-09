@@ -594,7 +594,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
         } else {
             if (typeof $scope.dataEventFunctions.onBeforeCreate === "function") {
-                $scope.dataEventFunctions.onBeforeCreate(dataToSave, null, function(err) {
+                $scope.dataEventFunctions.onBeforeCreate(dataToSave, function(err) {
                     if (err) {
                         showError(err);
                     } else {
