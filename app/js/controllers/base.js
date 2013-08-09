@@ -542,7 +542,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $http.post('api/' + $scope.modelName, dataToSave).success(function (data) {
             if (data.success !== false) {
                 if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
-                    $scope.dataEventFunctions.onAfterCreate(dataToSave);
+                    $scope.dataEventFunctions.onAfterCreate(data);
                 }
                 if (options.redirect) {
                     window.location = options.redirect
@@ -560,7 +560,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
             if (data.success !== false) {
                 if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
-                    $scope.dataEventFunctions.onAfterUpdate(dataToSave,master)
+                    $scope.dataEventFunctions.onAfterUpdate(data,master)
                 }
                 if (options.redirect) {
                     window.location = options.redirect;

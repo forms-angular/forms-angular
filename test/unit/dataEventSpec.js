@@ -16,7 +16,7 @@ describe('Data Events', function(){
         describe('Create', function(){
 
             it('should request make a call before creating document', function() {
-                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $location.$$path = '/collection/new';
@@ -36,7 +36,7 @@ describe('Data Events', function(){
             });
 
             it('should not create document if onBefore returns an error', function() {
-                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $location.$$path = '/collection/new';
@@ -59,7 +59,7 @@ describe('Data Events', function(){
         describe('Read', function(){
 
             it('should call function', function() {
-                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan"});
@@ -81,7 +81,7 @@ describe('Data Events', function(){
             });
 
             it('should not return document if onBefore returns an error', function() {
-                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $location.$$path = '/collection/125/edit';
@@ -105,7 +105,7 @@ describe('Data Events', function(){
         describe('Update', function(){
 
             it('should make a call before updating document', function() {
-                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
@@ -129,7 +129,7 @@ describe('Data Events', function(){
             });
 
             it('should not update document if onBefore returns an error', function() {
-                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
@@ -153,7 +153,7 @@ describe('Data Events', function(){
 //        describe('Delete', function(){
 //
 //            it('should request make a call before deleting document', function() {
-//                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+//                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
 //                    $httpBackend = _$httpBackend_;
 //                    $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
 //                    $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
@@ -176,7 +176,7 @@ describe('Data Events', function(){
 //            });
 //
 //            it('should not delete document if onBefore returns an error', function() {
-//                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+//                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
 //                    $httpBackend = _$httpBackend_;
 //                    $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
 //                    $location.$$path = '/collection/new';
@@ -202,16 +202,16 @@ describe('Data Events', function(){
         describe('Create', function(){
 
             it('should request make a call after creating document', function() {
-                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
-                    $httpBackend.when('POST','api/collection',{"name":"John"}).respond(200,'SUCCESS');
+                    $httpBackend.when('POST','api/collection',{"name":"John"}).respond(200,{name:"Philip"});
                     $location.$$path = '/collection/new';
                     var scope = $rootScope.$new();
                     var ctrl = $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onAfterCreate = function(data) {
-                        expect(data.name).toEqual('John');
+                        expect(data.name).toEqual('Philip');
                     };
 
                     scope.record = {name:"John"};
@@ -225,7 +225,7 @@ describe('Data Events', function(){
         describe('Read', function(){
 
             it('should request make a call after reading document', function() {
-                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan"});
@@ -245,7 +245,7 @@ describe('Data Events', function(){
         describe('Update', function(){
 
             it('should request make a call after updating document', function() {
-                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+                inject(function(_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
@@ -254,12 +254,12 @@ describe('Data Events', function(){
                     var ctrl = $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onAfterUpdate = function(data, old) {
-                        expect(data.name).toEqual('John');
+                        expect(data.name).toEqual('Philip');
                         expect(old.name).toEqual('Alan');
                     }
 
                     $httpBackend.flush();
-                    $httpBackend.when('POST','api/collection/125',{"name":"John", "_id":"125"}).respond(200,'SUCCESS');
+                    $httpBackend.when('POST','api/collection/125',{"name":"John", "_id":"125"}).respond(200,{"name":"Philip", "_id":"125"});
                     scope.record.name = "John";
                     scope.save();
                     $httpBackend.flush();
@@ -271,7 +271,7 @@ describe('Data Events', function(){
 //        describe('Delete', function(){
 //
 //            it('should request make a call after deleting document', function() {
-//                //            inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
+//                //            inject(function(_$httpBackend_, $rootScope, $controller, $location) {
 //                //                $httpBackend = _$httpBackend_;
 //                //                $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
 //                //                $httpBackend.when('POST','api/collection',{"name":"Alan"}).respond(200,'SUCCESS');
