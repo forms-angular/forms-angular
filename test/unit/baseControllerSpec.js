@@ -679,18 +679,95 @@ describe('confirm positive override of password field and name', function() {
 
 
 
-    // describe('should display deletion confirmation modal', function() {
+    describe('deletion confirmation modal', function() {
 
-    //     it('should display deletion confirmation modal', function() {
-    //         // element('#deleteButton').click();
-    //         // expect(element('#modal').count().toEqual(1))
+        var $scope, ctrl, $dialog, fakeDialog, provider, resolveCallback;
 
-    //         // inject(function($rootScope, $routeParams, $controller, $location, $dialog) {
 
-    //         // });
-    //     });
 
-    // });
+
+        beforeEach(function() {
+
+            module(function($dialogProvider){
+            provider = $dialogProvider;
+        });
+
+            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller, $location, _$dialog_){
+
+                 $dialog = _$dialog_;
+
+                 resolveCallback = function (callback) {
+
+                    // console.log(callback.toString());
+
+                 }
+
+                 //this fake object replaces the actual dialog object, as the functions are not visible to the test runner.
+                fakeDialog = {
+
+                            isOpen: false,
+
+                            open: function()
+                            {
+                                fakeDialog.isOpen = true;
+
+                                return {
+                                    then: resolveCallback
+                                };
+                            },
+
+                            close: function () {
+                                return true;
+                            }
+
+
+                        };
+
+
+                $httpBackend = _$httpBackend_;
+                $httpBackend.whenGET('api/schema/collection').respond({"email":{"enumValues":[],"regExp":null,"path":"email","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"directive":"email-field"}},"_index":null,"$conditionalHandlers":{}}});
+                $location.$$path = '/collection/new';
+                $scope = $rootScope.$new();
+                ctrl = $controller("BaseCtrl", {$scope: $scope, $dialog: $dialog});
+                $httpBackend.flush();
+
+                spyOn($dialog, 'messageBox').andReturn(fakeDialog);
+                $scope.record._id = 1;
+
+             
+
+            });
+
+        });
+
+        it('provider service should be injected', function(){
+                expect(provider).toBeDefined();
+            });
+
+        it('dialog service should be injected', function(){
+                expect($dialog).toBeDefined();
+            });
+
+        it('dialog messageBox should be defined', function(){
+
+            $scope.delete();
+
+            expect($dialog.messageBox).toHaveBeenCalled();
+
+
+            });
+
+
+        it('should be displayed when $scope.delete() is called', function() {
+
+            // $scope.record._id = 1;
+            $scope.delete();
+
+            expect(fakeDialog.isOpen).toEqual(true);
+
+        });
+
+    });
 
 //   Cannot get this test to work, but the code seems to....
 //    describe('handles sub documents', function() {
