@@ -551,6 +551,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     //                    reset?
                 }
             } else {
+
+                console.log(data);
                 showError(data);
             }
         }).error(handleError);
