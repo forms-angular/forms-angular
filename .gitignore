@@ -1,4 +1,5 @@
 **/.DS_Store
+.DS_Store
 nbproject
 manifest.mf
 build.xml
@@ -29,6 +30,8 @@ js-build
 test.js
 
 npm-debug.log
+
+
 
 node_modules/*
 
