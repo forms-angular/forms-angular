@@ -612,6 +612,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
     };
 
+    $scope.deleteRecord = function(model, id) {
+        $http.delete('api/' + model + '/' + id).success(function() {
+            if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
+                $scope.dataEventFunctions.onAfterDelete(master);
+            }
+            $location.path('/' + $scope.modelName);
+        });
+    }
+
+
     $scope.delete = function() {
 
         var boxResult;
@@ -629,12 +639,26 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             msgBox.open().then(function(result) {
 
                 if (result === 'yes') {
-                    $http.delete('api/' + $scope.modelName + '/' + $scope.id).success(function() {
-                        if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
-                            $scope.dataEventFunctions.onAfterDelete(master);
+
+                    if (typeof $scope.dataEventFunctions.onBeforeDelete === "function") {
+                            $scope.dataEventFunctions.onBeforeDelete(master, function(err) {
+
+                                if (err) {
+                                    showError(err);
+                                } else {
+
+                                    $scope.deleteRecord($scope.modelName, $scope.id);
+                                    
+                               }
+
+                            });
+                        } else {
+
+                            $scope.deleteRecord($scope.modelName, $scope.id);
+
                         }
-                        $location.path('/' + $scope.modelName);
-                    });
+
+                    
                 }
 
                 if (result === 'no') {
