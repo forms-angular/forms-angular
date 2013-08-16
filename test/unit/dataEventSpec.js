@@ -128,7 +128,7 @@ describe('Data Events', function(){
                 });
             });
 
-            it('should not update document if onBefore returns an error', function() {
+            it('should not update document if onBefore returns an error', function() { //TODO where's the expectation?
                 inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
                     $httpBackend = _$httpBackend_;
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
@@ -150,51 +150,115 @@ describe('Data Events', function(){
         });
 
         // Leaving the delete ones until the dialog testing is done so I don't have to reinvent the wheel
-//        describe('Delete', function(){
-//
-//            it('should request make a call before deleting document', function() {
-//                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
-//                    $httpBackend = _$httpBackend_;
-//                    $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
-//                    $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
-//                    $location.$$path = '/collection/125/edit';
-//                    var scope = $rootScope.$new();
-//                    var ctrl = $controller("BaseCtrl", {$scope: scope});
-//
-//                    scope.dataEventFunctions.onBeforeDelete = function(data, old, cb) {
-//                        expect(data.name).toEqual('John');
-//                        expect(old.name).toEqual('Alan');
-//                        cb();
-//                    }
-//
-//                    $httpBackend.flush();
-//                    $httpBackend.when('DELETE','api/collection/125').respond(200,'SUCCESS');
-//                    scope.record.name = "John";
-//                    scope.delete();
-//                    $httpBackend.flush();
-//                });
-//            });
-//
-//            it('should not delete document if onBefore returns an error', function() {
-//                inject(function(_$httpBackend_, $rootScope, $controller, $location, $data) {
-//                    $httpBackend = _$httpBackend_;
-//                    $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
-//                    $location.$$path = '/collection/new';
-//                    var scope = $rootScope.$new();
-//                    var ctrl = $controller("BaseCtrl", {$scope: scope});
-//
-//                    scope.dataEventFunctions.onBeforeCreate = function(data, old, cb) {
-//                        data.name = 'Alan';
-//                        cb(new Error("Something wrong"));
-//                    }
-//
-//                    scope.record = {name:"John"};
-//                    scope.save();
-//                    $httpBackend.flush();
-//                });
-//            });
-//
-//        });
+       describe('Delete', function(){
+
+            var scope, ctrl, $dialog, fakeDialog, resolveCallback;
+
+
+
+            //this fake object replaces the actual dialog object, as the functions are not visible to the test runner.
+            fakeDialog = {
+
+                isOpen: false,
+
+                open: function() {
+                    fakeDialog.isOpen = true;
+
+                    return {
+                        then: resolveCallback
+                    };
+                },
+
+                close: function() {
+                }
+
+            };
+            //default version of mock function so that delete http request is not called.
+            //Same as clicking yes on the dialog.
+            resolveCallback = function(callback) {
+
+                // console.log('called');
+
+                callback('yes');
+
+                    };
+
+
+           it('should make a call before deleting document', function() {
+
+
+               inject(function(_$httpBackend_, $rootScope, $controller, $location, $data, _$dialog_) {
+                   $httpBackend = _$httpBackend_;
+                   $dialog = _$dialog_;
+                   $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
+                   $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
+                   $location.$$path = '/collection/125/edit';
+                   var scope = $rootScope.$new();
+                   var ctrl = $controller("BaseCtrl", {$scope: scope, $dialog: $dialog});
+
+                   scope.dataEventFunctions.onBeforeDelete = function(data, cb) {
+                       cb();
+                   }
+
+                   spyOn (scope.dataEventFunctions, "onBeforeDelete").andCallThrough();
+
+                   spyOn($dialog, 'messageBox').andReturn(fakeDialog);
+
+                   $httpBackend.when('DELETE','api/collection/125').respond(200,'SUCCESS');
+
+                   
+
+                   
+
+
+                   $httpBackend.expectDELETE('api/collection/125');
+                   scope.record._id = 125;
+                   scope.record.name = "John";
+                   scope.delete();
+                   $httpBackend.flush();
+
+                   expect(scope.dataEventFunctions.onBeforeDelete).toHaveBeenCalled();
+
+               });
+           });
+
+
+        it('should not delete document if onBefore returns an error', function() {
+
+
+            inject(function(_$httpBackend_, $rootScope, $controller, $location, $data, _$dialog_) {
+                $httpBackend = _$httpBackend_;
+                $dialog = _$dialog_;
+                $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
+                $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
+                $location.$$path = '/collection/125/edit';
+                var scope = $rootScope.$new();
+                var ctrl = $controller("BaseCtrl", {$scope: scope, $dialog: $dialog});
+
+                scope.dataEventFunctions.onBeforeDelete = function(data, cb) {
+                    cb(new Error("Something wrong"));
+                }
+
+                spyOn (scope.dataEventFunctions, "onBeforeDelete").andCallThrough();
+
+                spyOn($dialog, 'messageBox').andReturn(fakeDialog);
+
+                //not expecting a request for this, so if happens will fail.
+                
+                scope.record._id = 125;
+                scope.record.name = "John";
+                scope.delete();
+                $httpBackend.flush();
+
+                expect(scope.dataEventFunctions.onBeforeDelete).toHaveBeenCalled();
+
+
+
+            });
+        });
+
+
+       });
     });
 
     describe('After', function() {
@@ -266,6 +330,80 @@ describe('Data Events', function(){
                 });
             });
         });
+
+
+       describe('Delete', function(){
+
+            var scope, ctrl, $dialog, fakeDialog, resolveCallback;
+
+
+
+            //this fake object replaces the actual dialog object, as the functions are not visible to the test runner.
+            fakeDialog = {
+
+                isOpen: false,
+
+                open: function() {
+                    fakeDialog.isOpen = true;
+
+                    return {
+                        then: resolveCallback
+                    };
+                },
+
+                close: function() {
+                }
+
+            };
+            //default version of mock function so that delete http request is not called.
+            //Same as clicking yes on the dialog.
+            resolveCallback = function(callback) {
+
+                // console.log('called');
+
+                callback('yes');
+
+                    };
+
+
+           it('should request make a call after deleting document', function() {
+
+
+               inject(function(_$httpBackend_, $rootScope, $controller, $location, $data, _$dialog_) {
+                   $httpBackend = _$httpBackend_;
+                   $dialog = _$dialog_;
+                   $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
+                   $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
+                   $location.$$path = '/collection/125/edit';
+                   var scope = $rootScope.$new();
+                   var ctrl = $controller("BaseCtrl", {$scope: scope, $dialog: $dialog});
+
+                   scope.dataEventFunctions.onAfterDelete = function(data) {
+                       
+                   }
+
+                   spyOn (scope.dataEventFunctions, "onAfterDelete").andCallThrough();
+
+                   spyOn($dialog, 'messageBox').andReturn(fakeDialog);
+
+                   $httpBackend.when('DELETE','api/collection/125').respond(200,'SUCCESS');
+        
+                   $httpBackend.expectDELETE('api/collection/125');
+                   scope.record._id = 125;
+                   scope.record.name = "John";
+                   scope.delete();
+                   $httpBackend.flush();
+
+                   expect(scope.dataEventFunctions.onAfterDelete).toHaveBeenCalled();
+
+               });
+           });
+
+
+
+
+
+       });
 
 //        // Leaving the delete ones until the dialog testing is done so I don't have to reinvent the wheel
 //        describe('Delete', function(){
