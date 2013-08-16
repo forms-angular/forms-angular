@@ -683,88 +683,123 @@ describe('confirm positive override of password field and name', function() {
 
         var $scope, ctrl, $dialog, fakeDialog, provider, resolveCallback;
 
+        //this fake object replaces the actual dialog object, as the functions are not visible to the test runner.
+        fakeDialog = {
 
+            isOpen: false,
 
+            open: function() {
+                fakeDialog.isOpen = true;
+
+                return {
+                    then: resolveCallback
+                };
+            },
+
+            close: function() {
+            }
+
+        };
+        //default version of mock function so that delete http request is not called.
+        //Same as clicking no on the dialog.
+        resolveCallback = function(callback) {
+
+            // callback('no');
+
+                };
+
+        
 
         beforeEach(function() {
 
-            module(function($dialogProvider){
-            provider = $dialogProvider;
-        });
+            module(function($dialogProvider) {
+                provider = $dialogProvider;
+            });
 
-            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller, $location, _$dialog_){
+            inject(function(_$httpBackend_, $rootScope, $routeParams, $controller, $location, _$dialog_) {
 
-                 $dialog = _$dialog_;
-
-                 resolveCallback = function (callback) {
-
-                    // console.log(callback.toString());
-
-                 }
-
-                 //this fake object replaces the actual dialog object, as the functions are not visible to the test runner.
-                fakeDialog = {
-
-                            isOpen: false,
-
-                            open: function()
-                            {
-                                fakeDialog.isOpen = true;
-
-                                return {
-                                    then: resolveCallback
-                                };
-                            },
-
-                            close: function () {
-                                return true;
-                            }
-
-
-                        };
-
-
+                $dialog = _$dialog_;
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/collection').respond({"email":{"enumValues":[],"regExp":null,"path":"email","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"directive":"email-field"}},"_index":null,"$conditionalHandlers":{}}});
-                $location.$$path = '/collection/new';
+                $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
+                $httpBackend.whenGET('api/collection/125').respond({"name":"Alan"});
+                $location.$$path = '/collection/125/edit';
+                
                 $scope = $rootScope.$new();
-                ctrl = $controller("BaseCtrl", {$scope: $scope, $dialog: $dialog});
-                $httpBackend.flush();
-
+                ctrl = $controller("BaseCtrl", {
+                    $scope: $scope,
+                    $dialog: $dialog
+                });
+                
+                
                 spyOn($dialog, 'messageBox').andReturn(fakeDialog);
+                
                 $scope.record._id = 1;
 
-             
 
             });
 
         });
 
-        it('provider service should be injected', function(){
-                expect(provider).toBeDefined();
-            });
+        it('provider service should be injected', function() {
+            $httpBackend.flush();
+            expect(provider).toBeDefined();
+        });
 
-        it('dialog service should be injected', function(){
-                expect($dialog).toBeDefined();
-            });
+        it('dialog service should be injected', function() {
+            $httpBackend.flush();
+            expect($dialog).toBeDefined();
+        });
 
-        it('dialog messageBox should be defined', function(){
-
+        it('dialog messageBox should be defined', function() {
+            
             $scope.delete();
-
+            $httpBackend.flush();
             expect($dialog.messageBox).toHaveBeenCalled();
+        });
 
 
-            });
-
-
-        it('should be displayed when $scope.delete() is called', function() {
-
-            // $scope.record._id = 1;
+        it('should call dialog open when $scope.delete() is called', function() {
+            
             $scope.delete();
-
+            $httpBackend.flush();
             expect(fakeDialog.isOpen).toEqual(true);
+        });
 
+        it('should close the dialog when No is clicked', function() {
+            
+
+            resolveCallback = function(callback) {
+
+            callback('no');
+
+                };
+
+            fakeDialog.close = function() {
+                fakeDialog.isOpen = false;
+
+            };
+
+            $scope.delete();
+            $httpBackend.flush();
+            expect(fakeDialog.isOpen).toEqual(false);
+        });
+
+        it('send a delete request when yes is clicked', function() {
+
+            $httpBackend.when('DELETE','api/collection/125').respond(200,'SUCCESS');
+
+            $httpBackend.expectDELETE('api/collection/125');
+            
+
+            resolveCallback = function(callback) {
+
+            callback('yes');
+
+                };
+
+            $scope.delete();
+            $httpBackend.flush();
+            // expect(fakeDialog.isOpen).toEqual(false);
         });
 
     });
