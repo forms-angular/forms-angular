@@ -9,8 +9,8 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', function ($scope, $htt
                 $scope.results = data.results;
                 $scope.moreCount = data.moreCount;
                 $scope.errorClass = $scope.results.length === 0 ? "error" : "";
-            }).error(function () {
-                console.log("Error in searchbox.js");
+            }).error(function (data, status) {
+                console.log("Error in searchbox.js : " + data + ' (status=' + status + ')');
             });
         } else {
             $scope.errorClass = "";
