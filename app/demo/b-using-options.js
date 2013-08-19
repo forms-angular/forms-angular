@@ -71,7 +71,7 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
             case 'f_eyeColour' :
                 var eyeColor = $('#f_eyeColour');
                 eyeColor.on("change", function(e) {
-                    console.log("change "+JSON.stringify({val:e.val, added:e.added, removed:e.removed}));
+//                    console.log("change "+JSON.stringify({val:e.val, added:e.added, removed:e.removed}));
                     setColour(e.val);
                 });
                 $timeout(function(){
