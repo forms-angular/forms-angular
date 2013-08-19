@@ -473,7 +473,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
             for (prop in from) {
                 if (from.hasOwnProperty(prop)) {
-                    if (_.isObject(from[prop])) {
+                    if (_.isObject(from[prop]) && !_.isArray(from[prop])) {
                         to[prop] = {};
                         copyObject(to[prop],from[prop]);
                     } else {
