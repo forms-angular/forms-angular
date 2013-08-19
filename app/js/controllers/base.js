@@ -610,7 +610,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.new = function () {
-        $location.search(null);
+        $location.search("");
         $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
     };
 

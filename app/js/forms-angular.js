@@ -2,6 +2,7 @@
 
 var formsAngular = angular.module('formsAngular', [
 	  'ngRoute'
+    , 'ngSanitize'
     , 'ui.select2'
     , 'ui.date'
     , 'fng.ui.bootstrap'

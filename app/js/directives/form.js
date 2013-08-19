@@ -89,8 +89,8 @@ formsAngular
                                 }
 
                                 template += '<div class="schema-head well">' + info.label + '</div>' +
-                                    '<div class="sub-doc well" id="' + info.id + 'List" ng-subdoc-repeat="subDoc in record.' + info.name + '">' +
-// TODO When upgrade to 1.14 works OK    '<div class="sub-doc well" id="' + info.id + 'List" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
+// for angular 1.0 branch     '<div class="sub-doc well" id="' + info.id + 'List" ng-subdoc-repeat="subDoc in record.' + info.name + '">' +
+                                '<div class="sub-doc well" id="' + info.id + 'List" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
                                     '<div class="row-fluid">' +
                                     '<div class="pull-left">' +
                                     '<form-input ng-repeat="' + schemaLoop + '" info="{{field}}" schema="true"></form-input>' +

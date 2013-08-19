@@ -60,6 +60,7 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
     function setColour(number) {
         var colours = ['#81B7DB','#C2A369','#6DDB4F','#47820C'];
         if (number != "") {
+
             $('#cg_f_eyeColour').css('background-color', colours[parseInt(number)]);
         } else {
             $('#cg_f_eyeColour').css('background-color', 'white');

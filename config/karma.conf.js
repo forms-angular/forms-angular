@@ -6,6 +6,7 @@ files = [
     "app/components/jquery/jquery.js",
     "app/components/jquery-ui/ui/jquery-ui.js",
     "app/components/angular/angular.js",
+    "app/components/angular-sanitize/angular-sanitize.js",
     "app/components/angular-route/angular-route.js",
     "app/components/underscore/underscore.js",
     "app/components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js",
