@@ -18,10 +18,10 @@
         </div>
     </div>
     <div class="row-fluid">
-        <div ng-hide="panes.length">
+        <div ng-if="!panes.length">
             <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
         </div>
-        <tabs ng-show="panes.length">
+        <tabs ng-if="panes.length">
             <pane ng-repeat="pane in panes" heading="{{pane.title}}" active="pane.active">
                 <form-input ng-repeat="field in pane.content" info="{{field}}"></form-input>
             </pane>
@@ -30,8 +30,8 @@
 
     <!--Record-->
     <!--<pre>{{record}}</pre>-->
-<!--     FormSchema
-    <pre>{{formSchema}}</pre>
-    Panes
-    <pre>{{panes}}</pre> -->
+    <!--FormSchema-->
+    <!--<pre>{{formSchema}}</pre>-->
+    <!--Panes-->
+    <!--<pre>{{panes}}</pre>-->
 </form>
