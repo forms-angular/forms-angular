@@ -462,18 +462,28 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         // would like to do
         //        $scope.record = angular.copy(master);
         // but the data may be shared
-        var prop;
 
-        for (prop in $scope.record) {
-            if ($scope.record.hasOwnProperty(prop)) {
-                delete $scope.record[prop];
+        function copyObject(to, from) {
+            var prop;
+
+            for (prop in to) {
+                if (to.hasOwnProperty(prop)) {
+                    delete to[prop];
+                }
+            }
+            for (prop in from) {
+                if (from.hasOwnProperty(prop)) {
+                    if (_.isObject(from[prop])) {
+                        to[prop] = {};
+                        copyObject(to[prop],from[prop]);
+                    } else {
+                        to[prop] = from[prop];
+                    }
+                }
             }
         }
-        for (prop in master) {
-            if (master.hasOwnProperty(prop)) {
-                $scope.record[prop] = master[prop];
-            }
-        }
+
+        copyObject($scope.record,master);
         $scope.dismissError();
 
 // TODO: Sort all this pristine stuff
