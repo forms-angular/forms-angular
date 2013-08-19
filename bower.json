@@ -1,21 +1,26 @@
 {
-    "name": "forms-angular",
-    "version": "0.0.24",
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "components"
-    ],
-    "dependencies": {
-        "angular":"1.0.7",
-        "angular-ui-bootstrap-bower": "0.4.0",
-        "angular-ui-date":"0.0.3",
-        "angular-ui-select2": "0.0.2",
-        "bootstrap.css": "2.3.2",
-        "html5shiv-dist": "3.6.2",
-        "jquery":"1.10.2",
-        "jquery-ui": "1.10.3",
-        "select2":"3.4.1",
-        "underscore": "1.4.4"
-    }
+  "name": "forms-angular",
+  "version": "0.0.24",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": {
+    "angular": "1.2.0rc1",
+    "angular-route": "1.2.0rc1",
+    "angular-mocks": "1.2.0rc1",
+    "angular-ui-bootstrap-bower": "0.5.0",
+    "angular-ui-date": "0.0.3",
+    "angular-ui-select2": "0.0.2",
+    "bootstrap.css": "2.3.2",
+    "html5shiv-dist": "3.6.2",
+    "jquery": "1.10.2",
+    "jquery-ui": "1.10.3",
+    "select2": "3.4.1",
+    "underscore": "1.4.4"
+  },
+  "resolutions": {
+    "angular": "1.2.0rc1"
+  }
 }

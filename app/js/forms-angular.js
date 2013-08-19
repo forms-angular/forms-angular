@@ -1,7 +1,8 @@
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
-    'ui.select2'
+	  'ngRoute'
+    , 'ui.select2'
     , 'ui.date'
     , 'fng.ui.bootstrap'
     , 'ui.bootstrap'
