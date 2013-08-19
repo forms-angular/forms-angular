@@ -260,3 +260,5 @@ describe('Secure fields', function () {
     });
 
 });
+
+// http://0.0.0.0:3001/api/a_unadorned_mongoose?a=%5B%7B%22%24match%22:%7B%22dateOfBirth%22:%221998-11-04%22%7D%7D,%7B%22$project%22:%7B%22surname%22:1%7D%7D%5D
