@@ -238,7 +238,7 @@
     A use case for this would be an index that is used in reports for grouping which has no meaning in a search.
 </section>
 
-<section id="customisation"><h3>Customisation</h3>
+<section id="client-side-customisation"><h3>Client Side Customisation</h3>
 
     Additional functionality can be added by using "model controllers" which have the name of
     a model followed by <strong>Ctrl</strong> (or the name of the model followed by the name of
@@ -255,7 +255,7 @@
     add a change handler to a select2 control which changes background color of a control group
     when the eye colour is changed.</p>
 
-    <h5>Data events</h5>
+    <h5>Client side data events</h5>
     <p>There are hooks before and after CRUD events as follows:</p>
     <ul>
         <li>onBeforeCreate function(data, callback(err))</li>
@@ -269,6 +269,17 @@
     </ul>
     <p>In all onBefore... cases passing an error back will stop the event completing.  There is a trivial example of
     how a data event hook might be used in <a href="/demo/d-array-example.js">this</a> controller.</p>
+</section>
+
+<section id="server-side-customisation"><h3>Server Side Customisation</h3>
+    <h5>Server side data events</h5>
+    <p>On the server side there are hooks around data events as follows:</p>
+    <ul>
+        <li>findFunc function(req, callback(err, query)) applies a filter to records returned by the server. A common use case is to restrict a user to only see their own records.</li>
+        <li>onSave function(doc, req, callback(err)) is a pre save hook that allows access to the record and the environment.  A common use case is to apply 'fine-grain' authentication.</li>
+    </ul>
+    <p>There are examples of both in <a href="/code/b_using_options.js">this</a> model</p>
+
 </section>
 
 </div>

@@ -9,9 +9,9 @@ var _ = require('underscore'),
     mongoose = require('mongoose'),
     debug = false;
 
-mongoose.set('debug',debug);
+mongoose.set('debug', debug);
 
-function logTheAPICalls (req, res, next) {
+function logTheAPICalls(req, res, next) {
     console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
     next();
 }
@@ -47,7 +47,7 @@ module.exports = exports = DataForm;
 DataForm.prototype.getListFields = function (resource, doc) {
     var listFields = Object.keys(resource.model.schema.paths);
     var display = '';
-    for (var listElement = 0 ; listElement < 2; listElement++) {
+    for (var listElement = 0; listElement < 2; listElement++) {
         display += doc[listFields[listElement]] + ' ';
     }
     return display;
@@ -108,7 +108,9 @@ DataForm.prototype.addResource = function (resource_name, model, options) {
         this.searchFunc = async.forEachSeries;
     }
     if (this.searchFunc === async.forEachSeries) {
-        this.resources.splice(_.sortedIndex(this.resources, resource, function(obj){return obj.options.searchImportance || 99}),0,resource);
+        this.resources.splice(_.sortedIndex(this.resources, resource, function (obj) {
+            return obj.options.searchImportance || 99
+        }), 0, resource);
     } else {
         this.resources.push(resource);
     }
@@ -126,14 +128,16 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
         url_parts = url.parse(req.url, true),
         searchFor = url_parts.query.q,
         filter = url_parts.query.f;
-    if (filter) {filter = JSON.parse(filter)}
+    if (filter) {
+        filter = JSON.parse(filter)
+    }
 
     for (var i = 0; i < resourceCount; i++) {
         var resource = resourcesToSearch[i];
         if (resource.options.searchImportance !== false) {
             var schema = resource.model.schema;
             var indexedFields = [];
-            for (j = 0; j < schema._indexes.length ; j++) {
+            for (j = 0; j < schema._indexes.length; j++) {
                 var attributes = schema._indexes[j][0];
                 var field = Object.keys(attributes)[0];
                 if (indexedFields.indexOf(field) == -1) {
@@ -149,8 +153,8 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                     }
                 }
             }
-            for (m=0; m < indexedFields.length ; m++) {
-                searches.push({resource:resource, field: indexedFields[m] })
+            for (m = 0; m < indexedFields.length; m++) {
+                searches.push({resource: resource, field: indexedFields[m] })
             }
         }
     }
@@ -167,37 +171,41 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                     delete searchDoc[item.field];
                     var obj1 = {}, obj2 = {};
                     obj1[item.field] = filter[item.field];
-                    obj2[item.field] = {$regex:'^'+searchFor, $options: 'i'};
+                    obj2[item.field] = {$regex: '^' + searchFor, $options: 'i'};
                     searchDoc['$and'] = [obj1, obj2];
                 } else {
-                    searchDoc[item.field] = {$regex:'^'+searchFor, $options: 'i'};
+                    searchDoc[item.field] = {$regex: '^' + searchFor, $options: 'i'};
                 }
             } else {
-                searchDoc[item.field] = {$regex:'^'+searchFor, $options: 'i'};
+                searchDoc[item.field] = {$regex: '^' + searchFor, $options: 'i'};
             }
 
             // The +30 in the next line is an arbitrary safety zone for situations where items that match the string
             // in more than one index get filtered out.
             // TODO : Figure out a better way to deal with this
-            that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 30, null, function(err, docs) {
+            that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 30, null, function (err, docs) {
                 if (!err && docs && docs.length > 0) {
                     for (var k = 0; k < docs.length && results.length < limit; k++) {
 
                         // Check we don't already have them in list
                         var thisId = docs[k]._id;
-                        if (_.find(results,function(obj){ return obj.id.id === thisId.id}) === undefined) {
+                        if (_.find(results, function (obj) {
+                            return obj.id.id === thisId.id
+                        }) === undefined) {
                             var resultObject;
 
                             // Use special listings format if defined
                             var specialListingFormat = item.resource.options.searchResultFormat;
                             if (specialListingFormat) {
                                 resultObject = specialListingFormat.apply(docs[k]);
-                                results.splice(_.sortedIndex(results, resultObject, function(obj){return obj.weighting}),0,resultObject)
+                                results.splice(_.sortedIndex(results, resultObject, function (obj) {
+                                    return obj.weighting
+                                }), 0, resultObject)
                             } else {
                                 resultObject = {
                                     id: thisId,
                                     weighting: '~~',
-                                    text: that.getListFields(item.resource,docs[k])
+                                    text: that.getListFields(item.resource, docs[k])
                                 };
                                 if (resourceCount > 1) {
                                     resultObject.resource = resultObject.resourceText = item.resource.resource_name;
@@ -214,7 +222,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
             })
         }
         , function (err) {
-            callback({results:results, moreCount:moreCount});
+            callback({results: results, moreCount: moreCount});
         }
     );
 };
@@ -225,7 +233,7 @@ DataForm.prototype.search = function (req, res, next) {
             return next();
         }
 
-        this.internalSearch(req, [req.resource], 10, function(resultsObject) {
+        this.internalSearch(req, [req.resource], 10, function (resultsObject) {
             res.send(resultsObject);
         });
     }, this);
@@ -233,7 +241,7 @@ DataForm.prototype.search = function (req, res, next) {
 
 DataForm.prototype.searchAll = function (req, res) {
     return _.bind(function (req, res) {
-        this.internalSearch(req, this.resources, 10, function(resultsObject) {
+        this.internalSearch(req, this.resources, 10, function (resultsObject) {
             res.send(resultsObject);
         });
     }, this);
@@ -244,7 +252,7 @@ DataForm.prototype.models = function (req, res, next) {
 
     var that = this;
 
-    return function(req, res, next) {
+    return function (req, res, next) {
         res.send(that.resources);
     }
 
@@ -303,7 +311,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
         for (var fld in formSchema) {
             if (formSchema.hasOwnProperty(fld)) {
                 if (!vanilla[fld]) {
-                    throw new Error("No such field as "+fld+".  Is it part of a sub-doc? If so you need the bit before the period.")
+                    throw new Error("No such field as " + fld + ".  Is it part of a sub-doc? If so you need the bit before the period.")
                 }
                 outPath[fld] = vanilla[fld];
                 outPath[fld].options = outPath[fld].options || {};
@@ -318,7 +326,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
             }
         }
     }
-    return {paths:outPath, hidden:hiddenFields};
+    return {paths: outPath, hidden: hiddenFields};
 };
 
 DataForm.prototype.schema = function () {
@@ -335,21 +343,39 @@ DataForm.prototype.schema = function () {
     }, this);
 };
 
-DataForm.prototype.saveAndRespond = function(doc, res) {
-    doc.save(function (err, doc2) {
-        if (err) {
-            var err2 = {status: 'err'};
-            if (!err.errors) {
-                err2.message = err.message;
+DataForm.prototype.saveAndRespond = function (req, res) {
+
+    function internalSave(doc) {
+        doc.save(function (err, doc2) {
+            if (err) {
+                var err2 = {status: 'err'};
+                if (!err.errors) {
+                    err2.message = err.message;
+                } else {
+                    extend(err2, err);
+                }
+                if (debug) {
+                    console.log('Error saving record: ' + JSON.stringify(err2))
+                }
+                res.send(400, err2);
             } else {
-                extend(err2, err);
+                res.send(doc2);
             }
-            if (debug) { console.log('Error saving record: ' + JSON.stringify(err2))}
-            res.send(400, err2);
-        } else {
-            res.send(doc2);
-        }
-    });
+        });
+    }
+
+    var doc = req.doc;
+    if (typeof req.resource.options.onSave === "function") {
+
+        req.resource.options.onSave(doc, req, function (err) {
+            if (err) {
+                throw err;
+            }
+            internalSave(doc);
+        })
+    } else {
+        internalSave(doc);
+    }
 };
 
 /**
@@ -374,11 +400,11 @@ DataForm.prototype.collectionGet = function () {
         }
 
         var url_parts = url.parse(req.url, true);
-        var aggregationParam = url_parts.query.a ?  JSON.parse(url_parts.query.a) : null;
-        var findParam = url_parts.query.f ?  JSON.parse(url_parts.query.f) : {};
+        var aggregationParam = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
+        var findParam = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
         var self = this;
 
-        this.filteredFind(req.resource, req, aggregationParam, findParam, req.resource.options.listOrder, null, null, function(err, docs) {
+        this.filteredFind(req.resource, req, aggregationParam, findParam, req.resource.options.listOrder, null, null, function (err, docs) {
             if (err) {
                 return self.renderError(err, null, req, res, next);
             } else {
@@ -388,16 +414,18 @@ DataForm.prototype.collectionGet = function () {
     }, this);
 };
 
-DataForm.prototype.filteredFind = function(resource, req, aggregationParam, findParam, sortOrder, limit, skip, callback) {
+DataForm.prototype.filteredFind = function (resource, req, aggregationParam, findParam, sortOrder, limit, skip, callback) {
     var hidden_fields = this.generateHiddenFields(resource, false);
 
     function doAggregation(cb) {
         if (aggregationParam) {
-            resource.model.aggregate(aggregationParam, function(err, aggregationResults) {
+            resource.model.aggregate(aggregationParam, function (err, aggregationResults) {
                 if (err) {
                     throw err
                 } else {
-                    cb(_.map(aggregationResults, function(obj) {return obj._id}));
+                    cb(_.map(aggregationResults, function (obj) {
+                        return obj._id
+                    }));
                 }
             })
         } else {
@@ -419,11 +447,11 @@ DataForm.prototype.filteredFind = function(resource, req, aggregationParam, find
         }
     }
 
-    doAggregation(function(idArray) {
+    doAggregation(function (idArray) {
         if (aggregationParam && idArray.length === 0) {
-            callback(null,[])
+            callback(null, [])
         } else {
-            doFindFunc(function(query) {
+            doFindFunc(function (query) {
                 if (idArray.length > 0) {
                     query = query.where('_id').in(idArray)
                 }
@@ -446,9 +474,9 @@ DataForm.prototype.collectionPost = function () {
         if (!req.body) throw new Error('Nothing submitted.');
 
         var cleansedBody = this.cleanseRequest(req);
-        var doc = new req.resource.model(cleansedBody);
+        req.doc = new req.resource.model(cleansedBody);
 
-        this.saveAndRespond(doc,res);
+        this.saveAndRespond(req, res);
     }, this);
 };
 
@@ -486,9 +514,6 @@ DataForm.prototype.cleanseRequest = function (req) {
         });
     });
 
-    if (typeof resource.options.onCleanseRequestSync === "function") {
-        resource.options.onCleanseRequestSync(req_data, req)
-    }
     return req_data;
 };
 
@@ -541,15 +566,17 @@ DataForm.prototype.entityGet = function () {
     }, this);
 };
 
-DataForm.prototype.replaceHiddenFields = function(record, data) {
+DataForm.prototype.replaceHiddenFields = function (record, data) {
     var self = this;
-    _.each(data, function(value, name) {
+    self._replacingHiddenFields = true;
+    _.each(data, function (value, name) {
         if (_.isObject(value)) {
             self.replaceHiddenFields(record[name], value)
         } else {
             record[name] = value;
         }
     });
+    delete self._replacingHiddenFields;
 }
 
 DataForm.prototype.entityPut = function () {
@@ -571,13 +598,14 @@ DataForm.prototype.entityPut = function () {
         if (req.resource.options.hide !== undefined) {
             var hidden_fields = this.generateHiddenFields(req.resource, true);
             hidden_fields._id = false;
-            req.resource.model.findById(req.doc._id,hidden_fields,{lean:true},function(err, data){
+            req.resource.model.findById(req.doc._id, hidden_fields, {lean: true}, function (err, data) {
                 that.replaceHiddenFields(req.doc, data);
-                that.saveAndRespond(req.doc, res);
+                that.saveAndRespond(req, res);
             })
         } else {
-            that.saveAndRespond(req.doc, res);
-        };
+            that.saveAndRespond(req, res);
+        }
+        ;
 
     }, this);
 };
@@ -603,7 +631,7 @@ DataForm.prototype.entityList = function () {
         if (!req.resource) {
             return next();
         }
-        return res.send({list:this.getListFields(req.resource, req.doc)});
+        return res.send({list: this.getListFields(req.resource, req.doc)});
     }, this);
 };
 

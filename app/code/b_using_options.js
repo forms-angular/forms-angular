@@ -82,8 +82,9 @@ BSchema.statics.findAccepted = function(req,cb) {
     cb(null, B.find().where('accepted', true));
 };
 
-BSchema.statics.prepUpdate = function(doc, req) {
+BSchema.statics.prepareSave = function(doc, req, cb) {
     doc.ipAddress = req.ip;
+    cb(null);
 };
 
 module.exports = {
@@ -91,5 +92,5 @@ module.exports = {
     , findFunc: BSchema.statics.findAccepted            // this can be used to 'pre' filter selections.
                                                         // A common use case is to restrict a user to only see their own records
                                                         // as described in https://groups.google.com/forum/?fromgroups=#!topic/mongoose-orm/TiR5OXR9mAM
-    , onCleanseRequestSync: BSchema.statics.prepUpdate  // a hook that can be used to add something from environment to record before update
+    , onSave: BSchema.statics.prepareSave               // a hook that can be used to add something from environment to record before update
 };
