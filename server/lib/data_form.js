@@ -7,7 +7,7 @@ var _ = require('underscore'),
     async = require('async'),
     url = require('url'),
     mongoose = require('mongoose'),
-    debug = false;
+    debug = true;
 
 mongoose.set('debug', debug);
 
@@ -326,7 +326,11 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
             }
         }
     }
-    return {paths: outPath, hidden: hiddenFields};
+    var returnObj = {paths: outPath}
+    if (hiddenFields.length > 0) {
+        returnObj.hidden = hiddenFields;
+    }
+    return returnObj;
 };
 
 DataForm.prototype.schema = function () {
