@@ -483,7 +483,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
         }
 
-        copyObject($scope.record,master);
+        copyObject($scope.record, master);
         $scope.dismissError();
 
 // TODO: Sort all this pristine stuff
@@ -577,8 +577,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (options.redirect) {
                     window.location = options.redirect;
                 } else {
-                    master = data;
-                    $scope.cancel();
+                    master = angular.copy($scope.record);
+                    $scope.dismissError();
+//                  Alternatively we could copy data into master and update all look ups and then call cancel (which calls dismissError).
+//                  This is harder and I can't currently see the need.
                 }
             } else {
                 showError(data);
