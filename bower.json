@@ -1,17 +1,29 @@
 {
   "name": "forms-angular",
   "version": "0.0.24",
+  "homepage": "https://github.com/mchapman/forms-angular",
+  "description": "No nonsense forms for the MEAN stack",
+  "keywords": [
+    "Mongoose",
+    "Mongo",
+    "Express",
+    "Angular",
+    "Node",
+    "Bootstrap",
+    "Forms"
+  ],
+  "license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
     "components"
   ],
   "dependencies": {
-    "angular": "1.2.0rc1",
-    "angular-route": "1.2.0rc1",
-    "angular-mocks": "1.2.0rc1",
+    "angular": "5b6d6a99ee0889ef4cc4b14b830db4b9e5bca2eb",
+    "angular-route": "9d2458ecdb5629a947bcbecd71f678967f4caa09",
+    "angular-mocks": "fcd87e92ac308d6451a185f242531a3b6d34b8cf",
     "angular-ui-bootstrap-bower": "0.5.0",
-    "angular-sanitize": "1.2.0rc1",
+    "angular-sanitize": "9727698e92353da0f349b5147e667edbc0f83b00",
     "angular-ui-date": "0.0.3",
     "angular-ui-select2": "0.0.2",
     "bootstrap.css": "2.3.2",
@@ -22,6 +34,6 @@
     "underscore": "1.4.4"
   },
   "resolutions": {
-    "angular": "1.2.0rc1"
+    "angular": "5b6d6a99ee0889ef4cc4b14b830db4b9e5bca2eb"
   }
 }
