@@ -404,17 +404,22 @@ DataForm.prototype.collectionGet = function () {
         }
 
         var url_parts = url.parse(req.url, true);
-        var aggregationParam = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
-        var findParam = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
-        var self = this;
+        try {
+            var aggregationParam = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
+            var findParam = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
 
-        this.filteredFind(req.resource, req, aggregationParam, findParam, req.resource.options.listOrder, null, null, function (err, docs) {
-            if (err) {
-                return self.renderError(err, null, req, res, next);
-            } else {
-                res.send(docs);
-            }
-        });
+            var self = this;
+
+            this.filteredFind(req.resource, req, aggregationParam, findParam, req.resource.options.listOrder, null, null, function (err, docs) {
+                if (err) {
+                    return self.renderError(err, null, req, res, next);
+                } else {
+                    res.send(docs);
+                }
+            });
+        } catch (e) {
+            res.send(e);
+        }
     }, this);
 };
 
