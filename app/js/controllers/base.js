@@ -2,7 +2,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
-    var allowLocationChange = false;
+    var allowLocationChange = true;   // Set when the data arrives..
     var debug = false;
 
     $scope.record = sharedStuff.record;
@@ -405,6 +405,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (data.success === false) {
                 $location.path("/404");
             }
+            allowLocationChange = false;
             if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
                 $scope.dataEventFunctions.onAfterRead(data);
             }
@@ -439,7 +440,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             $scope.$watch('record', function (newValue, oldValue) {
                 $scope.updateDataDependentDisplay(newValue, oldValue, false)
             }, true);
-            allowLocationChange = false;
 
             if ($scope.id) {
                 // Going to read a record
@@ -631,7 +631,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     }
 
     $scope.$on('$locationChangeStart', function (event, next, current) {
-        if (debug) {console.log(!allowLocationChange + '  ' + !$scope.isCancelDisabled())};
         if (!allowLocationChange && !$scope.isCancelDisabled()) {
             $dialog.messageBox('Record modified','Would you like to save your changes?', [{ label: 'Yes', result: 'yes'}, {label: 'No', result: 'no'}, { label: 'Cancel', result: 'cancel', cssClass: 'btn-primary'}])
                 .open()
@@ -647,12 +646,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         case 'cancel' :
                             break;
                     }
-                    if (debug) {console.log('Processed result ' + result)}
                 });
             event.preventDefault();
-            if (debug) {console.log('Message box coming')}
         }
-        if (debug) {console.log('Nothing to do')}
     });
 
     $scope.delete = function() {
