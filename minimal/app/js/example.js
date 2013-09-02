@@ -7,12 +7,12 @@ myApp.config(['$routeProvider', function($routeProvider) {
         $routeProvider.
             when('/index', {templateUrl: 'partials/models.html'} ).
             when('/404', {templateUrl: 'partials/404.html'} ).
-            when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html', controller: "BaseCtrl"}).
-            when('/:model/new', {templateUrl: 'partials/base-edit.html', controller: "BaseCtrl"}).
-            when('/:model', {templateUrl: 'partials/base-list.html', controller: "BaseCtrl"}).
-            when('/:model/:form/:id/edit', {templateUrl: 'partials/base-edit.html', controller: "BaseCtrl"}).
-            when('/:model/:form/new', {templateUrl: 'partials/base-edit.html', controller: "BaseCtrl"}).     
-            when('/:model/:form', {templateUrl: 'partials/base-list.html', controller: "BaseCtrl"}).         
+            when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html'}).
+            when('/:model/new', {templateUrl: 'partials/base-edit.html'}).
+            when('/:model', {templateUrl: 'partials/base-list.html'}).
+            when('/:model/:form/:id/edit', {templateUrl: 'partials/base-edit.html'}).
+            when('/:model/:form/new', {templateUrl: 'partials/base-edit.html'}).     
+            when('/:model/:form', {templateUrl: 'partials/base-list.html'}).         
             otherwise({redirectTo: '/index'});
     }]);
 
