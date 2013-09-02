@@ -8,6 +8,38 @@ formsAngular
                 return function (scope, element, attrs) {
                     scope.$watch(attrs.formInput, function () {
 
+                        //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
+                        //api looks like this:
+                        // <form-input ng-repeat="field in formSchema" info="{{field}}" moveOptions="{
+                        // 'drag-drop': true, 
+                        // 'ng-model': 'record', 
+                        // 'class': 'dragelement', 
+                        // 'data-jqyoui-options': '{revert: true}', 
+                        // 'jqyoui-draggable': {'animate':false, 'onDrop': 'onDrop'}
+                        // }"></form-input>
+                        // TODO - only works with the sample drag drop app pre-release 2/9/13
+                        var parseMoveOptions = function () {
+
+                            var jqyouiDraggable
+                                , opt
+                                , fieldName;
+
+                            if (attrs.moveoptions) {
+                                opt = JSON.parse(attrs.moveoptions.replace(/'/g, '"'));
+
+                                fieldName = (opt['ng-model'] || 'record') + '.' + JSON.parse(attrs.info).name
+
+                                if (opt['jqyoui-draggable']) {
+                                  jqyouiDraggable =  JSON.stringify(opt['jqyoui-draggable']).replace(/"/g, "'") 
+                                } else {
+                                    jqyouiDraggable = '';
+                                }
+
+                                 return  ' data-drag="' + opt['drag-drop'] + '" ng-model="' + fieldName + '" class="' + opt['class'] + '" data-jqyoui-options="' + opt['data-jqyoui-options'] + '" jqyoui-draggable="' + jqyouiDraggable + '" ';
+                            }  
+                            
+                        };
+
                         var generateInput = function (fieldInfo, modelString, isRequired, idString) {
                             var focusStr = '', placeHolder = '';
                             if (!modelString) {
@@ -76,7 +108,7 @@ formsAngular
                         };
 
                         var handleField = function (info) {
-                            var template = '<div class="control-group" id="cg_' + info.id + '">';
+                            var template = '<div class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions() + '>';
                             if (info.schema) {
                                 //schemas (which means they are arrays in Mongoose)
 
