@@ -2,6 +2,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
+    var allowLocationChange = true;   // Set when the data arrives..
+    var debug = false;
+
     $scope.record = sharedStuff.record;
     $scope.disableFunctions = sharedStuff.disableFunctions;
     $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
@@ -402,14 +405,15 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (data.success === false) {
                 $location.path("/404");
             }
+            allowLocationChange = false;
             if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
                 $scope.dataEventFunctions.onAfterRead(data);
             }
             master = convertToAngularModel($scope.formSchema, data, 0);
             $scope.cancel();
         }).error(function () {
-            $location.path("/404");
-        });
+                $location.path("/404");
+            });
     };
 
     $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''),{cache:true}).success(function (data) {
@@ -417,6 +421,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
 
         if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
+            allowLocationChange = true;
             var connector = '?';
             var queryString = '';
             if ($routeParams.f) {
@@ -486,7 +491,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         copyObject($scope.record, master);
         $scope.dismissError();
 
-// TODO: Sort all this pristine stuff
+// TODO: Sort all this pristine stuff now we are on 1.2
 //        if ($scope.myForm) {
 //            console.log('Calling set pristine')
 //            $scope.myForm.$setPristine();
@@ -503,14 +508,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 //        }
 //    }
 
-//    $scope.$on('$locationChangeStart', function (event, next, current) {
-//        console.log('changed = ' + $scope.isCancelDisabled())
-////        event.preventDefault();
-////        if ( !$scope.isCancelDisabled() && ! confirm("Are you sure you want to leave this page?") ) {
-////            event.preventDefault();
-////        }
-//    });
-
     var handleError = function (data, status) {
         if ([200, 400].indexOf(status) !== -1) {
             var errorMessage = '';
@@ -525,7 +522,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             errorMessage += data.errors[errorField].message;
                             break;
                     }
-                   errorMessage += '</li>'
+                    errorMessage += '</li>'
                 }
             }
             if (errorMessage.length > 0) {
@@ -561,8 +558,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     //                    reset?
                 }
             } else {
-
-                console.log(data);
                 showError(data);
             }
         }).error(handleError);
@@ -635,6 +630,26 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         });
     }
 
+    $scope.$on('$locationChangeStart', function (event, next, current) {
+        if (!allowLocationChange && !$scope.isCancelDisabled()) {
+            $dialog.messageBox('Record modified','Would you like to save your changes?', [{ label: 'Yes', result: 'yes'}, {label: 'No', result: 'no'}, { label: 'Cancel', result: 'cancel', cssClass: 'btn-primary'}])
+                .open()
+                .then(function(result) {
+                    switch (result) {
+                        case 'no' :
+                            allowLocationChange = true;
+                            $location.url = next;
+                            break;
+                        case 'yes' :
+                            $scope.save({redirect: next});    // save changes
+                        // break;   fall through to get the preventDefault
+                        case 'cancel' :
+                            break;
+                    }
+                });
+            event.preventDefault();
+        }
+    });
 
     $scope.delete = function() {
 
@@ -655,24 +670,22 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (result === 'yes') {
 
                     if (typeof $scope.dataEventFunctions.onBeforeDelete === "function") {
-                            $scope.dataEventFunctions.onBeforeDelete(master, function(err) {
+                        $scope.dataEventFunctions.onBeforeDelete(master, function(err) {
 
-                                if (err) {
-                                    showError(err);
-                                } else {
+                            if (err) {
+                                showError(err);
+                            } else {
 
-                                    $scope.deleteRecord($scope.modelName, $scope.id);
-                                    
-                               }
+                                $scope.deleteRecord($scope.modelName, $scope.id);
 
-                            });
-                        } else {
+                            }
 
-                            $scope.deleteRecord($scope.modelName, $scope.id);
+                        });
+                    } else {
 
-                        }
+                        $scope.deleteRecord($scope.modelName, $scope.id);
 
-                    
+                    }
                 }
 
                 if (result === 'no') {
