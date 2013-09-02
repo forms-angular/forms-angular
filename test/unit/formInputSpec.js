@@ -120,6 +120,17 @@ describe('formInput', function () {
                 thisElm = elm.find('.sub-doc')
                 expect(thisElm.length).toBe(2);
 
+                thisElm = elm.find('.sub-doc:first')
+                expect(thisElm.attr('id')).toBe('f_examsList[0]');
+                thisElm = elm.find('.sub-doc:last')
+                expect(thisElm.attr('id')).toBe('f_examsList[1]');
+
+                thisElm = elm.find('input[type="number"]');
+                expect(thisElm.length).toBe(2);
+
+                expect(thisElm[0].id).toBe('exams-0-score');
+                expect(thisElm[1].id).toBe('exams-1-score');
+
                 thisElm = elm.find('.sub-doc button:first');
                 expect(thisElm.text()).toBe(' Remove');
             });

@@ -16,7 +16,7 @@ formsAngular
                                     var compoundName = fieldInfo.name,
                                         lastPartStart = compoundName.lastIndexOf('.');
                                     modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$parent.$index + '.' + compoundName.slice(lastPartStart + 1);
-                                    idString = modelString.replace(/\./g, '-')
+                                    idString = modelString.slice(7).replace(/\./g, '-')
                                 } else {
                                     modelString = (attrs.model || 'record') + '.' + fieldInfo.name;
                                     if (scope.$index === 0) {
@@ -90,7 +90,7 @@ formsAngular
 
                                 template += '<div class="schema-head well">' + info.label + '</div>' +
 // for angular 1.0 branch     '<div class="sub-doc well" id="' + info.id + 'List" ng-subdoc-repeat="subDoc in record.' + info.name + '">' +
-                                '<div class="sub-doc well" id="' + info.id + 'List" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
+                                '<div class="sub-doc well" id="' + info.id + 'List[{{$index}}]" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
                                     '<div class="row-fluid">' +
                                     '<div class="pull-left">' +
                                     '<form-input ng-repeat="' + schemaLoop + '" info="{{field}}" schema="true"></form-input>' +
@@ -119,7 +119,7 @@ formsAngular
                                 if (info.array) {
                                     template += generateLabel(info, ' <i id="add_' + info.id + ' " ng-click="add(this)" class="icon-plus-sign"></i>') +
                                         '<div class="controls" id="' + info.id + 'List" ng-repeat="arrayItem in record.' + info.name + '">' +
-                                        generateInput(info, "arrayItem.x", true, null) +
+                                        generateInput(info, "arrayItem.x", true, info.id+'[{{$index}}]') +
                                         '<i ng-click="remove(this,$index)" class="icon-minus-sign"></i>' +
                                         '</div>';
                                 } else {
