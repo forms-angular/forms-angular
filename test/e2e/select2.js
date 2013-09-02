@@ -14,7 +14,7 @@ describe('Select 2', function() {
 
     it('should handle lookups using Ajax', function () {
         browser().navigateTo('/#/f_nested_schema/51c583d5b5c51226db418f16/edit');
-        expect(element('#s2id_record-exams-0-grader').text()).toMatch(/IsAccepted/);
+        expect(element('#s2id_exams-0-grader').text()).toMatch(/IsAccepted/);
     });
 
 });
