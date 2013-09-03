@@ -838,9 +838,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             } else {
 
                 // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
-                if (schema[i].array && simpleArrayNeedsX(schema[i]) && anObject[fieldname]) {
-                    for (var k = 0; k < anObject[fieldname].length; k++) {
-                        anObject[fieldname][k] = {x: anObject[fieldname][k]}
+                var thisField = $scope.getListData(anObject,fieldname);
+                if (schema[i].array && simpleArrayNeedsX(schema[i]) && thisField) {
+                    for (var k = 0; k < thisField.length; k++) {
+                        thisField[k] = {x: thisField[k]}
                     }
                 }
 
@@ -870,8 +871,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
         for (var i = 0; i < schema.length; i++) {
             var fieldname = schema[i].name.slice(prefixLength);
+            var thisField = $scope.getListData(anObject, fieldname);
+
             if (schema[i].schema) {
-                var thisField = $scope.getListData(anObject, fieldname);
                 if (thisField) {
                     for (var j = 0; j < thisField.length; j++) {
                         thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length);
@@ -880,9 +882,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             } else {
 
                 // Convert {array:[{x:'item 1'}]} to {array:['item 1']}
-                if (schema[i].array && simpleArrayNeedsX(schema[i]) && anObject[fieldname]) {
-                    for (var k = 0; k < anObject[fieldname].length; k++) {
-                        anObject[fieldname][k] = anObject[fieldname][k].x
+                if (schema[i].array && simpleArrayNeedsX(schema[i]) && thisField) {
+                    for (var k = 0; k < thisField.length; k++) {
+                        thisField[k] = thisField[k].x
                     }
                 }
 
