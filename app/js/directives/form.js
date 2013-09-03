@@ -149,7 +149,7 @@ formsAngular
                             } else {
                                 // Handle arrays here
                                 if (info.array) {
-                                    template += generateLabel(info, ' <i id="add_' + info.id + ' " ng-click="add(this)" class="icon-plus-sign"></i>') +
+                                    template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(this)" class="icon-plus-sign"></i>') +
                                         '<div class="controls" id="' + info.id + 'List" ng-repeat="arrayItem in record.' + info.name + '">' +
                                         generateInput(info, "arrayItem.x", true, info.id+'[{{$index}}]') +
                                         '<i ng-click="remove(this,$index)" class="icon-minus-sign"></i>' +

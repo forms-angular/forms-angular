@@ -198,7 +198,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     var basicInstructions = function (field, formData, prefix) {
         formData.name = prefix + field;
-        formData.id = formData.id || 'f_' + prefix + field;
+        formData.id = formData.id || 'f_' + prefix + field.replace(/\./g,'_');
         formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || $filter('titleCase')(field));
         return formData;
     };
