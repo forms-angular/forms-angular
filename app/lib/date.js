@@ -15,8 +15,8 @@ angular.module('ui.date', [])
         options = {};
         angular.extend(options, uiDateConfig);
         return {
-            require:'?ngModel',
-            link:function (scope, element, attrs, controller) {
+            require: '?ngModel',
+            link: function (scope, element, attrs, controller) {
                 var getOptions = function () {
                     return angular.extend({}, uiDateConfig, scope.$eval(attrs.uiDate));
                 };
@@ -31,22 +31,22 @@ angular.module('ui.date', [])
                         // (calling directive user's function too if provided)
                         var _onSelect = opts.onSelect || angular.noop;
                         opts.onSelect = function (value, picker) {
-                            scope.$apply(function() {
+                            scope.$apply(function () {
                                 showing = true;
                                 controller.$setViewValue(element.datepicker("getDate"));
                                 _onSelect(value, picker);
                                 element.blur();
                             });
                         };
-                        opts.beforeShow = function() {
+                        opts.beforeShow = function () {
                             showing = true;
                         };
-                        opts.onClose = function(value, picker) {
+                        opts.onClose = function (value, picker) {
                             showing = false;
                         };
-                        element.on('blur', function() {
-                            if ( !showing ) {
-                                scope.$apply(function() {
+                        element.on('blur', function () {
+                            if (!showing) {
+                                scope.$apply(function () {
                                     element.datepicker("setDate", element.datepicker("getDate"));
                                     controller.$setViewValue(element.datepicker("getDate"));
                                 });
@@ -56,7 +56,7 @@ angular.module('ui.date', [])
                         // Update the date picker when the model changes
                         controller.$render = function () {
                             var date = controller.$viewValue;
-                            if ( angular.isDefined(date) && date !== null && !angular.isDate(date) ) {
+                            if (angular.isDefined(date) && date !== null && !angular.isDate(date)) {
                                 throw new Error('ng-Model value must be a Date object - currently it is a ' + typeof date + ' - use ui-date-format to convert it from a string');
                             }
                             element.datepicker("setDate", date);
@@ -66,7 +66,7 @@ angular.module('ui.date', [])
                     element.datepicker('destroy');
                     // Create the new datepicker widget
                     element.datepicker(opts);
-                    if ( controller ) {
+                    if (controller) {
                         // Force a render to override whatever is in the input text box
                         controller.$render();
                     }
@@ -80,20 +80,20 @@ angular.module('ui.date', [])
 
     .constant('uiDateFormatConfig', '')
 
-    .directive('uiDateFormat', ['uiDateFormatConfig', function(uiDateFormatConfig) {
+    .directive('uiDateFormat', ['uiDateFormatConfig', function (uiDateFormatConfig) {
         var directive = {
-            require:'ngModel',
-            link: function(scope, element, attrs, modelCtrl) {
+            require: 'ngModel',
+            link: function (scope, element, attrs, modelCtrl) {
                 var dateFormat = attrs.uiDateFormat || uiDateFormatConfig;
-                if ( dateFormat ) {
+                if (dateFormat) {
                     // Use the datepicker with the attribute value as the dateFormat string to convert to and from a string
-                    modelCtrl.$formatters.push(function(value) {
-                        if (angular.isString(value) ) {
+                    modelCtrl.$formatters.push(function (value) {
+                        if (angular.isString(value)) {
                             return jQuery.datepicker.parseDate(dateFormat, value);
                         }
                         return null;
                     });
-                    modelCtrl.$parsers.push(function(value){
+                    modelCtrl.$parsers.push(function (value) {
                         if (value) {
                             return jQuery.datepicker.formatDate(dateFormat, value);
                         }
@@ -101,15 +101,19 @@ angular.module('ui.date', [])
                     });
                 } else {
                     // Default to ISO formatting
-                    modelCtrl.$formatters.push(function(value) {
-                        if (angular.isString(value) ) {
+                    modelCtrl.$formatters.push(function (value) {
+                        if (angular.isString(value)) {
                             return new Date(value);
                         }
                         return null;
                     });
-                    modelCtrl.$parsers.push(function(value){
+                    modelCtrl.$parsers.push(function (value) {
                         if (value) {
-                            return value.toISOString();
+                            try {
+                                return value.toISOString();
+                            } catch(e) {
+                                return null;
+                            }
                         }
                         return null;
                     });
