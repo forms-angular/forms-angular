@@ -47,16 +47,17 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 // Hacky way to get required styling working on select controls
                 if (mongooseOptions.required) {
 
-                    $scope.$watch('record.'+formInstructions.name, function (newValue) {
+                    $scope.$watch('record.' + formInstructions.name, function (newValue) {
                         updateInvalidClasses(newValue, formInstructions.id, formInstructions.select2);
                     }, true);
-                    setTimeout(function() { updateInvalidClasses($scope.record[formInstructions.name],formInstructions.id, formInstructions.select2);
-                    },0)
+                    setTimeout(function () {
+                        updateInvalidClasses($scope.record[formInstructions.name], formInstructions.id, formInstructions.select2);
+                    }, 0)
                 }
                 if (formInstructions.select2) {
-                    $scope['select2'+formInstructions.name] = {
+                    $scope['select2' + formInstructions.name] = {
                         allowClear: !mongooseOptions.required,
-                        initSelection: function(element, callback) {
+                        initSelection: function (element, callback) {
                             var myVal = element.val();
                             var display = {id: myVal, text: myVal};
                             callback(display);
@@ -64,7 +65,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         query: function (query) {
                             var data = {results: []},
                                 searchString = query.term.toUpperCase();
-                            for (var i = 0; i < mongooseOptions.enum.length ; i++) {
+                            for (var i = 0; i < mongooseOptions.enum.length; i++) {
                                 if (mongooseOptions.enum[i].toUpperCase().indexOf(searchString) !== -1) {
                                     data.results.push({id: i, text: mongooseOptions.enum[i]})
                                 }
@@ -72,8 +73,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             query.callback(data);
                         }
                     };
-                    _.extend($scope['select2'+formInstructions.name], formInstructions.select2);
-                    formInstructions.select2.s2query = 'select2'+formInstructions.name;
+                    _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
+                    formInstructions.select2.s2query = 'select2' + formInstructions.name;
                     $scope.select2List.push(formInstructions.name)
                 } else {
                     formInstructions.options = suffixCleanId(formInstructions, 'Options');
@@ -103,12 +104,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     $scope.select2List.push(formInstructions.name);
                     if (formInstructions.select2.fngAjax) {
                         // create the instructions for select2
-                        select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g,'');
+                        select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
                         $scope[select2ajaxName] = {
                             allowClear: !mongooseOptions.required,
                             minimumInputLength: 2,
-                            initSelection : function (element, callback) {
-                                $http.get('api/' + mongooseOptions.ref + '/' +element.val() + '/list').success(function (data) {
+                            initSelection: function (element, callback) {
+                                $http.get('api/' + mongooseOptions.ref + '/' + element.val() + '/list').success(function (data) {
                                     if (data.success === false) {
                                         $location.path("/404");
                                     }
@@ -140,9 +141,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         if (formInstructions.select2 == true) {
                             formInstructions.select2 = {};
                         }
-                        $scope['select2'+formInstructions.name] = {
+                        $scope['select2' + formInstructions.name] = {
                             allowClear: !mongooseOptions.required,
-                            initSelection: function(element, callback) {
+                            initSelection: function (element, callback) {
                                 var myId,
                                     myVal = element.val();
                                 if ($scope[formInstructions.options].length > 0) {
@@ -156,7 +157,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             query: function (query) {
                                 var data = {results: []},
                                     searchString = query.term.toUpperCase();
-                                for (var i = 0; i < $scope[formInstructions.options].length ; i++) {
+                                for (var i = 0; i < $scope[formInstructions.options].length; i++) {
                                     if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
                                         data.results.push({id: $scope[formInstructions.ids][i], text: $scope[formInstructions.options][i]})
                                     }
@@ -164,8 +165,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                 query.callback(data);
                             }
                         };
-                        _.extend($scope['select2'+formInstructions.name], formInstructions.select2);
-                        formInstructions.select2.s2query = 'select2'+formInstructions.name;
+                        _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
+                        formInstructions.select2.s2query = 'select2' + formInstructions.name;
                         $scope.select2List.push(formInstructions.name);
                         formInstructions.options = suffixCleanId(formInstructions, 'Options');
                         formInstructions.ids = suffixCleanId(formInstructions, '_ids');
@@ -198,7 +199,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     var basicInstructions = function (field, formData, prefix) {
         formData.name = prefix + field;
-        formData.id = formData.id || 'f_' + prefix + field.replace(/\./g,'_');
+        formData.id = formData.id || 'f_' + prefix + field.replace(/\./g, '_');
         formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || $filter('titleCase')(field));
         return formData;
     };
@@ -309,7 +310,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 record = record[nests[i]];
             }
         }
-        if (record && $scope.select2List.indexOf(nests[i-1]) !== -1) {
+        if (record && $scope.select2List.indexOf(nests[i - 1]) !== -1) {
             record = record.text;
         }
         if (record === undefined) {
@@ -400,7 +401,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
     };
 
-    $scope.readRecord = function() {
+    $scope.readRecord = function () {
         $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
             if (data.success === false) {
                 $location.path("/404");
@@ -416,7 +417,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             });
     };
 
-    $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''),{cache:true}).success(function (data) {
+    $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''), {cache: true}).success(function (data) {
 
         handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
 
@@ -444,7 +445,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if ($scope.id) {
                 // Going to read a record
                 if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
-                    $scope.dataEventFunctions.onBeforeRead($scope.id, function(err) {
+                    $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
                         if (err) {
                             showError(err);
                         } else {
@@ -480,7 +481,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (from.hasOwnProperty(prop)) {
                     if (_.isObject(from[prop]) && !_.isArray(from[prop])) {
                         to[prop] = {};
-                        copyObject(to[prop],from[prop]);
+                        copyObject(to[prop], from[prop]);
                     } else {
                         to[prop] = from[prop];
                     }
@@ -491,7 +492,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         copyObject($scope.record, master);
         $scope.dismissError();
 
-// TODO: Sort all this pristine stuff now we are on 1.2
+//  TODO: Sort all this pristine stuff now we are on 1.2
 //        if ($scope.myForm) {
 //            console.log('Calling set pristine')
 //            $scope.myForm.$setPristine();
@@ -513,7 +514,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             var errorMessage = '';
             for (var errorField in data.errors) {
                 if (data.errors.hasOwnProperty(errorField)) {
-                    errorMessage += '<li><b>'+ $filter('titleCase')(errorField) +': </b> ';
+                    errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
                     switch (data.errors[errorField].type) {
                         case 'enum' :
                             errorMessage += 'You need to select from the list of values';
@@ -545,7 +546,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         delete $scope.errorMessage;
     };
 
-    $scope.createNew = function(dataToSave, options) {
+    $scope.createNew = function (dataToSave, options) {
         $http.post('api/' + $scope.modelName, dataToSave).success(function (data) {
             if (data.success !== false) {
                 if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
@@ -563,11 +564,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }).error(handleError);
     }
 
-    $scope.updateDocument = function(dataToSave, options) {
+    $scope.updateDocument = function (dataToSave, options) {
         $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
             if (data.success !== false) {
                 if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
-                    $scope.dataEventFunctions.onAfterUpdate(data,master)
+                    $scope.dataEventFunctions.onAfterUpdate(data, master)
                 }
                 if (options.redirect) {
                     window.location = options.redirect;
@@ -591,7 +592,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         var dataToSave = convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0);
         if ($scope.id) {
             if (typeof $scope.dataEventFunctions.onBeforeUpdate === "function") {
-                $scope.dataEventFunctions.onBeforeUpdate(dataToSave, master, function(err) {
+                $scope.dataEventFunctions.onBeforeUpdate(dataToSave, master, function (err) {
                     if (err) {
                         showError(err);
                     } else {
@@ -603,7 +604,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
         } else {
             if (typeof $scope.dataEventFunctions.onBeforeCreate === "function") {
-                $scope.dataEventFunctions.onBeforeCreate(dataToSave, function(err) {
+                $scope.dataEventFunctions.onBeforeCreate(dataToSave, function (err) {
                     if (err) {
                         showError(err);
                     } else {
@@ -621,8 +622,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
     };
 
-    $scope.deleteRecord = function(model, id) {
-        $http.delete('api/' + model + '/' + id).success(function() {
+    $scope.deleteRecord = function (model, id) {
+        $http.delete('api/' + model + '/' + id).success(function () {
             if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
                 $scope.dataEventFunctions.onAfterDelete(master);
             }
@@ -632,9 +633,13 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.$on('$locationChangeStart', function (event, next, current) {
         if (!allowLocationChange && !$scope.isCancelDisabled()) {
-            $dialog.messageBox('Record modified','Would you like to save your changes?', [{ label: 'Yes', result: 'yes', cssClass: 'dlg-yes'}, {label: 'No', result: 'no', cssClass: 'dlg-no'}, { label: 'Cancel', result: 'cancel', cssClass: 'dlg-cancel'}])
+            $dialog.messageBox('Record modified', 'Would you like to save your changes?', [
+                    { label: 'Yes', result: 'yes', cssClass: 'dlg-yes'},
+                    {label: 'No', result: 'no', cssClass: 'dlg-no'},
+                    { label: 'Cancel', result: 'cancel', cssClass: 'dlg-cancel'}
+                ])
                 .open()
-                .then(function(result) {
+                .then(function (result) {
                     switch (result) {
                         case 'no' :
                             allowLocationChange = true;
@@ -652,26 +657,29 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
     });
 
-    $scope.delete = function() {
+    $scope.delete = function () {
 
         var boxResult;
 
         if ($scope.record._id) {
 
-            var msgBox = $dialog.messageBox('Delete Item', 'Are you sure you want to delete this record?', [{
-                label: 'Yes',
-                result: 'yes'
-            }, {
-                label: 'No',
-                result: 'no'
-            }]);
+            var msgBox = $dialog.messageBox('Delete Item', 'Are you sure you want to delete this record?', [
+                {
+                    label: 'Yes',
+                    result: 'yes'
+                },
+                {
+                    label: 'No',
+                    result: 'no'
+                }
+            ]);
 
-            msgBox.open().then(function(result) {
+            msgBox.open().then(function (result) {
 
                 if (result === 'yes') {
 
                     if (typeof $scope.dataEventFunctions.onBeforeDelete === "function") {
-                        $scope.dataEventFunctions.onBeforeDelete(master, function(err) {
+                        $scope.dataEventFunctions.onBeforeDelete(master, function (err) {
 
                             if (err) {
                                 showError(err);
@@ -691,7 +699,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
                 if (result === 'no') {
                     boxResult = result;
-                };
+                }
+                ;
             });
             //can't close the msxBox from within itself as it breaks it.
             if (boxResult === 'no') {
@@ -705,7 +714,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (typeof $scope.disableFunctions.isCancelDisabled === "function") {
             return $scope.disableFunctions.isCancelDisabled($scope.record, master, $scope.myForm);
         } else {
-            return angular.equals(master, $scope.record) ;
+            return angular.equals(master, $scope.record);
         }
     };
 
@@ -805,6 +814,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     }
 
 
+    var simpleArrayNeedsX = function (aSchema) {
+        var result = false;
+        if (aSchema.type === 'text') {
+            result = true;
+        } else if ((aSchema.type === 'select') && !aSchema.ids) {
+            result = true;
+        }
+        return result;
+    }
+
 // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
 // Which is what we need for use in the browser
     var convertToAngularModel = function (schema, anObject, prefixLength) {
@@ -819,7 +838,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             } else {
 
                 // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
-                if (schema[i].array && schema[i].type == 'text' && anObject[fieldname]) {
+                if (schema[i].array && simpleArrayNeedsX(schema[i]) && anObject[fieldname]) {
                     for (var k = 0; k < anObject[fieldname].length; k++) {
                         anObject[fieldname][k] = {x: anObject[fieldname][k]}
                     }
@@ -861,7 +880,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             } else {
 
                 // Convert {array:[{x:'item 1'}]} to {array:['item 1']}
-                if (schema[i].array && schema[i].type == 'text' && anObject[fieldname]) {
+                if (schema[i].array && simpleArrayNeedsX(schema[i]) && anObject[fieldname]) {
                     for (var k = 0; k < anObject[fieldname].length; k++) {
                         anObject[fieldname][k] = anObject[fieldname][k].x
                     }
@@ -949,7 +968,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var setUpSelectOptions = function (lookupCollection, schemaElement) {
         var optionsList = $scope[schemaElement.options] = [];
         var idList = $scope[schemaElement.ids] = [];
-        $http.get('api/schema/' + lookupCollection,{cache : true}).success(function (data) {
+        $http.get('api/schema/' + lookupCollection, {cache: true}).success(function (data) {
             var listInstructions = [];
             handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
             $http.get('api/' + lookupCollection, {cache: true}).success(function (data) {
@@ -988,7 +1007,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     // Open a select2 control from the appended search button
-    $scope.openSelect2 = function(ev) {
+    $scope.openSelect2 = function (ev) {
         $('#' + $(ev.currentTarget).data('select2-open')).select2('open')
     };
 

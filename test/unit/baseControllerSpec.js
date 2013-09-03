@@ -312,7 +312,7 @@ describe('"BaseCtrl"', function(){
 
     });
 
-describe('confirm positive override of password field and name', function() {
+    describe('confirm positive override of password field and name', function() {
 
     var scope, ctrl;
 
@@ -339,8 +339,6 @@ describe('confirm positive override of password field and name', function() {
     });
 
 });
-
-
 
     describe('handles simple conditional display fields', function() {
 
@@ -374,12 +372,14 @@ describe('confirm positive override of password field and name', function() {
         beforeEach(inject(function(_$httpBackend_, $rootScope, $controller, $location) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
-                {"textField":{"path":"textField","instance":"String","options":{"form":{"label":"Organisation Name"},"list":true},"_index":null},
+                {
+                    "textField":{"path":"textField","instance":"String","options":{"form":{"label":"Organisation Name"},"list":true},"_index":null},
                     "hiddenField":{"path":"lookupField", "instance":"ObjectID","options":{"ref":"NotCalled","form":{"hidden":true}},"_index":null},
                     "lookupField":{"path":"lookupField", "instance":"ObjectID","options":{"ref":"Person"},"_index":null},
                     "arrayOfString":{"caster":{"instance":"String"},"path":"arrayOfString", "options":{"type":[null]},"_index":null},
-                    "arrayOfLookup":{"caster":{"path":null,"instance":"ObjectID","options":{},"_index":null},"path":"arrayOfLookup","options":{"type":[null],"ref":"referral_format","form":{"label":"Referral Format"}},"_index":null}}
-            );
+                    "arrayOfLookup":{"caster":{"path":null,"instance":"ObjectID","options":{},"_index":null},"path":"arrayOfLookup","options":{"type":[null],"ref":"referral_format","form":{"label":"Referral Format"}},"_index":null},
+                    "arrayOfEnum":{"caster":{"path":"arrayOfEnum","instance":"String"},"path":"arrayOfEnum","options":{"type":[null],"enum":["Football","Hockey","Cricket"]},"_index":null,"$conditionalHandlers":{}},"_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null,"$conditionalHandlers":{}}
+                });
             $httpBackend.whenGET('api/schema/referral_format').respond(
                 {"description":{"enumValues":[],"regExp":null,"path":"description","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true},"_index":null},
                     "module":{"enumValues":[],"regExp":null,"path":"module","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"hidden":true}},"_index":null},
@@ -393,7 +393,7 @@ describe('confirm positive override of password field and name', function() {
                 {"name":"John Smith", _id:123456789},{"name":"Alan Jones", _id:123389}
             ]);
             $httpBackend.whenGET('api/collection/3').respond({
-                "textField":"This is some text","lookupField":123456789,"hiddenField":"12312","arrayOfString":["string","rope","cord"],"arrayOfLookup":["1","2","4"]
+                "textField":"This is some text","lookupField":123456789,"hiddenField":"12312","arrayOfString":["string","rope","cord"],"arrayOfLookup":["1","2","4"],"arrayOfEnum":["Football","Cricket"]
             });
             $httpBackend.whenGET('api/referral_format').respond(
                 [{"description":"Social services","module":"anything","_id":"1"},
@@ -420,6 +420,11 @@ describe('confirm positive override of password field and name', function() {
             it('converts id array to list strings array', function() {
                 expect(scope.record.arrayOfLookup).toEqual([ { x : 'Social services' }, { x : 'Continuing Health Care' }, { x : 'Website' } ]);
             });
+
+            it('converts enum array to object array', function() {
+                expect(scope.record.arrayOfEnum).toEqual([ { x : 'Football' }, { x : 'Cricket' }]);
+            });
+
         });
 
         describe('front end to mongo', function() {
@@ -427,7 +432,16 @@ describe('confirm positive override of password field and name', function() {
             it('converts object array to string array', function() {
                 scope.record.arrayOfString[2].x = 'ribbon';
                 $httpBackend.when('POST','api/collection/3',
-                    {"textField":"This is some text","lookupField":123456789,"hiddenField":"12312","arrayOfString":["string","rope","ribbon"],"arrayOfLookup":["1","2","4"]}
+                    {"textField":"This is some text","lookupField":123456789,"hiddenField":"12312","arrayOfString":["string","rope","ribbon"],"arrayOfLookup":["1","2","4"],"arrayOfEnum":["Football","Cricket"]}
+                ).respond(200,'SUCCESS');
+                scope.save();
+                $httpBackend.flush();
+            });
+
+            it('converts object array to enum array', function() {
+                scope.record.arrayOfEnum[1].x = 'Hockey';
+                $httpBackend.when('POST','api/collection/3',
+                    {"textField":"This is some text","lookupField":123456789,"hiddenField":"12312","arrayOfString":["string","rope","cord"],"arrayOfLookup":["1","2","4"],"arrayOfEnum":["Football","Hockey"]}
                 ).respond(200,'SUCCESS');
                 scope.save();
                 $httpBackend.flush();
@@ -708,7 +722,7 @@ describe('confirm positive override of password field and name', function() {
 
                 };
 
-        
+
 
         beforeEach(function() {
 
@@ -723,16 +737,16 @@ describe('confirm positive override of password field and name', function() {
                 $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                 $httpBackend.whenGET('api/collection/125').respond({"name":"Alan"});
                 $location.$$path = '/collection/125/edit';
-                
+
                 $scope = $rootScope.$new();
                 ctrl = $controller("BaseCtrl", {
                     $scope: $scope,
                     $dialog: $dialog
                 });
-                
-                
+
+
                 spyOn($dialog, 'messageBox').andReturn(fakeDialog);
-                
+
                 $scope.record._id = 1;
 
 
@@ -751,7 +765,7 @@ describe('confirm positive override of password field and name', function() {
         });
 
         it('dialog messageBox should be defined', function() {
-            
+
             $scope.delete();
             $httpBackend.flush();
             expect($dialog.messageBox).toHaveBeenCalled();
@@ -759,14 +773,14 @@ describe('confirm positive override of password field and name', function() {
 
 
         it('should call dialog open when $scope.delete() is called', function() {
-            
+
             $scope.delete();
             $httpBackend.flush();
             expect(fakeDialog.isOpen).toEqual(true);
         });
 
         it('should close the dialog when No is clicked', function() {
-            
+
 
             resolveCallback = function(callback) {
 
@@ -789,7 +803,7 @@ describe('confirm positive override of password field and name', function() {
             $httpBackend.when('DELETE','api/collection/125').respond(200,'SUCCESS');
 
             $httpBackend.expectDELETE('api/collection/125');
-            
+
 
             resolveCallback = function(callback) {
 
