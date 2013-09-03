@@ -18,11 +18,13 @@ formsAngular.controller('NavCtrl',['$scope', '$location', '$filter', '$locationP
             } else {
                 addThis = "listing";
             }
-            angular.forEach($scope.scopes[level].contextMenu, function(value) {
-                if (value[addThis]) {
-                    $scope.items.push(value);
-                }
-            })
+            if (angular.isObject(locals.$scope.contextMenu)) {
+                angular.forEach(locals.$scope.contextMenu, function(value) {
+                    if (value[addThis]) {
+                        $scope.items.push(value);
+                    }
+                })
+            }
         }
         catch(error) {
             if (/is not a function, got undefined/.test(error.message )) {
