@@ -7,7 +7,7 @@ build.xml
 .project
 .settings
 node_modules
-
+app/e2etest
 .idea/*
 bin/*
 

@@ -20,31 +20,57 @@ describe('Base edit form', function() {
         expect( element('.alert-error').text()).not().toMatch(/eye/)
     });
 
-});
-
-
     describe('should display deletion confirmation modal', function() {
-
 
         beforeEach(function () {
 
-
-
-
             browser().navigateTo('/#/a_unadorned_mongoose/666a6075b320153869b17599/edit');
-            // input('record.surname').enter('Steve');
-            // // select('record.eyeColour').option('Blue');
-            // element('#saveButton').click();
         })
 
         it('should display deletion confirmation modal', function() {
             
             element('#deleteButton').click();
             expect( element('.modal').count() ).toEqual(1);
-
-
-            // expect( element('input#f_surname').count() ).toEqual(1);
         });
 
     });
+
+    describe('Allows user to navigate away',function() {
+
+        it('does not put up dialog if no changes',function() {
+            browser().navigateTo('/#/a_unadorned_mongoose/666a6075b320153869b17599/edit');
+            element('#newButton').click();
+            expect(browser().location().url()).toMatch("/a_unadorned_mongoose/new");
+        });
+
+    });
+
+    describe('prompts user to save changes',function() {
+
+        beforeEach(function() {
+            browser().navigateTo('/#/b_using_options/519a6075b320153869b155e0/edit');
+            input('record.freeText').enter('This is a rude thing');
+            element('#newButton').click();
+        });
+
+        it('supports cancelling navigation', function() {
+            expect( element('.modal').count() ).toEqual(1);
+            element('.modal-footer button.dlg-cancel').click();
+            expect(browser().location().url()).toMatch("/b_using_options/519a6075b320153869b155e0/edit");
+        });
+
+        it('supports losing changes', function() {
+            expect( element('.modal').count() ).toEqual(1);
+            element('.modal-footer button.dlg-no').click();
+            expect(browser().location().url()).toMatch("/b_using_options/new");
+        });
+
+        it('supports saving changes', function() {
+            expect( element('.modal').count() ).toEqual(1);
+            element('.modal-footer button.dlg-yes').click();
+            expect( element('.alert-error').text()).toMatch(/your mouth/);
+        });
+    })
+
+});
 

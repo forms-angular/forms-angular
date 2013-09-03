@@ -632,13 +632,14 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.$on('$locationChangeStart', function (event, next, current) {
         if (!allowLocationChange && !$scope.isCancelDisabled()) {
-            $dialog.messageBox('Record modified','Would you like to save your changes?', [{ label: 'Yes', result: 'yes'}, {label: 'No', result: 'no'}, { label: 'Cancel', result: 'cancel', cssClass: 'btn-primary'}])
+            $dialog.messageBox('Record modified','Would you like to save your changes?', [{ label: 'Yes', result: 'yes', cssClass: 'dlg-yes'}, {label: 'No', result: 'no', cssClass: 'dlg-no'}, { label: 'Cancel', result: 'cancel', cssClass: 'dlg-cancel'}])
                 .open()
                 .then(function(result) {
                     switch (result) {
                         case 'no' :
                             allowLocationChange = true;
-                            $location.url = next;
+                            window.location = next;
+//                            $location.url = next;
                             break;
                         case 'yes' :
                             $scope.save({redirect: next});    // save changes
