@@ -122,7 +122,7 @@ formsAngular
 
                                 template += '<div class="schema-head well">' + info.label + '</div>' +
 // for angular 1.0 branch     '<div class="sub-doc well" id="' + info.id + 'List" ng-subdoc-repeat="subDoc in record.' + info.name + '">' +
-                                '<div class="sub-doc well" id="' + info.id + 'List[{{$index}}]" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
+                                '<div class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
                                     '<div class="row-fluid">' +
                                     '<div class="pull-left">' +
                                     '<form-input ng-repeat="' + schemaLoop + '" info="{{field}}" schema="true"></form-input>' +
@@ -151,8 +151,8 @@ formsAngular
                                 if (info.array) {
                                     template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(this)" class="icon-plus-sign"></i>') +
                                         '<div class="controls" id="' + info.id + 'List" ng-repeat="arrayItem in record.' + info.name + '">' +
-                                        generateInput(info, "arrayItem.x", true, info.id+'[{{$index}}]') +
-                                        '<i ng-click="remove(this,$index)" class="icon-minus-sign"></i>' +
+                                        generateInput(info, "arrayItem.x", true, info.id+'_{{$index}}') +
+                                        '<i ng-click="remove(this,$index)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
                                         '</div>';
                                 } else {
                                     // Single fields here
