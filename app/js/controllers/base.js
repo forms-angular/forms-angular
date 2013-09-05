@@ -361,7 +361,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         active = true;
                     }
                 }
-                pane = $scope.panes[$scope.panes.push({title: paneTitle, content: [], active: active}) - 1]
+                pane = $scope.panes[$scope.panes.push({title: paneTitle, containerType: 'pane', content: [], active: active}) - 1]
             }
             pane.content.push(thisInst);
         }
