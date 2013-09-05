@@ -18,20 +18,27 @@
         </div>
     </div>
     <div class="row-fluid">
-        <div ng-if="!panes.length">
-            <form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>
+        <!--<div ng-if="!panes.length">-->
+            <!--<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>-->
+        <!--</div>-->
+        <!--<tabs ng-if="panes.length">-->
+            <!--<pane ng-repeat="pane in panes" heading="{{pane.title}}" active="pane.active">-->
+                <!--<form-input ng-repeat="field in pane.content" info="{{field}}"></form-input>-->
+            <!--</pane>-->
+        <!--</tabs>-->
+        <!--<div>-->
+            <!--<span ng-init="surname=[{id:'f_surname',label: 'Surname',name:'surname',type:'text'}]"></span>-->
+            <!--<form-angular schema="surname"></form-angular>-->
+        <!--</div>-->
+        <div>
+            <form-angular schema="formSchema"></form-angular>
         </div>
-        <tabs ng-if="panes.length">
-            <pane ng-repeat="pane in panes" heading="{{pane.title}}" active="pane.active">
-                <form-input ng-repeat="field in pane.content" info="{{field}}"></form-input>
-            </pane>
-        </tabs>
     </div>
 
-    <!--Record-->
-    <!--<pre>{{record}}</pre>-->
-    <!--FormSchema-->
-    <!--<pre>{{formSchema}}</pre>-->
+    Record
+    <pre>{{record}}</pre>
+    FormSchema
+    <pre>{{formSchema}}</pre>
     <!--Panes-->
     <!--<pre>{{panes}}</pre>-->
 </form>

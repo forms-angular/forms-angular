@@ -7,7 +7,6 @@ formsAngular
             compile: function () {
                 return function (scope, element, attrs) {
                     scope.$watch(attrs.formInput, function () {
-
                         //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
                         //api looks like this:
                         // <form-input ng-repeat="field in formSchema" info="{{field}}" moveOptions="{
@@ -87,7 +86,7 @@ formsAngular
                                 if (fieldInfo.type == 'textarea') {
                                     value = '<textarea ' + common + (fieldInfo.rows ? 'rows = "' + fieldInfo.rows + '" ' : '') + ' />';
                                 } else {
-                                    value = '<input '    + common + 'type="' + info.type + '" />';
+                                    value = '<input '    + common + 'type="' + fieldInfo.type + '" />';
                                 }
                             }
                             if (fieldInfo.helpInline) {
