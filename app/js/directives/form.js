@@ -8,7 +8,7 @@ formsAngular
                     var elementHtml = ''
                         , tabsSetup = false;
 
-                    var parseMoveOptions = function () {
+                    var parseMoveOptions = function (info) {
                         //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
                         //api looks like this:
                         // <form-input ng-repeat="field in formSchema" info="{{field}}" moveOptions="{
@@ -27,7 +27,7 @@ formsAngular
                         if (attrs.moveoptions) {
                             opt = JSON.parse(attrs.moveoptions.replace(/'/g, '"'));
 
-                            fieldName = (opt['ng-model'] || 'record') + '.' + JSON.parse(attrs.info).name.replace(" ", "");
+                            fieldName = (opt['ng-model'] || 'record') + '.' + info.name.replace(" ", "");
 
                             if (opt['jqyoui-draggable']) {
                                 jqyouiDraggable = JSON.stringify(opt['jqyoui-draggable']).replace(/"/g, "'")
@@ -110,7 +110,7 @@ formsAngular
                     };
 
                     var handleField = function (info) {
-                        var template = '<div class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions() + '>';
+                        var template = '<div class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions(info) + '>';
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
