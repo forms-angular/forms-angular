@@ -27,7 +27,7 @@ formsAngular
                         if (attrs.moveoptions) {
                             opt = JSON.parse(attrs.moveoptions.replace(/'/g, '"'));
 
-                            fieldName = (opt['ng-model'] || 'record') + '.' + JSON.parse(attrs.info).name
+                            fieldName = (opt['ng-model'] || 'record') + '.' + JSON.parse(attrs.info).name.replace(" ", "");
 
                             if (opt['jqyoui-draggable']) {
                                 jqyouiDraggable = JSON.stringify(opt['jqyoui-draggable']).replace(/"/g, "'")
