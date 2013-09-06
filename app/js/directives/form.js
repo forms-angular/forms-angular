@@ -6,7 +6,7 @@ formsAngular
             priority: 1,
             compile: function () {
                 return function (scope, element, attrs) {
-                    scope.$watch(attrs.info, function () {
+                    scope.$watch(attrs.formInput, function () {
 
                         //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
                         //api looks like this:
