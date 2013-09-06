@@ -6,7 +6,7 @@ formsAngular
             priority: 1,
             compile: function () {
                 return function (scope, element, attrs) {
-                    scope.$watch(attrs.formInput, function () {
+                    scope.$watch(attrs.info, function () {
 
                         //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
                         //api looks like this:
@@ -27,7 +27,7 @@ formsAngular
                             if (attrs.moveoptions) {
                                 opt = JSON.parse(attrs.moveoptions.replace(/'/g, '"'));
 
-                                fieldName = (opt['ng-model'] || 'record') + '.' + JSON.parse(attrs.info).name
+                                fieldName = (opt['ng-model'] || 'record') + '.' + JSON.parse(attrs.info).name;
 
                                 if (opt['jqyoui-draggable']) {
                                   jqyouiDraggable =  JSON.stringify(opt['jqyoui-draggable']).replace(/"/g, "'") 
@@ -41,7 +41,7 @@ formsAngular
                         };
 
                         var generateInput = function (fieldInfo, modelString, isRequired, idString) {
-                            var focusStr = '', placeHolder = '';
+                            var focusStr = '';
                             if (!modelString) {
                                 if (fieldInfo.name.indexOf('.') != -1 && element[0].outerHTML.indexOf('schema="true"') != -1) {
                                     // Schema handling - need to massage the ngModel and the id
@@ -58,8 +58,7 @@ formsAngular
                             }
                             var value
                                 , requiredStr = (isRequired || fieldInfo.required) ? ' required' : ''
-                                , readonlyStr = fieldInfo.readonly ? ' readonly' : ''
-                                , common;
+                                , readonlyStr = fieldInfo.readonly ? ' readonly' : '';
 
                             var common = focusStr + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (fieldInfo.placeHolder ? ('placeholder="'+fieldInfo.placeHolder+'" ') : "");
                             if (fieldInfo.type === 'select') {
