@@ -29,10 +29,10 @@
                     href="https://github.com/mchapman/forms-angular/tree/master/minimal" target="_blank">sample
                 example</a> or follow the <a href="/#/build-app">build an app instructions</a> to understand how they fit in)</p>
     <pre>
-        var DataFormHandler = new (require('data_form.js'))(app)
-        DataFormHandler.addResource('Person',require('person_schema.js'))
+var DataFormHandler = new (require('data_form.js'))(app)
+DataFormHandler.addResource('Person',require('person_schema.js'))
 
-        &ltform-input ng-repeat="field in formSchema" info="{{field}}"&gt&lt/form-input&gt</pre>
+&ltform-input schema="formSchema"&gt&lt/form-input&gt</pre>
         </div>
     </div>
     <br/>
@@ -96,12 +96,43 @@
         </li>
         <li><strong>/#/:model/:formschema/:id/edit</strong></li>
     </ul>
+
+    <p>You can also create form schemas by hand (or dynamically in code), rather than using the ones that are generated from a Mongoose schema.
+        This allows the use of <strong>containers</strong>.  For example:</p>
+    <pre>
+&ltform-input ng-init="names=[
+  {containerType:'fieldset',title:'Name',content:
+    [
+      {id:'f_surname',label:'Surname',name:'surname',type:'text'},
+      {id:'f_forename',label:'forename',name:'forename',type:'text'}
+    ]
+  }
+]" schema="names"&gt&lt/form-input&gt</pre>
+    <p>Other containers are <strong>tab</strong>, <strong>pane</strong> (which sets up a tab set if necessary),
+        <strong>well</strong>, <strong>well-large</strong> and <strong>well-small</strong>.</p>
+
+    <p>If you want to &quot;roll your own&quot; you can do something like:</p>
+    <pre>
+&ltstyle&gt
+  .redBorder {border:solid 2px red;}
+  p.bigRed {color: red; font-size: large}
+&lt/style&gt
+&ltform-input ng-init="names=[
+  {containerType:'redBorder',title:'Name',titleTagOrClass:'bigRed',content:
+    [
+      {id:'f_surname',label:'Surname',name:'surname',type:'text'},
+      {id:'f_forename',label:'forename',name:'forename',type:'text'}
+    ]
+  }
+]" schema="names"&gt&lt/form-input&gt
+</pre>
+    <p>Where container type is seen as a class for a div and a titleTagOrClass of h1..h6 is interpreted as a heading tag and anything as a class to be applied to a paragraph (as in the example).</p>
 </section>
 
 <section id="schema-options" ><h3>Schema Options</h3>
 
     <p>The mark-up of generated forms can be influenced by use of the <strong>form</strong> object in the schema type.
-        The form object can have the following keys:
+        The form object can have the following keys:</p>
     <ul>
         <li><strong>hidden</strong> inhibits this schema key from appearing on the generated form.</li>
         <li><strong>label</strong> overrides the default input label. label:null suppresses the label altogether.</li>
@@ -122,6 +153,8 @@
         <li><strong>pane</strong> used to divide a large form up into panes accessed by tabs
             (see <a href="/#/i_tabbed_forms/new">example</a>). This requires using the UI Bootstrap tabs module which
             is not in the minimal deployment folder (but is in this demo).</li>
+        <li><strong>noAdd</strong> inhibits an Add button being generated for arrays</li>
+        <li><strong>noRemove</strong> inhibits a Remove button being generated for array elements</li>
         <li><strong>link</strong> sets up hyperlinks for reference fields as follows:
         <ul>
             <li><em>linkOnly</em> if true (which at the time of writing is the only option supported) then the input element is not generated</li>
@@ -129,9 +162,8 @@
         </ul>
     </ul>
 
-    <a href="/code/b_using_options.js">This example schema</a> and <a href="/#/b_using_options/new">this form</a> show
-    many of these options in use.
-    </p>
+    <p><a href="/code/b_using_options.js">This example schema</a> and <a href="/#/b_using_options/new">this form</a> show
+    many of these options in use.</p>
 </section>
 
 <section id="listing">
