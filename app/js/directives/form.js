@@ -6,9 +6,14 @@ formsAngular
                 return function (scope, element, attrs) {
 
                     var elementHtml = ''
-                        , tabsSetup = false;
+                        , tabsSetup = false
+                        //add a form option hide-if-blank and map this to the hide-on-empty directive
+                        //which will hide any field groups (label and input) that don't have a value once evaluated against the
+                        //$scope.record object.
+                        //only tested on input boxes - may break other things
+                        , hideIfBlank = attrs.hideIfBlank !== undefined ? 'hide-on-empty' : '';
 
-                    var parseMoveOptions = function () {
+                    var parseMoveOptions = function (info) {
                         //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
                         //api looks like this:
                         // <form-input schema="formSchema" moveOptions="{
@@ -28,7 +33,7 @@ formsAngular
                         if (attrs.moveoptions) {
                             opt = JSON.parse(attrs.moveoptions.replace(/'/g, '"'));
 
-                            fieldName = (opt['ng-model'] || 'record') + '.' + JSON.parse(attrs.info).name;
+                            fieldName = (opt['ng-model'] || 'record') + '.' + info.name.replace(" ", "");
 
                             if (opt['jqyoui-draggable']) {
                                 jqyouiDraggable = JSON.stringify(opt['jqyoui-draggable']).replace(/"/g, "'")
@@ -107,7 +112,7 @@ formsAngular
                     };
 
                     var handleField = function (info) {
-                        var template = '<div class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions() + '>';
+                        var template = '<div ' + hideIfBlank + ' class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions(info) + '>';
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
