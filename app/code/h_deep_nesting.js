@@ -28,7 +28,7 @@ var HSchema = new Schema({
         town: String
     },
     studies : {
-        courses: [CourseSchema],
+        courses: {type:[CourseSchema], form:{noAdd: true, noRemove: true}},
         exams: [ExamsSchema]
     },
     assistants: [{ type: Schema.Types.ObjectId, ref: 'b_using_options'}]

@@ -12,7 +12,7 @@ var ExamsSchema = new Schema({
 var FSchema = new Schema({
     surname: {type: String, index:true, list:{}},
     forename:  {type: String, index:true, list:true},
-    exams: {type: [ExamsSchema], form:{noAdd: true, noRemove: true}}
+    exams: [ExamsSchema]
 });
 
 var F;
@@ -33,7 +33,7 @@ F.prototype.searchResultFormat = function() {
         weighting: weighting,
         text: this.surname + ', ' + this.forename
     }
-}
+};
 
 module.exports = {
     model : F,

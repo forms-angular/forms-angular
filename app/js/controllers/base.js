@@ -20,6 +20,31 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = $filter('titleCase')($scope.modelName);
 
+    $scope.getData = function(object,fieldname,element){
+
+    };
+
+    $scope.setData = function(object,fieldname,element,value){
+        var parts = fieldname.split('.')
+            , workingRec = object
+            , re
+            , id;
+
+        if (element) {
+            id = element.context.id;
+        }
+        for (var i= 0; i < parts.length -1; i++) {
+            workingRec = workingRec[parts[i]];
+            if (angular.isArray(workingRec)) {
+                // If we come across an array we need to find the correct position
+                // or raise an exception
+                re = new RegExp(parts[i] + "-([0-9])-" + parts[i+1]);
+                workingRec = workingRec[parseInt(id.match(re)[1])]
+            }
+        }
+        workingRec[parts[length-1]] = value;
+    };
+
     function updateInvalidClasses(value, id, select2) {
         var target = '#' + ((select2) ? 'cg_' : '') + id;
         if (value) {
@@ -114,7 +139,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                         $location.path("/404");
                                     }
                                     var display = {id: element.val(), text: data.list};
-                                    master[formInstructions.name] = display;
+                                    $scope.setData(master, formInstructions.name, element, display);
                                     callback(display);
 
                                 }).error(function () {
@@ -360,7 +385,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         active = true;
                     }
                 }
-                pane = $scope.panes[$scope.panes.push({title: paneTitle, content: [], active: active}) - 1]
+                pane = $scope.panes[$scope.panes.push({title: paneTitle, containerType: 'pane', content: [], active: active}) - 1]
             }
             pane.content.push(thisInst);
         }
@@ -562,7 +587,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 showError(data);
             }
         }).error(handleError);
-    }
+    };
 
     $scope.updateDocument = function (dataToSave, options) {
         $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
@@ -583,7 +608,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
         }).error(handleError);
 
-    }
+    };
 
     $scope.save = function (options) {
         options = options || {};
@@ -629,9 +654,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
             $location.path('/' + $scope.modelName);
         });
-    }
+    };
 
-    $scope.$on('$locationChangeStart', function (event, next, current) {
+    $scope.$on('$locationChangeStart', function (event, next) {
         if (!allowLocationChange && !$scope.isCancelDisabled()) {
             $dialog.messageBox('Record modified', 'Would you like to save your changes?', [
                     { label: 'Yes', result: 'yes', cssClass: 'dlg-yes'},
@@ -700,7 +725,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (result === 'no') {
                     boxResult = result;
                 }
-                ;
             });
             //can't close the msxBox from within itself as it breaks it.
             if (boxResult === 'no') {
@@ -750,8 +774,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return text;
     };
 
-    $scope.add = function (elementInfo) {
-        var fieldName = elementInfo.field.name, arrayField;
+    $scope.add = function (fieldName) {
+        var arrayField;
         var fieldParts = fieldName.split('.');
         arrayField = $scope.record;
         for (var i = 0, l = fieldParts.length; i < l; i++) {
@@ -767,9 +791,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         arrayField.push({});
     };
 
-    $scope.remove = function (fieldInfo, value) {
+    $scope.remove = function (fieldName, value) {
         // Remove an element from an array
-        var fieldName = fieldInfo.$parent.field.name;
         var fieldParts = fieldName.split('.');
         var arrayField = $scope.record;
         for (var i = 0, l = fieldParts.length; i < l; i++) {
@@ -822,7 +845,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             result = true;
         }
         return result;
-    }
+    };
 
 // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
 // Which is what we need for use in the browser
@@ -1014,3 +1037,4 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
 }]);
+
