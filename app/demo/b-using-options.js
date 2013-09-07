@@ -60,25 +60,20 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
     function setColour(number) {
         var colours = ['#81B7DB','#C2A369','#6DDB4F','#47820C'];
         if (number != "") {
-
             $('#cg_f_eyeColour').css('background-color', colours[parseInt(number)]);
         } else {
             $('#cg_f_eyeColour').css('background-color', 'white');
         }
-    };
+    }
 
-    $scope.$on('formInputDone', function(event, info) {
-        switch (info.id) {
-            case 'f_eyeColour' :
-                var eyeColor = $('#f_eyeColour');
-                eyeColor.on("change", function(e) {
-//                    console.log("change "+JSON.stringify({val:e.val, added:e.added, removed:e.removed}));
-                    setColour(e.val);
-                });
-                $timeout(function(){
-                    setColour(eyeColor.select2("val"))
-                },100);
-                break;
-        }
+    $scope.$on('formInputDone', function() {
+        var eyeColor = $('#f_eyeColour');
+        eyeColor.on("change", function(e) {
+            console.log("change "+JSON.stringify({val:e.val, added:e.added, removed:e.removed}));
+            setColour(e.val);
+        });
+        $timeout(
+            function(){setColour(eyeColor.select2("val"))
+        },100);
     })
 }]);

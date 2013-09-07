@@ -58,7 +58,7 @@ describe('Links', function () {
             beforeEach(inject(function ($rootScope, $compile) {
                 elm = angular.element(
                     '<form name="myForm" class="form-horizontal compact">' +
-                        '<form-input info="{{formSchema}}"></form-input>' +
+                        '<form-input schema="formSchema"></form-input>' +
                         '</form>');
 
                 scope = $rootScope;

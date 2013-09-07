@@ -9,7 +9,7 @@ describe('formInput', function () {
         beforeEach(inject(function ($rootScope, $compile) {
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact">' +
-                    '<form-input info="{{formSchema}}"></form-input>' +
+                    '<form-input schema="formSchema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -41,7 +41,7 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>' +
+                    '<form-input schema="formSchema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -87,7 +87,7 @@ describe('formInput', function () {
             beforeEach(inject(function ($rootScope, $compile) {
                 elm = angular.element(
                     '<form name="myForm" class="form-horizontal compact"> ' +
-                        '<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>' +
+                        '<form-input schema="formSchema"></form-input>' +
                         '</form>');
 
                 scope = $rootScope;
@@ -117,12 +117,12 @@ describe('formInput', function () {
                 expect(thisElm.length).toBe(1);
                 expect((thisElm).text()).toBe(' Add');
 
-                thisElm = elm.find('.sub-doc')
+                thisElm = elm.find('.sub-doc');
                 expect(thisElm.length).toBe(2);
 
-                thisElm = elm.find('.sub-doc:first')
+                thisElm = elm.find('.sub-doc:first');
                 expect(thisElm.attr('id')).toBe('f_examsList_0');
-                thisElm = elm.find('.sub-doc:last')
+                thisElm = elm.find('.sub-doc:last');
                 expect(thisElm.attr('id')).toBe('f_examsList_1');
 
                 thisElm = elm.find('input[type="number"]');
@@ -140,7 +140,7 @@ describe('formInput', function () {
             beforeEach(inject(function ($rootScope, $compile) {
                 elm = angular.element(
                     '<form name="myForm" class="form-horizontal compact"> ' +
-                        '<form-input ng-repeat="field in formSchema" info="{{field}}"></form-input>' +
+                        '<form-input schema="formSchema"></form-input>' +
                         '</form>');
 
                 scope = $rootScope;
@@ -169,7 +169,7 @@ describe('formInput', function () {
                 thisElm = elm.find('.schema-foot button');
                 expect(thisElm.length).toBe(0);
 
-                thisElm = elm.find('.sub-doc')
+                thisElm = elm.find('.sub-doc');
                 expect(thisElm.length).toBe(2);
 
                 thisElm = elm.find('.sub-doc button:first');
@@ -177,7 +177,7 @@ describe('formInput', function () {
             });
         });
 
-    })
+    });
 
     describe('does not generate label element when label is blank', function () {
 
@@ -185,7 +185,7 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input schema="schema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -225,7 +225,7 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input schema="schema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -260,7 +260,7 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input schema="schema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -291,7 +291,7 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input schema="schema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -326,7 +326,7 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input schema="schema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -366,7 +366,7 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input schema="schema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -390,7 +390,7 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input schema="schema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -427,7 +427,7 @@ describe('formInput', function () {
 
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input schema="schema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;
@@ -497,7 +497,7 @@ describe('formInput', function () {
         beforeEach(inject(function ($rootScope, $compile) {
             elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact">' +
-                    '<form-input info="{{formSchema}}"></form-input>' +
+                    '<form-input schema="formSchema"></form-input>' +
                     '</form>');
 
             scope = $rootScope;

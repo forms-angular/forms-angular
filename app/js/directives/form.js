@@ -11,7 +11,7 @@ formsAngular
                     var parseMoveOptions = function () {
                         //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
                         //api looks like this:
-                        // <form-input ng-repeat="field in formSchema" info="{{field}}" moveOptions="{
+                        // <form-input schema="formSchema" moveOptions="{
                         // 'drag-drop': true,
                         // 'ng-model': 'record',
                         // 'class': 'dragelement',
@@ -22,12 +22,13 @@ formsAngular
 
                         var jqyouiDraggable
                             , opt
-                            , fieldName;
+                            , fieldName
+                            , optionsString = '';
 
                         if (attrs.moveoptions) {
                             opt = JSON.parse(attrs.moveoptions.replace(/'/g, '"'));
 
-                            fieldName = (opt['ng-model'] || 'record') + '.' + JSON.parse(attrs.info).name
+                            fieldName = (opt['ng-model'] || 'record') + '.' + JSON.parse(attrs.info).name;
 
                             if (opt['jqyoui-draggable']) {
                                 jqyouiDraggable = JSON.stringify(opt['jqyoui-draggable']).replace(/"/g, "'")
@@ -35,33 +36,29 @@ formsAngular
                                 jqyouiDraggable = '';
                             }
 
-                            return  ' data-drag="' + opt['drag-drop'] + '" ng-model="' + fieldName + '" class="' + opt['class'] + '" data-jqyoui-options="' + opt['data-jqyoui-options'] + '" jqyoui-draggable="' + jqyouiDraggable + '" ';
+                            optionsString = ' data-drag="' + opt['drag-drop'] + '" ng-model="' + fieldName + '" class="' + opt['class'] + '" data-jqyoui-options="' + opt['data-jqyoui-options'] + '" jqyoui-draggable="' + jqyouiDraggable + '" ';
                         }
-
+                        return optionsString;
                     };
 
                     var generateInput = function (fieldInfo, modelString, isRequired, idString) {
-                        var focusStr = '', placeHolder = '';
                         if (!modelString) {
-                            if (fieldInfo.name.indexOf('.') != -1 && element[0].outerHTML.indexOf('schema="true"') != -1) {
+                            // We are dealing with an array of sub schemas
+                            if (attrs.subschema && fieldInfo.name.indexOf('.') != -1) {
                                 // Schema handling - need to massage the ngModel and the id
                                 var compoundName = fieldInfo.name,
                                     lastPartStart = compoundName.lastIndexOf('.');
-                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$parent.$index + '.' + compoundName.slice(lastPartStart + 1);
+                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$index + '.' + compoundName.slice(lastPartStart + 1);
                                 idString = modelString.slice(7).replace(/\./g, '-')
                             } else {
                                 modelString = (attrs.model || 'record') + '.' + fieldInfo.name;
-                                if (scope.$index === 0) {
-                                    focusStr = "autofocus ";
-                                }
                             }
                         }
                         var value
                             , requiredStr = (isRequired || fieldInfo.required) ? ' required' : ''
-                            , readonlyStr = fieldInfo.readonly ? ' readonly' : ''
-                            , common;
+                            , readonlyStr = fieldInfo.readonly ? ' readonly' : '';
 
-                        var common = focusStr + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (fieldInfo.placeHolder ? ('placeholder="' + fieldInfo.placeHolder + '" ') : "");
+                        var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (fieldInfo.placeHolder ? ('placeholder="' + fieldInfo.placeHolder + '" ') : "");
                         if (fieldInfo.type === 'select') {
                             common += (fieldInfo.readonly ? 'disabled ' : '');
                             if (fieldInfo.select2) {
@@ -114,25 +111,18 @@ formsAngular
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
-                            var schemaLoop;
-                            if (scope.formSchema[scope.$index] && info.id === scope.formSchema[scope.$index].id) {
-                                schemaLoop = 'field in formSchema[' + scope.$index + '].schema'
-                            } else {
-                                // we are in a pane
-                                schemaLoop = 'field in panes[' + scope.$parent.$index + '].content[' + scope.$index + '].schema'
-                            }
-
+                            var schemaDefName = 'gen'+new Date().getTime();
+                            scope[schemaDefName] = info.schema;
                             template += '<div class="schema-head well">' + info.label + '</div>' +
-// for angular 1.0 branch     '<div class="sub-doc well" id="' + info.id + 'List" ng-subdoc-repeat="subDoc in record.' + info.name + '">' +
                                 '<div class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
                                 '<div class="row-fluid">' +
                                 '<div class="pull-left">' +
-                                '<form-input ng-repeat="' + schemaLoop + '" info="{{field}}" schema="true"></form-input>' +
+                                '<form-input schema="' + schemaDefName + '" subschema="true"></form-input>' +
                                 '</div>';
 
                             if (!info.noRemove) {
                                 template += '<div class="pull-left sub-doc-btns">' +
-                                    '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(this,$index)">' +
+                                    '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(\''+info.name+'\',$index)">' +
                                     '<i class="icon-minus"></i> Remove' +
                                     '</button>' +
                                     '</div> '
@@ -142,7 +132,7 @@ formsAngular
                                 '</div>' +
                                 '<div class = "schema-foot well">';
                             if (!info.noAdd) {
-                                template += '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(this)">' +
+                                template += '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(\''+info.name+'\')">' +
                                     '<i class="icon-plus"></i> Add' +
                                     '</button>'
                             }
@@ -151,10 +141,10 @@ formsAngular
                         } else {
                             // Handle arrays here
                             if (info.array) {
-                                template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(this)" class="icon-plus-sign"></i>') +
+                                template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\''+info.name+'\')" class="icon-plus-sign"></i>') +
                                     '<div class="controls" id="' + info.id + 'List" ng-repeat="arrayItem in record.' + info.name + '">' +
                                     generateInput(info, "arrayItem.x", true, info.id + '_{{$index}}') +
-                                    '<i ng-click="remove(this,$index)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
+                                    '<i ng-click="remove(\''+info.name+'\',$index)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
                                     '</div>';
                             } else {
                                 // Single fields here
@@ -168,15 +158,15 @@ formsAngular
                         return template;
                     };
 
-                    var tabs = function() {
-
-                    };
-
-                    var processInstructions = function (instructionsArray) {
+                    var processInstructions = function (instructionsArray, topLevel) {
                         for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
                             var info = instructionsArray[anInstruction];
+                            if (anInstruction === 0  && topLevel) {
+                                info.add = ((info.add || '') + "autofocus ");
+                            }
                             if (info.directive) {
-                                var newElement = '<' + info.directive;
+                                var directiveName = info.directive;
+                                var newElement = '<' + directiveName;
                                 var thisElement = element[0];
                                 for (var i = 0; i < thisElement.attributes.length; i++) {
                                     var thisAttr = thisElement.attributes[i];
@@ -189,65 +179,99 @@ formsAngular
                                                 newElement += ' class="' + classes + '"';
                                             }
                                             break;
-                                        case 'info' :
-                                            var options = JSON.parse(thisAttr.nodeValue);
+                                        case 'schema' :
+                                            var options = info;
                                             delete options.directive;
-                                            newElement += ' info="' + JSON.stringify(options).replace(/\"/g, '&quot;') + '"';
+                                            var bespokeSchemaDefName = 'bes'+new Date().getTime();
+                                            newElement += ' ng-init="' + bespokeSchemaDefName + '=[' + JSON.stringify(options).replace(/\"/g,"'") + ']" schema="' + bespokeSchemaDefName + '"';
                                             break;
                                         default :
                                             newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.nodeValue + '"';
                                     }
                                 }
-                                newElement += '></' + info.directive + '>';
+                                newElement += '></' + directiveName + '>';
                                 elementHtml += newElement;
                             } else if (info.containerType) {
-                                // maintain support for simplified pane syntax for now
-                                if (info.containerType === 'pane' && !tabsSetup) {
-
-                                } else {
-                                    switch (info.containerType) {
-//                                        case 'pane' :
-//                                            <!--<pane ng-repeat="pane in panes" heading="{{pane.title}}" active="pane.active">-->
-//                                            <!--<form-input ng-repeat="field in pane.content" info="{{field}}"></form-input>-->
-//                                                <!--</pane>-->
-//                                            break;
-//                                        case 'tab' :
-//                                            <!--<tabs ng-if="panes.length">-->
-//                                                <!--</tabs>-->
-//
-//                                            tabsSetup = true;
-//                                            break;
-                                        case 'fieldset' :
-                                            elementHtml += '<fieldset>';
-                                            if (info.title) {
-                                                elementHtml += '<legend>' + info.title + '</legend>';
+                                switch (info.containerType) {
+                                    case 'pane' :
+                                        // maintain support for simplified pane syntax for now
+                                        if (!tabsSetup) {
+                                            tabsSetup = 'forced';
+                                            elementHtml += '<tabs>';
+                                        }
+                                        elementHtml += '<pane heading="' + info.title + '" active="' + (info.active || 'false') + '">';
+                                        processInstructions(info.content);
+                                        elementHtml += '</pane>';
+                                        break;
+                                    case 'tab' :
+                                        elementHtml += '<tabs>';
+                                        processInstructions(info.content);
+                                        elementHtml += '</tabs>';
+                                        tabsSetup = true;
+                                        break;
+                                    case 'well' :
+                                        elementHtml += '<div class="well">';
+                                        processInstructions(info.content);
+                                        elementHtml += '</div>';
+                                        break;
+                                    case 'well-large' :
+                                        elementHtml += '<div class="well well-large">';
+                                        processInstructions(info.content);
+                                        elementHtml += '</div>';
+                                        break;
+                                    case 'well-small' :
+                                        elementHtml += '<div class="well well-small">';
+                                        processInstructions(info.content);
+                                        elementHtml += '</div>';
+                                        break;
+                                    case 'fieldset' :
+                                        elementHtml += '<fieldset>';
+                                        if (info.title) {
+                                            elementHtml += '<legend>' + info.title + '</legend>';
+                                        }
+                                        processInstructions(info.content);
+                                        elementHtml += '</fieldset>';
+                                        break;
+                                    default:
+                                        elementHtml += '<div class="' + info.containerType + '">';
+                                        if (info.title) {
+                                            var titleLook = info.titleTagOrClass || "";
+                                            if (titleLook.match(/h[1-6]/)) {
+                                                elementHtml += '<' + titleLook + '>' + info.title + '</' + info.titleLook + '>';
+                                            } else {
+                                                elementHtml += '<p class="' + titleLook + '">'+ info.title +'</p>'
                                             }
-                                            processInstructions(info.content);
-                                            elementHtml += '</fieldset>';
-                                            break;
-                                        default:
-                                            break;
-                                    }
+                                        }
+                                        processInstructions(info.content);
+                                        elementHtml += '</fieldset>';
+                                        break;
                                 }
                             } else {
                                 elementHtml += handleField(info);
                             }
                             // Todo - find a better way of communicating with controllers
-                            $rootScope.$broadcast('formInputDone', info)
                         }
-                    }
+                    };
 
                     var unwatch = scope.$watch(attrs.schema, function (newValue) {
-                        if (newValue.length > 0) {
-                            unwatch();
-                            elementHtml = '';
-                            processInstructions(newValue)
+                        if (newValue) {
+                            if (!angular.isArray(newValue)) {
+                                newValue = [newValue];   // otherwise some old tests stop working for no real reason
+                            }
+                            if (newValue.length > 0) {
+                                unwatch();
+                                elementHtml = '';
+                                processInstructions(newValue, true);
+                                if (tabsSetup === 'forced') {
+                                    elementHtml += '</tabs>';
+                                }
+                                element.replaceWith($compile(elementHtml)(scope));
+                                $rootScope.$broadcast('formInputDone');
 
-                            element.replaceWith($compile(elementHtml)(scope));
-
-                            if (scope.updateDataDependentDisplay) {
-                                // If this is not a test force the data dependent updates to the DOM
-                                scope.updateDataDependentDisplay(scope.record, null, true);
+                                if (scope.updateDataDependentDisplay) {
+                                    // If this is not a test force the data dependent updates to the DOM
+                                    scope.updateDataDependentDisplay(scope.record, null, true);
+                                }
                             }
                         }
 

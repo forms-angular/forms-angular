@@ -13,11 +13,12 @@ describe('formBespokeInput', function () {
             inject(function ($rootScope, $controller, $compile) {
                 elm = angular.element(
                 '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input ng-repeat="field in schema" info="{{field}}"></form-input>' +
+                    '<form-input schema="schema"></form-input>' +
                 '</form>');
             scope = $rootScope;
             scope.schema = [
-                {name: "email", id: "1", label: "Email", type: "text", directive: "email-field"}
+                {name: "email", id: "1", label: "Email", type: "text", directive: "email-field"},
+                {name: "name", id: "2", label: "Name", type: "text"}
             ];
             $compile(elm)(scope);
             scope.$digest();
@@ -25,7 +26,8 @@ describe('formBespokeInput', function () {
 
         it('field should have prefix', function () {
             var input = elm.find('input');
-            expect(input.length).toBe(1);
+            expect(input.length).toBe(2);
+            input = elm.find('input:first');
             expect(input).toHaveClass('ng-pristine');
             expect(input).toHaveClass('ng-valid');
             expect(input.attr('id')).toBe('1');
