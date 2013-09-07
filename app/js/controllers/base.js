@@ -820,7 +820,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             updateArrayOrObject(fieldDetails[1], portion[fieldDetails[0]], fn);
         } else if (portion[fieldDetails[0]]) {
             var theValue = portion[fieldDetails[0]];
-            portion[fieldDetails[0]] = fn((typeof theValue === 'Object') ? theValue.x : theValue)
+            portion[fieldDetails[0]] = fn((typeof theValue === 'Object') ? (theValue.x || theValue.id ) : theValue)
         }
     }
 
@@ -978,7 +978,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     var convertListValueToId = function (value, valuesArray, idsArray, fname) {
-        var textToConvert = _.isObject(value) ? value.x : value;
+        var textToConvert = _.isObject(value) ? (value.x || value.text) : value;
         if (textToConvert && textToConvert.match(/^[0-9a-f]{24}$/)) {
             return(textToConvert);  // a plugin probably added this
         } else {
@@ -1017,7 +1017,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var updateRecordWithLookupValues = function (schemaElement) {
         // Update the master and the record with the lookup values
         if (angular.equals(master[schemaElement.name], $scope.record[schemaElement.name]) ||
-            (schemaElement.select2 && angular.equals(master[schemaElement.name], $scope.record[schemaElement.name].text))) {
+            (schemaElement.select2 && $scope.record[schemaElement.name] && angular.equals(master[schemaElement.name], $scope.record[schemaElement.name].text))) {
             updateObject(schemaElement.name, master, function (value) {
                 return( convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement, '_ids')]));
             });

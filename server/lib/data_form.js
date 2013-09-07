@@ -222,6 +222,8 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
             })
         }
         , function (err) {
+            // Strip weighting from the results
+            results = _.map(results, function(aResult){delete aResult.weighting; return aResult});
             callback({results: results, moreCount: moreCount});
         }
     );
