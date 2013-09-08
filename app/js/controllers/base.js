@@ -25,6 +25,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         // for instance walkTree(master,'address.street.number',element)
         // called by getData and setData
         var parts = fieldname.split('.')
+            , higherLevels = parts.length - 1
             , workingRec = object
             , re
             , id;
@@ -32,7 +33,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (element) {
             id = element.context.id;
         }
-        for (var i= 0; i < parts.length -1; i++) {
+        for (var i= 0; i < higherLevels; i++) {
             workingRec = workingRec[parts[i]];
             if (angular.isArray(workingRec)) {
                 // If we come across an array we need to find the correct position
@@ -41,10 +42,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 workingRec = workingRec[parseInt(id.match(re)[1])]
             }
         }
-        return {lastObject: workingRec, key: parts[length-1]};
+        return {lastObject: workingRec, key: parts[higherLevels]};
     };
 
-    $scope.getData = function(object,fieldName,element){
+    $scope.getData = function(object,fieldname,element){
         leafData = $scope.walkTree(object, fieldname, element);
         return leafData.lastObject[leafData.key]
     };
@@ -936,7 +937,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         if (lookup) {
                             $scope.setData(anObject,fieldname,null,lookup.text);
                         } else {
-                            $scope.setData(anObject,fieldname,null,null);
+                            $scope.setData(anObject,fieldname,null,undefined);
                         }
                     }
                 }
