@@ -17,8 +17,3 @@ var formsAngular = angular.module('formsAngular', [
 //    when('/:model/:form/new', {templateUrl: 'partials/base-edit.html', controller: "BaseCtrl"}).       // non default form (different fields etc)
 //    when('/:model/:form', {templateUrl: 'partials/base-list.html', controller: "BaseCtrl"}).           // list page with links to non default form
 
-formsAngular.value('ui.config', {
-    date: {
-        dateFormat: 'dd/mm/yy'
-    }
-});
