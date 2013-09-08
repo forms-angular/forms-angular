@@ -606,6 +606,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     $scope.dataEventFunctions.onAfterUpdate(data, master)
                 }
                 if (options.redirect) {
+                    if (options.allowChange) {
+                        allowLocationChange = true;
+                    }
                     window.location = options.redirect;
                 } else {
                     master = angular.copy($scope.record);
@@ -682,7 +685,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 //                            $location.url = next;
                             break;
                         case 'yes' :
-                            $scope.save({redirect: next});    // save changes
+                            $scope.save({redirect: next, allowChange: true});    // save changes
                         // break;   fall through to get the preventDefault
                         case 'cancel' :
                             break;

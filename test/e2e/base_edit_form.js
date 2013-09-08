@@ -57,18 +57,28 @@ describe('Base edit form', function() {
             expect( element('.modal').count() ).toEqual(1);
             element('.modal-footer button.dlg-cancel').click();
             expect(browser().location().url()).toMatch("/b_using_options/519a6075b320153869b155e0/edit");
+            expect( element('.modal').count() ).toEqual(0);
         });
 
         it('supports losing changes', function() {
             expect( element('.modal').count() ).toEqual(1);
             element('.modal-footer button.dlg-no').click();
             expect(browser().location().url()).toMatch("/b_using_options/new");
+            expect( element('.modal').count() ).toEqual(0);
         });
 
         it('supports saving changes', function() {
             expect( element('.modal').count() ).toEqual(1);
             element('.modal-footer button.dlg-yes').click();
             expect( element('.alert-error').text()).toMatch(/your mouth/);
+            expect( element('.modal').count() ).toEqual(0);
+            input('record.freeText').enter('This is a polite thing');
+            element('#newButton').click();
+            expect( element('.modal').count() ).toEqual(1);
+            element('.modal-footer button.dlg-yes').click();
+            expect(browser().location().url()).toMatch("/b_using_options/new");
+            browser().navigateTo('/#/b_using_options/519a6075b320153869b155e0/edit');
+            expect(element('#f_freeText').val()).toMatch(/polite thing/);
         });
     })
 
