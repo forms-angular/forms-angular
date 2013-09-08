@@ -20,11 +20,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = $filter('titleCase')($scope.modelName);
 
-    $scope.getData = function(object,fieldname,element){
-
-    };
-
-    $scope.setData = function(object,fieldname,element,value){
+    $scope.walkTree = function(object,fieldname,element){
+        // Walk through subdocs to find the required key
+        // for instance walkTree(master,'address.street.number',element)
+        // called by getData and setData
         var parts = fieldname.split('.')
             , workingRec = object
             , re
@@ -42,7 +41,17 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 workingRec = workingRec[parseInt(id.match(re)[1])]
             }
         }
-        workingRec[parts[length-1]] = value;
+        return {lastObject: workingRec, key: parts[length-1]};
+    };
+
+    $scope.getData = function(object,fieldName,element){
+        leafData = $scope.walkTree(object, fieldname, element);
+        return leafData.lastObject[leafData.key]
+    };
+
+    $scope.setData = function(object,fieldname,element,value){
+        leafData = $scope.walkTree(object, fieldname, element);
+        leafData.lastObject[leafData.key] = value;
     };
 
     function updateInvalidClasses(value, id, select2) {
@@ -918,15 +927,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         return( convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i], 'Options')], idList) );
                     });
                 } else if (schema[i].select2) {
+                    var lookup = $scope.getData(anObject,fieldname,null);
                     if (schema[i].select2.fngAjax) {
-                        if (anObject[fieldname]) {
-                            anObject[fieldname] = anObject[fieldname].id;
+                        if (lookup) {
+                            $scope.setData(anObject,fieldname,null,lookup.id);
                         }
                     } else {
-                        if (anObject[fieldname]) {
-                            anObject[fieldname] = anObject[fieldname].text;
+                        if (lookup) {
+                            $scope.setData(anObject,fieldname,null,lookup.text);
                         } else {
-                            delete anObject[fieldname];
+                            $scope.setData(anObject,fieldname,null,null);
                         }
                     }
                 }
