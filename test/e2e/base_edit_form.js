@@ -61,18 +61,16 @@ describe('Base edit form', function() {
         });
 
         it('supports losing changes', function() {
-            expect( element('.modal').count() ).toEqual(1);
             element('.modal-footer button.dlg-no').click();
             expect(browser().location().url()).toMatch("/b_using_options/new");
             expect( element('.modal').count() ).toEqual(0);
         });
 
         it('supports saving changes', function() {
-            expect( element('.modal').count() ).toEqual(1);
             element('.modal-footer button.dlg-yes').click();
             expect( element('.alert-error').text()).toMatch(/your mouth/);
             expect( element('.modal').count() ).toEqual(0);
-            input('record.freeText').enter('This is a polite thing');
+            input('record.freeText').enter('This is a polite thing ' + new Date().getTime());  // to ensure that it is a change
             element('#newButton').click();
             expect( element('.modal').count() ).toEqual(1);
             element('.modal-footer button.dlg-yes').click();

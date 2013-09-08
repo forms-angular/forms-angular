@@ -10,7 +10,7 @@ files = [
     "app/components/angular-route/angular-route.js",
     "app/components/underscore/underscore.js",
     "app/components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js",
-    "app/lib/date.js",
+    "app/components/angular-ui-date/src/date.js",
     "app/components/angular-ui-select2/src/select2.js",
     "app/components/select2/select2.js",
     'app/components/angular-mocks/angular-mocks.js',
