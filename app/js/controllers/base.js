@@ -46,12 +46,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.getData = function(object,fieldname,element){
-        leafData = $scope.walkTree(object, fieldname, element);
+        var leafData = $scope.walkTree(object, fieldname, element);
         return leafData.lastObject[leafData.key]
     };
 
     $scope.setData = function(object,fieldname,element,value){
-        leafData = $scope.walkTree(object, fieldname, element);
+        var leafData = $scope.walkTree(object, fieldname, element);
         leafData.lastObject[leafData.key] = value;
     };
 
@@ -215,7 +215,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
         } else if (mongooseType.instance == 'Date') {
             formInstructions.type = 'text';
-            formInstructions.add = 'ui-date ui-date-format ';
+            formInstructions.add = 'ui-date ui-date-format="' + 'dd/mm/yy' + '" ';
         } else if (mongooseType.instance == 'boolean') {
             formInstructions.type = 'checkbox';
         } else if (mongooseType.instance == 'Number') {
