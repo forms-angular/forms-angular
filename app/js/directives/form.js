@@ -116,7 +116,7 @@ formsAngular
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
-                            var schemaDefName = 'gen'+new Date().getTime();
+                            var schemaDefName = (info.name+'_schema').replace(/\./g,'_');
                             scope[schemaDefName] = info.schema;
                             template += '<div class="schema-head well">' + info.label + '</div>' +
                                 '<div class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
@@ -187,7 +187,7 @@ formsAngular
                                         case 'schema' :
                                             var options = info;
                                             delete options.directive;
-                                            var bespokeSchemaDefName = 'bes'+new Date().getTime();
+                                            var bespokeSchemaDefName = ('bespoke_' + info.name).replace(/\./g,'_');
                                             newElement += ' ng-init="' + bespokeSchemaDefName + '=[' + JSON.stringify(options).replace(/\"/g,"'") + ']" schema="' + bespokeSchemaDefName + '"';
                                             break;
                                         default :
