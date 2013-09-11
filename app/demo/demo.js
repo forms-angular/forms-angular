@@ -2,12 +2,12 @@
 
 var myDemoApp = angular.module('myDemoApp', ['formsAngular']);
 
-myDemoApp.config(['$routeProvider', function($routeProvider) {
+myDemoApp.config(['$routeProvider', function ($routeProvider) {
 
         $routeProvider.
-            when('/index', {templateUrl: 'partials/howto.html'} ).
-            when('/build-app', {templateUrl: 'partials/build-app.html'} ).
-            when('/404', {templateUrl: 'partials/404.html'} ).
+            when('/index', {templateUrl: 'partials/howto.html'}).
+            when('/build-app', {templateUrl: 'partials/build-app.html'}).
+            when('/404', {templateUrl: 'partials/404.html'}).
             when('/z_custom_form/new', {templateUrl: 'partials/custom-new.html'}).            // example view override
             when('/z_custom_form/:id/edit', {templateUrl: 'partials/custom-edit.html'}).      // example view override
             when('/z_custom_form/:form/new', {templateUrl: 'partials/custom-new.html'}).      // example view override with specified form content
@@ -23,4 +23,14 @@ myDemoApp.config(['$routeProvider', function($routeProvider) {
 
             otherwise({redirectTo: '/index'});
     }]
-);
+    )
+
+//    .config(['uiDateConfig', function (uiDateConfig) {
+//        angular.extend(uiDateConfig, {
+//            dateFormat: 'dd/mm/yy',
+//            firstDay: 1
+//        });
+//    }]
+//    )
+;
+
