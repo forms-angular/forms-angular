@@ -116,7 +116,7 @@ formsAngular
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
-                            var schemaDefName = (info.name+'_schema').replace(/\./g,'_');
+                            var schemaDefName = ('__schema_'+info.name).replace(/\./g,'_');
                             scope[schemaDefName] = info.schema;
                             template += '<div class="schema-head well">' + info.label + '</div>' +
                                 '<div class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
@@ -166,7 +166,7 @@ formsAngular
                     var processInstructions = function (instructionsArray, topLevel) {
                         for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
                             var info = instructionsArray[anInstruction];
-                            if (anInstruction === 0  && topLevel) {
+                            if (anInstruction === 0  && topLevel && !attrs.schema.match(/__schema_/) ) {
                                 info.add = ((info.add || '') + "autofocus ");
                             }
                             if (info.directive) {
