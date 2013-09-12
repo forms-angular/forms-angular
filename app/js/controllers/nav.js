@@ -1,6 +1,6 @@
 'use strict';
 
-formsAngular.controller('NavCtrl',['$scope', '$location', '$filter', '$locationParse', '$controller', function($scope, $location, $filter, $locationParse, $controller) {
+formsAngular.controller('NavCtrl',['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', function($scope, $data, $location, $filter, $locationParse, $controller) {
 
     $scope.items = [];
 
@@ -49,11 +49,12 @@ formsAngular.controller('NavCtrl',['$scope', '$location', '$filter', '$locationP
             $scope.scopes = [];
             // Now load context menu.  For /person/client/:id/edit we need
             // to load PersonCtrl and PersonClientCtrl
-            $scope.contextMenu = $filter('titleCase')($scope.routing.modelName, true);
-            loadMenu($scope.contextMenu,0);
+            var modelName = $filter('titleCase')($scope.routing.modelName, true);
+            loadMenu(modelName,0);
             if ($scope.routing.formName) {
                 loadMenu($scope.contextMenu + $filter('titleCase')($scope.routing.formName, true),1);
             }
+            $scope.contextMenu = $data.dropDownDisplay || $data.modelNameDisplay || modelName;
         }
     });
 

@@ -278,9 +278,15 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
     the custom form followed by Ctrl.  There is an sample model controller <a href="/demo/b-using-options.js">here</a>
     which is used in the examples in this section. The NavCtrl controller handles the model controllers, so don't remove it.
 
+    <h5 id="naming" name="naming">Naming</h5>
+    The BaseCtrl scope has a variable called <strong>modelNameDisplay</strong> which is used in several places in the demo
+    app.  It defaults to the model name in title case, but can be over-ridden in the model controller.
+
     <h5>Menu</h5>
     <p>The menu can be added to where required by the models (see an example <a href="/#/b_using_options">here</a>)
-        The options can be configured to appear when records are being listed, edited or created.</p>
+        The options can be configured to appear when records are being listed, edited or created.  The top level text is
+        taken from the model controller's <strong>dropDownDisplay</strong> variable, if present.  If not present it will
+        fall back to the modelNameDisplay (see above) and it that is not present the model name.</p>
 
     <h5 id="postprocessing">Post form-input generation processing</h5>
     <p>The form-input directive broadcasts a <strong>formInputDone</strong> message when it has
