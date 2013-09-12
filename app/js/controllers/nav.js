@@ -4,7 +4,7 @@ formsAngular.controller('NavCtrl',['$scope', '$data', '$location', '$filter', '$
 
     $scope.items = [];
 
-    function loadMenu(controllerName, level) {
+    function loadControllerAndMenu(controllerName, level) {
         var locals={}, addThis;
 
         controllerName += 'Ctrl';
@@ -50,9 +50,9 @@ formsAngular.controller('NavCtrl',['$scope', '$data', '$location', '$filter', '$
             // Now load context menu.  For /person/client/:id/edit we need
             // to load PersonCtrl and PersonClientCtrl
             var modelName = $filter('titleCase')($scope.routing.modelName, true);
-            loadMenu(modelName,0);
+            loadControllerAndMenu(modelName,0);
             if ($scope.routing.formName) {
-                loadMenu(modelName + $filter('titleCase')($scope.routing.formName, true),1);
+                loadControllerAndMenu(modelName + $filter('titleCase')($scope.routing.formName, true),1);
             }
             $scope.contextMenu = $data.dropDownDisplay || $data.modelNameDisplay || modelName;
         }
