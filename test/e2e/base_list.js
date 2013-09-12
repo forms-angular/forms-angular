@@ -13,5 +13,23 @@ describe('Base list', function() {
         expect(element('.list-well>.span6:first-child').text()).not().toMatch('Smith05 Smith06 Smith97 Smith08');
     });
 
+    it('should support the model name override', function() {
+        browser().navigateTo('/#/b_using_options');
+        expect(element('h1').text()).toMatch('Override the name');
+        expect(element('li.dropdown').text()).toMatch('Custom Dropdown');
+    });
+
+    // this test doesn't fail when it should...
+    it('should revert to normal model descriptions', function() {
+        browser().navigateTo('/#/d_array_example');
+        expect(element('h1').text()).toMatch('D Array Example');
+    });
+
+    it('should support the model name override with bespoke formschema', function() {
+        browser().navigateTo('/#/b_using_options/justnameandpostcode');
+        expect(element('h1').text()).toMatch('Another override');
+        expect(element('li.dropdown').text()).toMatch('Custom 2nd Level');
+    });
+
 });
 

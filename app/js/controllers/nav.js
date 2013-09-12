@@ -47,6 +47,11 @@ formsAngular.controller('NavCtrl',['$scope', '$data', '$location', '$filter', '$
                 value.$destroy();
             });
             $scope.scopes = [];
+            $data.record = {};
+            $data.disableFunctions = {};
+            $data.dataEventFunctions = {};
+            delete $data.dropDownDisplay;
+            delete $data.modelNameDisplay;
             // Now load context menu.  For /person/client/:id/edit we need
             // to load PersonCtrl and PersonClientCtrl
             var modelName = $filter('titleCase')($scope.routing.modelName, true);
