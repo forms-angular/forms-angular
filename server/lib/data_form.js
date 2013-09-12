@@ -407,12 +407,15 @@ DataForm.prototype.collectionGet = function () {
 
         var url_parts = url.parse(req.url, true);
         try {
-            var aggregationParam = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
-            var findParam = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
+            var aggregationParam    = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
+            var findParam           = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
+            var limitParam          = url_parts.query.l ? JSON.parse(url_parts.query.l) : {};
+            var skipParam           = url_parts.query.s ? JSON.parse(url_parts.query.s) : {};
+            var orderParam          = url_parts.query.o ? JSON.parse(url_parts.query.o) : req.resource.options.listOrder;
 
             var self = this;
 
-            this.filteredFind(req.resource, req, aggregationParam, findParam, req.resource.options.listOrder, null, null, function (err, docs) {
+            this.filteredFind(req.resource, req, aggregationParam, findParam, orderParam, limitParam, skipParam, function (err, docs) {
                 if (err) {
                     return self.renderError(err, null, req, res, next);
                 } else {

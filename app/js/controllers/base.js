@@ -14,6 +14,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.recordList = [];
     $scope.dataDependencies = {};
     $scope.select2List = [];
+    $scope.page_size = 20;
+    $scope.pages_loaded = 0;
 
     angular.extend($scope, $locationParse($location.$$path));
 
@@ -452,26 +454,43 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             });
     };
 
+    function generateListQuery() {
+        var queryString = '?l='+$scope.page_size
+            , addParameter = function(param, value) {
+                if (value && value !== '') {
+                    queryString += '&' + param + '=' + value;
+                }
+            };
+
+        addParameter('f', $routeParams.f);
+        addParameter('a', $routeParams.a);
+        addParameter('s', $scope.pages_loaded * $scope.page_size);
+        $scope.pages_loaded++;
+        console.log(queryString);
+        return queryString;
+    }
+
+    $scope.scrollTheList = function() {
+        $http.get('api/' + $scope.modelName + generateListQuery()).success(function (data) {
+            $scope.recordList = $scope.recordList.concat(data);
+        }).error(function () {
+                $location.path("/404");
+        });
+    };
+
     $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''), {cache: true}).success(function (data) {
 
         handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
 
         if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
             allowLocationChange = true;
-            var connector = '?';
-            var queryString = '';
-            if ($routeParams.f) {
-                queryString += connector + 'f=' + $routeParams.f;
-                connector = '&';
-            }
-            if ($routeParams.a) {
-                queryString += connector + 'a=' + $routeParams.a;
-            }
-            $http.get('api/' + $scope.modelName + queryString).success(function (data) {
-                $scope.recordList = data;
-            }).error(function () {
-                    $location.path("/404");
-                });
+// ngInfiniteList does all this
+//            $scope.pages_loaded = 0;
+//            $http.get('api/' + $scope.modelName + generateListQuery()).success(function (data) {
+//                $scope.recordList = data;
+//            }).error(function () {
+//                    $location.path("/404");
+//                });
         } else {
             $scope.$watch('record', function (newValue, oldValue) {
                 $scope.updateDataDependentDisplay(newValue, oldValue, false)
