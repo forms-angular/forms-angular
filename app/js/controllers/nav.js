@@ -52,7 +52,7 @@ formsAngular.controller('NavCtrl',['$scope', '$data', '$location', '$filter', '$
             var modelName = $filter('titleCase')($scope.routing.modelName, true);
             loadMenu(modelName,0);
             if ($scope.routing.formName) {
-                loadMenu($scope.contextMenu + $filter('titleCase')($scope.routing.formName, true),1);
+                loadMenu(modelName + $filter('titleCase')($scope.routing.formName, true),1);
             }
             $scope.contextMenu = $data.dropDownDisplay || $data.modelNameDisplay || modelName;
         }
