@@ -9,7 +9,7 @@ var BSchema = new Schema({
     address: {
         line1: {type: String, form:{label: 'Address'}},      // this label overrides the one generated from the field name
         line2: {type: String, form:{label: null}},           // null label - gives a blank label
-        line3: {type: String, form:{label: null}},
+        line3: {type: String, form:{label: null, add:'class="some classes here"'}},
         town: {type: String, form:{label: 'Town', placeHolder: "Post town"}},          // You can specify place holders
         postcode: {type: String, form:{label: 'Postcode', size:'small', help:'Enter your postcode or zip code'}},  // help displays on the line under the control, size adds matching bootstrap input- class
         country: {type: String, form:{label:"Country", hidden:true}},
