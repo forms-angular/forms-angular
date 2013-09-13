@@ -13,6 +13,7 @@ files = [
     "app/components/angular-ui-date/src/date.js",
     "app/components/angular-ui-select2/src/select2.js",
     "app/components/ngInfiniteScroll/ng-infinite-scroll.js",
+    "app/components/ng-grid/build/ng-grid.js",
     "app/components/select2/select2.js",
     'app/components/angular-mocks/angular-mocks.js',
     'app/js/forms-angular.js',

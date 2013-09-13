@@ -46,10 +46,18 @@ module.exports = exports = DataForm;
 
 DataForm.prototype.getListFields = function (resource, doc) {
     var display = ''
+        , listElement = 0
         , listFields = resource.options.listFields;
 
-    for (var listElement = 0; listElement < listFields.length; listElement++) {
-        display += doc[listFields[listElement].field] + ' ';
+    if (listFields) {
+        for (; listElement < listFields.length; listElement++) {
+            display += doc[listFields[listElement].field] + ' ';
+        }
+    } else {
+        listFields = Object.keys(resource.model.schema.paths);
+        for (; listElement < 2; listElement++) {
+            display += doc[listFields[listElement]] + ' ';
+        }
     }
     return display.trim();
 };
@@ -64,6 +72,7 @@ DataForm.prototype.registerRoutes = function () {
 
     this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName', this.schema()]));
     this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName/:formName', this.schema()]));
+    this.app.get.apply(this.app, processArgs(this.options, ['report-schema/:resourceName/:reportName', this.reportSchema()]));
 
     this.app.all.apply(this.app, processArgs(this.options, [':resourceName', this.collection()]));
     this.app.get.apply(this.app, processArgs(this.options, [':resourceName', this.collectionGet()]));
@@ -357,6 +366,19 @@ DataForm.prototype.schema = function () {
     }, this);
 };
 
+DataForm.prototype.reportSchema = function () {
+    return _.bind(function (req, res, next) {
+        if (!(req.resource = this.getResource(req.params.resourceName))) {
+            return next();
+        }
+        var reportSchema = null;
+        if (req.params.reportName) {
+            reportSchema = req.resource.model.schema.statics['report'](req.params.reportName)
+        }
+        res.send(JSON.stringify(reportSchema));
+    }, this);
+};
+
 DataForm.prototype.saveAndRespond = function (req, res) {
 
     function internalSave(doc) {
@@ -415,21 +437,31 @@ DataForm.prototype.collectionGet = function () {
 
         var url_parts = url.parse(req.url, true);
         try {
-            var aggregationParam    = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
-            var findParam           = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
-            var limitParam          = url_parts.query.l ? JSON.parse(url_parts.query.l) : {};
-            var skipParam           = url_parts.query.s ? JSON.parse(url_parts.query.s) : {};
-            var orderParam          = url_parts.query.o ? JSON.parse(url_parts.query.o) : req.resource.options.listOrder;
+            if (url_parts.query.p) {
+                req.resource.model.aggregate(JSON.parse(url_parts.query.p), function (err, aggregationResults) {
+                    if (err) {
+                        return self.renderError(err, null, req, res, next);
+                    } else {
+                        res.send(aggregationResults);
+                    }
+                });
+            } else {
+                var aggregationParam    = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
+                var findParam           = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
+                var limitParam          = url_parts.query.l ? JSON.parse(url_parts.query.l) : {};
+                var skipParam           = url_parts.query.s ? JSON.parse(url_parts.query.s) : {};
+                var orderParam          = url_parts.query.o ? JSON.parse(url_parts.query.o) : req.resource.options.listOrder;
 
-            var self = this;
+                var self = this;
 
-            this.filteredFind(req.resource, req, aggregationParam, findParam, orderParam, limitParam, skipParam, function (err, docs) {
-                if (err) {
-                    return self.renderError(err, null, req, res, next);
-                } else {
-                    res.send(docs);
-                }
-            });
+                this.filteredFind(req.resource, req, aggregationParam, findParam, orderParam, limitParam, skipParam, function (err, docs) {
+                    if (err) {
+                        return self.renderError(err, null, req, res, next);
+                    } else {
+                        res.send(docs);
+                    }
+                });
+            }
         } catch (e) {
             res.send(e);
         }

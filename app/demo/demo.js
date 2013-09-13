@@ -14,6 +14,7 @@ myDemoApp.config(['$routeProvider', function ($routeProvider) {
             when('/z_custom_form/:form/:id/edit', {templateUrl: 'partials/custom-edit.html'}).// example view override with specified form content
 
             // This next block is the default forms angular routing.  Can't figure out how to get it to work from that module.
+            when('/:model/analyse', {templateUrl: 'partials/base-analysis.html'}).
             when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html'}).
             when('/:model/new', {templateUrl: 'partials/base-edit.html'}).
             when('/:model', {templateUrl: 'partials/base-list.html'}).
