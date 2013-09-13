@@ -22,7 +22,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
 
-    $scope.walkTree = function(object,fieldname,element){
+    $scope.walkTree = function (object, fieldname, element) {
         // Walk through subdocs to find the required key
         // for instance walkTree(master,'address.street.number',element)
         // called by getData and setData
@@ -35,24 +35,24 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (element) {
             id = element.context.id;
         }
-        for (var i= 0; i < higherLevels; i++) {
+        for (var i = 0; i < higherLevels; i++) {
             workingRec = workingRec[parts[i]];
             if (angular.isArray(workingRec)) {
                 // If we come across an array we need to find the correct position
                 // or raise an exception
-                re = new RegExp(parts[i] + "-([0-9])-" + parts[i+1]);
+                re = new RegExp(parts[i] + "-([0-9])-" + parts[i + 1]);
                 workingRec = workingRec[parseInt(id.match(re)[1])]
             }
         }
         return {lastObject: workingRec, key: parts[higherLevels]};
     };
 
-    $scope.getData = function(object,fieldname,element){
+    $scope.getData = function (object, fieldname, element) {
         var leafData = $scope.walkTree(object, fieldname, element);
         return leafData.lastObject[leafData.key]
     };
 
-    $scope.setData = function(object,fieldname,element,value){
+    $scope.setData = function (object, fieldname, element, value) {
         var leafData = $scope.walkTree(object, fieldname, element);
         leafData.lastObject[leafData.key] = value;
     };
@@ -337,9 +337,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return display;
     };
 
-    // TODO: Think about nested arrays
-    // This doesn't handle things like :
-    // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
+// TODO: Think about nested arrays
+// This doesn't handle things like :
+// {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
     $scope.getListData = function (record, fieldName) {
         var nests = fieldName.split('.');
         for (var i = 0; i < nests.length; i++) {
@@ -455,8 +455,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     function generateListQuery() {
-        var queryString = '?l='+$scope.page_size
-            , addParameter = function(param, value) {
+        var queryString = '?l=' + $scope.page_size
+            , addParameter = function (param, value) {
                 if (value && value !== '') {
                     queryString += '&' + param + '=' + value;
                 }
@@ -469,12 +469,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return queryString;
     }
 
-    $scope.scrollTheList = function() {
+    $scope.scrollTheList = function () {
         $http.get('api/' + $scope.modelName + generateListQuery()).success(function (data) {
             $scope.recordList = $scope.recordList.concat(data);
         }).error(function () {
                 $location.path("/404");
-        });
+            });
     };
 
     $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''), {cache: true}).success(function (data) {
@@ -518,31 +518,14 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         });
 
     $scope.cancel = function () {
-        // would like to do
-        //        $scope.record = angular.copy(master);
-        // but the data may be shared
 
-        function copyObject(to, from) {
-            var prop;
-
-            for (prop in to) {
-                if (to.hasOwnProperty(prop)) {
-                    delete to[prop];
-                }
-            }
-            for (prop in from) {
-                if (from.hasOwnProperty(prop)) {
-                    if (_.isObject(from[prop]) && !_.isArray(from[prop])) {
-                        to[prop] = {};
-                        copyObject(to[prop], from[prop]);
-                    } else {
-                        to[prop] = from[prop];
-                    }
-                }
+        for (prop in $scope.record) {
+            if ($scope.record.hasOwnProperty(prop)) {
+                delete $scope.record[prop];
             }
         }
 
-        copyObject($scope.record, master);
+        $.extend(true, $scope.record, master);
         $scope.dismissError();
 
 //  TODO: Sort all this pristine stuff now we are on 1.2
@@ -553,14 +536,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 //            console.log("No form");
 //        }
     };
-
-//    window.onbeforeunload = function() {
-//        if ($('.ng-dirty').length > 0) {
-//            return 'You have unsaved changes!';
-//        } else {
-//            return null;
-//        }
-//    }
 
     var handleError = function (data, status) {
         if ([200, 400].indexOf(status) !== -1) {
@@ -777,7 +752,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (typeof $scope.disableFunctions.isSaveDisabled === "function") {
             return $scope.disableFunctions.isSaveDisabled($scope.record, master, $scope.myForm);
         } else {
-            return $scope.myForm.$invalid || angular.equals(master, $scope.record);
+            return ($scope.myForm && $scope.myForm.$invalid) || angular.equals(master, $scope.record);
         }
     };
 
@@ -892,7 +867,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             } else {
 
                 // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
-                var thisField = $scope.getListData(anObject,fieldname);
+                var thisField = $scope.getListData(anObject, fieldname);
                 if (schema[i].array && simpleArrayNeedsX(schema[i]) && thisField) {
                     for (var k = 0; k < thisField.length; k++) {
                         thisField[k] = {x: thisField[k]}
@@ -949,16 +924,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         return( convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i], 'Options')], idList) );
                     });
                 } else if (schema[i].select2) {
-                    var lookup = $scope.getData(anObject,fieldname,null);
+                    var lookup = $scope.getData(anObject, fieldname, null);
                     if (schema[i].select2.fngAjax) {
                         if (lookup) {
-                            $scope.setData(anObject,fieldname,null,lookup.id);
+                            $scope.setData(anObject, fieldname, null, lookup.id);
                         }
                     } else {
                         if (lookup) {
-                            $scope.setData(anObject,fieldname,null,lookup.text);
+                            $scope.setData(anObject, fieldname, null, lookup.text);
                         } else {
-                            $scope.setData(anObject,fieldname,null,undefined);
+                            $scope.setData(anObject, fieldname, null, undefined);
                         }
                     }
                 }
@@ -1063,10 +1038,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
     };
 
-    // Open a select2 control from the appended search button
+// Open a select2 control from the appended search button
     $scope.openSelect2 = function (ev) {
         $('#' + $(ev.currentTarget).data('select2-open')).select2('open')
     };
 
-}]);
+}])
+;
 

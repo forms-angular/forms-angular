@@ -832,5 +832,25 @@ describe('"BaseCtrl"', function () {
 
     });
 
+    describe('Save button enables when appropriate', function () {
+
+        it('changes to array', function () {
+            inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
+                $httpBackend = _$httpBackend_;
+                $httpBackend.whenGET('api/schema/collection').respond({"specialSubjects":{"caster":{"enumValues":[],"regExp":null,"path":"specialSubjects","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"path":"specialSubjects","validators":[],"setters":[],"getters":[],"options":{"type":[null]},"_index":null,"$conditionalHandlers":{}}});
+                $httpBackend.whenGET('api/collection/3').respond({"surname":"Accepted","forename":"John","accepted":true,"_id":"3","specialSubjects":["English"]});
+                $location.$$path = '/collection/3/edit';
+                scope = $rootScope.$new();
+                ctrl = $controller("BaseCtrl", {$scope: scope});
+                $httpBackend.flush();
+                expect(scope.isSaveDisabled()).toEqual(true);
+                scope.record.specialSubjects = [];
+                expect(scope.isSaveDisabled()).toEqual(false);
+            });
+        });
+
+    });
+
+
 });
 
