@@ -45,12 +45,13 @@ var DataForm = function (app, options) {
 module.exports = exports = DataForm;
 
 DataForm.prototype.getListFields = function (resource, doc) {
-    var listFields = Object.keys(resource.model.schema.paths);
-    var display = '';
-    for (var listElement = 0; listElement < 2; listElement++) {
-        display += doc[listFields[listElement]] + ' ';
+    var display = ''
+        , listFields = resource.options.listFields;
+
+    for (var listElement = 0; listElement < listFields.length; listElement++) {
+        display += doc[listFields[listElement].field] + ' ';
     }
-    return display;
+    return display.trim();
 };
 
 /**
@@ -102,7 +103,7 @@ DataForm.prototype.addResource = function (resource_name, model, options) {
         }
     }
 
-    resource.options.hide = this.preprocess(resource.model.schema.paths, null).hidden;
+    extend(resource.options, this.preprocess(resource.model.schema.paths, null));
 
     if (resource.options.searchImportance) {
         this.searchFunc = async.forEachSeries;
@@ -274,7 +275,8 @@ DataForm.prototype.redirect = function (address, req, res) {
 
 DataForm.prototype.preprocess = function (paths, formSchema) {
     var outPath = {},
-        hiddenFields = [];
+        hiddenFields = [],
+        listFields = [];
     for (var element in paths) {
         if (paths.hasOwnProperty(element) && element != '__v') {
             // check for schemas
@@ -304,6 +306,9 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
                 if (paths[element].options.secure) {
                     hiddenFields.push(element);
                 }
+                if (paths[element].options.list) {
+                    listFields.push({field:element, params:paths[element].options.list})
+                }
             }
         }
     }
@@ -330,7 +335,10 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
     }
     var returnObj = {paths: outPath}
     if (hiddenFields.length > 0) {
-        returnObj.hidden = hiddenFields;
+        returnObj.hide = hiddenFields;
+    }
+    if (listFields.length > 0) {
+        returnObj.listFields = listFields;
     }
     return returnObj;
 };
