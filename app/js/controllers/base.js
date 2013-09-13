@@ -519,7 +519,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.cancel = function () {
 
-        for (prop in $scope.record) {
+        for (var prop in $scope.record) {
             if ($scope.record.hasOwnProperty(prop)) {
                 delete $scope.record[prop];
             }
