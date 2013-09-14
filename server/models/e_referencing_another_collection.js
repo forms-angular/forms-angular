@@ -21,7 +21,8 @@ ESchema.statics.report = function(report) {
             reportSchema = {
                 pipeline: [{$group:{_id:"$teacher",count:{"$sum":1}}}],
                 title: "Class Sizes",
-                columnDefs: [{field:'_id', displayName:'Teacher'}, {field:'count', displayName:'Number in Class'}]
+                columnDefs: [{field:'_id', displayName:'Teacher'}, {field:'count', displayName:'Number in Class'}],
+                columnTranslations: [{field:'_id', ref: 'b_using_options'}]
             };
             break;
     }

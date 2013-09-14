@@ -318,13 +318,12 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
         <li>onSave function(doc, req, callback(err)) is a pre save hook that allows access to the record and the environment.  A common use case is to apply 'fine-grain' authentication.</li>
     </ul>
     <p>There are examples of both in <a href="/code/b_using_options.js">this</a> model</p>
-
 </section>
 
 <section id="reports"><h3>Reports</h3>
     <p>Reports can be run by passing an <a href="http://docs.mongodb.org/manual/core/aggregation-pipeline/">aggregation pipeline</a>
-    to the server using a the format <strong>/#/model/analyse?r=[pipeline]</strong> - for example
-    <a href="/#/g_conditional_fields/analyse?r=%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D">/#/g_conditional_fields/analyse?r=[{"$group":{"_id":"$sex","count":{"$sum":1}}}]</a>
+    to the server using a the format <strong>/#/analyse/model?r=[pipeline]</strong> - for example
+    <a href="/#/analyse/g_conditional_fields?r=%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D">/#/analyse/g_conditional_fields?r=[{"$group":{"_id":"$sex","count":{"$sum":1}}}]</a>
     produces a breakdown of the men and women in a collection.</p>
 
     <h5>Options</h5>
@@ -332,10 +331,17 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
     options:</p>
     <ul>
         <li><strong>title</strong> this option allows a title to be specified.  The default is the model name.</li>
-        <li><strong>columnDefs</strong> and array of field to displayName mappings, such as <strong>[{field:'_id', displayName:'Sex'}]</strong>.</li>
+        <li><strong>columnDefs</strong> an array of field&rarr;displayName mappings, such as <strong>[{field:'_id', displayName:'Sex'}]</strong>.</li>
+        <li><strong>columnTranslations</strong> and array of objects giving instructions for translating returned data.  The objects are made up as follows:
+            <ul>
+                <li><strong>field</strong> (mandatory) the name of the results column to translate</li>
+                <li><strong>ref</strong> the name of a Mongoose model to use to look up the current value against (returning a concatenation of the fields with a truthy <strong>list</strong> key)</li>
+                <li><strong>translations</strong> an array of value&rarr;display mappings, such as <strong>[{value:'M', display:'Male'},{value:'F', display:'Female'}]</strong></li>
+            </ul>
+        </li>
     </ul>
 
-    <p>Using these options the report above can be <a href="/#/g_conditional_fields/analyse?r=%7B%22pipeline%22:%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D,%22title%22:%22Breakdown%20By%20Sex%22,%22columnDefs%22:%5B%7B%22field%22:%22_id%22,%22displayName%22:%22Sex%22%7D,%7B%22field%22:%22count%22,%22displayName%22:%22No%20of%20Applicants%22%7D%5D%7D">tidied up<a>.</p>
+    <p>Using these options the report above can be <a href="/#/analyse/g_conditional_fields?r=%7B%22pipeline%22:%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D,%22title%22:%22Breakdown%20By%20Sex%22,%22columnDefs%22:%5B%7B%22field%22:%22_id%22,%22displayName%22:%22Sex%22%7D,%7B%22field%22:%22count%22,%22displayName%22:%22No%20of%20Applicants%22%7D%5D%7D">tidied up</a>.</p>
 
     <h5>Report Schemas</h5>
     <p>If you looked at the link to that last report you would have realised that using the URL to specify a report format

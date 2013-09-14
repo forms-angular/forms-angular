@@ -1,42 +1,38 @@
 formsAngular.controller('AnalysisCtrl', ['$locationParse', '$scope', '$http', '$location', '$routeParams', function ($locationParse, $scope, $http, $location, $routeParams) {
     var debug = false;
 
-    angular.extend($scope, $locationParse($location.$$path));
-
-    $scope.options = {title: $scope.modelName};
-    $scope.gridOptions = {columnDefs : 'options.columnDefs', data: 'report'};
+    angular.extend($scope, $routeParams);
+    $scope.reportSchema = {};
+    $scope.gridOptions = {columnDefs : 'reportSchema.columnDefs', data: 'report'};
     $scope.report = [];
 
-    $scope.runReport = function() {
-        $http.get('/api/' + $scope.modelName + '?p=' + JSON.stringify($scope.options.pipeline)).success(function (data) {
-            $scope.report = data;
-        }).error(function () {
-                $location.path("/404");
-            });
-    };
-
-    if ($routeParams.r) {
+    if (!$scope.reportSchemaName && $routeParams.r) {
         switch ($routeParams.r.slice(0, 1)) {
             case '[' :
-                $scope.options.pipeline = JSON.parse($routeParams.r);
-                $scope.runReport();
+                $scope.reportSchema.pipeline = JSON.parse($routeParams.r);
                 break;
             case '{' :
-//this needs to be abgular.extend or whatever works down below
-                angular.extend($scope.options, JSON.parse($routeParams.r));
-                $scope.runReport();
+                angular.extend($scope.reportSchema, JSON.parse($routeParams.r));
                 break;
             default :
-                $http.get('/api/report-schema/' + $scope.modelName + '/' + $routeParams.r).success(function (data) {
-                    angular.extend($scope.options, data);
-                    $scope.runReport();
-                }).error(function () {
-                        $location.path("/404");
-                    });
+                throw new Error("No report instructions specified");
         }
-    } else {
-        throw new Error("No report instructions specified");
     }
+
+    var apiCall = '/api/report/' + $scope.model;
+    if ($scope.reportSchemaName) {
+        apiCall += '/'+$scope.reportSchemaName
+    } else {
+        apiCall += '?r=' + JSON.stringify($scope.reportSchema);
+    }
+
+    $http.get(apiCall).success(function (data) {
+        $scope.report = data.report;
+        $scope.reportSchema = data.schema;
+        $scope.reportSchema.title = $scope.reportSchema.title || $scope.model;
+    }).error(function () {
+            $location.path("/404");
+         });
 
 }]);
 

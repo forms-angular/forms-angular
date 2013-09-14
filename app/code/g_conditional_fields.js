@@ -20,8 +20,9 @@ GSchema.statics.report = function(report) {
         case 'breakdownbysex' :
             reportSchema = {
                 pipeline: [{$group:{_id:"$sex",count:{"$sum":1}}}],
-                title: "Breakdown By Sex",
-                columnDefs: [{field:'_id', displayName:'Sex'}, {field:'count', displayName:'No of Applicants'}]
+                title: "Numbers of Applicants By Sex",
+                columnDefs: [{field:'_id', displayName:'Sex'}, {field:'count', displayName:'No of Applicants'}],
+                columnTranslations: [{field:'_id', translations:[{value:'M', display:'Male'},{value:'F', display:'Female'}]}]
             };
             break;
     }

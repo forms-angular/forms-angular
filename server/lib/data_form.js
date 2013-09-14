@@ -72,7 +72,8 @@ DataForm.prototype.registerRoutes = function () {
 
     this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName', this.schema()]));
     this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName/:formName', this.schema()]));
-    this.app.get.apply(this.app, processArgs(this.options, ['report-schema/:resourceName/:reportName', this.reportSchema()]));
+    this.app.get.apply(this.app, processArgs(this.options, ['report/:resourceName', this.report()]));
+    this.app.get.apply(this.app, processArgs(this.options, ['report/:resourceName/:reportName', this.report()]));
 
     this.app.all.apply(this.app, processArgs(this.options, [':resourceName', this.collection()]));
     this.app.get.apply(this.app, processArgs(this.options, [':resourceName', this.collectionGet()]));
@@ -366,16 +367,83 @@ DataForm.prototype.schema = function () {
     }, this);
 };
 
-DataForm.prototype.reportSchema = function () {
+DataForm.prototype.report = function () {
     return _.bind(function (req, res, next) {
         if (!(req.resource = this.getResource(req.params.resourceName))) {
             return next();
         }
-        var reportSchema = null;
+        var reportSchema
+            self = this;
         if (req.params.reportName) {
             reportSchema = req.resource.model.schema.statics['report'](req.params.reportName)
+        } else {
+            var url_parts = url.parse(req.url, true);
+            reportSchema = JSON.parse(url_parts.query.r);
         }
-        res.send(JSON.stringify(reportSchema));
+
+        var toDo = {runAggregation: function(cb,results) {
+            req.resource.model.aggregate(reportSchema.pipeline, cb)
+            }
+        };
+
+        // if we need to do any column translations add the function to the tasks list
+        if (reportSchema.columnTranslations) {
+            toDo.apply_translations = ['runAggregation', function(cb,results) {
+                reportSchema.columnTranslations.forEach(function(columnTranslation){
+                    results.runAggregation.forEach(function(resultRow){
+                        var thisTranslation = _.find(columnTranslation.translations, function(option){
+                            return resultRow[columnTranslation.field].toString() === option.value.toString()
+                        });
+                        resultRow[columnTranslation.field] = thisTranslation.display;
+                    })
+                });
+                cb(null,null);
+            }];
+
+            // if any of the column translations are refs, set up the tasks to look up the values and populate the translations
+            for (var i=0; i < reportSchema.columnTranslations.length; i++) {
+                var thisColumnTranslation = reportSchema.columnTranslations[i]
+                    , translateName = thisColumnTranslation.field;
+                if (translateName){
+                    if (thisColumnTranslation.ref) {
+                        var lookup = self.getResource(thisColumnTranslation.ref);
+                        if (lookup) {
+                            if (toDo[translateName]) {
+                                return self.renderError(new Error("Cannot have two columnTranslations for field " + translateName ), null, req, res, next);
+                            } else {
+                                thisColumnTranslation.translations = thisColumnTranslation.translations || [];
+                                toDo[translateName] = function(cb,results) {lookup.model.find({},{},{lean:true},function(err,findResults){
+                                    if (err) {
+                                        cb(err);
+                                    } else {
+                                        for (var j=0; j<findResults.length;j++){
+                                            thisColumnTranslation.translations[j] = {value: findResults[j]._id, display: self.getListFields(lookup, findResults[j])};
+                                        }
+                                        cb(null,null);
+                                    }
+                                })};
+                                toDo.apply_translations.unshift(translateName);  // Make sure we populate lookup before doing translation
+                            }
+                        } else {
+                            return self.renderError(new Error("Invalid ref property of " + thisColumnTranslation.ref + " in columnTranslations " + translateName ), null, req, res, next);
+                        }
+                    } else if (!thisColumnTranslation.translations) {
+                        return self.renderError(new Error("A column translation needs a ref or a translations property - " + translateName + " has neither" ), null, req, res, next);
+                    }
+                } else {
+                    return self.renderError(new Error("A column translation needs a field property" ), null, req, res, next);
+                }
+            }
+        }
+
+        async.auto(toDo, function(err, results){
+            if (err) {
+                return self.renderError(err, null, req, res, next);
+            } else {
+                console.log("Final results",results);
+                res.send({schema:reportSchema, report: results.runAggregation});
+            }
+        });
     }, this);
 };
 
@@ -437,31 +505,21 @@ DataForm.prototype.collectionGet = function () {
 
         var url_parts = url.parse(req.url, true);
         try {
-            if (url_parts.query.p) {
-                req.resource.model.aggregate(JSON.parse(url_parts.query.p), function (err, aggregationResults) {
-                    if (err) {
-                        return self.renderError(err, null, req, res, next);
-                    } else {
-                        res.send(aggregationResults);
-                    }
-                });
-            } else {
-                var aggregationParam    = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
-                var findParam           = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
-                var limitParam          = url_parts.query.l ? JSON.parse(url_parts.query.l) : {};
-                var skipParam           = url_parts.query.s ? JSON.parse(url_parts.query.s) : {};
-                var orderParam          = url_parts.query.o ? JSON.parse(url_parts.query.o) : req.resource.options.listOrder;
+            var aggregationParam    = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
+            var findParam           = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
+            var limitParam          = url_parts.query.l ? JSON.parse(url_parts.query.l) : {};
+            var skipParam           = url_parts.query.s ? JSON.parse(url_parts.query.s) : {};
+            var orderParam          = url_parts.query.o ? JSON.parse(url_parts.query.o) : req.resource.options.listOrder;
 
-                var self = this;
+            var self = this;
 
-                this.filteredFind(req.resource, req, aggregationParam, findParam, orderParam, limitParam, skipParam, function (err, docs) {
-                    if (err) {
-                        return self.renderError(err, null, req, res, next);
-                    } else {
-                        res.send(docs);
-                    }
-                });
-            }
+            this.filteredFind(req.resource, req, aggregationParam, findParam, orderParam, limitParam, skipParam, function (err, docs) {
+                if (err) {
+                    return self.renderError(err, null, req, res, next);
+                } else {
+                    res.send(docs);
+                }
+            });
         } catch (e) {
             res.send(e);
         }
