@@ -8,6 +8,7 @@ var formsAngular = angular.module('formsAngular', [
     , 'fng.ui.bootstrap'
     , 'ui.bootstrap'
     , 'infinite-scroll'
+    , 'monospaced.elastic'
 ]);
 
 // Ideally would want a config call in here which adds the routes, below, but couldn't get it to work

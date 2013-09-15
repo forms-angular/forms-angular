@@ -32,6 +32,7 @@
     "select2": "3.4.1",
     "underscore": "1.4.4",
     "angular-ui-date": "git://github.com/mchapman/ui-date.git#patch-1",
-    "ngInfiniteScroll": "~1.0.0"
+    "ngInfiniteScroll": "~1.0.0",
+    "angular-elastic": "~2.0.0"
   }
 }

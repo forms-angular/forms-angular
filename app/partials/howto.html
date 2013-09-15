@@ -149,7 +149,8 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
             <strong>select2:{fngAjax:true}</strong> instructs the program to use ajax calls to query
             the server rather than downloading the table. The values in the select[2] control come
             from the <a href="/#/index#listing">listing fields</a>.</li>
-        <li><strong>rows</strong> sets the number of rows in inputs (such as textarea) that support this.</li>
+        <li><strong>rows</strong> sets the number of rows in inputs (such as textarea) that support this.  Setting rows to
+            <strong>"auto"</strong> makes the textarea expand to fit the content, rather than create a scrollbar.
         <li><strong>pane</strong> used to divide a large form up into panes accessed by tabs
             (see <a href="/#/i_tabbed_forms/new">example</a>). This requires using the UI Bootstrap tabs module which
             is not in the minimal deployment folder (but is in this demo).</li>
