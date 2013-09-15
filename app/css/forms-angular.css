@@ -12,7 +12,10 @@
     margin: 8px 0;
 }
 
-.form-horizontal.compact input +.help-block {
+.form-horizontal.compact input + .help-block, .form-horizontal.compact select + .help-block,
+.form-horizontal.compact textarea + .help-block, .form-horizontal.compact .uneditable-input + .help-block,
+.form-horizontal.compact .input-prepend + .help-block, .form-horizontal.compact .input-append + .help-block
+{
     margin-top: 0;
     margin-bottom: 2px;
 }

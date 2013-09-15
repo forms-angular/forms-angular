@@ -89,7 +89,14 @@ formsAngular
                         } else {
                             common += (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                             if (fieldInfo.type == 'textarea') {
-                                value = '<textarea ' + common + (fieldInfo.rows ? 'rows = "' + fieldInfo.rows + '" ' : '') + ' />';
+                                if (fieldInfo.rows) {
+                                    if (fieldInfo.rows == 'auto') {
+                                        common += 'msd-elastic="\n" class="ng-animate" ';
+                                    } else {
+                                        common += 'rows = "' + fieldInfo.rows + '" ';
+                                    }
+                                }
+                                value = '<textarea ' + common + ' />';
                             } else {
                                 value = '<input ' + common + 'type="' + fieldInfo.type + '" />';
                             }
@@ -185,7 +192,7 @@ formsAngular
                                             }
                                             break;
                                         case 'schema' :
-                                            var options = info;
+                                            var options = angular.copy(info);
                                             delete options.directive;
                                             var bespokeSchemaDefName = ('bespoke_' + info.name).replace(/\./g,'_');
                                             newElement += ' ng-init="' + bespokeSchemaDefName + '=[' + JSON.stringify(options).replace(/\"/g,"'") + ']" schema="' + bespokeSchemaDefName + '"';

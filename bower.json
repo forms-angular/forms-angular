@@ -19,11 +19,11 @@
     "components"
   ],
   "dependencies": {
-    "angular": "1.2.0-rc.1",
-    "angular-route": "1.2.0-rc.1",
-    "angular-mocks": "1.2.0-rc.1",
+    "angular": "1.2.0-rc.2",
+    "angular-route": "1.2.0-rc.2",
+    "angular-mocks": "1.2.0-rc.2",
     "angular-ui-bootstrap-bower": "0.5.0",
-    "angular-sanitize": "1.2.0-rc.1",
+    "angular-sanitize": "1.2.0-rc.2",
     "angular-ui-select2": "0.0.2",
     "bootstrap.css": "2.3.2",
     "html5shiv-dist": "3.6.2",
@@ -33,6 +33,10 @@
     "underscore": "1.4.4",
     "angular-ui-date": "git://github.com/mchapman/ui-date.git#patch-1",
     "ngInfiniteScroll": "~1.0.0",
-    "ng-grid": "~2.0.7"
+    "ng-grid": "~2.0.7",
+    "angular-elastic": "~2.0.0"
+  },
+  "resolutions": {
+    "angular": "1.2.0-rc.2"
   }
 }
