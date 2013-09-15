@@ -19,15 +19,20 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$scope', '$http', '$
         }
     }
 
-    var apiCall = '/api/report/' + $scope.model;
+    var apiCall = '/api/report/' + $scope.model
+        ,connector;
     if ($scope.reportSchemaName) {
-        apiCall += '/'+$scope.reportSchemaName + '?'
+        apiCall += '/'+$scope.reportSchemaName
+        connector = '?'
     } else {
-        apiCall += '?r=' + JSON.stringify($scope.reportSchema) + '&';
+        apiCall += '?r=' + JSON.stringify($scope.reportSchema);
+        connector = '&'
     }
 
     var query = $location.$$url.match(/\?.*/);
-    if (query) {apiCall += query[0].slice(1) }
+    if (query) {
+        apiCall += connector + query[0].slice(1)
+    }
 
     $http.get(apiCall).success(function (data) {
         if (data.success) {

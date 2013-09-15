@@ -390,10 +390,13 @@ DataForm.prototype.report = function () {
         // Replace parameters in pipeline
         var schemaCopy = {};
         extend(schemaCopy, reportSchema);
+        schemaCopy.params = schemaCopy.params || [];
         // Bit crap here switching back and forth to string
         runPipeline = JSON.stringify(schemaCopy.pipeline);
         for (var param in url_parts.query) {
-            schemaCopy.params[param] = url_parts.query[param];
+            if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
+                schemaCopy.params[param] = url_parts.query[param];
+            }
         }
         runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function(match){ return '"'+schemaCopy.params[match.slice(2,-2)]+'"'})
         runPipeline = JSON.parse(runPipeline);
