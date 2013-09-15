@@ -15,6 +15,15 @@ describe('Report API', function () {
         });
     });
 
+    it('handles complex pipeline request', function(done) {
+        exec('curl 0.0.0.0:3001/api/report/e_referencing_another_collection?r=%7B%22pipeline%22:%5B%7B%22%24group%22:%7B%22_id%22:%22%24teacher%22,%22count%22:%7B%22%24sum%22:1%7D%7D%7D%5D,%22title%22:%22Class%20Sizes%22,%22columnDefs%22:%5B%7B%22field%22:%22_id%22,%22displayName%22:%22Teacher%22%7D,%7B%22field%22:%22count%22,%22displayName%22:%22Number%20in%20Class%22%7D%5D,%22columnTranslations%22:%5B%7B%22field%22:%22_id%22,%22ref%22:%22b_using_options%22%7D%5D%7D', function (error, stdout) {
+            var data = JSON.parse(stdout).report;
+            assert.equal(data.length, 1);
+            assert.deepEqual(data[0],{_id:'IsAccepted John true 89',count:1});
+            done();
+        });
+    });
+
     it('looks up schema and does a simple translate', function(done) {
         exec('curl 0.0.0.0:3001/api/report/g_conditional_fields/breakdownbysex', function (error, stdout) {
             var data = JSON.parse(stdout).report;
@@ -33,6 +42,14 @@ describe('Report API', function () {
             done();
         });
     });
+
+    it('handles invalid lookup table error', function(done) {
+        exec('curl 0.0.0.0:3001/api/report/e_referencing_another_collection?r=%7B%22pipeline%22:%5B%7B%22%24group%22:%7B%22_id%22:%22%24teacher%22,%22count%22:%7B%22%24sum%22:1%7D%7D%7D%5D,%22title%22:%22Class%20Sizes%22,%22columnDefs%22:%5B%7B%22field%22:%22_id%22,%22displayName%22:%22Teacher%22%7D,%7B%22field%22:%22count%22,%22displayName%22:%22Number%20in%20Class%22%7D%5D,%22columnTranslations%22:%5B%7B%22field%22:%22_id%22,%22ref%22:%22b_usissng_options%22%7D%5D%7D', function (error, stdout) {
+            assert.equal(stdout,"Invalid ref property of b_usissng_options in columnTranslations _id");
+            done();
+        });
+    });
+
 
 });
 

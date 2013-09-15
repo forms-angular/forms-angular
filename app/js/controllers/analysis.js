@@ -21,15 +21,24 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$scope', '$http', '$
 
     var apiCall = '/api/report/' + $scope.model;
     if ($scope.reportSchemaName) {
-        apiCall += '/'+$scope.reportSchemaName
+        apiCall += '/'+$scope.reportSchemaName + '?'
     } else {
-        apiCall += '?r=' + JSON.stringify($scope.reportSchema);
+        apiCall += '?r=' + JSON.stringify($scope.reportSchema) + '&';
     }
 
+    var query = $location.$$url.match(/\?.*/);
+    if (query) {apiCall += query[0].slice(1) }
+
     $http.get(apiCall).success(function (data) {
-        $scope.report = data.report;
-        $scope.reportSchema = data.schema;
-        $scope.reportSchema.title = $scope.reportSchema.title || $scope.model;
+        if (data.success) {
+            $scope.report = data.report;
+            $scope.reportSchema = data.schema;
+            $scope.reportSchema.title = $scope.reportSchema.title || $scope.model;
+            $location.rew
+        } else {
+            console.log(JSON.stringify(data));
+            $scope.reportSchema.title = "Error - see console log";
+        }
     }).error(function () {
             $location.path("/404");
          });

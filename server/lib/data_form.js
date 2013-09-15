@@ -276,7 +276,11 @@ DataForm.prototype.models = function (req, res, next) {
 
 
 DataForm.prototype.renderError = function (err, redirectUrl, req, res) {
-    res.send(err);
+    if (typeof err === "string") {
+        res.send(err)
+    } else {
+        res.send(err.message)
+    }
 };
 
 DataForm.prototype.redirect = function (address, req, res) {
@@ -373,16 +377,29 @@ DataForm.prototype.report = function () {
             return next();
         }
         var reportSchema
-            self = this;
+            , self = this
+            , url_parts = url.parse(req.url, true)
+            , runPipeline;
+
         if (req.params.reportName) {
             reportSchema = req.resource.model.schema.statics['report'](req.params.reportName)
         } else {
-            var url_parts = url.parse(req.url, true);
             reportSchema = JSON.parse(url_parts.query.r);
         }
 
+        // Replace parameters in pipeline
+        var schemaCopy = {};
+        extend(schemaCopy, reportSchema);
+        // Bit crap here switching back and forth to string
+        runPipeline = JSON.stringify(schemaCopy.pipeline);
+        for (var param in url_parts.query) {
+            schemaCopy.params[param] = url_parts.query[param];
+        }
+        runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function(match){ return '"'+schemaCopy.params[match.slice(2,-2)]+'"'})
+        runPipeline = JSON.parse(runPipeline);
+
         var toDo = {runAggregation: function(cb,results) {
-            req.resource.model.aggregate(reportSchema.pipeline, cb)
+            req.resource.model.aggregate(runPipeline, cb)
             }
         };
 
@@ -440,8 +457,7 @@ DataForm.prototype.report = function () {
             if (err) {
                 return self.renderError(err, null, req, res, next);
             } else {
-                console.log("Final results",results);
-                res.send({schema:reportSchema, report: results.runAggregation});
+                res.send({success:true, schema:reportSchema, report: results.runAggregation, paramsUsed: schemaCopy.params});
             }
         });
     }, this);

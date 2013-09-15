@@ -25,6 +25,15 @@ GSchema.statics.report = function(report) {
                 columnTranslations: [{field:'_id', translations:[{value:'M', display:'Male'},{value:'F', display:'Female'}]}]
             };
             break;
+        case 'totalforonesex' :
+            reportSchema = {
+                pipeline: [{$match:{sex:"(sex)"}},{$group:{_id:"$sex",count:{"$sum":1}}}],
+                title: "Numbers of Applicants By Sex",
+                columnDefs: [{field:'_id', displayName:'Sex'}, {field:'count', displayName:'No of Applicants'}],
+                columnTranslations: [{field:'_id', translations:[{value:'M', display:'Male'},{value:'F', display:'Female'}]}],
+                params: {sex:'M'}
+            };
+            break;
     }
     return reportSchema;
 };
