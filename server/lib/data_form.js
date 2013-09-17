@@ -395,10 +395,13 @@ DataForm.prototype.report = function () {
         runPipeline = JSON.stringify(schemaCopy.pipeline);
         for (var param in url_parts.query) {
             if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
-                schemaCopy.params[param] = url_parts.query[param];
+                schemaCopy.params[param].value = url_parts.query[param];
             }
         }
-        runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function(match){ return '"'+schemaCopy.params[match.slice(2,-2)]+'"'})
+        runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function(match){
+            param = schemaCopy.params[match.slice(2,-2)];
+            return param.type === String ? '"'+param.value+'"' : param.value;
+        })
         runPipeline = JSON.parse(runPipeline);
 
         var toDo = {runAggregation: function(cb,results) {

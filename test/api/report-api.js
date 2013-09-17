@@ -50,7 +50,7 @@ describe('Report API', function () {
         });
     });
 
-    it('supports selection by parameter', function(done) {
+    it('supports selection by text parameter', function(done) {
         exec('curl 0.0.0.0:3001/api/report/g_conditional_fields/totalforonesex', function (error, stdout) {
             var data = JSON.parse(stdout).report;
             assert.equal(data.length, 1);
@@ -59,11 +59,20 @@ describe('Report API', function () {
         });
     });
 
-    it('supports selection by query parameter', function(done) {
+    it('supports selection by query text parameter', function(done) {
         exec('curl 0.0.0.0:3001/api/report/g_conditional_fields/totalforonesex?sex=F', function (error, stdout) {
             var data = JSON.parse(stdout).report;
             assert.equal(data.length, 1);
             assert.deepEqual(data[0],{_id:'Female',count:11});
+            done();
+        });
+    });
+
+    it('supports selection by numeric parameter', function(done) {
+        exec('curl 0.0.0.0:3001/api/report/g_conditional_fields/selectbynumber?number_param=11', function (error, stdout) {
+            var data = JSON.parse(stdout).report;
+            assert.equal(data.length, 1);
+            assert.deepEqual(data[0],{_id:'F',count:11});
             done();
         });
     });

@@ -39,7 +39,9 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$scope', '$http', '$
             $scope.report = data.report;
             $scope.reportSchema = data.schema;
             $scope.reportSchema.title = $scope.reportSchema.title || $scope.model;
-            $location.rew
+//            if (data.params) {
+//                $scope.paramSchema = []
+//            }
         } else {
             console.log(JSON.stringify(data));
             $scope.reportSchema.title = "Error - see console log";

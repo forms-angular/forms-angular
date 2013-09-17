@@ -1,7 +1,22 @@
 <div ng-controller="AnalysisCtrl" class="row-fluid">
-    <div class="hero-unit span12">
-        <h1>{{ reportSchema.title }}</h1>
+    <div ng-show="paramSchema" class="row-fluid form-header">
+        <div class="span12 well">
+            <div class="pull-right">
+                <form-input schema="paramSchema"></form-input>
+            </div>
+            <div class="pull-right">
+                <h1>{{ reportSchema.title }}</h1>
+            </div>
+        </div>
     </div>
+    <div ng-show="errorMessage" class="row-fluid">
+        <div class="span6 offset3 alert alert-error">
+            <button type="button" class="close" ng-click="dismissError()">&times;</button>
+            <h4>{{alertTitle}}</h4>
+            <div ng-bind-html="errorMessage"></div>
+        </div>
+    </div>
+
     <div class="row-fluid">
         <div class="gridStyle" ng-grid="gridOptions"></div>
     </div>

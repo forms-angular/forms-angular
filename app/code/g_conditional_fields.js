@@ -27,11 +27,20 @@ GSchema.statics.report = function(report) {
             break;
         case 'totalforonesex' :
             reportSchema = {
-                pipeline: [{$match:{sex:"(sex)"}},{$group:{_id:"$sex",count:{"$sum":1}}}],
-                title: "Numbers of Applicants By Sex",
-                columnDefs: [{field:'_id', displayName:'Sex'}, {field:'count', displayName:'No of Applicants'}],
-                columnTranslations: [{field:'_id', translations:[{value:'M', display:'Male'},{value:'F', display:'Female'}]}],
-                params: {sex:'M'}
+                "pipeline":[{"$match":{"sex":"(sex)"}},{"$group":{"_id":"$sex","count":{"$sum":1}}}],
+                "title":"Numbers of Applicants By Sex",
+                "columnDefs":[{"field":'_id',"displayName":'Sex'},{"field":'count',"displayName":'No of Applicants'}],
+                "columnTranslations": [{"field":'_id',"translations":[{"value":'M', "display":'Male'},{"value":'F',"display":'Female'}]}],
+                "params":{"sex":{value:'M', type: String}}
+            };
+            break;
+        case 'selectbynumber' :
+            reportSchema = {
+                "pipeline":[
+                    {"$group":{"_id":"$sex","count":{"$sum":1}}},
+                    {"$match":{"count":"(number_param)"}}
+                ],
+                "params":{"number_param":{value:11, type:Number}}
             };
             break;
     }
@@ -44,3 +53,6 @@ module.exports = {
     searchOrder: {surname:1},
     listOrder: {surname:1}
 };
+
+
+//    "pipeline":[{"$group":{"_id":"$sex","count":{"$sum":1}}},{"$match":{"count":"(number_param)"}}],"params":{"number_param":11}
