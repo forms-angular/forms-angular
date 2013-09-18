@@ -1,4 +1,4 @@
-formsAngular.controller('AnalysisCtrl', ['$locationParse', '$scope', '$http', '$location', '$routeParams', function ($locationParse, $scope, $http, $location, $routeParams) {
+formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', '$http', '$location', '$routeParams', function ($locationParse, $filter, $scope, $http, $location, $routeParams) {
     var debug = false;
 
     angular.extend($scope, $routeParams);
@@ -19,36 +19,76 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$scope', '$http', '$
         }
     }
 
-    var apiCall = '/api/report/' + $scope.model
-        ,connector;
-    if ($scope.reportSchemaName) {
-        apiCall += '/'+$scope.reportSchemaName
-        connector = '?'
-    } else {
-        apiCall += '?r=' + JSON.stringify($scope.reportSchema);
-        connector = '&'
-    }
+    $scope.refreshQuery = function() {
 
-    var query = $location.$$url.match(/\?.*/);
-    if (query) {
-        apiCall += connector + query[0].slice(1)
-    }
-
-    $http.get(apiCall).success(function (data) {
-        if (data.success) {
-            $scope.report = data.report;
-            $scope.reportSchema = data.schema;
-            $scope.reportSchema.title = $scope.reportSchema.title || $scope.model;
-//            if (data.params) {
-//                $scope.paramSchema = []
-//            }
+        var apiCall = '/api/report/' + $scope.model
+            ,connector;
+        if ($scope.reportSchemaName) {
+            apiCall += '/'+$scope.reportSchemaName
+            connector = '?'
         } else {
-            console.log(JSON.stringify(data));
-            $scope.reportSchema.title = "Error - see console log";
+            apiCall += '?r=' + JSON.stringify($scope.reportSchema);
+            connector = '&'
         }
-    }).error(function () {
-            $location.path("/404");
-         });
+
+        if ($scope.paramSchema) {
+            // we are using the params form
+            for (var paramVal in $scope.record) {
+                if ($scope.record[paramVal] && $scope.record[paramVal] !== "") {
+                    apiCall += connector + paramVal + '=' + $scope.record[paramVal];
+                    connector = '&';
+                } else if ($scope.reportSchema.params[paramVal].required) {
+                    // Don't do a round trip if a required field is empty - it will show up red
+                    return;
+                }
+            }
+        } else {
+            // take params of the URL
+            var query = $location.$$url.match(/\?.*/);
+            if (query) {
+                apiCall += connector + query[0].slice(1)
+            }
+        }
+
+        $http.get(apiCall).success(function (data) {
+            if (data.success) {
+                $scope.report = data.report;
+                $scope.reportSchema = data.schema;
+                $scope.reportSchema.title = $scope.reportSchema.title || $scope.model;
+                // set up parameters if this is the first time through
+                if (!$scope.paramSchema && data.schema.params) {
+                    $scope.paramSchema = [];
+                    $scope.record = {};
+                    for (var param in data.schema.params) {
+                        var thisPart = data.schema.params[param];
+                        $scope.paramSchema.push({
+                            name: param,
+                            id: 'fp_'+param,
+                            label: thisPart.label || $filter('titleCase')(param),
+                            type : thisPart.type || 'text',
+                            required: true,
+                            size: thisPart.size || 'small'
+                        });
+                        $scope.record[param] = thisPart.value;
+                    }
+                    $scope.$watch('record', function (newValue, oldValue) {
+                        if (oldValue !== newValue) {
+                            $scope.refreshQuery();
+                        }
+                    },true);
+
+                }
+            } else {
+                console.log(JSON.stringify(data));
+                $scope.reportSchema.title = "Error - see console log";
+            }
+        }).error(function (err) {
+                console.log(JSON.stringify(err));
+                $location.path("/404");
+             });
+    }
+
+    $scope.refreshQuery();
 
 }]);
 

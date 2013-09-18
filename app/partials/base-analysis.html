@@ -1,10 +1,10 @@
 <div ng-controller="AnalysisCtrl" class="row-fluid">
-    <div ng-show="paramSchema" class="row-fluid form-header">
+    <div class="row-fluid form-header">
         <div class="span12 well">
-            <div class="pull-right">
+            <form name="paramForm" ng-show="paramSchema" class="pull-right form form-horizontal compact">
                 <form-input schema="paramSchema"></form-input>
-            </div>
-            <div class="pull-right">
+            </form>
+            <div>
                 <h1>{{ reportSchema.title }}</h1>
             </div>
         </div>

@@ -31,7 +31,7 @@ GSchema.statics.report = function(report) {
                 "title":"Numbers of Applicants By Sex",
                 "columnDefs":[{"field":'_id',"displayName":'Sex'},{"field":'count',"displayName":'No of Applicants'}],
                 "columnTranslations": [{"field":'_id',"translations":[{"value":'M', "display":'Male'},{"value":'F',"display":'Female'}]}],
-                "params":{"sex":{value:'M', type: String}}
+                "params":{"sex":{value:'M', type: 'text', required:true}}
             };
             break;
         case 'selectbynumber' :
@@ -40,7 +40,7 @@ GSchema.statics.report = function(report) {
                     {"$group":{"_id":"$sex","count":{"$sum":1}}},
                     {"$match":{"count":"(number_param)"}}
                 ],
-                "params":{"number_param":{value:11, type:Number}}
+                "params":{"number_param":{value:11, type:'number',required:true}}
             };
             break;
     }
