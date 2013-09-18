@@ -34,10 +34,15 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         if ($scope.paramSchema) {
             // we are using the params form
             for (var paramVal in $scope.record) {
+                var instructions = $scope.reportSchema.params[paramVal];
                 if ($scope.record[paramVal] && $scope.record[paramVal] !== "") {
-                    apiCall += connector + paramVal + '=' + $scope.record[paramVal];
+                    $scope.param = $scope.record[paramVal];
+                    if (instructions.conversionExpression) {
+                        $scope.param = $scope.$eval(instructions.conversionExpression);
+                    }
+                    apiCall += connector + paramVal + '=' + $scope.param;
                     connector = '&';
-                } else if ($scope.reportSchema.params[paramVal].required) {
+                } else if (instructions.required) {
                     // Don't do a round trip if a required field is empty - it will show up red
                     return;
                 }
@@ -61,7 +66,7 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                     $scope.record = {};
                     for (var param in data.schema.params) {
                         var thisPart = data.schema.params[param];
-                        $scope.paramSchema.push({
+                        var newLen = $scope.paramSchema.push({
                             name: param,
                             id: 'fp_'+param,
                             label: thisPart.label || $filter('titleCase')(param),
@@ -69,6 +74,11 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                             required: true,
                             size: thisPart.size || 'small'
                         });
+                        if (thisPart.type === 'select') {
+                            // TODO: Remove when select and select2 is modified during the restructure
+                            $scope[param + '_Opts'] = thisPart.enum;
+                            $scope.paramSchema[newLen-1].options = param + '_Opts';
+                        }
                         $scope.record[param] = thisPart.value;
                     }
                     $scope.$watch('record', function (newValue, oldValue) {

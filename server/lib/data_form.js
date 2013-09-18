@@ -400,7 +400,7 @@ DataForm.prototype.report = function () {
         }
         runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function(match){
             param = schemaCopy.params[match.slice(2,-2)];
-            return param.type === 'text' ? '"'+param.value+'"' : param.value;
+            return param.type === 'number' ? param.value : '"'+param.value+'"';
         })
         runPipeline = JSON.parse(runPipeline);
 
