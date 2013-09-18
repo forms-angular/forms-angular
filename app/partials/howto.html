@@ -251,6 +251,7 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
                 href="/code/g_conditional_fields.js">g_conditional_fields</a>.</p>
     <ul>
         <li><strong>searchImportance</strong> can be used to determine the order of table searches. There is an example
+            in <a href="/code/g_conditional_fields.js">this</a> model.
         </li>
         <li><strong>searchOrder</strong> can be used to set the default ordering of the search results within a model.
             It is normally used in conjunction with searchImportance.
@@ -333,11 +334,23 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
     <ul>
         <li><strong>title</strong> this option allows a title to be specified.  The default is the model name.</li>
         <li><strong>columnDefs</strong> an array of field&rarr;displayName mappings, such as <strong>[{field:'_id', displayName:'Sex'}]</strong>.</li>
-        <li><strong>columnTranslations</strong> and array of objects giving instructions for translating returned data.  The objects are made up as follows:
+        <li><strong>columnTranslations</strong> an array of objects giving instructions for translating returned data.  The objects are made up as follows:
             <ul>
                 <li><strong>field</strong> (mandatory) the name of the results column to translate</li>
                 <li><strong>ref</strong> the name of a Mongoose model to use to look up the current value against (returning a concatenation of the fields with a truthy <strong>list</strong> key)</li>
                 <li><strong>translations</strong> an array of value&rarr;display mappings, such as <strong>[{value:'M', display:'Male'},{value:'F', display:'Female'}]</strong></li>
+            </ul>
+        </li>
+        <li><strong>params</strong> contains and array of parameters that can be used in the pipeline, normally in a $match such as {$match:{sex:("sex"}}.  Parameters can have the following properties:
+            <ul>
+                <li><strong>value</strong> is the (mandatory) value used for the query when the page is first generated</li>
+                <li><strong>type</strong> can be <em>'text'</em> (default), <em>'number'</em> or <em>'select'</em>.  In the case of <em>'select'</em> values must be defined for</li>
+                <li><strong>enum</strong> an array of values to populate a select input</li>
+                <li><strong>required</strong> should set to true if the query cannot be run without the parameter</li>
+                <li><strong>noInput</strong> can be set to true to prevent the parameter being prompted for.  Normally used in conjunction with</li>
+                <li><strong>conversionExpression</strong> an angular expression which generates and / or formats the parameter at runtime.
+                    For example <pre>param + ' ' + record.surname | uppercase</pre> would concatenate the values fom the current parameter
+                    and the surname parameter and convert them to uppercase.</li>
             </ul>
         </li>
     </ul>

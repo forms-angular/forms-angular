@@ -463,6 +463,7 @@ DataForm.prototype.report = function () {
             if (err) {
                 return self.renderError(err, null, req, res, next);
             } else {
+                // TODO: Could loop through schemaCopy.params and just send back the values
                 res.send({success:true, schema:reportSchema, report: results.runAggregation, paramsUsed: schemaCopy.params});
             }
         });

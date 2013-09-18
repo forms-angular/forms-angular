@@ -66,18 +66,21 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                     $scope.record = {};
                     for (var param in data.schema.params) {
                         var thisPart = data.schema.params[param];
-                        var newLen = $scope.paramSchema.push({
-                            name: param,
-                            id: 'fp_'+param,
-                            label: thisPart.label || $filter('titleCase')(param),
-                            type : thisPart.type || 'text',
-                            required: true,
-                            size: thisPart.size || 'small'
-                        });
-                        if (thisPart.type === 'select') {
-                            // TODO: Remove when select and select2 is modified during the restructure
-                            $scope[param + '_Opts'] = thisPart.enum;
-                            $scope.paramSchema[newLen-1].options = param + '_Opts';
+                        // if noInput then this value will be inferred from another parameter
+                        if (!thisPart.noInput) {
+                            var newLen = $scope.paramSchema.push({
+                                name: param,
+                                id: 'fp_'+param,
+                                label: thisPart.label || $filter('titleCase')(param),
+                                type : thisPart.type || 'text',
+                                required: true,
+                                size: thisPart.size || 'small'
+                            });
+                            if (thisPart.type === 'select') {
+                                // TODO: Remove when select and select2 is modified during the restructure
+                                $scope[param + '_Opts'] = thisPart.enum;
+                                $scope.paramSchema[newLen-1].options = param + '_Opts';
+                            }
                         }
                         $scope.record[param] = thisPart.value;
                     }
