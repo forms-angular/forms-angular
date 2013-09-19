@@ -59,6 +59,7 @@ formsAngular
                             , readonlyStr = fieldInfo.readonly ? ' readonly' : '';
 
                         var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (fieldInfo.placeHolder ? ('placeholder="' + fieldInfo.placeHolder + '" ') : "");
+                        common +=   addAll("Field");
                         if (fieldInfo.type === 'select') {
                             common += (fieldInfo.readonly ? 'disabled ' : '');
                             if (fieldInfo.select2) {
