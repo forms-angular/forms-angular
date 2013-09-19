@@ -139,6 +139,19 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
         url_parts = url.parse(req.url, true),
         searchFor = url_parts.query.q,
         filter = url_parts.query.f;
+
+    function translate(string, array, context) {
+        if (array) {
+            var translation = _.find(array, function(fromTo) {
+                return fromTo.from === string && (!fromTo.context || fromTo.context === context)
+            });
+            if (translation) {
+                string = translation.to;
+            }
+        }
+        return string;
+    }
+
     if (filter) {
         filter = JSON.parse(filter)
     }
@@ -209,6 +222,10 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                             var specialListingFormat = item.resource.options.searchResultFormat;
                             if (specialListingFormat) {
                                 resultObject = specialListingFormat.apply(docs[k]);
+                                if (item.resource.options.localisationData) {
+                                    resultObject.resource = translate(resultObject.resource,item.resource.options.localisationData,'resource');
+                                    resultObject.resourceText = translate(resultObject.resourceText,item.resource.options.localisationData,'resourceText');
+                                }
                                 results.splice(_.sortedIndex(results, resultObject, function (obj) {
                                     return obj.weighting
                                 }), 0, resultObject)
