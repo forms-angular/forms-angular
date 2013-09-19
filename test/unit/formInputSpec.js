@@ -517,5 +517,90 @@ describe('formInput', function () {
 
     });
 
+
+    describe('Testing add all functionality, ', function() {
+
+        describe('a text box', function() {
+
+            beforeEach(inject(function($rootScope, $compile) {
+                elm = angular.element(
+                    '<form name="myForm" class="form-horizontal compact">' +
+                    '<form-input schema="formSchema" add-all-field="bobby"></form-input>' +
+                    '</form>');
+
+                scope = $rootScope;
+                scope.formSchema = {
+                    name: "desc",
+                    id: "desc_id",
+                    label: "Description",
+                    type: "text"
+                };
+                $compile(elm)(scope);
+                scope.$digest();
+            }));
+
+            it('should have an attribute of bobby', function() {
+                var input = elm.find('input');
+
+                expect(input.attr('bobby')).toBeDefined();
+
+            });
+
+            describe('a text box label', function() {
+
+                beforeEach(inject(function($rootScope, $compile) {
+                    elm = angular.element(
+                        '<form name="myForm" class="form-horizontal compact">' +
+                        '<form-input schema="formSchema" add-all-label="bobby"></form-input>' +
+                        '</form>');
+
+                    scope = $rootScope;
+                    scope.formSchema = {
+                        name: "desc",
+                        id: "desc_id",
+                        label: "Description",
+                        type: "text"
+                    };
+                    $compile(elm)(scope);
+                    scope.$digest();
+                }));
+
+                it('should have an attribute of bobby', function() {
+                    var label = elm.find('label');
+
+                    expect(label.attr('bobby')).toBeDefined();
+
+                });
+            });
+
+            describe('a control group', function() {
+
+                beforeEach(inject(function($rootScope, $compile) {
+                    elm = angular.element(
+                        '<form name="myForm" class="form-horizontal compact">' +
+                        '<form-input schema="formSchema" add-all-group="bobby"></form-input>' +
+                        '</form>');
+
+                    scope = $rootScope;
+                    scope.formSchema = {
+                        name: "desc",
+                        id: "desc_id",
+                        label: "Description",
+                        type: "text"
+                    };
+                    $compile(elm)(scope);
+                    scope.$digest();
+                }));
+
+                it('should have an attribute of bobby', function() {
+                    var group = elm.find('.control-group');
+
+                    expect(group.attr('bobby')).toBeDefined();
+
+                });
+            });
+        });
+    });
+
 });
 
