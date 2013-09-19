@@ -310,6 +310,20 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
     </ul>
     <p>In all onBefore... cases passing an error back will stop the event completing.  There is a trivial example of
     how a data event hook might be used in <a href="/demo/d-array-example.js">this</a> controller.</p>
+
+    <h5>Adding additional attributes to all elements.</h5>
+    <p>It is possible to apply additional attributes to all elements of a certain type by passing it once in the form-input declaration. The available types are Control Group, Field or Label.</p>
+    <p>This can be achieved in two ways. Either as an attribute of the form-input element: <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with paramters'"</span>&gt;</pre> or via the controller by making it an attribute of scope: <pre><span>$scope.addAllGroup="injected-attribute"</span></pre></p>
+    <p>The three versions of this are: 
+        <ul>
+            <li>add-all-group="injected-attrbute"</li>
+            <li>add-all-field="injected-attrbute"</li>
+            <li>add-all-label="injected-attrbute"</li>
+        </ul>
+        For example if wished to inject a directive called 'hide-on-empty' to every individial control group then you would add: <pre>add-all-group="hide-on-empty"</pre> to the form-input declaration.
+    </p>
+    <p>If declared in a controller then it will be applied to all child controllers. If declared in the form-input element the scope is limited to the individual form's scope. In this way a single declaration at the root scope is seem by all controllers.</p>
+
 </section>
 
 <section id="server-side-customisation"><h3>Server Side Customisation</h3>

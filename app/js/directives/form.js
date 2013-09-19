@@ -1,5 +1,5 @@
 formsAngular
-    .directive('formInput', ['$compile', '$rootScope', function ($compile, $rootScope) {
+    .directive('formInput', ['$compile', '$rootScope','utils', function ($compile, $rootScope, utils) {
         return {
             restrict: 'E',
             compile: function () {
@@ -7,11 +7,6 @@ formsAngular
 
                     var elementHtml = ''
                         , tabsSetup = false
-                        //add a form option hide-if-blank and map this to the hide-on-empty directive
-                        //which will hide any field groups (label and input) that don't have a value once evaluated against the
-                        //$scope.record object.
-                        //only tested on input boxes - may break other things
-                        , hideIfBlank = attrs.hideIfBlank !== undefined ? 'hide-on-empty' : '';
 
                     var parseMoveOptions = function (info) {
                         //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
@@ -64,6 +59,7 @@ formsAngular
                             , readonlyStr = fieldInfo.readonly ? ' readonly' : '';
 
                         var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (fieldInfo.placeHolder ? ('placeholder="' + fieldInfo.placeHolder + '" ') : "");
+                        common +=   addAll("Field");
                         if (fieldInfo.type === 'select') {
                             common += (fieldInfo.readonly ? 'disabled ' : '');
                             if (fieldInfo.select2) {
@@ -113,13 +109,13 @@ formsAngular
                     var generateLabel = function (fieldInfo, addButton) {
                         var labelHTML = '';
                         if (fieldInfo.label !== '' || addButton) {
-                            labelHTML = '<label class="control-label" for="' + fieldInfo.id + '">' + fieldInfo.label + (addButton || '') + '</label>';
+                            labelHTML = '<label class="control-label" for="' + fieldInfo.id + '"' + addAll('Label') + '>' + fieldInfo.label + (addButton || '') + '</label>';
                         }
                         return labelHTML;
                     };
 
                     var handleField = function (info) {
-                        var template = '<div ' + hideIfBlank + ' class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions(info) + '>';
+                        var template = '<div' + addAll("Group") + 'class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions(info) + '>';
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
@@ -288,6 +284,14 @@ formsAngular
                         }
 
                     }, true);
+
+                    function addAll (type) {
+
+                        var action = 'getAddAll' + type + 'Options'
+
+                        return utils[action](scope, attrs) || [];
+
+                    }
                 }
             }
         }
