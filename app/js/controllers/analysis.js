@@ -59,6 +59,27 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
             if (data.success) {
                 $scope.report = data.report;
                 $scope.reportSchema = data.schema;
+                if (data.schema.columnDefs) {
+                    var totals = {}
+                        , columnDefs = data.schema.columnDefs;
+                    for (var i = 0 ; i < columnDefs.length ; i++) {
+                        switch (columnDefs[i].totalsRow) {
+                            case undefined :
+                                break;
+                            case '$SUM' :
+                                var sum = 0;
+                                for (var j = 0; j < data.report.length ;j++) {
+                                    sum += data.report[j][columnDefs[i].field]
+                                }
+                                totals[columnDefs[i].field] = sum;
+                                break;
+                            default :
+                                totals[columnDefs[i].field] = columnDefs[i].totalsRow;
+                                break;
+                        }
+                    }
+                    data.report.push(totals);
+                }
                 $scope.reportSchema.title = $scope.reportSchema.title || $scope.model;
                 // set up parameters if this is the first time through
                 if (!$scope.paramSchema && data.schema.params) {
