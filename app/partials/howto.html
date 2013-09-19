@@ -324,7 +324,7 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
 
 <section id="reports"><h3>Reports</h3>
     <p>Reports can be run by passing an <a href="http://docs.mongodb.org/manual/core/aggregation-pipeline/">aggregation pipeline</a>
-    to the server using a the format <strong>/#/analyse/model?r=[pipeline]</strong> - for example
+    to the server using the format <strong>/#/analyse/model?r=[pipeline]</strong> - for example
     <a href="/#/analyse/g_conditional_fields?r=%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D">/#/analyse/g_conditional_fields?r=[{"$group":{"_id":"$sex","count":{"$sum":1}}}]</a>
     produces a breakdown of the men and women in a collection.</p>
 
