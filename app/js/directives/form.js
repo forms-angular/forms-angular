@@ -109,7 +109,7 @@ formsAngular
                     var generateLabel = function (fieldInfo, addButton) {
                         var labelHTML = '';
                         if (fieldInfo.label !== '' || addButton) {
-                            labelHTML = '<label class="control-label" for="' + fieldInfo.id + '">' + fieldInfo.label + (addButton || '') + '</label>';
+                            labelHTML = '<label class="control-label" for="' + fieldInfo.id + '"' + addAll('Label') + '>' + fieldInfo.label + (addButton || '') + '</label>';
                         }
                         return labelHTML;
                     };
