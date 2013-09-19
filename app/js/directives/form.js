@@ -1,5 +1,5 @@
 formsAngular
-    .directive('formInput', ['$compile', '$rootScope', function ($compile, $rootScope) {
+    .directive('formInput', ['$compile', '$rootScope','utils', function ($compile, $rootScope, utils) {
         return {
             restrict: 'E',
             compile: function () {
@@ -7,11 +7,6 @@ formsAngular
 
                     var elementHtml = ''
                         , tabsSetup = false
-                        //add a form option hide-if-blank and map this to the hide-on-empty directive
-                        //which will hide any field groups (label and input) that don't have a value once evaluated against the
-                        //$scope.record object.
-                        //only tested on input boxes - may break other things
-                        , hideIfBlank = attrs.hideIfBlank !== undefined ? 'hide-on-empty' : '';
 
                     var parseMoveOptions = function (info) {
                         //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
@@ -119,7 +114,7 @@ formsAngular
                     };
 
                     var handleField = function (info) {
-                        var template = '<div ' + hideIfBlank + ' class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions(info) + '>';
+                        var template = '<div' + addAll("Group") + 'class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions(info) + '>';
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
@@ -288,6 +283,14 @@ formsAngular
                         }
 
                     }, true);
+
+                    function addAll (type) {
+
+                        var action = 'getAddAll' + type + 'Options'
+
+                        return utils[action](scope, attrs) || [];
+
+                    }
                 }
             }
         }
