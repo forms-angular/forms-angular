@@ -414,10 +414,6 @@ DataForm.prototype.report = function () {
             if (err) {
                 return self.renderError(new Error("There was a problem with the findFunc for model " + req.resource.modelName), null, req, res, next);
             } else {
-                if (queryObj) {
-                    schemaCopy.pipeline.unshift({$match:queryObj});
-                }
-
                 // Bit crap here switching back and forth to string
                 runPipeline = JSON.stringify(schemaCopy.pipeline);
                 for (var param in url_parts.query) {
@@ -431,9 +427,13 @@ DataForm.prototype.report = function () {
                 });
                 runPipeline = JSON.parse(runPipeline);
 
+                if (queryObj) {
+                    runPipeline.unshift({$match:queryObj});
+                }
+
                 var toDo = {runAggregation: function(cb,results) {
                     req.resource.model.aggregate(runPipeline, cb)
-                    }
+                }
                 };
 
                 // if we need to do any column translations add the function to the tasks list
