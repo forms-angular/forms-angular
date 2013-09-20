@@ -13,7 +13,8 @@ formsAngular
 
                 if (element.find('input').length > 0) {
 
-                    if (scope.$eval(element.find('input')[0].attributes.getNamedItem('ng-model').value) === undefined) {
+
+                    if (scope.$eval(element.find('input').prop('attributes').getNamedItem('ng-model').value) === undefined) {
 
                         element.hide();
 
@@ -23,7 +24,7 @@ formsAngular
 
                 if (element.find('textarea').length > 0) {
 
-                    if (scope.$eval(element.find('textarea')[0].attributes.getNamedItem('ng-model').value) === undefined) {
+                    if (scope.$eval(element.find('textarea').prop('attributes').getNamedItem('ng-model').value) === undefined) {
 
                         element.hide();
 
