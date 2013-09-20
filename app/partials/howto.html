@@ -323,6 +323,7 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
         For example if wished to inject a directive called 'hide-on-empty' to every individial control group then you would add: <pre>add-all-group="hide-on-empty"</pre> to the form-input declaration.
     </p>
     <p>If declared in a controller then it will be applied to all child controllers. If declared in the form-input element the scope is limited to the individual form's scope. In this way a single declaration at the root scope is seem by all controllers.</p>
+    <p>Due to the parse method, in order declare multiple classes each class must be prefixed with 'class=' e.g. <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with paramters' class=myclass class=my-second-class"</span>&gt;</pre></p>
 
 </section>
 
