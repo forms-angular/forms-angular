@@ -6,40 +6,17 @@ formsAngular
                 return function (scope, element, attrs) {
 
                     var elementHtml = ''
-                        , tabsSetup = false
+                        , tabsSetup = false;
 
-                    var parseMoveOptions = function (info) {
-                        //this function handles MoveOptions for drag and drop plugin angular-ui:drag-drop (http://codef0rmer.github.com/angular-dragdrop/)
-                        //api looks like this:
-                        // <form-input schema="formSchema" moveOptions="{
-                        // 'drag-drop': true,
-                        // 'ng-model': 'record',
-                        // 'class': 'dragelement',
-                        // 'data-jqyoui-options': '{revert: true}',
-                        // 'jqyoui-draggable': {'animate':false, 'onDrop': 'onDrop'}
-                        // }"></form-input>
-                        // TODO - only works with the sample drag drop app pre-release 2/9/13
 
-                        var jqyouiDraggable
-                            , opt
-                            , fieldName
-                            , optionsString = '';
+                        scope.toggleFolder = function(groupId) {
 
-                        if (attrs.moveoptions) {
-                            opt = JSON.parse(attrs.moveoptions.replace(/'/g, '"'));
+                            scope['showHide'+groupId] = !scope['showHide' + groupId];
 
-                            fieldName = (opt['ng-model'] || 'record') + '.' + info.name.replace(" ", "");
+                            $('i.' + groupId).toggleClass('icon-folder-open icon-folder-close');
 
-                            if (opt['jqyoui-draggable']) {
-                                jqyouiDraggable = JSON.stringify(opt['jqyoui-draggable']).replace(/"/g, "'")
-                            } else {
-                                jqyouiDraggable = '';
-                            }
-
-                            optionsString = ' data-drag="' + opt['drag-drop'] + '" ng-model="' + fieldName + '" class="' + opt['class'] + '" data-jqyoui-options="' + opt['data-jqyoui-options'] + '" jqyoui-draggable="' + jqyouiDraggable + '" ';
-                        }
-                        return optionsString;
-                    };
+                        };
+                                        
 
                     var generateInput = function (fieldInfo, modelString, isRequired, idString) {
                         if (!modelString) {
@@ -114,8 +91,17 @@ formsAngular
                         return labelHTML;
                     };
 
-                    var handleField = function (info) {
-                        var template = '<div' + addAll("Group", 'control-group') + ' class="" id="cg_' + info.id + '" ' + parseMoveOptions(info) + '>';
+                    var handleField = function (info, parentId) {
+
+                        var parentString;
+
+                        if (parentId) {
+
+                            parentString = ' ui-toggle="showHide' + parentId + '"';
+
+                        }
+                        
+                        var template = '<div' + addAll("Group", 'control-group') + parentString +  ' class="" id="cg_' + info.id + '">';
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
@@ -166,7 +152,7 @@ formsAngular
                         return template;
                     };
 
-                    var processInstructions = function (instructionsArray, topLevel) {
+                    var processInstructions = function (instructionsArray, topLevel, groupId) {
                         for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
                             var info = instructionsArray[anInstruction];
                             if (anInstruction === 0  && topLevel && !attrs.schema.match(/__schema_/) ) {
@@ -240,6 +226,17 @@ formsAngular
                                         processInstructions(info.content);
                                         elementHtml += '</fieldset>';
                                         break;
+                                    case 'container' :
+                                        elementHtml += '<fieldset>';
+                                        if (info.title) {
+                                            elementHtml += '<a ng-click="toggleFolder(\''+ info.id +'\')" class="container-header"><i class="icon-folder-open ' + info.id + '"></i>';
+                                            elementHtml +=  info.title ;
+                                            elementHtml += '</a><i class="icon-plus-sign"></i>';
+
+                                        }
+                                        processInstructions(info.content, null, info.id);
+                                        elementHtml += '</fieldset>';
+                                        break; 
                                     default:
                                         elementHtml += '<div class="' + info.containerType + '">';
                                         if (info.title) {
@@ -255,7 +252,10 @@ formsAngular
                                         break;
                                 }
                             } else {
-                                elementHtml += handleField(info);
+                                if (groupId) {
+                                    scope['showHide' + groupId] = true;
+                                }
+                                elementHtml += handleField(info, groupId);
                             }
                             // Todo - find a better way of communicating with controllers
                         }
