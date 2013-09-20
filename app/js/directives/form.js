@@ -109,13 +109,13 @@ formsAngular
                     var generateLabel = function (fieldInfo, addButton) {
                         var labelHTML = '';
                         if (fieldInfo.label !== '' || addButton) {
-                            labelHTML = '<label class="control-label" for="' + fieldInfo.id + '"' + addAll('Label') + '>' + fieldInfo.label + (addButton || '') + '</label>';
+                            labelHTML = '<label for="' + fieldInfo.id + '"' + addAll('Label', 'control-label') + '>' + fieldInfo.label + (addButton || '') + '</label>';
                         }
                         return labelHTML;
                     };
 
                     var handleField = function (info) {
-                        var template = '<div' + addAll("Group") + 'class="control-group" id="cg_' + info.id + '" ' + parseMoveOptions(info) + '>';
+                        var template = '<div' + addAll("Group", 'control-group') + ' class="" id="cg_' + info.id + '" ' + parseMoveOptions(info) + '>';
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
@@ -285,11 +285,11 @@ formsAngular
 
                     }, true);
 
-                    function addAll (type) {
+                    function addAll (type, additionalClasses) {
 
                         var action = 'getAddAll' + type + 'Options'
 
-                        return utils[action](scope, attrs) || [];
+                        return utils[action](scope, attrs, additionalClasses) || [];
 
                     }
                 }

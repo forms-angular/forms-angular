@@ -1,38 +1,47 @@
 formsAngular.service('utils', function() {
 
 
-    this.getAddAllGroupOptions = function (scope, attrs) {
-        return getAddAllOptions(scope, attrs, "Group");
+    this.getAddAllGroupOptions = function(scope, attrs, classes) {
+        return getAddAllOptions(scope, attrs, "Group", classes);
     }
 
-    this.getAddAllFieldOptions = function (scope, attrs) {
-        return getAddAllOptions(scope, attrs, "Field");
+    this.getAddAllFieldOptions = function(scope, attrs, classes) {
+        return getAddAllOptions(scope, attrs, "Field", classes);
     }
 
-    this.getAddAllLabelOptions = function (scope, attrs) {
-        return getAddAllOptions(scope, attrs, "Label");
+    this.getAddAllLabelOptions = function(scope, attrs, classes) {
+        return getAddAllOptions(scope, attrs, "Label", classes);
     }
 
+    function getAddAllOptions(scope, attrs, type, classes) {
 
+        
 
-     function getAddAllOptions (scope, attrs, type) {
+        var addAllOptions = []
+        , classList = []
+        , tmp
+        , options;
 
-        type = "addAll" + type;
+       type = "addAll" + type;
 
-        var addAllOptions = [];
+        if (typeof(classes) === 'string') {
+            tmp = classes.split(' ');
+            for (var i = 0; i < tmp.length; i++) {
+                classList.push(tmp[i]);
+            }
+        }
 
         function getAllOptions(obj) {
 
             for (var key in obj) {
                 if (key === type) {
-                    addAllOptions.push (obj[key]);
+                    addAllOptions.push(obj[key]);
                 }
 
                 if (key === "$parent") {
                     getAllOptions(obj[key]);
                 }
             }
-
         }
 
         getAllOptions(scope);
@@ -43,16 +52,35 @@ formsAngular.service('utils', function() {
 
                 //support objects...
 
-            } else if (typeof (attrs[type]) === "string") {
+            } else if (typeof(attrs[type]) === "string") {
 
-                addAllOptions.push(attrs[type].trim());
+                var tmp = attrs[type].split(' ');
 
-
+                for (var i = 0; i < tmp.length; i++) {
+                    if (tmp[i].indexOf('class=') === 0) {
+                        classList.push(tmp[i].substring(6, tmp[i].length));
+                    } else {
+                        addAllOptions.push(tmp[i]);
+                    }
+                }
             } else {
                 // return false; //error?
             }
         }
 
-        return addAllOptions.length > 0 ? " " + addAllOptions.join(" ") + " " : " ";
+        if (classList.length > 0) {
+            classes = ' class="' + classList.join(" ") + '" ';
+        } else {
+            classes = " ";
+        }
+
+        if (addAllOptions.length > 0) {
+            options = addAllOptions.join(" ") + " ";
+        } else {
+            options = "";
+        }
+
+        return classes + options;
+
     }
 });
