@@ -347,7 +347,7 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
     options:</p>
     <ul>
         <li><strong>title</strong> this option allows a title to be specified.  The default is the model name.</li>
-        <li><strong>columnDefs</strong> an array of field&rarr;displayName mappings, such as <strong>[{field:'_id', displayName:'Sex'}]</strong>.</li>
+        <li><strong>columnDefs</strong> an array of column instruction objects, containing field&rarr;displayName mappings, such as <strong>[{field:'_id', displayName:'Sex'}]</strong>.  Can also have a totalsRow property which can be $SUM (to add up the values in the column) or some text (generally "TOTAL" or similar).</li>
         <li><strong>columnTranslations</strong> an array of objects giving instructions for translating returned data.  The objects are made up as follows:
             <ul>
                 <li><strong>field</strong> (mandatory) the name of the results column to translate</li>
