@@ -31,7 +31,7 @@ GSchema.statics.report = function(report) {
                 "title":"Numbers of Applicants By Sex",
                 "columnDefs":[{"field":'_id',"displayName":'Sex'},{"field":'count',"displayName":'No of Applicants'}],
                 "columnTranslations": [{"field":'_id',"translations":[{"value":'M', "display":'Male'},{"value":'F',"display":'Female'}]}],
-                "params":{"sex":{value:'Male', type: 'select', enum:['Male','Female'], required:true, conversionExpression: "param[0]"}}
+                "params":{"sex":{value:'M', type: 'select', enum:['Male','Female'], required:true, conversionExpression: "param[0]"}}
             };
             break;
         case 'selectbynumber' :

@@ -77,5 +77,14 @@ describe('Report API', function () {
         });
     });
 
+    it('honours findfunc',function(done) {
+        exec('curl 0.0.0.0:3001/api/report/b_using_options/allVisible', function (error, stdout) {
+            var data = JSON.parse(stdout).report;
+            assert.equal(data.length, 1);
+            assert.deepEqual(data[0],{_id:true,count:1});
+            done();
+        });
+    })
+
 });
 
