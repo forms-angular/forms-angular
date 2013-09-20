@@ -14,7 +14,15 @@
 instead of
 ```
     <form-input ng-repeat="field in formSchema" info={{field}}>
-```    
+```
+* findFunc option now returns a query object such as
+```
+    {field:'value'}
+```
+rather than a MongooseJS Query such as
+```
+    model.find().where('field', 'value')
+```
 * Bespoke directives need to be modified (changes will normally be from something like
 ```
     var info = JSON.parse(attrs.info);

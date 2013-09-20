@@ -80,13 +80,27 @@ BSchema.statics.form = function(layout) {
 
 BSchema.statics.findAccepted = function(req,cb) {
     // Only show the accepted items
-    cb(null, B.find().where('accepted', true));
+    cb(null, {accepted:true});
 };
 
 BSchema.statics.prepareSave = function(doc, req, cb) {
     doc.ipAddress = req.ip;
     cb(null);
 };
+
+BSchema.statics.report = function(report) {
+    var reportSchema = '';
+    switch (report) {
+        case 'allVisible' :
+            reportSchema = {
+                pipeline: [{$group:{_id:"$accepted",count:{"$sum":1}}}],
+                title: "Numbers of Applicants By Status"
+            };
+            break;
+    }
+    return reportSchema;
+};
+
 
 module.exports = {
     model : B                                           // pass the model in an object if you want to add options
