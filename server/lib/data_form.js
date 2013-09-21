@@ -393,6 +393,7 @@ DataForm.prototype.report = function () {
         if (!(req.resource = this.getResource(req.params.resourceName))) {
             return next();
         }
+
         var reportSchema
             , self = this
             , url_parts = url.parse(req.url, true)
@@ -423,9 +424,39 @@ DataForm.prototype.report = function () {
                 }
                 runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function(match){
                     param = schemaCopy.params[match.slice(2,-2)];
-                    return param.type === 'number' ? param.value : '"'+param.value+'"';
+                    if (param.type === 'number') {
+                        return param.value;
+                    } else if (_.isObject(param.value)) {
+                        return JSON.stringify(param.value);
+                    } else if (param.value[0] = '{') {
+                        return param.value;
+                    } else {
+                        return '"'+param.value+'"';
+                    }
                 });
                 runPipeline = JSON.parse(runPipeline);
+
+                // Replace variables that cannot be serialised / deserialised.  Bit of a hack, but needs must...
+                // Anything formatted 1800-01-01T00:00:00.000Z is converted to a Date
+                // Only handles the cases I need for now
+                // TODO: handle arrays etc
+                var hackVariables = function(obj) {
+                    for (var prop in obj) {
+                        if (typeof obj[prop] === 'string') {
+                            if (obj[prop].match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/)) {
+                                obj[prop] = new Date(obj[prop])
+                            }
+                        } else if (_.isObject(obj[prop])) {
+                            hackVariables(obj[prop]);
+                        }
+                    }
+                };
+
+                for (var pipelineSection = 0; pipelineSection < runPipeline.length; pipelineSection++) {
+                    if (runPipeline[pipelineSection]['$match']) {
+                        hackVariables(runPipeline[pipelineSection]['$match']);
+                    }
+                }
 
                 if (queryObj) {
                     runPipeline.unshift({$match:queryObj});
