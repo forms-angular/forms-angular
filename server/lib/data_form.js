@@ -428,7 +428,7 @@ DataForm.prototype.report = function () {
                         return param.value;
                     } else if (_.isObject(param.value)) {
                         return JSON.stringify(param.value);
-                    } else if (param.value[0] = '{') {
+                    } else if (param.value[0] === '{') {
                         return param.value;
                     } else {
                         return '"'+param.value+'"';
@@ -726,6 +726,7 @@ DataForm.prototype.entity = function () {
         }
 
         var hidden_fields = this.generateHiddenFields(req.resource, false);
+        hidden_fields.__v = 0;
 
         var query = req.resource.model.findOne({ _id: req.params.id }).select(hidden_fields);
 

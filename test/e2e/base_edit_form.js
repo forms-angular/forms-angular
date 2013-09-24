@@ -16,6 +16,7 @@ describe('Base edit form', function() {
         input('record.accepted').check();
         input('record.freeText').enter('this is a rude word');
         element('#saveButton').click();
+        expect( element('.alert-error').text()).toMatch(/Error!/)
         expect( element('.alert-error').text()).toMatch(/Wash your mouth!/)
         expect( element('.alert-error').text()).not().toMatch(/eye/)
     });
