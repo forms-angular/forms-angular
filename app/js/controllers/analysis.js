@@ -88,13 +88,12 @@ function ngGridCsvExportPlugin (opts) {
                 }
                 csvData = swapLastCommaForNewline(csvData);
             }
-            var fp = grid.$root.find(".ngFooterPanel");
-            var csvDataLinkPrevious = grid.$root.find('.ngFooterPanel .csv-data-link-span');
+            var fp = angular.element('h1').parent();
+            var csvDataLinkPrevious = angular.element('#csv-data-link');
             if (csvDataLinkPrevious != null) {csvDataLinkPrevious.remove() ; }
-            var csvDataLinkHtml = "<span class=\"csv-data-link-span\">";
-            csvDataLinkHtml += "<br><a href=\"data:text/csv;charset=UTF-8,";
+            var csvDataLinkHtml = "<button id=\"csv-data-link\" class=\"btn\"><a href=\"data:text/csv;charset=UTF-8,";
             csvDataLinkHtml += encodeURIComponent(csvData);
-            csvDataLinkHtml += "\" download=\"Export.csv\">CSV Export</a></br></span>" ;
+            csvDataLinkHtml += "\" download=\"Export.csv\">CSV Export</button>" ;
             fp.append(csvDataLinkHtml);
         }
         setTimeout(showDs, 0);
@@ -120,7 +119,7 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         showColumnMenu: true,
         showFilter: true,
         enableSorting: false,     // because it puts totals in the list
-        plugins: [new ngGridFlexibleHeightPlugin(), new ngGridCsvExportPlugin()],
+        plugins: [new ngGridFlexibleHeightPlugin()]  //, new ngGridCsvExportPlugin()]
     };
     $scope.report = [];
 
