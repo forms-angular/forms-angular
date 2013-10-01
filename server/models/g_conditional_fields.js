@@ -21,7 +21,7 @@ GSchema.statics.report = function(report) {
             reportSchema = {
                 pipeline: [{$group:{_id:"$sex",count:{"$sum":1}}}],
                 title: "Numbers of Applicants By Sex",
-                columnDefs: [{field:'_id', displayName:'Sex',totalsRow:'Total'}, {field:'count', displayName:'No of Applicants',totalsRow:'$SUM'}],
+                columnDefs: [{field:'_id', displayName:'Sex',totalsRow:'Total', "width":"160px"}, {field:'count', displayName:'No of Applicants',totalsRow:'$SUM',"width":"160px", "cellFilter":"number", "cellClass":"fngRight"}],
                 columnTranslations: [{field:'_id', translations:[{value:'M', display:'Male'},{value:'F', display:'Female'}]}]
             };
             break;
@@ -29,7 +29,7 @@ GSchema.statics.report = function(report) {
             reportSchema = {
                 "pipeline":[{"$match":{"sex":"(sex)"}},{"$group":{"_id":"$sex","count":{"$sum":1}}}],
                 "title":"Numbers of Applicants By Sex",
-                "columnDefs":[{"field":'_id',"displayName":'Sex'},{"field":'count',"displayName":'No of Applicants'}],
+                "columnDefs":[{"field":'_id',"displayName":'Sex',"width":"200"},{"field":'count',"displayName":'No of Applicants',"cellClass":"fngRight", "width":"200"}],
                 "columnTranslations": [{"field":'_id',"translations":[{"value":'M', "display":'Male'},{"value":'F',"display":'Female'}]}],
                 "params":{"sex":{value:'M', type: 'select', enum:['Male','Female'], required:true, conversionExpression: "param[0]"}}
             };

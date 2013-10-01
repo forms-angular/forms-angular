@@ -1,9 +1,127 @@
+function ngGridFlexibleHeightPlugin (opts) {
+    var self = this;
+    self.grid = null;
+    self.scope = null;
+    self.init = function (scope, grid, services) {
+        self.domUtilityService = services.DomUtilityService;
+        self.grid = grid;
+        self.scope = scope;
+        var recalcHeightForData = function () { setTimeout(innerRecalcForData, 1); };
+        var innerRecalcForData = function () {
+            var gridId = self.grid.gridId;
+            var footerPanelSel = '.' + gridId + ' .ngFooterPanel';
+            var extraHeight = self.grid.$topPanel.height() + $(footerPanelSel).height();
+            var naturalHeight = self.grid.$canvas.height() + 1;
+            if (opts != null) {
+                if (opts.minHeight != null && (naturalHeight + extraHeight) < opts.minHeight) {
+                    naturalHeight = opts.minHeight - extraHeight - 3;
+                }
+            }
+
+            var newViewportHeight = naturalHeight + 3;
+            if (!self.scope.baseViewportHeight || self.scope.baseViewportHeight !== newViewportHeight) {
+                self.grid.$viewport.css('height', newViewportHeight + 'px');
+                self.grid.$root.css('height', (newViewportHeight + extraHeight) + 'px');
+                self.scope.baseViewportHeight = newViewportHeight;
+                self.domUtilityService.UpdateGridLayout(self.scope, self.grid);
+            }
+        };
+        self.scope.catHashKeys = function () {
+            var hash = '',
+                idx;
+            for (idx in self.scope.renderedRows) {
+                hash += self.scope.renderedRows[idx].$$hashKey;
+            }
+            return hash;
+        };
+        self.scope.$watch('catHashKeys()', innerRecalcForData);
+        self.scope.$watch(self.grid.config.data, recalcHeightForData);
+    };
+}
+
+function ngGridCsvExportPlugin (opts) {
+    var self = this;
+    self.grid = null;
+    self.scope = null;
+    self.init = function(scope, grid, services) {
+        self.grid = grid;
+        self.scope = scope;
+        function showDs() {
+            var keys = [];
+            for (var f in grid.config.columnDefs) { keys.push(grid.config.columnDefs[f].field);}
+            var csvData = '';
+            function csvStringify(str) {
+                if (str == null) { // we want to catch anything null-ish, hence just == not ===
+                    return '';
+                }
+                if (typeof(str) === 'number') {
+                    return '' + str;
+                }
+                if (typeof(str) === 'boolean') {
+                    return (str ? 'TRUE' : 'FALSE') ;
+                }
+                if (typeof(str) === 'string') {
+                    return str.replace(/"/g,'""');
+                }
+
+                return JSON.stringify(str).replace(/"/g,'""');
+            }
+            function swapLastCommaForNewline(str) {
+                var newStr = str.substr(0,str.length - 1);
+                return newStr + "\n";
+            }
+            for (var k in keys) {
+                csvData += '"' + csvStringify(keys[k]) + '",';
+            }
+            csvData = swapLastCommaForNewline(csvData);
+            var gridData = grid.data;
+            for (var gridRow in gridData) {
+                for ( k in keys) {
+                    var curCellRaw;
+                    if (opts != null && opts.columnOverrides != null && opts.columnOverrides[keys[k]] != null) {
+                        curCellRaw = opts.columnOverrides[keys[k]](gridData[gridRow][keys[k]]);
+                    }
+                    else {
+                        curCellRaw = gridData[gridRow][keys[k]];
+                    }
+                    csvData += '"' + csvStringify(curCellRaw) + '",';
+                }
+                csvData = swapLastCommaForNewline(csvData);
+            }
+            var fp = grid.$root.find(".ngFooterPanel");
+            var csvDataLinkPrevious = grid.$root.find('.ngFooterPanel .csv-data-link-span');
+            if (csvDataLinkPrevious != null) {csvDataLinkPrevious.remove() ; }
+            var csvDataLinkHtml = "<span class=\"csv-data-link-span\">";
+            csvDataLinkHtml += "<br><a href=\"data:text/csv;charset=UTF-8,";
+            csvDataLinkHtml += encodeURIComponent(csvData);
+            csvDataLinkHtml += "\" download=\"Export.csv\">CSV Export</a></br></span>" ;
+            fp.append(csvDataLinkHtml);
+        }
+        setTimeout(showDs, 0);
+        scope.catHashKeys = function() {
+            var hash = '';
+            for (var idx in scope.renderedRows) {
+                hash += scope.renderedRows[idx].$$hashKey;
+            }
+            return hash;
+        };
+        scope.$watch('catHashKeys()', showDs);
+    };
+}
+
 formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', '$http', '$location', '$routeParams', function ($locationParse, $filter, $scope, $http, $location, $routeParams) {
     var debug = false;
 
     angular.extend($scope, $routeParams);
     $scope.reportSchema = {};
-    $scope.gridOptions = {columnDefs : 'reportSchema.columnDefs', data: 'report'};
+    $scope.gridOptions = {
+        columnDefs : 'reportSchema.columnDefs',
+        data: 'report',
+        showColumnMenu: true,
+        showFilter: true,
+        enableSorting: false,     // because it puts totals in the list
+        plugins: [new ngGridFlexibleHeightPlugin(), new ngGridCsvExportPlugin()],
+    };
     $scope.report = [];
 
     if (!$scope.reportSchemaName && $routeParams.r) {
@@ -17,6 +135,10 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
             default :
                 throw new Error("No report instructions specified");
         }
+    }
+
+    $scope.getRowClass = function(row) {
+        return row.entity.isLast === true ? 'lastRow' : 'notLastRow';
     }
 
     $scope.refreshQuery = function() {
@@ -61,6 +183,7 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                 $scope.reportSchema = data.schema;
                 if (data.schema.columnDefs) {
                     var totals = {}
+                        , showTotals = false
                         , columnDefs = data.schema.columnDefs;
                     for (var i = 0 ; i < columnDefs.length ; i++) {
                         switch (columnDefs[i].totalsRow) {
@@ -72,13 +195,17 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                                     sum += data.report[j][columnDefs[i].field]
                                 }
                                 totals[columnDefs[i].field] = sum;
+                                showTotals = true;
                                 break;
                             default :
                                 totals[columnDefs[i].field] = columnDefs[i].totalsRow;
+                                showTotals = true;
                                 break;
                         }
                     }
-                    data.report.push(totals);
+                    if (showTotals) {
+                        data.report.push(totals);
+                    }
                 }
                 $scope.reportSchema.title = $scope.reportSchema.title || $scope.model;
                 // set up parameters if this is the first time through
