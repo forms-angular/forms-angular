@@ -17,6 +17,7 @@ files = [
     "app/components/select2/select2.js",
     'app/components/angular-mocks/angular-mocks.js',
     'app/components/angular-elastic/elastic.js',
+    'app/components/angular-dragdrop/src/angular-dragdrop.js',
     'app/js/forms-angular.js',
     'app/js/**/*.js',
     'app/demo/demo.js',
