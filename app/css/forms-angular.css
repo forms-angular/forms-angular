@@ -1,6 +1,7 @@
 .gridStyle {
     border: 1px solid rgb(212,212,212);
     margin: auto;
+    height: 400px;
 }
 
 .gridStyle .ngTopPanel {
@@ -15,12 +16,8 @@
     text-align: right;
 }
 
-.gridStyle .ngRow:last-of-type {
-    background-color: rgb(234,234,234);
+.gridStyle .ngTotalCell {
     font-weight: bold;
-    border-top-color: rgb(212, 212, 212);
-    border-top-style: solid;
-    border-top-width: 1px;
 }
 
 .form-horizontal.compact .control-group {

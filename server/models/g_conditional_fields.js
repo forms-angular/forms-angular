@@ -34,6 +34,13 @@ GSchema.statics.report = function(report) {
                 "params":{"sex":{value:'M', type: 'select', enum:['Male','Female'], required:true, conversionExpression: "param[0]"}}
             };
             break;
+        case 'totals' :
+            reportSchema = {
+                "pipeline":[{"$project":{"surname":1,"forename":1,"bribeAmount":1, "_id":0}}],
+                "title":"A report with totals",
+                "columnDefs":[{"field":'surname',"displayName":'Surname',"width":"200", totalsRow:'Total'},{"field":'forename',"displayName":'Forename',"width":200},{"field":"bribeAmount","displayName":"Bribe","cellClass":"fngRight", "width":"200", totalsRow:'$SUM', "cellFilter":"currency"}]
+            };
+            break;
         case 'selectbynumber' :
             reportSchema = {
                 "pipeline":[

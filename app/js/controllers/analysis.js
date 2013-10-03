@@ -108,6 +108,57 @@ function ngGridCsvExportPlugin (opts) {
     };
 }
 
+var COL_FIELD = /COL_FIELD/g
+formsAngular.directive('ngTotalCell', ['$compile', '$domUtilityService', function ($compile, domUtilityService) {
+    var ngCell = {
+        scope: false,
+        compile: function() {
+            return {
+                pre: function($scope, iElement) {
+                    var html;
+// ellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD |number}}</s
+// ellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD }}</s
+                    var cellTemplate,
+                        filterMatch = $scope.col.cellTemplate.match(/{{COL_FIELD \|(.+)}}/);
+                    if (filterMatch) {
+                        cellTemplate = $scope.col.cellTemplate.replace('COL_FIELD |' + filterMatch[1], 'getTotalVal("' + $scope.col.field + '","' + filterMatch[1] + '")');
+                    } else {
+                        cellTemplate = $scope.col.cellTemplate.replace(COL_FIELD, 'getTotalVal("' + $scope.col.field + '")');
+                    }
+
+                    if ($scope.col.enableCellEdit) {
+                        html =  $scope.col.cellEditTemplate;
+                        html = html.replace(DISPLAY_CELL_TEMPLATE, cellTemplate);
+                        html = html.replace(EDITABLE_CELL_TEMPLATE, $scope.col.editableCellTemplate.replace(COL_FIELD, 'row.entity.' + $scope.col.field));
+                    } else {
+                        html = cellTemplate;
+                    }
+
+                    var cellElement = $compile(html)($scope);
+
+                    if ($scope.enableCellSelection && cellElement[0].className.indexOf('ngSelectionCell') === -1) {
+                        cellElement[0].setAttribute('tabindex', 0);
+                        cellElement.addClass('ngCellElement');
+                    }
+
+                    iElement.append(cellElement);
+                },
+                post: function($scope, iElement) {
+                    if ($scope.enableCellSelection) {
+                        $scope.domAccessProvider.selectionHandlers($scope, iElement);
+                    }
+
+                    $scope.$on('ngGridEventDigestCell', function() {
+                        domUtilityService.digest($scope);
+                    });
+                }
+            };
+        }
+    };
+
+    return ngCell;
+}]);
+
 formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', '$http', '$location', '$routeParams', function ($locationParse, $filter, $scope, $http, $location, $routeParams) {
     var debug = false;
 
@@ -118,8 +169,43 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         data: 'report',
         showColumnMenu: true,
         showFilter: true,
-        enableSorting: false,     // because it puts totals in the list
-        plugins: [new ngGridFlexibleHeightPlugin()]  //, new ngGridCsvExportPlugin()]
+        showFooter: true,
+        showTotals: true,
+        footerRowHeight: 65,
+        multiSelect: false,
+        plugins: [], //new ngGridFlexibleHeightPlugin(), new ngGridCsvExportPlugin()],
+        footerTemplate:
+'<div ng-show="showFooter" class="ngFooterPanel" ng-class="{\'ui-widget-content\': jqueryUITheme, \'ui-corner-bottom\': jqueryUITheme}" ng-style="footerStyle()">'+
+ '<div ng-show="gridOptions.showTotals" ng-style="{height: rowHeight+3}">'+
+  '<div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ngTotalCell {{col.cellClass}}">' +
+   '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }">&nbsp;</div>' +
+   '<div ng-total-cell></div>' +
+ ' </div>' +
+ '</div>' +
+ '<div class="ngTotalSelectContainer" >'+
+  '<div class="ngFooterTotalItems" ng-class="{\'ngNoMultiSelect\': !multiSelect}" >'+
+   '<span class="ngLabel">{{i18n.ngTotalItemsLabel}} {{maxRows()}}</span><span ng-show="filterText.length > 0" class="ngLabel">({{i18n.ngShowingItemsLabel}} {{totalFilteredItemsLength()}}) hello</span>'+
+  '</div>'+
+  '<div class="ngFooterSelectedItems" ng-show="multiSelect">'+
+ '  <span class="ngLabel">{{i18n.ngSelectedItemsLabel}} {{selectedItems.length}}</span>'+
+  '</div>'+
+ '</div>'+
+ '<div class="ngPagerContainer" style="float: right; margin-top: 10px;" ng-show="enablePaging" ng-class="{\'ngNoMultiSelect\': !multiSelect}">'+
+  '<div style="float:left; margin-right: 10px;" class="ngRowCountPicker">'+
+   '<span style="float: left; margin-top: 3px;" class="ngLabel">{{i18n.ngPageSizeLabel}}</span>'+
+   '<select style="float: left;height: 27px; width: 100px" ng-model="pagingOptions.pageSize" >'+
+    '<option ng-repeat="size in pagingOptions.pageSizes">{{size}}</option>'+
+   '</select>'+
+  '</div>'+
+  '<div style="float:left; margin-right: 10px; line-height:25px;" class="ngPagerControl" style="float: left; min-width: 135px;">'+
+   '<button class="ngPagerButton" ng-click="pageToFirst()" ng-disabled="cantPageBackward()" title="{{i18n.ngPagerFirstTitle}}"><div class="ngPagerFirstTriangle"><div class="ngPagerFirstBar"></div></div></button>'+
+   '<button class="ngPagerButton" ng-click="pageBackward()" ng-disabled="cantPageBackward()" title="{{i18n.ngPagerPrevTitle}}"><div class="ngPagerFirstTriangle ngPagerPrevTriangle"></div></button>'+
+   '<input class="ngPagerCurrent" min="1" max="{{maxPages()}}" type="number" style="width:50px; height: 24px; margin-top: 1px; padding: 0 4px;" ng-model="pagingOptions.currentPage"/>'+
+   '<button class="ngPagerButton" ng-click="pageForward()" ng-disabled="cantPageForward()" title="{{i18n.ngPagerNextTitle}}"><div class="ngPagerLastTriangle ngPagerNextTriangle"></div></button>'+
+   '<button class="ngPagerButton" ng-click="pageToLast()" ng-disabled="cantPageToLast()" title="{{i18n.ngPagerLastTitle}}"><div class="ngPagerLastTriangle"><div class="ngPagerLastBar"></div></div></button>'+
+  '</div>'+
+ '</div>'+
+'</div>'
     };
     $scope.report = [];
 
@@ -136,8 +222,33 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         }
     }
 
-    $scope.getRowClass = function(row) {
-        return row.entity.isLast === true ? 'lastRow' : 'notLastRow';
+    $scope.getTotalVal = function(field, filter) {
+        var result = '',
+            instructions = _.find($scope.reportSchema.columnDefs,function(col) {
+                return col.field === field;
+            });
+
+        if (instructions) {
+            switch (instructions.totalsRow) {
+                case undefined :
+                    break;
+                case '$SUM' :
+                    var sum = 0;
+                    for (var j = 0; j < $scope.report.length ;j++) {
+                        sum += $scope.report[j][field]
+                    }
+                    result = sum;
+                    break;
+                default :
+                    result = instructions.totalsRow;
+                    break;
+            }
+        }
+
+        if (filter) {
+            result = $filter(filter)(result);
+        }
+        return result;
     }
 
     $scope.refreshQuery = function() {
@@ -180,32 +291,6 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
             if (data.success) {
                 $scope.report = data.report;
                 $scope.reportSchema = data.schema;
-                if (data.schema.columnDefs) {
-                    var totals = {}
-                        , showTotals = false
-                        , columnDefs = data.schema.columnDefs;
-                    for (var i = 0 ; i < columnDefs.length ; i++) {
-                        switch (columnDefs[i].totalsRow) {
-                            case undefined :
-                                break;
-                            case '$SUM' :
-                                var sum = 0;
-                                for (var j = 0; j < data.report.length ;j++) {
-                                    sum += data.report[j][columnDefs[i].field]
-                                }
-                                totals[columnDefs[i].field] = sum;
-                                showTotals = true;
-                                break;
-                            default :
-                                totals[columnDefs[i].field] = columnDefs[i].totalsRow;
-                                showTotals = true;
-                                break;
-                        }
-                    }
-                    if (showTotals) {
-                        data.report.push(totals);
-                    }
-                }
                 $scope.reportSchema.title = $scope.reportSchema.title || $scope.model;
                 // set up parameters if this is the first time through
                 if (!$scope.paramSchema && data.schema.params) {
