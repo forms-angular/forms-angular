@@ -156,7 +156,7 @@ formsAngular.directive('ngTotalCell', ['$compile', '$domUtilityService', functio
         }
     };
 
-    return ngCell;
+    return ngTotalCell;
 }]);
 
 
