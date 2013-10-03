@@ -20,8 +20,21 @@ formsAngular
 
                     var generateInput = function (fieldInfo, modelString, isRequired, idString) {
                         if (!modelString) {
+
+
+                            if (attrs.subschema && fieldInfo.name.indexOf('.') != -1 && attrs.elementno) { //scope.$index doesn't work for hierarchies
+
+                                // Schema handling - need to massage the ngModel and the id
+                                var compoundName = fieldInfo.name,
+                                    lastPartStart = compoundName.lastIndexOf('.');
+                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + attrs.elementno + '.' + compoundName.slice(lastPartStart + 1);
+                                idString = modelString.slice(7).replace(/\./g, '-')
+
+                            }
+
                             // We are dealing with an array of sub schemas
-                            if (attrs.subschema && fieldInfo.name.indexOf('.') != -1) {
+                            else
+                             if (attrs.subschema && fieldInfo.name.indexOf('.') != -1) {
                                 // Schema handling - need to massage the ngModel and the id
                                 var compoundName = fieldInfo.name,
                                     lastPartStart = compoundName.lastIndexOf('.');
@@ -93,16 +106,20 @@ formsAngular
 
                     var handleField = function (info, parentId) {
 
-                        var parentString;
+                        var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '');
 
-                        if (parentId) {
+                          var template = '<div' + addAll("Group", 'control-group') + parentString +  ' id="cg_' + info.id + '">';
 
-                            parentString = ' ui-toggle="showHide' + parentId + '"';
+                        if (info.schema && info.hierarchy) {//display as a hierarchy not control group
+                                                           
+                            var schemaDefName = ('__schema_'+info.name).replace(/\./g,'_');
 
-                        }
-                        
-                        var template = '<div' + addAll("Group", 'control-group') + parentString +  ' class="" id="cg_' + info.id + '">';
-                        if (info.schema) {
+                            scope[schemaDefName] = info.schema;
+
+                            template += '<fa-hierarchy-list data-record="record.' + info.name + '" data-schema="' + schemaDefName + '"></fa-hierarchy-list>';
+
+                        } else
+                         if (info.schema) { // display as a control group
                             //schemas (which means they are arrays in Mongoose)
 
                             var schemaDefName = ('__schema_'+info.name).replace(/\./g,'_');
@@ -131,8 +148,9 @@ formsAngular
                                     '</button>'
                             }
                             template += '</div>';
+                        }
 
-                        } else {
+                          else {
                             // Handle arrays here
                             if (info.array) {
                                 template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\''+info.name+'\')" class="icon-plus-sign"></i>') +

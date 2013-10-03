@@ -1,0 +1,48 @@
+<div class="hierarchy-list {{field.dataType}}">
+	<div ng-switch on="toggleCPElement">
+		<div ng-switch-when="true">
+			<span class="name"><i class="{{iconType}}"></i>{{field.name}} e:{{field.elementNo}} p:{{field.parent}} o:{{field.order}} </span>
+			<span class="label">
+				<span ng-if="field.label.length > 0">{{field.label}}</span>
+				<span ng-if="field.label == undefined">empty</span>
+			</span>
+			<span class="controls">
+
+				
+				<span ng-if="field.type == 'container'">
+					<i class="icon-plus-sign" ng-click="addChild($event, field.elementNo)"></i>
+				</span>
+				<i class="icon-minus-sign" ng-click="removeLine('{{model}}', $index)"></i>
+				<span ng-if="field.type != 'container'">
+					<i class="icon"></i>
+				</span>
+				<i class="icon-edit" ng-click="toggleCPElement = !toggleCPElement"></i>
+				<i class="icon-move"></i>
+			</span>
+			<div ng-switch on="toggleChildElement">
+				<div ng-switch-when="true">
+					<!-- This is where we need to recurse -->
+					<!-- <fa-hierarchy-list data-record="test" data-child="true"></fa-hierarchy-list> -->
+					<!-- <fa-hierarchy-child ng-repeat='field in field.content' track by elementNo></fa-hierarchy-child> -->
+					<button btn ng-click="save()">done</button>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div ng-switch-when="false">
+			<form-input schema="{{schemaName}}" subschema="true" elementNo="{{field.elementNo}}"></form-input>
+			<button btn ng-click="toggleShow()">done</button>
+		</div>
+	</div> 
+	<div class="children" ng-if="field.content">
+		<span ng-if="field.content != undefined">
+			<!-- <fa-hierarchy-child ng-repeat='field in field.content' track by elementNo></fa-hierarchy-child> -->
+			<div ng-repeat='field in field.content' field='field.content'>
+				<form-input schema="{{schemaName}}" subschema="true" elementNo="{{field.elementNo}}"></form-input>
+				<button btn ng-click="toggleShow()">done</button>
+			</div>
+		</span>
+	</div>
+</div>

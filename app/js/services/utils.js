@@ -83,4 +83,133 @@ formsAngular.service('utils', function() {
         return classes + options;
 
     }
+
+    function toTitleCase(str) {
+        return str.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    };
+
+    function getNewItem(item, readOnly) {
+
+        //return an item in it's correct form
+
+        //build in loads of stuff to ensure correct fields are returned
+        var newItem = {};
+        //sort the name field:
+
+        if (!item.name) {
+            if (!item.personFieldName) {
+                if (!item.fieldName) {
+                    if (!item.label) {
+                        newItem.name = '';
+                    } else {
+                        newItem.name = item.label;
+                    }
+
+                } else {
+                    newItem.name = item.fieldName;
+                }
+            } else {
+                newItem.name = item.personFieldName;
+            }
+        } else {
+            newItem.name = item.name;
+        }
+
+        newItem.id = 'f_' + item.elementNo;
+
+        newItem.label = toTitleCase(!item.label ? newItem.name : item.label);
+
+        newItem.type = !item.dataType ? 'text' : item.dataType;
+
+        if (newItem.type === 'textarea') {
+            newItem.rows = "auto";
+        }
+
+
+        if (item.mapsTo !== undefined) {
+
+            newItem.mapsTo = item.mapsTo;
+
+        }
+
+        newItem.elementNo = item.elementNo;
+        newItem.readonly = readOnly;
+        return newItem;
+
+    }
+
+    var buildHierarchy = function(arry, readOnly) {
+
+        var roots = [],
+            content = {},
+            len,
+            newItem,
+            i;
+
+        // find the top level nodes and hash the content based on parent
+        for (i = 0, len = arry.length; i < len; ++i) {
+
+
+            var item = arry[i],
+                p = item.parent === undefined ? undefined : item.parent;
+
+            //transform the item 
+
+            if (item.hide !== true) {
+
+                newItem = getNewItem(item, readOnly);
+
+                var target = p == undefined ? roots : (content[p] || (content[p] = []));
+
+                target.push(newItem);
+            }
+        }
+
+        // function to recursively build the tree
+        var findChildren = function(parent) {
+            if (content[parent.elementNo]) {
+                parent.content = content[parent.elementNo];
+                for (var i = 0, len = parent.content.length; i < len; ++i) {
+                    findChildren(parent.content[i]);
+                }
+            }
+        };
+
+        // enumerate through to handle the case where there are multiple roots
+        for (i = 0, len = roots.length; i < len; ++i) {
+            findChildren(roots[i]);
+        }
+
+        return roots;
+    };
+
+    this.createFormSchema = function(assessmentLayout, readOnly) {
+
+        var fields = buildHierarchy(assessmentLayout, readOnly);
+
+        return fields;
+
+    };
+
+    this.findInArray = function(array, key, value) {
+
+        for (var i = 0, len = arr.length; i < len; i++) {
+            if (name in arr[i] && arr[i][name] == value) return i;
+        };
+        return false;
+
+    }
+
+    this.index = function index(obj, is, value) {
+            if (typeof is == 'string')
+                return index(obj, is.split('.'), value);
+            else if (is.length == 1 && value !== undefined)
+                return obj[is[0]] = value;
+            else if (is.length == 0)
+                return obj;
+            else
+                return index(obj[is[0]], is.slice(1), value);
+        }
 });

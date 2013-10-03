@@ -411,20 +411,34 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     if (mongooseType.schema) {
                         if (doRecursion && destForm) {
                             var schemaSchema = [];
+
+                            if (formData.hierarchy) {
+                                mongooseType.schema.options = {hierarchy: true};
+
                             handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
                             if (formData.pane) handlePaneInfo(formData.pane, sectionInstructions);
                             destForm.push(sectionInstructions);
+                            }
                         }
                     } else {
                         if (destForm) {
                             var formInstructions = basicInstructions(field, formData, prefix);
-                            if (handleConditionals(formInstructions.showIf, formInstructions.id)) {
-                                var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
-                                if (formInst.pane) handlePaneInfo(formInst.pane, formInst);
-                                destForm.push(formInst);
-                            }
+
+                            // if (source.options && source.options.hierarchy) {
+
+                            // } else {
+
+                                if (handleConditionals(formInstructions.showIf, formInstructions.id) && field !== 'options') {
+                                    var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
+                                    if (formInst.pane) handlePaneInfo(formInst.pane, formInst);
+                                    destForm.push(formInst);
+                                }
+
+                            // }
+
+                            
                         }
                         if (destList) {
                             handleListInfo(destList, mongooseOptions.list, field);
