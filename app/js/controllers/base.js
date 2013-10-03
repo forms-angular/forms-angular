@@ -414,13 +414,14 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
                             if (formData.hierarchy) {
                                 mongooseType.schema.options = {hierarchy: true};
+                            }
 
                             handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
                             if (formData.pane) handlePaneInfo(formData.pane, sectionInstructions);
                             destForm.push(sectionInstructions);
-                            }
+                            
                         }
                     } else {
                         if (destForm) {
