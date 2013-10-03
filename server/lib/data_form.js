@@ -402,7 +402,16 @@ DataForm.prototype.report = function () {
         if (req.params.reportName) {
             reportSchema = req.resource.model.schema.statics['report'](req.params.reportName)
         } else {
-            reportSchema = JSON.parse(url_parts.query.r);
+            switch (url_parts.query.r[0]) {
+                case '[':
+                    reportSchema = {pipeline: JSON.parse(url_parts.query.r)};
+                    break;
+                case '{':
+                    reportSchema = JSON.parse(url_parts.query.r);
+                    break;
+                default:
+                    return self.renderError(new Error("Invalid 'r' parameter" ), null, req, res, next);
+            }
         }
 
         // Replace parameters in pipeline
@@ -418,8 +427,10 @@ DataForm.prototype.report = function () {
                 // Bit crap here switching back and forth to string
                 runPipeline = JSON.stringify(schemaCopy.pipeline);
                 for (var param in url_parts.query) {
-                    if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
-                        schemaCopy.params[param].value = url_parts.query[param];
+                    if (url_parts.query.hasOwnProperty(param)) {
+                        if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
+                            schemaCopy.params[param].value = url_parts.query[param];
+                        }
                     }
                 }
                 runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function(match){
@@ -442,12 +453,14 @@ DataForm.prototype.report = function () {
                 // TODO: handle arrays etc
                 var hackVariables = function(obj) {
                     for (var prop in obj) {
-                        if (typeof obj[prop] === 'string') {
-                            if (obj[prop].match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/)) {
-                                obj[prop] = new Date(obj[prop])
+                        if (obj.hasOwnProperty(prop)) {
+                            if (typeof obj[prop] === 'string') {
+                                if (obj[prop].match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/)) {
+                                    obj[prop] = new Date(obj[prop])
+                                }
+                            } else if (_.isObject(obj[prop])) {
+                                hackVariables(obj[prop]);
                             }
-                        } else if (_.isObject(obj[prop])) {
-                            hackVariables(obj[prop]);
                         }
                     }
                 };
@@ -462,7 +475,7 @@ DataForm.prototype.report = function () {
                     runPipeline.unshift({$match:queryObj});
                 }
 
-                var toDo = {runAggregation: function(cb,results) {
+                var toDo = {runAggregation: function(cb) {
                     req.resource.model.aggregate(runPipeline, cb)
                 }
                 };
@@ -493,7 +506,7 @@ DataForm.prototype.report = function () {
                                         return self.renderError(new Error("Cannot have two columnTranslations for field " + translateName ), null, req, res, next);
                                     } else {
                                         thisColumnTranslation.translations = thisColumnTranslation.translations || [];
-                                        toDo[translateName] = function(cb,results) {lookup.model.find({},{},{lean:true},function(err,findResults){
+                                        toDo[translateName] = function(cb) {lookup.model.find({},{},{lean:true},function(err,findResults){
                                             if (err) {
                                                 cb(err);
                                             } else {
