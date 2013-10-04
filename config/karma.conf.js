@@ -23,7 +23,13 @@ files = [
     'app/demo/demo.js',
     'app/demo/bespoke-field.js',
     'test/unit/**/*.js'
+    
+    //load templates and use html2js to add to the $templateCache
+    , 'app/template/**/*.html'
 ];
+
+//use html2js to load the templates to the $templateCache
+preprocessors = { 'app/template/**/*.html': 'html2js'};
 
 autoWatch = true;
 
