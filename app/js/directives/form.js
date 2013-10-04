@@ -116,7 +116,7 @@ formsAngular
 
                             scope[schemaDefName] = info.schema;
 
-                            template += '<fa-hierarchy-list data-record="record.' + info.name + '" data-schema="' + schemaDefName + '"></fa-hierarchy-list>';
+                            template += '<fng-hierarchy-list data-record="record.' + info.name + '" data-schema="' + schemaDefName + '"></fng-hierarchy-list>';
 
                         } else
                          if (info.schema) { // display as a control group
