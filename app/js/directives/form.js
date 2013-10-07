@@ -26,8 +26,9 @@ formsAngular
 
                                 // Schema handling - need to massage the ngModel and the id
                                 var compoundName = fieldInfo.name,
-                                    lastPartStart = compoundName.lastIndexOf('.');
-                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + attrs.elementno + '.' + compoundName.slice(lastPartStart + 1);
+                                    lastPartStart = compoundName.lastIndexOf('.'),
+                                    thisArrayIndex = scope.record[compoundName.slice(0, lastPartStart)].length-1;
+                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + thisArrayIndex + '.' + compoundName.slice(lastPartStart + 1);
                                 idString = modelString.slice(7).replace(/\./g, '-')
 
                             }
