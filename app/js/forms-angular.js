@@ -5,6 +5,7 @@ var formsAngular = angular.module('formsAngular', [
     , 'ngSanitize'
     , 'ui.select2'
     , 'ui.date'
+    , 'ui.sortable'
     , 'fng.ui.bootstrap'
     , 'ui.bootstrap'
     , 'ngGrid'

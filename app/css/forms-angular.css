@@ -257,3 +257,7 @@
 .hoverindicator {
     border-bottom: solid 1px blue;
 }
+
+.roothoverindicator {
+    background-color: #eee;
+}
