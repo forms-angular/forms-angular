@@ -1,4 +1,4 @@
-<div ng-class= "{hoverindicator: hoverLine}" data-drop="true" jqyoui-droppable="{animate:true, onDrop: 'onDrop', onOver: 'onOver', onOut: 'onOut'}">
+<div ui-sortable ng-model="hier" ng-class= "{hoverindicator: hoverLine}" data-drop="true" jqyoui-droppable="{animate:true, onDrop: 'onDrop', onOver: 'onOver', onOut: 'onOut'}">
 	<fng-hierarchy-child ng-repeat='field in hier'></fng-hierarchy-child>
 	<i class="icon-plus-sign" ng-click="addChild()"></i>
 </div>
