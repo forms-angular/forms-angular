@@ -1,0 +1,105 @@
+@import "../components/bootstrap/less/bootstrap.less";
+@icon-font-path: "../fonts/glyphicons/";
+
+@import "../components/select2-bootstrap-css/lib/select2-bootstrap.less";
+
+// Modifications to ngGrid style
+
+.gridStyle {
+    border: 1px solid #d4d4d4;
+    margin: auto;
+    height: 400px;
+  .ngTopPanel {
+    background-color: #ffffff;
+  }
+  .ngHeaderCell {
+    background-color: #e4e4e4;
+  }
+  .fngRight {
+      text-align: right;
+  }
+  .ngTotalCell {
+      font-weight: bold;
+  }
+}
+
+.form-horizontal {
+  .compact {
+    .control-group {
+      margin-bottom: 2px;
+    }
+    input + .help-block, select + .help-block, textarea + .help-block, .uneditable-input + .help-block,
+    .input-prepend + .help-block, .input-append + .help-block {
+      margin-top: 0;
+      margin-bottom: 2px;
+    }
+    hr {
+      margin: 8px 0;
+    }
+  }
+  button.form-btn {
+    width: 8em;
+    height: 2em;
+  }
+  .schema-head {
+     margin-top: 15px;
+     margin-bottom: 5px;
+     border: 1px solid #ddd;
+     padding: 4px 180px;
+  }
+  .sub-doc {
+    padding: 5px 0;
+    margin-bottom: 3px;
+  }
+  .sub-doc-btns {
+    margin-left: 15px;
+  }
+  .schema-foot {
+      padding: 5px 180px;
+      margin: 5px 0;
+  }
+  input[type="checkbox"].ng-invalid-required:after {
+    content:"*";
+    font-weight: bold;
+    color: red;
+/* padding-left is too small at 12 if inline help is not used*/
+    padding-left: 12px
+  }
+  input.ng-invalid-required, select.fng-invalid-required {
+    background-color: rgba(255, 0, 0, 0.10);
+  }
+  option {
+    background-color: white;
+  }
+  .fng-select2 {
+    width: 220px;
+  }
+}
+
+.global-search {
+    position : relative;
+    float: right;
+    width: 236px;
+}
+
+.results-container {
+    width: 6000px;
+    z-index: 3;
+    position: absolute;
+    top: 41px;
+    right: 0;
+}
+
+.search-results {
+    float: right;
+    border: 1px solid gray;
+    -webkit-box-shadow: 10px 10px 10px #888;
+    box-shadow: 10px 10px 10px #888;
+    background: white;
+    padding: 5px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
+
+

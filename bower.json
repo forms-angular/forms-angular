@@ -25,7 +25,7 @@
     "angular-ui-bootstrap-bower": "0.5.0",
     "angular-sanitize": "1.2.0-rc.2",
     "angular-ui-select2": "0.0.2",
-    "bootstrap.css": "2.3.2",
+    "bootstrap": "2.3.2",
     "html5shiv-dist": "3.6.2",
     "jquery": "1.10.2",
     "jquery-ui": "1.10.3",
@@ -34,7 +34,8 @@
     "angular-ui-date": "git://github.com/mchapman/ui-date.git#patch-1",
     "ngInfiniteScroll": "~1.0.0",
     "ng-grid": "~2.0.7",
-    "angular-elastic": "~2.0.0"
+    "angular-elastic": "~2.0.0",
+    "select2-bootstrap-css": "~1"
   },
   "resolutions": {
     "angular": "1.2.0-rc.2"
