@@ -35,7 +35,8 @@
     "ngInfiniteScroll": "~1.0.0",
     "ng-grid": "~2.0.7",
     "angular-elastic": "~2.0.0",
-    "angular-dragdrop": "~1.0.4"
+    "angular-dragdrop": "~1.0.4",
+    "angular-ui-sortable": "~0.0.1"
   },
   "resolutions": {
     "angular": "1.2.0-rc.2"
