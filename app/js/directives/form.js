@@ -22,13 +22,13 @@ formsAngular
                         if (!modelString) {
 
 
-                            if (attrs.subschema && fieldInfo.name.indexOf('.') != -1 && attrs.elementno) { //scope.$index doesn't work for hierarchies
+                            if (attrs.subschema && fieldInfo.name.indexOf('.') != -1 && attrs.index) { //scope.$index doesn't work for hierarchies
 
                                 // Schema handling - need to massage the ngModel and the id
                                 var compoundName = fieldInfo.name,
                                     lastPartStart = compoundName.lastIndexOf('.'),
-                                    thisArrayIndex = scope.record[compoundName.slice(0, lastPartStart)].length-1;
-                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + thisArrayIndex + '.' + compoundName.slice(lastPartStart + 1);
+                                    // thisArrayIndex = scope.record[compoundName.slice(0, lastPartStart)].length-1;
+                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + attrs.index + '.' + compoundName.slice(lastPartStart + 1);
                                 idString = modelString.slice(7).replace(/\./g, '-')
 
                             }

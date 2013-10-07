@@ -213,7 +213,7 @@
     width: 50%;
     /*border: red solid 1px;*/
     margin: 0;
-    padding: 10px;
+    padding: 0 0.25%;
 
 }
 
@@ -236,6 +236,7 @@
 .hierarchy-list .controls {
     display: inline-block;
     float: right;
+    padding-right: 2px;
 }
 
 
@@ -247,5 +248,12 @@
 }
 
 .hierarchy-list .hierarchy-list {
-    width: 95%;
+    width: 98%;
+    padding-top: 0.25%;
+    padding-bottom: 0.25%;
+    padding-left: 2%;
+}
+
+.hoverindicator {
+    border-bottom: solid 1px blue;
 }
