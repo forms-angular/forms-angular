@@ -552,6 +552,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 //        }
     };
 
+    //listener for any child scopes to display messages
+    // pass like this scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+    $scope.$on('showErrorMessage', function (event, args) {
+        showError(args.body, args.title);
+    });
+
     var handleError = function (data, status) {
         if ([200, 400].indexOf(status) !== -1) {
             var errorMessage = '';
