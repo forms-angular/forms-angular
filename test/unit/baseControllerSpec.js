@@ -800,7 +800,6 @@ describe('"BaseCtrl"', function () {
             $scope.delete();
             $httpBackend.flush();
             expect($dialog.messageBox).toHaveBeenCalled();
-            dump($scope.delete);
         });
 
 
