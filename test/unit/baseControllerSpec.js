@@ -796,9 +796,11 @@ describe('"BaseCtrl"', function () {
         });
 
         it('dialog messageBox should be defined', function () {
+
             $scope.delete();
             $httpBackend.flush();
             expect($dialog.messageBox).toHaveBeenCalled();
+            dump($scope.delete);
         });
 
 
