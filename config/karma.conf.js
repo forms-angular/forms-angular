@@ -18,6 +18,7 @@ files = [
     'app/components/angular-mocks/angular-mocks.js',
     'app/components/angular-elastic/elastic.js',
     'app/components/angular-dragdrop/src/angular-dragdrop.js',
+    'app/components/angular-ui-sortable/src/sortable.js',
     'app/js/forms-angular.js',
     'app/js/**/*.js',
     'app/demo/demo.js',
