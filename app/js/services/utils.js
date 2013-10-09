@@ -212,4 +212,18 @@ formsAngular.service('utils', function() {
             else
                 return index(obj[is[0]], is.slice(1), value);
         }
+
+        this.getIndex = function  (record, model, elementNo) {
+
+        var index = -1;
+
+        for (var i = 0; i < record[model].length; i++) {
+            if (record[model][i]['elementNo'] === elementNo) {
+                return i;
+            }
+        }
+
+        return i;
+
+    }
 });
