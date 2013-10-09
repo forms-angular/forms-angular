@@ -1,0 +1,53 @@
+.hierarchy-list {
+
+    width: 50%;
+    /*border: red solid 1px;*/
+    margin: 0;
+    padding: 0 0.25%;
+
+}
+
+.hierarchy-list .name {
+    font-size: 1.3em;
+    width: 250px;
+    display: inline-block;
+
+}
+
+.hierarchy-list .name i {
+   margin-top: 4px;
+   width: 22px;
+}
+
+.hierarchy-list button {
+    margin: 5px;
+}
+
+.hierarchy-list .controls {
+    display: inline-block;
+    float: right;
+    padding-right: 2px;
+}
+
+
+.hierarchy-list:nth-child(odd) {
+
+    background-color: #f6f6f6;
+
+
+}
+
+.hierarchy-list .hierarchy-list {
+    width: 98%;
+    padding-top: 0.25%;
+    padding-bottom: 0.25%;
+    padding-left: 2%;
+}
+
+.hoverindicator {
+    border-bottom: solid 1px blue;
+}
+
+.roothoverindicator {
+    background-color: #eee;
+}
