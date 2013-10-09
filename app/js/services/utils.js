@@ -15,14 +15,13 @@ formsAngular.service('utils', function() {
 
     function getAddAllOptions(scope, attrs, type, classes) {
 
-        
 
-        var addAllOptions = []
-        , classList = []
-        , tmp
-        , options;
 
-       type = "addAll" + type;
+        var addAllOptions = [],
+            classList = [],
+            tmp, options;
+
+        type = "addAll" + type;
 
         if (typeof(classes) === 'string') {
             tmp = classes.split(' ');
@@ -90,7 +89,7 @@ formsAngular.service('utils', function() {
         });
     };
 
-    function getNewItem(item, readOnly) {
+    function getNewItem(item, readOnly, parentContainer) {
 
         //return an item in it's correct form
 
@@ -122,6 +121,7 @@ formsAngular.service('utils', function() {
         newItem.label = toTitleCase(!item.label ? newItem.name : item.label);
 
         newItem.type = !item.dataType ? 'text' : item.dataType;
+        newItem.order = !item.order ? undefined : item.order;
 
         if (newItem.type === 'textarea') {
             newItem.rows = "auto";
@@ -136,6 +136,7 @@ formsAngular.service('utils', function() {
 
         newItem.elementNo = item.elementNo;
         newItem.readonly = readOnly;
+        newItem.parentReference = parentContainer;
         return newItem;
 
     }
@@ -159,9 +160,9 @@ formsAngular.service('utils', function() {
 
             if (item.hide !== true) {
 
-                newItem = getNewItem(item, readOnly);
-
                 var target = p == undefined ? roots : (content[p] || (content[p] = []));
+
+                newItem = getNewItem(item, readOnly, target);
 
                 target.push(newItem);
             }
@@ -188,10 +189,54 @@ formsAngular.service('utils', function() {
     this.createFormSchema = function(assessmentLayout, readOnly) {
 
         var fields = buildHierarchy(assessmentLayout, readOnly);
+        return this.sort(fields);
 
-        return fields;
 
     };
+
+    this.sort = function(tree) {
+
+        var order = 0;
+
+        function comparator(a, b) {
+
+            if (a.order === undefined) {
+                a.order = order;
+                order++;
+            } else {
+                // order = a.order + 1;
+            }
+
+            if (b.order === undefined) {
+                b.order = order;
+                order++;
+            } else {
+                // order = b.order - 1;
+            }
+
+            return a.order < b.order ? 0 : 1;
+
+        }
+
+        function sortRecurse(el) {
+
+            order = 0;
+
+            el.sort(comparator);
+            for (var i = el.length - 1; i >= 0; i--) {
+                if (el[i].content) {
+
+                    sortRecurse(el[i].content);
+
+                }
+
+            };
+            return el;
+        }
+
+        return sortRecurse(tree);
+
+    }
 
     this.findInArray = function(array, key, value) {
 
@@ -203,17 +248,17 @@ formsAngular.service('utils', function() {
     }
 
     this.index = function index(obj, is, value) {
-            if (typeof is == 'string')
-                return index(obj, is.split('.'), value);
-            else if (is.length == 1 && value !== undefined)
-                return obj[is[0]] = value;
-            else if (is.length == 0)
-                return obj;
-            else
-                return index(obj[is[0]], is.slice(1), value);
-        }
+        if (typeof is == 'string')
+            return index(obj, is.split('.'), value);
+        else if (is.length == 1 && value !== undefined)
+            return obj[is[0]] = value;
+        else if (is.length == 0)
+            return obj;
+        else
+            return index(obj[is[0]], is.slice(1), value);
+    }
 
-        this.getIndex = function  (record, model, elementNo) {
+    this.getIndex = function(record, model, elementNo) {
 
         var index = -1;
 
@@ -224,6 +269,33 @@ formsAngular.service('utils', function() {
         }
 
         return i;
+
+    }
+
+    this.updateOrder = function(scope) {
+
+        var that = this;
+
+
+        function traverse(el) {
+            var index;
+
+            for (var i = el.length - 1; i >= 0; i--) {
+
+                index = that.getIndex(scope.record, scope.model, el[i].elementNo);
+
+                scope.record[scope.model][index].order = el[i].order;
+
+                if (el[i].content) {
+                    traverse(el[i].content);
+                }
+
+            };
+
+
+        }
+
+        traverse(scope.hierarchy);
 
     }
 });
