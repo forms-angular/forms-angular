@@ -6307,8 +6307,17 @@ select.select2 {
   background-color: #e4e4e4;
 }
 
-.gridStyle .fngRight {
+.gridStyle .fng-right {
   text-align: right;
+}
+
+.gridStyle .fng-left {
+  text-align: left;
+}
+
+.gridStyle .fng-centre,
+.gridStyle .fng-center {
+  text-align: center;
 }
 
 .gridStyle .ngTotalCell {

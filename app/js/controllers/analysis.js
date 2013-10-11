@@ -1,5 +1,7 @@
 formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', '$http', '$location', '$routeParams', function ($locationParse, $filter, $scope, $http, $location, $routeParams) {
-    var firstTime = true;
+    var firstTime = true,
+        pdfPlugIn = new ngGridPdfExportPlugin({inhibitButton:true}),
+        csvPlugIn = new ngGridCsvExportPlugin({inhibitButton:true});
 
     angular.extend($scope, $routeParams);
     $scope.reportSchema = {};
@@ -13,7 +15,7 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         showTotals: true,
         footerRowHeight: 65,
         multiSelect: false,
-        plugins: [], //new ngGridFlexibleHeightPlugin(), new ngGridCsvExportPlugin()],
+        plugins: [pdfPlugIn, csvPlugIn],
         footerTemplate:
 '<div ng-show="gridOptions.reallyShowFooter" class="ngFooterPanel" ng-class="{\'ui-widget-content\': jqueryUITheme, \'ui-corner-bottom\': jqueryUITheme}" ng-style="footerStyle()">'+
  '<div ng-show="gridOptions.showTotals" ng-style="{height: rowHeight+3}">'+
@@ -91,6 +93,14 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         return result;
     };
 
+    $scope.$on('exportToPDF', function() {
+        pdfPlugIn.createPDF();
+    });
+
+    $scope.$on('exportToCSV', function() {
+        csvPlugIn.createCSV();
+    });
+
     $scope.refreshQuery = function() {
 
         var apiCall = '/api/report/' + $scope.model
@@ -139,7 +149,13 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                             for (var i=0; i < newValue.length; i++) {
                                 if (newValue[i].totalsRow) {
                                     columnTotals = true;
-                                    break;
+                                }
+                                if (newValue[i].align) {
+                                    var alignClass='fng-' + newValue[i].align;
+                                    newValue[i].cellClass = newValue[i].cellClass || '';
+                                    if (newValue[i].cellClass.indexOf(alignClass) === -1) {
+                                        newValue[i].cellClass = newValue[i].cellClass + ' ' + alignClass;
+                                    }
                                 }
                             }
                         }

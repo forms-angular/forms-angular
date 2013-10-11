@@ -352,10 +352,11 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
             For full details see <a href="https://github.com/angular-ui/ng-grid/wiki/Defining-columns">the ng-grid documentation</a>
             but the most common uses are:
             <ul>
-                <li><strong>field</strong> the name of the field in the model</li>
-                <li><strong>displayName</strong> (optional) the column heading</li>
-                <li><strong>width</strong> (optional) the desired display width</li>
-                <li><strong>cellClass</strong> (optional) a CSS class to be added to the cell (<em>fngRight</em> is a useful one).</li>
+                <li><strong>field</strong> the name of the field in the model.</li>
+                <li><strong>displayName</strong> (optional) the column heading.</li>
+                <li><strong>width</strong> (optional) the desired display width.</li>
+                <li><strong>align</strong> (optional - default left) the desired text alignment.  If present must be one of left, right, centre, center.</li>
+                <li><strong>cellClass</strong> (optional) a CSS class to be added to the cell.</li>
                 <li><strong>cellFilter</strong> (optional) an Angular filter (such as <em>number</em> or <em>currency</em> to be applied to the value.</li>
                 <li><strong>totalsRow</strong> (optional - <strong>an extension to ng-grid</strong>) a text value (generally "Total") or <em>$SUM</em></li>
             </ul>

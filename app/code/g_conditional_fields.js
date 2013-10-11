@@ -21,7 +21,7 @@ GSchema.statics.report = function(report) {
             reportSchema = {
                 pipeline: [{$group:{_id:"$sex",count:{"$sum":1}}}],
                 title: "Numbers of Applicants By Sex",
-                columnDefs: [{field:'_id', displayName:'Sex',totalsRow:'Total', "width":"160px"}, {field:'count', displayName:'No of Applicants',totalsRow:'$SUM',"width":"160px", "cellFilter":"number", "cellClass":"fngRight"}],
+                columnDefs: [{field:'_id', displayName:'Sex',totalsRow:'Total', "width":"160px"}, {field:'count', displayName:'No of Applicants',totalsRow:'$SUM',"width":"160px", "cellFilter":"number", "align":"right"}],
                 columnTranslations: [{field:'_id', translations:[{value:'M', display:'Male'},{value:'F', display:'Female'}]}]
             };
             break;
@@ -29,7 +29,7 @@ GSchema.statics.report = function(report) {
             reportSchema = {
                 "pipeline":[{"$match":{"sex":"(sex)"}},{"$group":{"_id":"$sex","count":{"$sum":1}}}],
                 "title":"Numbers of Applicants By Sex",
-                "columnDefs":[{"field":'_id',"displayName":'Sex',"width":"200"},{"field":'count',"displayName":'No of Applicants',"cellClass":"fngRight", "width":"200"}],
+                "columnDefs":[{"field":'_id',"displayName":'Sex',"width":"200"},{"field":'count',"displayName":'No of Applicants',"align":"right", "width":"200"}],
                 "columnTranslations": [{"field":'_id',"translations":[{"value":'M', "display":'Male'},{"value":'F',"display":'Female'}]}],
                 "params":{"sex":{value:'M', type: 'select', enum:['Male','Female'], required:true, conversionExpression: "param[0]"}}
             };
@@ -38,7 +38,7 @@ GSchema.statics.report = function(report) {
             reportSchema = {
                 "pipeline":[{"$project":{"surname":1,"forename":1,"bribeAmount":1, "_id":0}}],
                 "title":"A report with totals",
-                "columnDefs":[{"field":'surname',"displayName":'Surname',"width":"200", totalsRow:'Total'},{"field":'forename',"displayName":'Forename',"width":200},{"field":"bribeAmount","displayName":"Bribe","cellClass":"fngRight", "width":"200", totalsRow:'$SUM', "cellFilter":"currency"}]
+                "columnDefs":[{"field":'surname',"displayName":'Surname',"width":"200", totalsRow:'Total'},{"field":'forename',"displayName":'Forename',"width":200},{"field":"bribeAmount","displayName":"Bribe","align":"right", "width":"200", totalsRow:'$SUM', "cellFilter":"currency"}]
             };
             break;
         case 'selectbynumber' :
