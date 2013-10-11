@@ -21,10 +21,12 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         plugins: [pdfPlugIn, csvPlugIn],
         afterSelectionChange: function (rowItem) {
             var url = $scope.reportSchema.drilldown;
-            url = url.replace(/%.+%/g,function(match){
-                return rowItem.entity[match.slice(1,-1)];
-            });
-            window.location = url;
+            if (url) {
+                url = url.replace(/%.+%/g,function(match){
+                    return rowItem.entity[match.slice(1,-1)];
+                });
+                window.location = url;
+            }
         },
         footerTemplate:
 '<div ng-show="gridOptions.reallyShowFooter" class="ngFooterPanel" ng-class="{\'ui-widget-content\': jqueryUITheme, \'ui-corner-bottom\': jqueryUITheme}" ng-style="footerStyle()">'+
