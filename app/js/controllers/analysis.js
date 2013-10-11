@@ -13,9 +13,18 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         showFooter: true,    // always set this to true so it works out the style
         reallyShowFooter: true,   // this determines whether it is actually displayed or not
         showTotals: true,
+        enableColumnResize: true,
+        enableColumnReordering: true,
         footerRowHeight: 65,
         multiSelect: false,
         plugins: [pdfPlugIn, csvPlugIn],
+        afterSelectionChange: function (rowItem) {
+            var url = $scope.reportSchema.drilldown;
+            url = url.replace(/%.+%/g,function(match){
+                return rowItem.entity[match.slice(1,-1)];
+            });
+            window.location = url;
+        },
         footerTemplate:
 '<div ng-show="gridOptions.reallyShowFooter" class="ngFooterPanel" ng-class="{\'ui-widget-content\': jqueryUITheme, \'ui-corner-bottom\': jqueryUITheme}" ng-style="footerStyle()">'+
  '<div ng-show="gridOptions.showTotals" ng-style="{height: rowHeight+3}">'+

@@ -401,7 +401,7 @@ DataForm.prototype.report = function () {
 
         if (req.params.reportName) {
             reportSchema = req.resource.model.schema.statics['report'](req.params.reportName)
-        } else {
+        } else if (url_parts.query.r) {
             switch (url_parts.query.r[0]) {
                 case '[':
                     reportSchema = {pipeline: JSON.parse(url_parts.query.r)};
@@ -412,6 +412,18 @@ DataForm.prototype.report = function () {
                 default:
                     return self.renderError(new Error("Invalid 'r' parameter" ), null, req, res, next);
             }
+        } else {
+            var fields = {};
+            for (var key in req.resource.model.schema.paths) {
+                if (req.resource.model.schema.paths.hasOwnProperty(key)) {
+                    if (key !== '__v' && !req.resource.model.schema.paths[key].options.secure) {
+                        if (key.indexOf('.') === -1) {
+                            fields[key] = 1;
+                        }
+                    }
+                }
+            }
+            reportSchema = {pipeline:[{$project:fields}],drilldown:"/#/"+req.params.resourceName+"/%_id%/edit"};
         }
 
         // Replace parameters in pipeline

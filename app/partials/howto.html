@@ -338,7 +338,9 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
 </section>
 
 <section id="reports"><h3>Reports</h3>
-    <p>Reports can be run by passing an <a href="http://docs.mongodb.org/manual/core/aggregation-pipeline/">aggregation pipeline</a>
+    <p>Simple reports can be produced by navigating to URLs of the format /#/analyse/modelname - see example <a href="/#/analyse/b_using_options">here</a>.</p>
+
+    <p>More useful reports can be run by passing an <a href="http://docs.mongodb.org/manual/core/aggregation-pipeline/">aggregation pipeline</a>
     to the server using the format <strong>/#/analyse/model?r=[pipeline]</strong> - for example
     <a href="/#/analyse/g_conditional_fields?r=%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D">/#/analyse/g_conditional_fields?r=[{"$group":{"_id":"$sex","count":{"$sum":1}}}]</a>
     produces a breakdown of the men and women in a collection.</p>
@@ -367,6 +369,8 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
                 <li><strong>translations</strong> an array of value&rarr;display mappings, such as <strong>[{value:'M', display:'Male'},{value:'F', display:'Female'}]</strong></li>
             </ul>
         </li>
+        <li><strong>drilldown</strong> a url that clicking on the row will navigate to.  A %fieldname% will be replaced with the value of the fieldname in the current row.  For example a report
+            listing one row per item might have a drilldown of <em>/#/model/%_id%/edit</em></li>
         <li><strong>params</strong> contains an array of parameters that can be used in the pipeline, normally in a $match such as {$match:{sex:("sex")}}.  Parameters can have the following properties:
             <ul>
                 <li><strong>value</strong> is the (mandatory) value used for the query when the page is first generated</li>
