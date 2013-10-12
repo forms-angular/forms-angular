@@ -86,5 +86,11 @@ describe('Report API', function () {
         });
     })
 
+    it('prevents access to secure fields', function(done) {
+        exec('curl 0.0.0.0:3001/api/report/b_using_options?r=%5B%7B%22$project%22:%7B%22passwordHash%22:1%7D%7D%5D', function (error, stdout) {
+            assert.equal(stdout, 'You cannot access passwordHash');
+            done();
+        });
+    })
 });
 

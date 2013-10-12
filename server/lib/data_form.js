@@ -457,6 +457,14 @@ DataForm.prototype.report = function () {
                         return '"'+param.value+'"';
                     }
                 });
+
+                // Don't send the 'secure' fields
+                for (var hiddenField in self.generateHiddenFields(req.resource, false)) {
+                    if (runPipeline.indexOf(hiddenField) !== -1) {
+                        return self.renderError(new Error("You cannot access "+hiddenField), null, req, res, next);
+                    }
+                }
+
                 runPipeline = JSON.parse(runPipeline);
 
                 // Replace variables that cannot be serialised / deserialised.  Bit of a hack, but needs must...
@@ -483,6 +491,7 @@ DataForm.prototype.report = function () {
                     }
                 }
 
+                // Add the findFunc query to the pipeline
                 if (queryObj) {
                     runPipeline.unshift({$match:queryObj});
                 }
