@@ -92,6 +92,9 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                         sum += $scope.report[j][field]
                     }
                     result = sum;
+                    if (filter) {
+                        result = $filter(filter)(result);
+                    }
                     break;
                 default :
                     result = instructions.totalsRow;
@@ -99,9 +102,6 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
             }
         }
 
-        if (filter) {
-            result = $filter(filter)(result);
-        }
         return result;
     };
 
