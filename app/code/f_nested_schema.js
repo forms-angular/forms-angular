@@ -12,7 +12,9 @@ var ExamsSchema = new Schema({
 var FSchema = new Schema({
     surname: {type: String, index:true, list:{}},
     forename:  {type: String, index:true, list:true},
-    exams: [ExamsSchema]
+    exams: [ExamsSchema]    // defaults to horizontal form
+    // or
+//    exams: {type:[ExamsSchema], form:{formStyle:"inline"}}
 });
 
 var F;

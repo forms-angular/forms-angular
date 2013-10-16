@@ -29,7 +29,7 @@
   }
 }
 
-.form-horizontal {
+form.form-horizontal {
   .compact {
     .control-group {
       margin-bottom: 2px;
@@ -43,12 +43,30 @@
       margin: 8px 0;
     }
   }
+}
+
+form {
+
   button.form-btn {
     width: 8em;
     height: 2em;
   }
+
+  .schema-head, .sub-doc, .schema-foot {
+    min-height: 20px;
+    margin-bottom: 20px;
+    background-color: @wellBackground;
+    border: 1px solid darken(@wellBackground, 7%);
+    .border-radius(@baseBorderRadius);
+    .box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
+    blockquote {
+      border-color: #ddd;
+      border-color: rgba(0,0,0,.15);
+    }
+  }
+
   .schema-head {
-     margin-top: 15px;
+     margin-top: 0;
      margin-bottom: 5px;
      border: 1px solid #ddd;
      padding: 4px 180px;
@@ -64,6 +82,7 @@
       padding: 5px 180px;
       margin: 5px 0;
   }
+
   input[type="checkbox"].ng-invalid-required:after {
     content:"*";
     font-weight: bold;
@@ -80,6 +99,13 @@
   .fng-select2 {
     width: 220px;
   }
+}
+
+.form-inline > .sub-doc {
+  padding: 0 5px;
+  border: none;
+  background-color: @bodyBackground;
+  box-shadow: none;
 }
 
 .global-search {
