@@ -194,6 +194,7 @@ formsAngular.service('utils', function() {
 
     };
 
+//custom sort function to 
     this.sort = function(tree) {
 
         var order = 0;
@@ -204,14 +205,12 @@ formsAngular.service('utils', function() {
                 a.order = order;
                 order++;
             } else {
-                // order = a.order + 1;
             }
 
             if (b.order === undefined) {
                 b.order = order;
                 order++;
             } else {
-                // order = b.order - 1;
             }
 
             return a.order < b.order ? 0 : 1;

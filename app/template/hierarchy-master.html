@@ -1,6 +1,9 @@
 <div class="hierarchy">
+	<span ng-switch on="true">
+    <span ng-switch-when="true">
 	<fng-hierarchy-child ng-repeat='field in hierarchy'></fng-hierarchy-child>
-	<div ng-class="{roothoverindicator: hoverLine}" data-drop="true" jqyoui-droppable="{animate:true, onDrop: 'onDrop', onOver: 'onOver', onOut: 'masterOnOut'}">
+</span></span>
+	<div ng-class="{roothoverindicator: hoverLine}" data-jqyoui-options="{revert: 'invalid'}" data-drop="true" jqyoui-droppable="{animate:false, onDrop: 'onDrop', onOver: 'onOver', onOut: 'masterOnOut'}">
 	<i class="icon-plus-sign" ng-click="addChild()"></i>
 	</div>
 </div>

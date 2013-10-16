@@ -6405,6 +6405,52 @@ select.select2 {
           box-shadow: 10px 10px 10px #888;
 }
 
+.hierarchy-list {
+  width: 50%;
+  padding: 0 0.25%;
+  margin: 0;
+}
+
+.hierarchy-list .name {
+  display: inline-block;
+  width: 250px;
+  font-size: 1.3em;
+}
+
+.hierarchy-list .name i {
+  width: 22px;
+  margin-top: 4px;
+}
+
+.hierarchy-list button {
+  margin: 5px;
+}
+
+.hierarchy-list .controls {
+  display: inline-block;
+  float: right;
+  padding-right: 2px;
+}
+
+.hierarchy-list:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+
+.hierarchy-list .hierarchy-list {
+  width: 98%;
+  padding-top: 0.25%;
+  padding-bottom: 0.25%;
+  padding-left: 2%;
+}
+
+.hoverindicator {
+  border-bottom: solid 1px blue;
+}
+
+.roothoverindicator {
+  background-color: #eee;
+}
+
 .navbar .brand {
   padding: 14px 20px 16px;
   font-family: 'Telex', sans-serif;
