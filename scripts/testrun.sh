@@ -1,6 +1,7 @@
 #!/bin/bash
 
 karma start config/karma.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
+karma start config/karma.midway.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
 
 A=`lsof -Pnl +M -i4 | grep '3001'`
 
