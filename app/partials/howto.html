@@ -361,33 +361,23 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
     <p>You can also call onRecordChange function(data, old) which is useful for updating calculated fields etc.</p>
 
     <h5>Adding additional attributes to all elements.</h5>
-
-    <p>It is possible to apply additional attributes to all elements of a certain type by passing it once in the
-        form-input declaration. The available types are Control Group, Field or Label.</p>
-
+    <p>It is possible to apply additional attributes to all elements of a certain type by passing it once in the form-input declaration. The available types are Control Group, Field or Label.</p>
     <p>This can be achieved in two ways. Either as an attribute of the form-input element:</p>
-    <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with paramters'"</span>&gt;</pre>
-    <p>or via the controller by making it an attribute of scope:</p>
-    <pre><span>$scope.addAllGroup="injected-attribute"</span></pre>
-
-    <p>The three versions of this are:
+    <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with parameters'"</span>&gt;</pre>
+    <p>or via the controller by making it an attribute of scope: <pre><span>$scope.addAllGroup="injected-attribute"</span></pre></p>
+    <p>The three versions of this are:</p>
     <ul>
         <li>add-all-group="injected-attrbute"</li>
         <li>add-all-field="injected-attrbute"</li>
         <li>add-all-label="injected-attrbute"</li>
     </ul>
-    For example if wished to inject a directive called 'hide-on-empty' to every individial control group then you would
-    add:
+    <p>For example if wished to inject a directive called 'hide-on-empty' to every individual control group then you would add:</p>
     <pre>add-all-group="hide-on-empty"</pre>
-    to the form-input declaration.
-    </p>
-    <p>If declared in a controller then it will be applied to all child controllers. If declared in the form-input
-        element the scope is limited to the individual form's scope. In this way a single declaration at the root scope
-        is seem by all controllers.</p>
-
-    <p>Due to the parse method, in order declare multiple classes each class must be prefixed with 'class=' e.g.
-    <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with paramters' class=myclass class=my-second-class"</span>&gt;</pre>
-    </p>
+    <p>to the form-input declaration.</p>
+    <p>If declared in a controller then it will be applied to all child controllers. If declared in the form-input element
+        the scope is limited to the individual form's scope. In this way a single declaration at the root scope is seem by all controllers.</p>
+    <p>Due to the parse method, in order declare multiple classes each class must be prefixed with 'class=' e.g.</p>
+    <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with parameters' class=myclass class=my-second-class"</span>&gt;</pre>
 
 </section>
 
