@@ -21,7 +21,7 @@ describe('Data Events', function(){
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $location.$$path = '/collection/new';
                     var scope = $rootScope.$new();
-                    var ctrl = $controller("BaseCtrl", {$scope: scope});
+                    $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onBeforeCreate = function(data, cb) {
                         data.name = 'Alan';
@@ -41,7 +41,7 @@ describe('Data Events', function(){
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $location.$$path = '/collection/new';
                     var scope = $rootScope.$new();
-                    var ctrl = $controller("BaseCtrl", {$scope: scope});
+                    $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onBeforeCreate = function(data, cb) {
                         data.name = 'Alan';
@@ -65,7 +65,7 @@ describe('Data Events', function(){
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
-                    var ctrl = $controller("BaseCtrl", {$scope: scope});
+                    $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onBeforeRead = function(id, cb) {
                         if (id === 123) {
@@ -73,7 +73,7 @@ describe('Data Events', function(){
                         } else {
                             cb();
                         }
-                    }
+                    };
 
                     $httpBackend.flush();
                     expect(scope.record.name).toEqual('Alan');
@@ -86,7 +86,7 @@ describe('Data Events', function(){
                     $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
-                    var ctrl = $controller("BaseCtrl", {$scope: scope});
+                    $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onBeforeRead = function(id, cb) {
                         if (id === '125') {
@@ -94,7 +94,7 @@ describe('Data Events', function(){
                         } else {
                             cb();
                         }
-                    }
+                    };
 
                     $httpBackend.flush();
                 });
@@ -111,14 +111,14 @@ describe('Data Events', function(){
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
-                    var ctrl = $controller("BaseCtrl", {$scope: scope});
+                    $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onBeforeUpdate = function(data, old, cb) {
                         expect(data.name).toEqual('John');
                         expect(old.name).toEqual('Alan');
                         data.name = 'Berty';
                         cb();
-                    }
+                    };
 
                     $httpBackend.flush();
                     $httpBackend.when('POST','api/collection/125',{"name":"Berty", "_id":"125"}).respond(200,'SUCCESS');
@@ -135,11 +135,11 @@ describe('Data Events', function(){
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
-                    var ctrl = $controller("BaseCtrl", {$scope: scope});
+                    $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onBeforeUpdate = function(data, old, cb) {
                         cb(new Error("Fail!"));
-                    }
+                    };
 
                     $httpBackend.flush();
                     scope.record.name = "John";
@@ -152,7 +152,7 @@ describe('Data Events', function(){
         // Leaving the delete ones until the dialog testing is done so I don't have to reinvent the wheel
        describe('Delete', function(){
 
-            var scope, ctrl, $dialog, fakeDialog, resolveCallback;
+            var $dialog, fakeDialog, resolveCallback;
 
 
 
@@ -194,22 +194,17 @@ describe('Data Events', function(){
                    $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
                    $location.$$path = '/collection/125/edit';
                    var scope = $rootScope.$new();
-                   var ctrl = $controller("BaseCtrl", {$scope: scope, $dialog: $dialog});
+                   $controller("BaseCtrl", {$scope: scope, $dialog: $dialog});
 
                    scope.dataEventFunctions.onBeforeDelete = function(data, cb) {
                        cb();
-                   }
+                   };
 
                    spyOn (scope.dataEventFunctions, "onBeforeDelete").andCallThrough();
 
                    spyOn($dialog, 'messageBox').andReturn(fakeDialog);
 
                    $httpBackend.when('DELETE','api/collection/125').respond(200,'SUCCESS');
-
-                   
-
-                   
-
 
                    $httpBackend.expectDELETE('api/collection/125');
                    scope.record._id = 125;
@@ -233,11 +228,11 @@ describe('Data Events', function(){
                 $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
                 $location.$$path = '/collection/125/edit';
                 var scope = $rootScope.$new();
-                var ctrl = $controller("BaseCtrl", {$scope: scope, $dialog: $dialog});
+                $controller("BaseCtrl", {$scope: scope, $dialog: $dialog});
 
                 scope.dataEventFunctions.onBeforeDelete = function(data, cb) {
                     cb(new Error("Something wrong"));
-                }
+                };
 
                 spyOn (scope.dataEventFunctions, "onBeforeDelete").andCallThrough();
 
@@ -272,7 +267,7 @@ describe('Data Events', function(){
                     $httpBackend.when('POST','api/collection',{"name":"John"}).respond(200,{name:"Philip"});
                     $location.$$path = '/collection/new';
                     var scope = $rootScope.$new();
-                    var ctrl = $controller("BaseCtrl", {$scope: scope});
+                    $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onAfterCreate = function(data) {
                         expect(data.name).toEqual('Philip');
@@ -295,11 +290,11 @@ describe('Data Events', function(){
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
-                    var ctrl = $controller("BaseCtrl", {$scope: scope});
+                    $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onAfterRead = function(data) {
                         expect(data.name).toEqual('Alan')
-                    }
+                    };
 
                     $httpBackend.flush();
                 });
@@ -315,12 +310,12 @@ describe('Data Events', function(){
                     $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
-                    var ctrl = $controller("BaseCtrl", {$scope: scope});
+                    $controller("BaseCtrl", {$scope: scope});
 
                     scope.dataEventFunctions.onAfterUpdate = function(data, old) {
                         expect(data.name).toEqual('Philip');
                         expect(old.name).toEqual('Alan');
-                    }
+                    };
 
                     $httpBackend.flush();
                     $httpBackend.when('POST','api/collection/125',{"name":"John", "_id":"125"}).respond(200,{"name":"Philip", "_id":"125"});
@@ -334,7 +329,7 @@ describe('Data Events', function(){
 
        describe('Delete', function(){
 
-            var scope, ctrl, $dialog, fakeDialog, resolveCallback;
+            var $dialog, fakeDialog, resolveCallback;
 
 
 
@@ -376,11 +371,11 @@ describe('Data Events', function(){
                    $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
                    $location.$$path = '/collection/125/edit';
                    var scope = $rootScope.$new();
-                   var ctrl = $controller("BaseCtrl", {$scope: scope, $dialog: $dialog});
+                   $controller("BaseCtrl", {$scope: scope, $dialog: $dialog});
 
                    scope.dataEventFunctions.onAfterDelete = function(data) {
                        
-                   }
+                   };
 
                    spyOn (scope.dataEventFunctions, "onAfterDelete").andCallThrough();
 
@@ -430,6 +425,31 @@ describe('Data Events', function(){
 //
 //        });
     });
+
+    describe('On record change', function() {
+
+        it('should call function when record changes', function() {
+            inject(function(_$httpBackend_, $rootScope, $controller, $location) {
+                $httpBackend = _$httpBackend_;
+                $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
+                $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
+                $location.$$path = '/collection/125/edit';
+                var scope = $rootScope.$new();
+                $controller("BaseCtrl", {$scope: scope});
+
+                scope.dataEventFunctions.onRecordChange = function(data) {
+                    data.name = 'George';
+                };
+
+                $httpBackend.flush();
+                scope.record.name = "Philip";
+
+                scope.$digest();
+                expect(scope.record.name).toEqual('George');
+            });
+        });
+
+    })
 
 });
 

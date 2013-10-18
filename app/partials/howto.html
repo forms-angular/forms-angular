@@ -108,7 +108,7 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
     </tr>
 </table>
 <p>Sub forms that are created by the directive will have these classes added in the appropriate place.</p>
-
+</section>
 <section id="custom-form-schemas"><h3>Custom Form Schemas</h3>
 
     <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the fields
@@ -321,7 +321,7 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
     which is used in the examples in this section. The NavCtrl controller handles the model controllers, so don't remove
     it.
 
-    <h5 id="naming" name="naming">Naming</h5>
+    <h5 id="naming">Naming</h5>
     The BaseCtrl scope has a variable called <strong>modelNameDisplay</strong> which is used in several places in the
     demo
     app. It defaults to the model name in title case, but can be over-ridden in the model controller.
@@ -355,18 +355,21 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
         <li>onAfterDelete function(old)</li>
     </ul>
     <p>In all onBefore... cases passing an error back will stop the event completing. There is a trivial example of
-        how a data event hook might be used in <a href="/demo/d-array-example.js">this</a> controller.</p>
+        how a data event hook might be used in <a href="/demo/d-array-example.js">this</a> controller, which shows
+        how such event handlers are set up.</p>
+
+    <p>You can also call onRecordChange function(data, old) which is useful for updating calculated fields etc.</p>
 
     <h5>Adding additional attributes to all elements.</h5>
 
     <p>It is possible to apply additional attributes to all elements of a certain type by passing it once in the
         form-input declaration. The available types are Control Group, Field or Label.</p>
 
-    <p>This can be achieved in two ways. Either as an attribute of the form-input element:
+    <p>This can be achieved in two ways. Either as an attribute of the form-input element:</p>
     <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with paramters'"</span>&gt;</pre>
-    or via the controller by making it an attribute of scope:
+    <p>or via the controller by making it an attribute of scope:</p>
     <pre><span>$scope.addAllGroup="injected-attribute"</span></pre>
-    </p>
+
     <p>The three versions of this are:
     <ul>
         <li>add-all-group="injected-attrbute"</li>
