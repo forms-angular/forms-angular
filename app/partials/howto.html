@@ -1,11 +1,11 @@
 <div ng-controller="ModelCtrl">
 
 <section id="intro">
-    <h1>Welcome to forms-angular</h1>
-
+    <h1 class="text-center" style="font-size: 76px; margin: 45px 0px 40px;">forms-angular</h1>
+    <h3 class="text-center">No nonsense forms (and reports) using the MEAN stack</h3>
     <div class="row-fluid">
         <div class="hero-unit span6 big-box">
-            <h4>Turn this...</h4>
+            <h4>Turns this...</h4>
     <pre>var PersonSchema = new Schema({
     surname: {type:String, required:true, index:true},
     forename: {type:String, index:true},
@@ -23,20 +23,36 @@
     </div>
     <div class="row-fluid">
         <div class="span8 offset2">
-            <h4 class="text-center">...with three lines of code!</h4>
-
-            <p class="text-center">(though you will find it easier to start with the <a
-                    href="https://github.com/mchapman/forms-angular/tree/master/minimal" target="_blank">sample
-                example</a> or follow the <a href="/#/build-app">build an app instructions</a> to understand how they
-                fit in)</p>
-    <pre>
-var DataFormHandler = new (require('data_form.js'))(app)
-DataFormHandler.addResource('Person',require('person_schema.js'))
-
-&ltform-input schema="formSchema" formstyle="horizontal"&gt&lt/form-input&gt</pre>
+            <h2 class="text-center">...with just a few lines of code!</h2>
         </div>
     </div>
     <br/>
+
+</section>
+
+<div class="row-fluid" style="text-align: center">
+    <div class="span4">
+        <h2>Perfect for CRUD</h2>
+        <p>Forms-angular lets you convert your Mongoose database schemas into simple CRUD (create, read, update, delete) forms with <em>almost no work</em>!
+    </div>
+    <div class="span4">
+
+    </div>
+    <div class="span4">
+
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span4">
+
+    </div>
+    <div class="span4">
+
+    </div>
+    <div class="span4">
+
+    </div>
+</div>
 
     <p><strong>forms-angular</strong> is a form builder build on top of the <a
             href="http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and">MEAN
@@ -45,7 +61,7 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
                 href="http://mongoosejs.com/">Mongoose</a> thrown in for good measure) that
         enables you to generate forms super quickly. At its simplest it takes a mongoose schema and <em>with no effort
             on your part</em> generates a form, complete with REST routing and bindings.</p>
-</section>
+<div style="display:none">
 
 <section id="forms"><h3>Forms</h3>
 
@@ -512,4 +528,5 @@ DataFormHandler.addResource('Person',require('person_schema.js'))
         static in the model file - see <a href="/code/g_conditional_fields.js">here</a> for some examples.</p>
 </section>
 
+</div>
 </div>

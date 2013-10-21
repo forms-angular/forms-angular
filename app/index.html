@@ -78,10 +78,14 @@
 <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png"
                                                          style="position: fixed; right: 0; top: 0;"></a>
 
-<div class="navbar row" ng-hide="routing.index">
+<div class="navbar row">
     <div class="navbar-inner">
         <ul class="nav">
-            <li><a href="/">Home</a></li>
+            <li><a href="/index">Home</a></li>
+            <li><a href="/get-started">Get Started</a></li>
+            <li><a href="/forms">Forms</a></li>
+            <li><a href="/schemas">Schemas</a></li>
+            <li><a href="/reports">Reports</a></li>
             <li ng-show="items.length > 0" class="dropdown" >
                 <a class="dropdown-toggle">
                     {{contextMenu}}
@@ -94,7 +98,7 @@
             </li>
         </ul>
         <div class="span9">
-            <div ng-controller="SearchCtrl" class="global-search">
+            <div ng-controller="SearchCtrl" class="global-search" ng-hide="routing.index">
                 <form class="navbar-search pull-right">
                     <div id="search-cg" class="control-group" ng-class="errorClass">
                         <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
