@@ -5,9 +5,26 @@ formsAngular
             compile: function () {
                 return function (scope, element, attrs) {
 
+//                    generate markup for bootstrap forms
+//
+//                    Horizontal (default)
+//                    <div class="control-group">
+//                        <label class="control-label" for="inputEmail">Email</label>
+//                        <div class="controls">
+//                            <input type="text" id="inputEmail" placeholder="Email">
+//                        </div>
+//                    </div>
+//
+//                    Vertical
+//                    <label>Label name</label>
+//                    <input type="text" placeholder="Type something…">
+//                    <span class="help-block">Example block-level help text here.</span>
+//
+//                    Inline
+//                    <input type="text" class="input-small" placeholder="Email">
+
                     var elementHtml = ''
                         , tabsSetup = false;
-
 
                         scope.toggleFolder = function(groupId) {
 
@@ -16,7 +33,10 @@ formsAngular
                             $('i.' + groupId).toggleClass('icon-folder-open icon-folder-close');
 
                         };
-                                        
+
+                    var isHorizontalStyle = function(formStyle) {
+                        return (!formStyle || formStyle === "undefined" || formStyle === 'horizontal' || formStyle === 'horizontalCompact');
+                    };
 
                     var generateInput = function (fieldInfo, modelString, isRequired, idString) {
                         if (!modelString) {
@@ -47,9 +67,11 @@ formsAngular
                         }
                         var value
                             , requiredStr = (isRequired || fieldInfo.required) ? ' required' : ''
-                            , readonlyStr = fieldInfo.readonly ? ' readonly' : '';
+                            , readonlyStr = fieldInfo.readonly ? ' readonly' : ''
+                            , placeHolder = fieldInfo.placeHolder;
 
-                        var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (fieldInfo.placeHolder ? ('placeholder="' + fieldInfo.placeHolder + '" ') : "");
+                        if (attrs.formstyle === 'inline') placeHolder = placeHolder || fieldInfo.label;
+                        var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (placeHolder ? ('placeholder="' + placeHolder + '" ') : "");
                         common +=   addAll("Field");
                         if (fieldInfo.type === 'select') {
                             common += (fieldInfo.readonly ? 'disabled ' : '');
@@ -85,7 +107,13 @@ formsAngular
                                 }
                                 value = '<textarea ' + common + ' />';
                             } else {
-                                value = '<input ' + common + 'type="' + fieldInfo.type + '" />';
+                                value = '<input ' + common + 'type="' + fieldInfo.type + '"';
+                                if (attrs.formstyle === 'inline') {
+                                    if (!fieldInfo.size) {
+                                        value += ' class="input-small"';
+                                    }
+                                }
+                                value += ' />';
                             }
                         }
                         if (fieldInfo.helpInline) {
@@ -97,10 +125,34 @@ formsAngular
                         return value;
                     };
 
-                    var generateLabel = function (fieldInfo, addButton) {
+                    var convertFormStyleToClass = function(aFormStyle) {
+                        switch (aFormStyle) {
+                            case 'horizontal' :
+                                return 'form-horizontal';
+                                break;
+                            case 'vertical' :
+                                return '';
+                                break;
+                            case 'inline' :
+                                return 'form-inline';
+                                break;
+                            case 'horizontalCompact' :
+                                return 'form-horizontal compact';
+                                break;
+                            default:
+                                return 'form-horizontal compact';
+                                break;
+                        }
+                    };
+
+                    var generateLabel = function (fieldInfo, addButtonMarkup) {
                         var labelHTML = '';
-                        if (fieldInfo.label !== '' || addButton) {
-                            labelHTML = '<label for="' + fieldInfo.id + '"' + addAll('Label', 'control-label') + '>' + fieldInfo.label + (addButton || '') + '</label>';
+                        if ((attrs.formstyle !== 'inline' && fieldInfo.label !== '') || addButtonMarkup) {
+                            labelHTML = '<label';
+                            if (isHorizontalStyle(attrs.formstyle)) {
+                                labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'control-label');
+                            }
+                            labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
                         }
                         return labelHTML;
                     };
@@ -108,6 +160,8 @@ formsAngular
                     var handleField = function (info, parentId) {
 
                         var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '');
+
+                          var template = isHorizontalStyle(attrs.formstyle) ? '<div' + addAll("Group", 'control-group') + parentString + ' id="cg_' + info.id + '">' : '<div ' + parentString + ' id="cg_' + info.id + '">';
 
                           var template = '<div' + addAll("Group", 'control-group') + parentString +  ' id="cg_' + info.id + '">';
 
@@ -123,13 +177,14 @@ formsAngular
                          if (info.schema) { // display as a control group
                             //schemas (which means they are arrays in Mongoose)
 
-                            var schemaDefName = ('__schema_'+info.name).replace(/\./g,'_');
+                            var niceName = info.name.replace(/\./g,'_');
+                            var schemaDefName = '__schema_' + niceName;
                             scope[schemaDefName] = info.schema;
-                            template += '<div class="schema-head well">' + info.label + '</div>' +
-                                '<div class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
-                                '<div class="row-fluid">' +
+                            template += '<div class="schema-head">' + info.label + '</div>' +
+                                '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
+                                '<div class="row-fluid sub-doc">' +
                                 '<div class="pull-left">' +
-                                '<form-input schema="' + schemaDefName + '" subschema="true"></form-input>' +
+                                '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + info.formStyle + '"></form-input>' +
                                 '</div>';
 
                             if (!info.noRemove) {
@@ -142,7 +197,7 @@ formsAngular
 
                             template += '</div>' +
                                 '</div>' +
-                                '<div class = "schema-foot well">';
+                                '<div class = "schema-foot">';
                             if (!info.noAdd) {
                                 template += '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(\''+info.name+'\')">' +
                                     '<i class="icon-plus"></i> Add' +
@@ -153,18 +208,20 @@ formsAngular
 
                           else {
                             // Handle arrays here
+                            var controlClass = (isHorizontalStyle(attrs.formstyle)) ? ' class="controls"' : '';
                             if (info.array) {
+                                if (attrs.formstyle === 'inline') throw "Cannot use arrays in an inline form";
                                 template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\''+info.name+'\')" class="icon-plus-sign"></i>') +
-                                    '<div class="controls" id="' + info.id + 'List" ng-repeat="arrayItem in record.' + info.name + '">' +
+                                    '<div '+controlClass+' id="' + info.id + 'List" ng-repeat="arrayItem in record.' + info.name + '">' +
                                     generateInput(info, "arrayItem.x", true, info.id + '_{{$index}}') +
                                     '<i ng-click="remove(\''+info.name+'\',$index)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
                                     '</div>';
                             } else {
                                 // Single fields here
-                                template += generateLabel(info) +
-                                    '<div class="controls">' +
-                                    generateInput(info, null, attrs.required, info.id) +
-                                    '</div>';
+                                template += generateLabel(info);
+                                if (controlClass !== '') template += '<div '+controlClass+'>';
+                                template += generateInput(info, null, attrs.required, info.id);
+                                if (controlClass !== '') template += '</div>';
                             }
                         }
                         template += '</div>';
@@ -306,7 +363,7 @@ formsAngular
 
                     function addAll (type, additionalClasses) {
 
-                        var action = 'getAddAll' + type + 'Options'
+                        var action = 'getAddAll' + type + 'Options';
 
                         return utils[action](scope, attrs, additionalClasses) || [];
 

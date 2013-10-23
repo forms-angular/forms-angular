@@ -401,7 +401,7 @@ DataForm.prototype.report = function () {
 
         if (req.params.reportName) {
             reportSchema = req.resource.model.schema.statics['report'](req.params.reportName)
-        } else {
+        } else if (url_parts.query.r) {
             switch (url_parts.query.r[0]) {
                 case '[':
                     reportSchema = {pipeline: JSON.parse(url_parts.query.r)};
@@ -412,6 +412,18 @@ DataForm.prototype.report = function () {
                 default:
                     return self.renderError(new Error("Invalid 'r' parameter" ), null, req, res, next);
             }
+        } else {
+            var fields = {};
+            for (var key in req.resource.model.schema.paths) {
+                if (req.resource.model.schema.paths.hasOwnProperty(key)) {
+                    if (key !== '__v' && !req.resource.model.schema.paths[key].options.secure) {
+                        if (key.indexOf('.') === -1) {
+                            fields[key] = 1;
+                        }
+                    }
+                }
+            }
+            reportSchema = {pipeline:[{$project:fields}],drilldown:"/#/"+req.params.resourceName+"/%_id%/edit"};
         }
 
         // Replace parameters in pipeline
@@ -445,6 +457,14 @@ DataForm.prototype.report = function () {
                         return '"'+param.value+'"';
                     }
                 });
+
+                // Don't send the 'secure' fields
+                for (var hiddenField in self.generateHiddenFields(req.resource, false)) {
+                    if (runPipeline.indexOf(hiddenField) !== -1) {
+                        return self.renderError(new Error("You cannot access "+hiddenField), null, req, res, next);
+                    }
+                }
+
                 runPipeline = JSON.parse(runPipeline);
 
                 // Replace variables that cannot be serialised / deserialised.  Bit of a hack, but needs must...
@@ -471,6 +491,7 @@ DataForm.prototype.report = function () {
                     }
                 }
 
+                // Add the findFunc query to the pipeline
                 if (queryObj) {
                     runPipeline.unshift({$match:queryObj});
                 }

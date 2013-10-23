@@ -14,8 +14,10 @@ describe('Reports', function() {
         expect(element('.col1').text()).toMatch(/11/);
     });
 
-    it('should do report schemas', function() {
-        browser().navigateTo('/#/analyse/g_conditional_fields/totals');
-        expect()
+    it('should generate a default report', function() {
+        browser().navigateTo('/#/analyse/b_using_options');
+        expect(repeater('.ngRow').count()).toEqual(1);
+        element('.ngRow').click();
+        expect(browser().window().hash()).toMatch('\/b_using_options/519a6075b320153869b155e0/edit');
     })
 });

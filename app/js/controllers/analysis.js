@@ -1,5 +1,7 @@
 formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', '$http', '$location', '$routeParams', function ($locationParse, $filter, $scope, $http, $location, $routeParams) {
-    var firstTime = true;
+    var firstTime = true,
+        pdfPlugIn = new ngGridPdfExportPlugin({inhibitButton:true}),
+        csvPlugIn = new ngGridCsvExportPlugin({inhibitButton:true});
 
     angular.extend($scope, $routeParams);
     $scope.reportSchema = {};
@@ -11,9 +13,21 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         showFooter: true,    // always set this to true so it works out the style
         reallyShowFooter: true,   // this determines whether it is actually displayed or not
         showTotals: true,
+        enableColumnResize: true,
+//        enableColumnReordering: true,
+//        jqueryUIDraggable: true,
         footerRowHeight: 65,
         multiSelect: false,
-        plugins: [], //new ngGridFlexibleHeightPlugin(), new ngGridCsvExportPlugin()],
+        plugins: [pdfPlugIn, csvPlugIn],
+        afterSelectionChange: function (rowItem) {
+            var url = $scope.reportSchema.drilldown;
+            if (url) {
+                url = url.replace(/%.+%/g,function(match){
+                    return rowItem.entity[match.slice(1,-1)];
+                });
+                window.location = url;
+            }
+        },
         footerTemplate:
 '<div ng-show="gridOptions.reallyShowFooter" class="ngFooterPanel" ng-class="{\'ui-widget-content\': jqueryUITheme, \'ui-corner-bottom\': jqueryUITheme}" ng-style="footerStyle()">'+
  '<div ng-show="gridOptions.showTotals" ng-style="{height: rowHeight+3}">'+
@@ -78,6 +92,9 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                         sum += $scope.report[j][field]
                     }
                     result = sum;
+                    if (filter) {
+                        result = $filter(filter)(result);
+                    }
                     break;
                 default :
                     result = instructions.totalsRow;
@@ -85,11 +102,16 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
             }
         }
 
-        if (filter) {
-            result = $filter(filter)(result);
-        }
         return result;
     };
+
+    $scope.$on('exportToPDF', function() {
+        pdfPlugIn.createPDF();
+    });
+
+    $scope.$on('exportToCSV', function() {
+        csvPlugIn.createCSV();
+    });
 
     $scope.refreshQuery = function() {
 
@@ -139,7 +161,13 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                             for (var i=0; i < newValue.length; i++) {
                                 if (newValue[i].totalsRow) {
                                     columnTotals = true;
-                                    break;
+                                }
+                                if (newValue[i].align) {
+                                    var alignClass='fng-' + newValue[i].align;
+                                    newValue[i].cellClass = newValue[i].cellClass || '';
+                                    if (newValue[i].cellClass.indexOf(alignClass) === -1) {
+                                        newValue[i].cellClass = newValue[i].cellClass + ' ' + alignClass;
+                                    }
                                 }
                             }
                         }

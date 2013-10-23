@@ -3,7 +3,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
     var allowLocationChange = true;   // Set when the data arrives..
-    var debug = false;
 
     $scope.record = sharedStuff.record;
     $scope.disableFunctions = sharedStuff.disableFunctions;
@@ -464,7 +463,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
             master = convertToAngularModel($scope.formSchema, data, 0);
             $scope.cancel();
-        }).error(function () {
+            if (typeof $scope.dataEventFunctions.onRecordChange === "function") {
+                $scope.$watch('record', function (newValue, oldValue) {
+                    $scope.dataEventFunctions.onRecordChange(newValue, oldValue);
+                }, true);
+            }
+            }).error(function () {
                 $location.path("/404");
             });
     };

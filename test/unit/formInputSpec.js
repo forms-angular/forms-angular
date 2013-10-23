@@ -120,9 +120,9 @@ describe('formInput', function () {
                 thisElm = elm.find('.sub-doc');
                 expect(thisElm.length).toBe(2);
 
-                thisElm = elm.find('.sub-doc:first');
+                thisElm = elm.find('.sub-doc:first').parent();
                 expect(thisElm.attr('id')).toBe('f_examsList_0');
-                thisElm = elm.find('.sub-doc:last');
+                thisElm = elm.find('.sub-doc:last').parent();
                 expect(thisElm.attr('id')).toBe('f_examsList_1');
 
                 thisElm = elm.find('input[type="number"]');
