@@ -159,24 +159,17 @@ formsAngular
 
                     var handleField = function (info, parentId) {
 
-                        var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '');
-
-                          var template = isHorizontalStyle(attrs.formstyle) ? '<div' + addAll("Group", 'control-group') + parentString + ' id="cg_' + info.id + '">' : '<div ' + parentString + ' id="cg_' + info.id + '">';
-
-                          var template = '<div' + addAll("Group", 'control-group') + parentString +  ' id="cg_' + info.id + '">';
+                        var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '')
+                        , styling = isHorizontalStyle(attrs.formstyle)
+                        , template = styling ? '<div' + addAll("Group", 'control-group') + parentString + ' id="cg_' + info.id + '">' : '<span ' + parentString + ' id="cg_' + info.id + '">';
 
                         if (info.schema && info.hierarchy) {//display as a hierarchy not control group
-                                                           
                             var schemaDefName = ('__schema_'+info.name).replace(/\./g,'_');
-
                             scope[schemaDefName] = info.schema;
-
                             template += '<fng-hierarchy-list data-record="record.' + info.name + '" data-schema="' + schemaDefName + '"></fng-hierarchy-list>';
-
                         } else
                          if (info.schema) { // display as a control group
                             //schemas (which means they are arrays in Mongoose)
-
                             var niceName = info.name.replace(/\./g,'_');
                             var schemaDefName = '__schema_' + niceName;
                             scope[schemaDefName] = info.schema;
@@ -224,7 +217,7 @@ formsAngular
                                 if (controlClass !== '') template += '</div>';
                             }
                         }
-                        template += '</div>';
+                        template += styling ? '</div>' : '</span>';
                         return template;
                     };
 
