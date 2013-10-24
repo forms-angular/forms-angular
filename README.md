@@ -1,18 +1,14 @@
 # forms-angular
-## No nonsense forms for the MEAN stack
+## Probably the most opinionated framework in the world
 
 [![Build Status](https://travis-ci.org/mchapman/forms-angular.png?branch=master)](https://travis-ci.org/mchapman/forms-angular)
 [![Dependency Status](https://david-dm.org/mchapman/forms-angular.png)](https://david-dm.org/mchapman/forms-angular.png)
 
-An example app to demonstrate forms-angular - a way of creating forms on the
-MEAN stack (Mongo - Express - Angular - Node) with the addition of Mongoose 
-and Twitter Bootstrap (the MANTBEM stack?)
+Documentation: http://forms-angular.org
 
-There is a demonstration application with detailed documentation and several 
-example schemas running at http://forms-ng.herokuapp.com.
+This repo is multi-purpose: it contains the development environment for forms-angular
+ and the web site that is used to demonstrate and document the framework.  We have
+ tried splitting it up, but we weren't happy with the resulting workflow!
 
-Although it is a bit premature for production use (though I am doing it) the
-"minimal" folder shows how you might go about doing it in the simplest way.  
-It has its own README file.
 
 

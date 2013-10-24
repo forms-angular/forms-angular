@@ -3,7 +3,7 @@ myDemoApp.controller('BUsingOptionsJustnameandpostcodeCtrl',['$scope', '$data', 
     $scope.record = $data.record;
 
     $data.modelNameDisplay = "Another override";
-    $data.dropDownDisplay = 'Custom 2nd Level'
+    $data.dropDownDisplay = 'Custom 2nd Level';
 
 
     $scope.contextMenu = [

@@ -3,7 +3,7 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
     $scope.record = $data.record;
 
     $data.modelNameDisplay = "Override the name";
-    $data.dropDownDisplay = 'Custom Dropdown'
+    $data.dropDownDisplay = 'Custom Dropdown';
 
     $scope.doAlert = function(message, showId) {
         alertMessage = message;

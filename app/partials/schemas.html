@@ -1,0 +1,229 @@
+<div class="row">
+    <div class="page-header">
+        <h1>Schemas</h1>
+    </div>
+</div>
+<div class="row">
+<div class="span3">
+    <affix></affix>
+</div>
+
+<div class="span9 affix-section">
+<section id="introduction" name="Introduction" affix-scroll>
+    <h3>Introduction</h3>
+
+    <p>The most visible part of forms-angular is the <strong>form-input</strong> directive which
+        takes a <em>schema</em> in the scope and creates inputs. These schemas can be very simple as in the
+        example below:</p>
+    <pre>
+&lt;div ng-init="name=[
+    {id:'f_surname',label:'Surname',name:'surname',type:'text'},
+    {id:'f_forename',label:'Forename',name:'forename',type:'text'}
+    ]"&gt;
+    &lt;form&gt;
+        &lt;form-input schema="name" /&gt;
+    &lt;/form&gt;
+&lt;div&gt;</pre>
+    <p>This simple bit of markup creates a small schema and stores it in the $scope as <em>name</em>(you
+        wouldn't normally it like this, but it illustrates things well)
+        then in a form invokes the form-input directive, telling it to use the schema just created.</p>
+
+    <p>Unfortunately displaying the resulting form stops the page scrolling to the internal links, so we have
+        decided to
+        omit it - there are plenty of examples accessible elsewhere on the site.</p>
+    <!--TODO: plunker or similar-->
+</section>
+
+<section id="mongoose" name="Mongoose Schemas" affix-scroll>
+    <h3>Mongoose Schemas</h3>
+
+    <p>Mongoose is a popular package that simplifies using MongoDB with Node JS. Mongoose requires that
+        a schema is created for each 'model'. As you will have seen in the <a href="/#/get-started">Get
+            Started</a> section, <strong>forms-angular</strong> can convert Mongoose schemas into the schemas
+        that
+        the form-input directive uses, which saves a lot of coding by hand and makes it very easy to
+        keep your front and back ends in sync.</p>
+
+    <p>As many models as you want can be registered with forms-angular by calling the <code>addResource</code>
+        method of the forms-angular object as <a href="/#/get-started#server-code">shown</a> in the
+        Get Started section. If you have more than a few models it is a good idea to put them in their own
+        directory and loop through it.</p>
+
+    <p>A trivially simple schema looks like this:</p>
+            <pre>var ApplicantSchema = new Schema({
+    surname: {type:String, required:true, index:true},
+    forename: {type:String, index:true},
+});</pre>
+    <p>Each schema element (or field) has a type and optionally a number of other properties. Many of these
+        properties
+        are used by forms-angular to generate appropriate behaviour on the front end. The appropriate input
+        types are
+        used, and client side validation keeps round trips down (we cannot say "to a minimum" as work remains to
+        be done in this area).</p>
+
+    <p>You can get an idea of what forms-angular does with a vanilla Mongoose JS schema by looking at <a
+            href="/code/a_unadorned_mongoose.js">this schema</a> and <a href="/#/a_unadorned_mongoose/new">the
+        form generated from it</a>.</p>
+
+    <p>For comprehensive information about Mongoose schemas visit the <a
+            href="http://mongoosejs.com/docs/guide.html">Mongoose JS website</a>.</p>
+</section>
+<section id="list-fields" name="List Fields" affix-scroll>
+    <h3>List Fields</h3>
+
+    <p>In a couple of places forms-angular uses the concept of 'list fields' - fields that generally allow
+        the user to quickly see
+        what they are dealing with - for example in the case of a person the forename and surname would be
+        list fields. They don't
+        have to be unique, they just have to be useful. List fields are used:</p>
+    <ul>
+        <li>In list forms - where the contents of a collection are displayed</li>
+        <li>In search results (though this can be overridden)</li>
+        <li>In reports when a model is referenced by another model and a columnTranslation is used</li>
+        <li>When populating select options when a model is referenced by another model</li>
+    </ul>
+
+    <p>A field may be specified to be a list field by adding a truthy value for a <strong>list</strong> key
+        in the schema element: <code>forename: {type:String, list:true}</code></p>
+
+    <p>List fields can be generated on both the front and back end, and it is done as follows:</p>
+    <ol>
+        <li>If there is at least one schema element with a truthy value for <strong>list</strong> then all
+            such fields are list fields
+        </li>
+        <li>If no field is specified as a list field then:</li>
+        <ul>
+            <li>On the client the first non hidden string field is used or failing that the first field</li>
+            <li>On the server the first two fields are used (one day there will hopefully be some
+                consistency here!)
+            </li>
+        </ul>
+    </ol>
+</section>
+
+<section id="form-object" name="The form Object" affix-scroll>
+    <h3>The <em>form</em> Object</h3>
+
+    <p>The mark-up of generated forms can be influenced by use of the <strong>form</strong> object in the
+        schema type: <code>surname: {type:String, form:{label:'Family Name', size:'large'}}</code></p>
+
+    <p>The form object can have the following keys:</p>
+    <ul>
+        <li><strong>hidden</strong> inhibits this schema key from appearing on the generated form.</li>
+        <li><strong>label</strong> overrides the default input label. label:null suppresses the label
+            altogether.
+        </li>
+        <li><strong>placeHolder</strong> adds placeholder text to the input (depending on data type).</li>
+        <li><strong>help</strong> adds help text under the input.</li>
+        <li><strong>helpInline</strong> adds help to the right of the input.</li>
+        <li><strong>size</strong> sets <a href="http://twitter.github.io/bootstrap/base-css.html#forms">control
+            width</a>.
+            Options are: mini, small, medium (default), large, xlarge, xxlarge and block-level..
+        </li>
+        <li><strong>directive</strong> allows you to specify custom behaviour.</li>
+        <li><strong>readonly</strong> adds the readonly attribute to the generated input (doesn't work with
+            date - and perhaps other types). </li>
+        <li><strong>select2</strong> in an enum field or a reference field tells the system to use the
+            <a href="http://ivaynberg.github.io/select2/"><em>select2</em></a> control rather than a
+            <em>select</em>. If the number of options is large in a reference field then
+            <strong>select2:{fngAjax:true}</strong> instructs the program to use ajax calls to query
+            the server rather than downloading the table. The values in the select2 control come
+            from the <a href="#listing">listing fields</a>.
+        </li>
+        <li><strong>rows</strong> sets the number of rows in inputs (such as textarea) that support this.
+            Setting rows
+            to
+            <strong>"auto"</strong> makes the textarea expand to fit the content, rather than create a
+            scrollbar.
+        <li><strong>pane</strong> used to divide a large form up into panes accessed by tabs
+            (see <a href="/#/i_tabbed_forms/new">example</a>). This requires using the UI Bootstrap tabs
+            module which
+            is not in the minimal deployment folder (but is in this demo).
+            <!--TODO: Check that statement -->
+        </li>
+        <li><strong>noAdd</strong> inhibits an Add button being generated for arrays.</li>
+        <li><strong>noRemove</strong> inhibits a Remove button being generated for array elements.</li>
+        <li><strong>add</strong> allows arbitrary attributes to be added to the input tag. Useful for adding
+            classes.
+        </li>
+        <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a
+                href='/#/forms#form-styles'>form style section</a> for options.
+        </li>
+        <li><strong>link</strong> sets up hyperlinks for reference fields as follows:
+            <ul>
+                <li><em>linkOnly</em> if true (which at the time of writing is the only option supported)
+                    then the input
+                    element is not generated.
+                </li>
+                <li><em>text</em> the text used for the link.</li>
+            </ul>
+    </ul>
+
+    <p><a href="/code/b_using_options.js">This example schema</a> and <a href="/#/b_using_options/new">this
+        form</a> shows many of these options in use.</p>
+
+</section>
+
+<section id="custom" name="Custom Schemas" affix-scroll>
+    <h3>Custom Schemas</h3>
+
+    <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the
+        fields to include and any options. See the static in <a href="/code/b_using_options.js">this example</a>.
+        The custom form schemas are invoked as follows:
+    </p>
+    <ul>
+        <li><strong>/#/:model/:formschema</strong> (<a href="/#/b_using_options/justnameandpostcode/">example
+            here</a>)
+        </li>
+        <li><strong>/#/:model/:formschema/new</strong> (<a
+                href="/#/b_using_options/justnameandpostcode/new">example
+            here</a>)
+        </li>
+        <li><strong>/#/:model/:formschema/:id/edit</strong></li>
+    </ul>
+</section>
+
+<section id="containers" name="Containers" affix-scroll>
+    <h3>Containers</h3>
+
+    <p>Sometimes it is hard within a Mongoose schema to detail exactly how you want the associated form
+        or forms to be laid out. One particular class of layout features that currently cannot be
+        requested within a Mongoose schema are containers. Hopefully this will be addressed in a forthcoming
+        release
+        but if you need them now then you need to create a schema by hand (or dynamically in code).</p>
+
+    <p>An example of a use of containers would be:</p>
+    <pre>
+&ltform-input ng-init="names=[
+  {containerType:'fieldset',title:'Name',content:
+    [
+      {id:'f_surname',label:'Surname',name:'surname',type:'text'},
+      {id:'f_forename',label:'forename',name:'forename',type:'text'}
+    ]
+  }
+]" schema="names"&gt&lt/form-input&gt</pre>
+    <p>Other containers are <strong>tab</strong>,
+        <strong>well</strong>, <strong>well-large</strong> and <strong>well-small</strong>.</p>
+
+    <p>If you want to &quot;roll your own&quot; you can do something like:</p>
+    <pre>
+&ltstyle&gt
+  .redBorder {border:solid 2px red;}
+  p.bigRed {color: red; font-size: large}
+&lt/style&gt
+&ltform-input ng-init="names=[
+  {containerType:'redBorder',title:'Name',titleTagOrClass:'bigRed',content:
+    [
+      {id:'f_surname',label:'Surname',name:'surname',type:'text'},
+      {id:'f_forename',label:'forename',name:'forename',type:'text'}
+    ]
+  }
+]" schema="names"&gt&lt/form-input&gt
+</pre>
+    <p>Where container type is seen as a class for a div and a titleTagOrClass of h1..h6 is interpreted as a
+        heading tag
+        and anything else as a class to be applied to a paragraph (as in the example).</p>
+</section>
+
+</div>
+</div>

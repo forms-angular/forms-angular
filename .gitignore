@@ -24,8 +24,7 @@ lib-cov
 pids
 logs
 results
-app/components
-minimal/app/components
+app/bower_components
 js-build
 test.js
 
