@@ -145,12 +145,9 @@ formsAngular
 
                     var handleField = function (info, parentId) {
 
-                        var parentString;
-                        if (parentId) {
-                            parentString = ' ui-toggle="showHide' + parentId + '"';
-                        }
-
-                        var template = isHorizontalStyle(attrs.formstyle) ? '<div' + addAll("Group", 'control-group') + parentString + ' id="cg_' + info.id + '">' : '';
+                        var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '')
+                        , styling = isHorizontalStyle(attrs.formstyle)
+                        , template = styling ? '<div' + addAll("Group", 'control-group') + parentString + ' id="cg_' + info.id + '">' : '<span ' + parentString + ' id="cg_' + info.id + '">';
                         if (info.schema) {
                             //schemas (which means they are arrays in Mongoose)
 
@@ -200,7 +197,7 @@ formsAngular
                                 if (controlClass !== '') template += '</div>';
                             }
                         }
-                        template += '</div>';
+                        template += styling ? '</div>' : '</span>';
                         return template;
                     };
 
