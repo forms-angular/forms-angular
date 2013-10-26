@@ -1,24 +1,25 @@
-<div ng-controller="AnalysisCtrl" class="row-fluid">
-    <div class="row-fluid form-header">
-        <div class="span12 well">
-            <form name="paramForm" ng-show="paramSchema" class="pull-right form form-horizontal compact">
-                <form-input schema="paramSchema"></form-input>
-            </form>
-            <div>
+<div ng-controller="AnalysisCtrl">
+    <div class="container-fluid page-header report-header">
+        <div class="row-fluid">
+            <div class="header-lhs span7">
                 <h1>{{ reportSchema.title }}</h1>
             </div>
+            <form name="paramForm" ng-show="paramSchema" class="span4 header-rhs form form-horizontal compact">
+                <form-input schema="paramSchema"></form-input>
+            </form>
         </div>
     </div>
-    <div ng-show="errorMessage" class="row-fluid">
-        <div class="span6 offset3 alert alert-error">
-            <button type="button" class="close" ng-click="dismissError()">&times;</button>
-            <h4>{{alertTitle}}</h4>
-            <div ng-bind-html="errorMessage"></div>
+    <div class="container-fluid page-body report-body">
+        <div ng-show="errorMessage" class="row-fluid">
+            <div class="span6 offset3 alert alert-error">
+                <button type="button" class="close" ng-click="dismissError()">&times;</button>
+                <h4>{{alertTitle}}</h4>
+                <div ng-bind-html="errorMessage"></div>
+            </div>
         </div>
-    </div>
-
-    <div class="row-fluid">
-        <div class="gridStyle" ng-grid="gridOptions"></div>
+        <div class="row-fluid">
+            <div class="gridStyle" ng-grid="gridOptions"></div>
+        </div>
     </div>
 </div>
 
