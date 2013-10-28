@@ -133,6 +133,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (formInstructions.link && formInstructions.link.linkOnly) {
                 formInstructions.type = 'link';
                 formInstructions.linkText = formInstructions.link.text;
+                formInstructions.form = formInstructions.link.form;
                 delete formInstructions.link;
             } else {
                 formInstructions.type = 'select';

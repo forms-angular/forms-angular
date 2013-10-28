@@ -10400,6 +10400,11 @@ select.select2 {
   visibility: hidden;
 }
 
+body {
+  position: relative;
+  padding-top: 40px;
+}
+
 .list-item {
   min-height: 20px;
   padding: 19px;
@@ -11061,11 +11066,6 @@ i[class^="icon-"] {
 
 /* Body and structure
 -------------------------------------------------- */
-
-body {
-  position: relative;
-  padding-top: 40px;
-}
 
 /* Code in headings */
 

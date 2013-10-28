@@ -80,7 +80,7 @@ formsAngular
                                 value += '</select>';
                             }
                         } else if (fieldInfo.type === 'link') {
-                            value = '<a ng-href="/#/' + fieldInfo.ref + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
+                            value = '<a ng-href="/#/' + fieldInfo.ref + (fieldInfo.form ? '/'+fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
                         } else {
                             common += (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                             if (fieldInfo.type == 'textarea') {
