@@ -34,7 +34,7 @@ describe('Links', function () {
             $httpBackend.verifyNoOutstandingRequest();
         });
 
-        ddescribe('existing data with selected data present in first position',function() {
+        describe('existing data with selected data present in first position',function() {
 
             beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
                 $httpBackend = _$httpBackend_;
@@ -45,16 +45,22 @@ describe('Links', function () {
                     "forename":"Anne",
                     "exams":[
                         {
-                            "subject":"English",
-                            "examDate":"2013-05-12T23:00:00.000Z",
-                            "score":83,
-                            "result":"pass"
+                            "subject":"French",
+                            "examDate":"2013-03-11T23:00:00.000Z",
+                            "score":34,
+                            "result":"fail"
                         },
                         {
                             "subject":"Maths",
                             "examDate":"2013-05-11T23:00:00.000Z",
                             "score":97,
                             "result":"distinction"
+                        },
+                        {
+                            "subject":"English",
+                            "examDate":"2013-05-12T23:00:00.000Z",
+                            "score":83,
+                            "result":"pass"
                         }
                     ]
                 });
@@ -77,16 +83,15 @@ describe('Links', function () {
 
                 var label = angular.element(elm.find('label')[0]);
                 expect(label.text()).toBe('Surname');
-                var label = angular.element(elm.find('label')[1]);
+                label = angular.element(elm.find('label')[1]);
                 expect(label.text()).toBe('Forename');
-                var label = angular.element(elm.find('label')[2]);
+                label = angular.element(elm.find('label')[2]);
                 expect(label.text()).toBe('Score');
-                var label = angular.element(elm.find('label')[3]);
+                label = angular.element(elm.find('label')[3]);
                 expect(label.text()).toBe('Exam Date');
 
-                // correct ids
-                // correct models
-                // correct values
+                input = angular.element(elm.find('input')[2]);
+                expect(input.val()).toBe('83');
             });
 
         });

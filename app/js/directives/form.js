@@ -26,13 +26,10 @@ formsAngular
                     var elementHtml = ''
                         , tabsSetup = false;
 
-                        scope.toggleFolder = function(groupId) {
-
-                            scope['showHide'+groupId] = !scope['showHide' + groupId];
-
-                            $('i.' + groupId).toggleClass('icon-folder-open icon-folder-close');
-
-                        };
+                    scope.toggleFolder = function(groupId) {
+                        scope['showHide'+groupId] = !scope['showHide' + groupId];
+                        $('i.' + groupId).toggleClass('icon-folder-open icon-folder-close');
+                    };
 
                     var isHorizontalStyle = function(formStyle) {
                         return (!formStyle || formStyle === "undefined" || formStyle === 'horizontal' || formStyle === 'horizontalCompact');
@@ -43,12 +40,17 @@ formsAngular
                             // We are dealing with an array of sub schemas
                             if (attrs.subschema && fieldInfo.name.indexOf('.') != -1) {
                                 // Schema handling - need to massage the ngModel and the id
-                                var compoundName = fieldInfo.name,
-                                    lastPartStart = compoundName.lastIndexOf('.'),
-                                    arrayOffset = attrs.arrayoffset || scope.$index;
+                                var arrayOffset,
+                                    compoundName = fieldInfo.name,
+                                    lastPartStart = compoundName.lastIndexOf('.');
 
-                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + arrayOffset + '.' + compoundName.slice(lastPartStart + 1);
-                                idString = modelString.slice(7).replace(/\./g, '-')
+                                if (attrs.subkey) {
+                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '[' + '__arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '].' + compoundName.slice(lastPartStart + 1);
+                                    idString = compoundName + '_subkey';
+                                } else {
+                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$index + '.' + compoundName.slice(lastPartStart + 1);
+                                    idString = modelString.slice(7).replace(/\./g, '-')
+                                }
                             } else {
                                 modelString = (attrs.model || 'record') + '.' + fieldInfo.name;
                             }
@@ -60,7 +62,7 @@ formsAngular
 
                         if (attrs.formstyle === 'inline') placeHolder = placeHolder || fieldInfo.label;
                         var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (placeHolder ? ('placeholder="' + placeHolder + '" ') : "");
-                        common +=   addAll("Field");
+                        common += addAll("Field");
                         if (fieldInfo.type === 'select') {
                             common += (fieldInfo.readonly ? 'disabled ' : '');
                             if (fieldInfo.select2) {
@@ -161,7 +163,28 @@ formsAngular
                             if (info.subkey) {
                                 info.subkey.path = info.name;
                                 scope[schemaDefName+'_subkey'] = info.subkey;
+                                scope['__arrayOffset_' + niceName] = 0;
                                 template += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey' + '"></form-input>'
+                                scope.$watch('record.' + info.name, function (newValue) {
+                                    if (newValue) {
+                                        for (var arrayOffset = 0; arrayOffset < newValue.length; arrayOffset++) {
+                                            var matching = true;
+                                            for (var keyPart = 0; keyPart < info.subkey.keyList.length ; keyPart++) {
+                                                var keyField = Object.keys(info.subkey.keyList[keyPart])[0];
+                                                // Not (currently) concerned with objects here - just simple types
+                                                if (newValue[arrayOffset][keyField] !== info.subkey.keyList[keyPart][keyField]) {
+                                                    matching = false;
+                                                    break;
+                                                }
+                                            }
+                                            if (matching) {
+                                                scope['__arrayOffset_' + niceName] = arrayOffset;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                });
+
                             } else {
                                 template += '<div class="schema-head">' + info.label + '</div>' +
                                     '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
