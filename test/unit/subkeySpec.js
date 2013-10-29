@@ -34,7 +34,7 @@ describe('Links', function () {
             $httpBackend.verifyNoOutstandingRequest();
         });
 
-        describe('existing data with selected data present in first position',function() {
+        ddescribe('existing data with selected data present in first position',function() {
 
             beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
                 $httpBackend = _$httpBackend_;
@@ -75,7 +75,15 @@ describe('Links', function () {
                 var input = elm.find('input');
                 expect(input.length).toBe(4);
 
-                // correct labels
+                var label = angular.element(elm.find('label')[0]);
+                expect(label.text()).toBe('Surname');
+                var label = angular.element(elm.find('label')[1]);
+                expect(label.text()).toBe('Forename');
+                var label = angular.element(elm.find('label')[2]);
+                expect(label.text()).toBe('Score');
+                var label = angular.element(elm.find('label')[3]);
+                expect(label.text()).toBe('Exam Date');
+
                 // correct ids
                 // correct models
                 // correct values
