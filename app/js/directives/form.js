@@ -44,8 +44,10 @@ formsAngular
                             if (attrs.subschema && fieldInfo.name.indexOf('.') != -1) {
                                 // Schema handling - need to massage the ngModel and the id
                                 var compoundName = fieldInfo.name,
-                                    lastPartStart = compoundName.lastIndexOf('.');
-                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$index + '.' + compoundName.slice(lastPartStart + 1);
+                                    lastPartStart = compoundName.lastIndexOf('.'),
+                                    arrayOffset = attrs.arrayoffset || scope.$index;
+
+                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + arrayOffset + '.' + compoundName.slice(lastPartStart + 1);
                                 idString = modelString.slice(7).replace(/\./g, '-')
                             } else {
                                 modelString = (attrs.model || 'record') + '.' + fieldInfo.name;
@@ -154,31 +156,37 @@ formsAngular
                             var niceName = info.name.replace(/\./g,'_');
                             var schemaDefName = '__schema_' + niceName;
                             scope[schemaDefName] = info.schema;
-                            template += '<div class="schema-head">' + info.label + '</div>' +
-                                '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
-                                '<div class="row-fluid sub-doc">' +
-                                '<div class="pull-left">' +
-                                '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + info.formStyle + '"></form-input>' +
-                                '</div>';
 
-                            if (!info.noRemove) {
-                                template += '<div class="pull-left sub-doc-btns">' +
-                                    '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(\''+info.name+'\',$index)">' +
-                                    '<i class="icon-minus"></i> Remove' +
-                                    '</button>' +
-                                    '</div> '
+                            // Check for subkey - selecting out one of the array
+                            if (info.subkey) {
+                                scope[schemaDefName+'_subkey'] = info.subkey;
+                                template += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey' + '"></form-input>'
+                            } else {
+                                template += '<div class="schema-head">' + info.label + '</div>' +
+                                    '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
+                                    '<div class="row-fluid sub-doc">' +
+                                    '<div class="pull-left">' +
+                                    '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + info.formStyle + '"></form-input>' +
+                                    '</div>';
+
+                                if (!info.noRemove) {
+                                    template += '<div class="pull-left sub-doc-btns">' +
+                                        '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(\''+info.name+'\',$index)">' +
+                                        '<i class="icon-minus"></i> Remove' +
+                                        '</button>' +
+                                        '</div> '
+                                }
+
+                                template += '</div>' +
+                                    '</div>' +
+                                    '<div class = "schema-foot">';
+                                if (!info.noAdd) {
+                                    template += '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(\''+info.name+'\')">' +
+                                        '<i class="icon-plus"></i> Add' +
+                                        '</button>'
+                                }
+                                template += '</div>';
                             }
-
-                            template += '</div>' +
-                                '</div>' +
-                                '<div class = "schema-foot">';
-                            if (!info.noAdd) {
-                                template += '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(\''+info.name+'\')">' +
-                                    '<i class="icon-plus"></i> Add' +
-                                    '</button>'
-                            }
-                            template += '</div>';
-
                         } else {
                             // Handle arrays here
                             var controlClass = (isHorizontalStyle(attrs.formstyle)) ? ' class="controls"' : '';
