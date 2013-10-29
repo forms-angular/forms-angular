@@ -159,6 +159,7 @@ formsAngular
 
                             // Check for subkey - selecting out one of the array
                             if (info.subkey) {
+                                info.subkey.path = info.name;
                                 scope[schemaDefName+'_subkey'] = info.subkey;
                                 template += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey' + '"></form-input>'
                             } else {
@@ -308,6 +309,8 @@ formsAngular
                                         elementHtml += '</fieldset>';
                                         break;
                                 }
+                            } else if (attrs.subkey && _.find(scope[attrs.subkey].keyList, function(subkey){return scope[attrs.subkey].path + '.' + Object.keys(subkey)[0] === info.name})) {
+                                // Don't do fields that form part of the subkey
                             } else {
                                 if (groupId) {
                                     scope['showHide' + groupId] = true;

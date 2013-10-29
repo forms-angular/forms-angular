@@ -73,7 +73,7 @@ describe('Links', function () {
             it('generates correct fields', function () {
                 // correct number of fields - excluding subkey
                 var input = elm.find('input');
-//                expect(input.length).toBe(4);
+                expect(input.length).toBe(4);
 
                 // correct labels
                 // correct ids
