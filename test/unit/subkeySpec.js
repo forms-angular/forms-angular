@@ -8,21 +8,23 @@ describe('Links', function () {
 
         var $httpBackend, scope, ctrl, elm,
             subkeySchema = {
-                "surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[],"setters":[],"getters":[],"options":{"index":true,"list":{}},"_index":true,"$conditionalHandlers":{}},
-                "forename":{"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"index":true,"list":true},"_index":true,"$conditionalHandlers":{}},
-                "exams":{
-                    "schema":{
-                        "subject":{"enumValues":[],"regExp":null,"path":"subject","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null,"$conditionalHandlers":{}},
-                        "score":{"path":"score","instance":"Number","validators":[],"setters":[],"getters":[],"options":{},"_index":null,"$conditionalHandlers":{}},
-                        "examDate":{"path":"examDate","instance":"Date","validators":[],"setters":[],"getters":[],"options":{},"_index":null,"$conditionalHandlers":{}}
+                "surname": {"enumValues": [], "regExp": null, "path": "surname", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"index": true, "list": {}}, "_index": true, "$conditionalHandlers": {}},
+                "forename": {"enumValues": [], "regExp": null, "path": "forename", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"index": true, "list": true}, "_index": true, "$conditionalHandlers": {}},
+                "exams": {
+                    "schema": {
+                        "subject": {"enumValues": [], "regExp": null, "path": "subject", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {}, "_index": null, "$conditionalHandlers": {}},
+                        "score": {"path": "score", "instance": "Number", "validators": [], "setters": [], "getters": [], "options": {}, "_index": null, "$conditionalHandlers": {}},
+                        "examDate": {"path": "examDate", "instance": "Date", "validators": [], "setters": [], "getters": [], "options": {}, "_index": null, "$conditionalHandlers": {}}
                     },
-                    "options":{
-                        "form":{
-                            "formStyle":"inline",
-                            "subkey":{
-                                "keyList":[{"subject":"English"}],
-                                "container":"fieldset",
-                                "title":"English Exam"
+                    "options": {
+                        "form": {
+                            "formStyle": "inline",
+                            "subkey": {
+                                "keyList": [
+                                    {"subject": "English"}
+                                ],
+                                "container": "fieldset",
+                                "title": "English Exam"
                             }
                         }
                     }
@@ -34,33 +36,33 @@ describe('Links', function () {
             $httpBackend.verifyNoOutstandingRequest();
         });
 
-        describe('existing data with selected data present in first position',function() {
+        describe('existing data with selected data present in first position', function () {
 
             beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
                 $httpBackend = _$httpBackend_;
                 $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
                 $httpBackend.whenGET('api/f_nested_schema/51c583d5b5c51226db418f16').respond({
-                    "_id":"51c583d5b5c51226db418f16",
-                    "surname":"Smith",
-                    "forename":"Anne",
-                    "exams":[
+                    "_id": "51c583d5b5c51226db418f16",
+                    "surname": "Smith",
+                    "forename": "Anne",
+                    "exams": [
                         {
-                            "subject":"French",
-                            "examDate":"2013-03-11T23:00:00.000Z",
-                            "score":34,
-                            "result":"fail"
+                            "subject": "English",
+                            "examDate": "2013-05-12T23:00:00.000Z",
+                            "score": 83,
+                            "result": "pass"
                         },
                         {
-                            "subject":"Maths",
-                            "examDate":"2013-05-11T23:00:00.000Z",
-                            "score":97,
-                            "result":"distinction"
+                            "subject": "French",
+                            "examDate": "2013-03-11T23:00:00.000Z",
+                            "score": 34,
+                            "result": "fail"
                         },
                         {
-                            "subject":"English",
-                            "examDate":"2013-05-12T23:00:00.000Z",
-                            "score":83,
-                            "result":"pass"
+                            "subject": "Maths",
+                            "examDate": "2013-05-11T23:00:00.000Z",
+                            "score": 97,
+                            "result": "distinction"
                         }
                     ]
                 });
@@ -92,6 +94,122 @@ describe('Links', function () {
 
                 input = angular.element(elm.find('input')[2]);
                 expect(input.val()).toBe('83');
+            });
+
+        });
+
+        describe('existing data with selected data present in different position', function () {
+
+            beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
+                $httpBackend = _$httpBackend_;
+                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
+                $httpBackend.whenGET('api/f_nested_schema/51c583d5b5c51226db418f16').respond({
+                    "_id": "51c583d5b5c51226db418f16",
+                    "surname": "Smith",
+                    "forename": "Anne",
+                    "exams": [
+                        {
+                            "subject": "French",
+                            "examDate": "2013-03-11T23:00:00.000Z",
+                            "score": 34,
+                            "result": "fail"
+                        },
+                        {
+                            "subject": "English",
+                            "examDate": "2013-05-12T23:00:00.000Z",
+                            "score": 83,
+                            "result": "pass"
+                        },
+                        {
+                            "subject": "Maths",
+                            "examDate": "2013-05-11T23:00:00.000Z",
+                            "score": 97,
+                            "result": "distinction"
+                        }
+                    ]
+                });
+                $location.$$path = '/f_nested_schema/English/51c583d5b5c51226db418f16/edit';
+                elm = angular.element(
+                    '<form name="myForm" class="form-horizontal compact">' +
+                        '<form-input schema="formSchema"></form-input>' +
+                        '</form>');
+                scope = $rootScope.$new();
+                ctrl = $controller("BaseCtrl", {$scope: scope});
+                $httpBackend.flush();
+                $compile(elm)(scope);
+                scope.$digest();
+            }));
+
+            it('gets correct array element', function () {
+                input = angular.element(elm.find('input')[2]);
+                expect(input.val()).toBe('83');
+            });
+
+        });
+
+        describe('existing data without required subschema', function () {
+
+            beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
+                $httpBackend = _$httpBackend_;
+                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
+                $httpBackend.whenGET('api/f_nested_schema/51c583d5b5c51226db418f16').respond({
+                    "_id": "51c583d5b5c51226db418f16",
+                    "surname": "Smith",
+                    "forename": "Anne",
+                    "exams": [
+                        {
+                            "subject": "French",
+                            "examDate": "2013-03-11T23:00:00.000Z",
+                            "score": 34,
+                            "result": "fail"
+                        },
+                        {
+                            "subject": "Maths",
+                            "examDate": "2013-05-11T23:00:00.000Z",
+                            "score": 97,
+                            "result": "distinction"
+                        }
+                    ]
+                });
+                $location.$$path = '/f_nested_schema/English/51c583d5b5c51226db418f16/edit';
+                elm = angular.element(
+                    '<form name="myForm" class="form-horizontal compact">' +
+                        '<form-input schema="formSchema"></form-input>' +
+                        '</form>');
+                scope = $rootScope.$new();
+                ctrl = $controller("BaseCtrl", {$scope: scope});
+                $httpBackend.flush();
+                $compile(elm)(scope);
+                scope.$digest();
+            }));
+
+            it('creates a new array element', function () {
+                expect(scope.record.exams.length).toBe(3);
+                expect(scope.record.exams[2].subject).toBe('English');
+            });
+
+        });
+
+        describe('new data', function () {
+
+            beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
+                $httpBackend = _$httpBackend_;
+                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
+                $location.$$path = '/f_nested_schema/English/new';
+                elm = angular.element(
+                    '<form name="myForm" class="form-horizontal compact">' +
+                        '<form-input schema="formSchema"></form-input>' +
+                        '</form>');
+                scope = $rootScope.$new();
+                ctrl = $controller("BaseCtrl", {$scope: scope});
+                $httpBackend.flush();
+                $compile(elm)(scope);
+                scope.$digest();
+            }));
+
+            it('creates a new array element', function () {
+                expect(scope.record.exams.length).toBe(1);
+                expect(scope.record.exams[0].subject).toBe('English');
             });
 
         });

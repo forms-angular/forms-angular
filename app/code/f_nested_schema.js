@@ -45,7 +45,7 @@ FSchema.statics.form = function(layout) {
             formSchema = {
                 surname: {},
                 forename:  {},
-                exams: {subkey:{keyList:[{subject:'English'}], container:'fieldset', title:'English Exam'}}
+                exams: {subkey:{keyList:[{subject:'English'}], containerType:'well', title:'English Exam'}}
             };
             break;
     }
