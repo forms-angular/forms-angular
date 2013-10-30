@@ -9,8 +9,8 @@ describe('Base list', function() {
 
     it('should support the listOrder option', function() {
         browser().navigateTo('/#/g_conditional_fields');
-        expect(repeater('.list-well').count()).toBeGreaterThan(8);
-        expect(element('.list-well>.span6:first-child').text()).not().toMatch('Smith05 Smith06 Smith97 Smith08');
+        expect(repeater('.list-item').count()).toBeGreaterThan(8);
+        expect(element('.list-item>.span6:first-child').text()).not().toMatch('Smith05 Smith06 Smith97 Smith08');
     });
 
     it('should support the model name override', function() {

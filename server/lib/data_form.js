@@ -142,7 +142,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
 
     function translate(string, array, context) {
         if (array) {
-            var translation = _.find(array, function(fromTo) {
+            var translation = _.find(array, function (fromTo) {
                 return fromTo.from === string && (!fromTo.context || fromTo.context === context)
             });
             if (translation) {
@@ -182,9 +182,12 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
             }
         }
     }
+
     var that = this,
         results = [],
-        moreCount = 0;
+        moreCount = 0,
+        searchCriteria = {$regex: '^(' + searchFor.split(' ').join('|') +')', $options: 'i'};
+
     this.searchFunc(
         searches
         , function (item, cb) {
@@ -195,13 +198,13 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                     delete searchDoc[item.field];
                     var obj1 = {}, obj2 = {};
                     obj1[item.field] = filter[item.field];
-                    obj2[item.field] = {$regex: '^' + searchFor, $options: 'i'};
+                    obj2[item.field] = searchCriteria;
                     searchDoc['$and'] = [obj1, obj2];
                 } else {
-                    searchDoc[item.field] = {$regex: '^' + searchFor, $options: 'i'};
+                    searchDoc[item.field] = searchCriteria;
                 }
             } else {
-                searchDoc[item.field] = {$regex: '^' + searchFor, $options: 'i'};
+                searchDoc[item.field] = searchCriteria;
             }
 
             // The +30 in the next line is an arbitrary safety zone for situations where items that match the string
@@ -209,22 +212,43 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
             // TODO : Figure out a better way to deal with this
             that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 30, null, function (err, docs) {
                 if (!err && docs && docs.length > 0) {
-                    for (var k = 0; k < docs.length && results.length < limit; k++) {
+                    for (var k = 0; k < docs.length; k++) {
 
-                        // Check we don't already have them in list
-                        var thisId = docs[k]._id;
-                        if (_.find(results, function (obj) {
-                            return obj.id.id === thisId.id
-                        }) === undefined) {
-                            var resultObject;
+                        // Do we already have them in the list?
+                        var thisId = docs[k]._id,
+                            resultObject,
+                            resultPos;
 
+                        for (resultPos = results.length - 1; resultPos >= 0 ; resultPos--) {
+                            if (results[resultPos].id.id === thisId.id) {
+                                break;
+                            }
+                        }
+
+                        if (resultPos >= 0) {
+                            resultObject = {};
+                            extend(resultObject, results[resultPos]);
+                            // If they have already matched then improve their weighting
+                            if (typeof resultObject.weighting === "number") {
+                                resultObject.weighting = resultObject.weighting * 0.5;
+                            } else {
+                                resultObject.weighting = String.fromCharCode(resultObject.weighting.charCodeAt()+1/2)+resultObject.weighting.slice(1);
+                            }
+                            // remove it from current position
+                            results.splice(resultPos,1);
+                            // and re-insert where appropriate
+                            results.splice(_.sortedIndex(results, resultObject, function (obj) {
+                                return obj.weighting
+                            }), 0, resultObject)
+                        } else {
+                            // Otherwise add them new...
                             // Use special listings format if defined
                             var specialListingFormat = item.resource.options.searchResultFormat;
                             if (specialListingFormat) {
                                 resultObject = specialListingFormat.apply(docs[k]);
                                 if (item.resource.options.localisationData) {
-                                    resultObject.resource = translate(resultObject.resource,item.resource.options.localisationData,'resource');
-                                    resultObject.resourceText = translate(resultObject.resourceText,item.resource.options.localisationData,'resourceText');
+                                    resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, 'resource');
+                                    resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
                                 }
                                 results.splice(_.sortedIndex(results, resultObject, function (obj) {
                                     return obj.weighting
@@ -242,8 +266,9 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                             }
                         }
                     }
-                    if (results.length === limit) {
-                        moreCount += docs.length - k;
+                    if (results.length > limit) {
+                        moreCount += results.length - limit;
+                        results.splice(limit);
                     }
                 }
                 cb(err)
@@ -251,7 +276,10 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
         }
         , function (err) {
             // Strip weighting from the results
-            results = _.map(results, function(aResult){delete aResult.weighting; return aResult});
+            results = _.map(results, function (aResult) {
+                delete aResult.weighting;
+                return aResult
+            });
             callback({results: results, moreCount: moreCount});
         }
     );
@@ -338,7 +366,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
                     hiddenFields.push(element);
                 }
                 if (paths[element].options.list) {
-                    listFields.push({field:element, params:paths[element].options.list})
+                    listFields.push({field: element, params: paths[element].options.list})
                 }
             }
         }
@@ -410,7 +438,7 @@ DataForm.prototype.report = function () {
                     reportSchema = JSON.parse(url_parts.query.r);
                     break;
                 default:
-                    return self.renderError(new Error("Invalid 'r' parameter" ), null, req, res, next);
+                    return self.renderError(new Error("Invalid 'r' parameter"), null, req, res, next);
             }
         } else {
             var fields = {};
@@ -423,7 +451,9 @@ DataForm.prototype.report = function () {
                     }
                 }
             }
-            reportSchema = {pipeline:[{$project:fields}],drilldown:"/#/"+req.params.resourceName+"/%_id%/edit"};
+            reportSchema = {pipeline: [
+                {$project: fields}
+            ], drilldown: "/#/" + req.params.resourceName + "/%_id%/edit"};
         }
 
         // Replace parameters in pipeline
@@ -431,7 +461,7 @@ DataForm.prototype.report = function () {
         extend(schemaCopy, reportSchema);
         schemaCopy.params = schemaCopy.params || [];
 
-        self.doFindFunc(req, req.resource, function(err, queryObj) {
+        self.doFindFunc(req, req.resource, function (err, queryObj) {
 
             if (err) {
                 return self.renderError(new Error("There was a problem with the findFunc for model " + req.resource.modelName), null, req, res, next);
@@ -445,8 +475,8 @@ DataForm.prototype.report = function () {
                         }
                     }
                 }
-                runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function(match){
-                    param = schemaCopy.params[match.slice(2,-2)];
+                runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function (match) {
+                    param = schemaCopy.params[match.slice(2, -2)];
                     if (param.type === 'number') {
                         return param.value;
                     } else if (_.isObject(param.value)) {
@@ -454,14 +484,14 @@ DataForm.prototype.report = function () {
                     } else if (param.value[0] === '{') {
                         return param.value;
                     } else {
-                        return '"'+param.value+'"';
+                        return '"' + param.value + '"';
                     }
                 });
 
                 // Don't send the 'secure' fields
                 for (var hiddenField in self.generateHiddenFields(req.resource, false)) {
                     if (runPipeline.indexOf(hiddenField) !== -1) {
-                        return self.renderError(new Error("You cannot access "+hiddenField), null, req, res, next);
+                        return self.renderError(new Error("You cannot access " + hiddenField), null, req, res, next);
                     }
                 }
 
@@ -471,7 +501,7 @@ DataForm.prototype.report = function () {
                 // Anything formatted 1800-01-01T00:00:00.000Z is converted to a Date
                 // Only handles the cases I need for now
                 // TODO: handle arrays etc
-                var hackVariables = function(obj) {
+                var hackVariables = function (obj) {
                     for (var prop in obj) {
                         if (obj.hasOwnProperty(prop)) {
                             if (typeof obj[prop] === 'string') {
@@ -493,70 +523,72 @@ DataForm.prototype.report = function () {
 
                 // Add the findFunc query to the pipeline
                 if (queryObj) {
-                    runPipeline.unshift({$match:queryObj});
+                    runPipeline.unshift({$match: queryObj});
                 }
 
-                var toDo = {runAggregation: function(cb) {
+                var toDo = {runAggregation: function (cb) {
                     req.resource.model.aggregate(runPipeline, cb)
                 }
                 };
 
                 // if we need to do any column translations add the function to the tasks list
                 if (reportSchema.columnTranslations) {
-                    toDo.apply_translations = ['runAggregation', function(cb,results) {
-                        reportSchema.columnTranslations.forEach(function(columnTranslation){
-                            results.runAggregation.forEach(function(resultRow){
-                                var thisTranslation = _.find(columnTranslation.translations, function(option){
+                    toDo.apply_translations = ['runAggregation', function (cb, results) {
+                        reportSchema.columnTranslations.forEach(function (columnTranslation) {
+                            results.runAggregation.forEach(function (resultRow) {
+                                var thisTranslation = _.find(columnTranslation.translations, function (option) {
                                     return resultRow[columnTranslation.field].toString() === option.value.toString()
                                 });
                                 resultRow[columnTranslation.field] = thisTranslation.display;
                             })
                         });
-                        cb(null,null);
+                        cb(null, null);
                     }];
 
                     // if any of the column translations are refs, set up the tasks to look up the values and populate the translations
-                    for (var i=0; i < reportSchema.columnTranslations.length; i++) {
+                    for (var i = 0; i < reportSchema.columnTranslations.length; i++) {
                         var thisColumnTranslation = reportSchema.columnTranslations[i]
                             , translateName = thisColumnTranslation.field;
-                        if (translateName){
+                        if (translateName) {
                             if (thisColumnTranslation.ref) {
                                 var lookup = self.getResource(thisColumnTranslation.ref);
                                 if (lookup) {
                                     if (toDo[translateName]) {
-                                        return self.renderError(new Error("Cannot have two columnTranslations for field " + translateName ), null, req, res, next);
+                                        return self.renderError(new Error("Cannot have two columnTranslations for field " + translateName), null, req, res, next);
                                     } else {
                                         thisColumnTranslation.translations = thisColumnTranslation.translations || [];
-                                        toDo[translateName] = function(cb) {lookup.model.find({},{},{lean:true},function(err,findResults){
-                                            if (err) {
-                                                cb(err);
-                                            } else {
-                                                for (var j=0; j<findResults.length;j++){
-                                                    thisColumnTranslation.translations[j] = {value: findResults[j]._id, display: self.getListFields(lookup, findResults[j])};
+                                        toDo[translateName] = function (cb) {
+                                            lookup.model.find({}, {}, {lean: true}, function (err, findResults) {
+                                                if (err) {
+                                                    cb(err);
+                                                } else {
+                                                    for (var j = 0; j < findResults.length; j++) {
+                                                        thisColumnTranslation.translations[j] = {value: findResults[j]._id, display: self.getListFields(lookup, findResults[j])};
+                                                    }
+                                                    cb(null, null);
                                                 }
-                                                cb(null,null);
-                                            }
-                                        })};
+                                            })
+                                        };
                                         toDo.apply_translations.unshift(translateName);  // Make sure we populate lookup before doing translation
                                     }
                                 } else {
-                                    return self.renderError(new Error("Invalid ref property of " + thisColumnTranslation.ref + " in columnTranslations " + translateName ), null, req, res, next);
+                                    return self.renderError(new Error("Invalid ref property of " + thisColumnTranslation.ref + " in columnTranslations " + translateName), null, req, res, next);
                                 }
                             } else if (!thisColumnTranslation.translations) {
-                                return self.renderError(new Error("A column translation needs a ref or a translations property - " + translateName + " has neither" ), null, req, res, next);
+                                return self.renderError(new Error("A column translation needs a ref or a translations property - " + translateName + " has neither"), null, req, res, next);
                             }
                         } else {
-                            return self.renderError(new Error("A column translation needs a field property" ), null, req, res, next);
+                            return self.renderError(new Error("A column translation needs a field property"), null, req, res, next);
                         }
                     }
                 }
 
-                async.auto(toDo, function(err, results){
+                async.auto(toDo, function (err, results) {
                     if (err) {
                         return self.renderError(err, null, req, res, next);
                     } else {
                         // TODO: Could loop through schemaCopy.params and just send back the values
-                        res.send({success:true, schema:reportSchema, report: results.runAggregation, paramsUsed: schemaCopy.params});
+                        res.send({success: true, schema: reportSchema, report: results.runAggregation, paramsUsed: schemaCopy.params});
                     }
                 });
             }
@@ -622,11 +654,11 @@ DataForm.prototype.collectionGet = function () {
 
         var url_parts = url.parse(req.url, true);
         try {
-            var aggregationParam    = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
-            var findParam           = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
-            var limitParam          = url_parts.query.l ? JSON.parse(url_parts.query.l) : {};
-            var skipParam           = url_parts.query.s ? JSON.parse(url_parts.query.s) : {};
-            var orderParam          = url_parts.query.o ? JSON.parse(url_parts.query.o) : req.resource.options.listOrder;
+            var aggregationParam = url_parts.query.a ? JSON.parse(url_parts.query.a) : null;
+            var findParam = url_parts.query.f ? JSON.parse(url_parts.query.f) : {};
+            var limitParam = url_parts.query.l ? JSON.parse(url_parts.query.l) : {};
+            var skipParam = url_parts.query.s ? JSON.parse(url_parts.query.s) : {};
+            var orderParam = url_parts.query.o ? JSON.parse(url_parts.query.o) : req.resource.options.listOrder;
 
             var self = this;
 
@@ -643,7 +675,7 @@ DataForm.prototype.collectionGet = function () {
     }, this);
 };
 
-DataForm.prototype.doFindFunc = function(req, resource, cb) {
+DataForm.prototype.doFindFunc = function (req, resource, cb) {
     if (resource.options.findFunc) {
         resource.options.findFunc(req, cb)
     } else {

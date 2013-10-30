@@ -26,7 +26,7 @@ F.prototype.searchResultFormat = function() {
     // ordering within a collection
     var weighting;
 
-    weighting = this.forename === 'John' ? 1 : 3;
+    weighting = this.forename === 'John' ? 2 : 3;
 
     return {
         resource: 'f_nested_schema',
