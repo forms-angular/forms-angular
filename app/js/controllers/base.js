@@ -5,6 +5,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var allowLocationChange = true;   // Set when the data arrives..
 
     $scope.record = sharedStuff.record;
+    $scope.phase = 'init';
     $scope.disableFunctions = sharedStuff.disableFunctions;
     $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
     $scope.formSchema = [];
@@ -448,6 +449,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 $scope.dataEventFunctions.onAfterRead(data);
             }
             master = convertToAngularModel($scope.formSchema, data, 0);
+            $scope.phase = 'ready';
             $scope.cancel();
             if (typeof $scope.dataEventFunctions.onRecordChange === "function") {
                 $scope.$watch('record', function (newValue, oldValue) {
@@ -514,7 +516,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     $scope.readRecord();
                 }
             } else {
+                // New record
                 master = {};
+                $scope.phase = 'ready';
                 $scope.cancel();
             }
         }

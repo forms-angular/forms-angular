@@ -24,6 +24,7 @@ formsAngular
 //                    <input type="text" class="input-small" placeholder="Email">
 
                     var elementHtml = ''
+                        , subkeys = []
                         , tabsSetup = false;
 
                     scope.toggleFolder = function(groupId) {
@@ -235,26 +236,7 @@ formsAngular
                                 template += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey' + '"></form-input>';
                                 template += topAndTail.after;
 
-                                scope.$watch('record.' + info.name, function (newValue) {
-                                    if (newValue) {
-                                        for (var arrayOffset = 0; arrayOffset < newValue.length; arrayOffset++) {
-                                            var matching = true;
-                                            for (var keyPart = 0; keyPart < info.subkey.keyList.length ; keyPart++) {
-                                                var keyField = Object.keys(info.subkey.keyList[keyPart])[0];
-                                                // Not (currently) concerned with objects here - just simple types
-                                                if (newValue[arrayOffset][keyField] !== info.subkey.keyList[keyPart][keyField]) {
-                                                    matching = false;
-                                                    break;
-                                                }
-                                            }
-                                            if (matching) {
-                                                scope['__arrayOffset_' + niceName] = arrayOffset;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                });
-
+                                subkeys.push(info);
                             } else {
                                 template += '<div class="schema-head">' + info.label + '</div>' +
                                     '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
@@ -368,7 +350,7 @@ formsAngular
                                         elementHtml += parts.after;
                                         break;
                                 }
-                            } else if (attrs.subkey && _.find(scope[attrs.subkey].keyList, function(subkey){return scope[attrs.subkey].path + '.' + Object.keys(subkey)[0] === info.name})) {
+                            } else if (attrs.subkey && _.find(scope[attrs.subkey].keyList, function(value, key){return scope[attrs.subkey].path + '.' + key === info.name})) {
                                 // Don't do fields that form part of the subkey
                             } else {
                                 if (groupId) {
@@ -393,6 +375,44 @@ formsAngular
                                     elementHtml += '</tabs>';
                                 }
                                 element.replaceWith($compile(elementHtml)(scope));
+
+                                // If there are subkeys we need to fix up ng-model references when record is read
+                                if (subkeys.length > 0) {
+
+                                    var unwatch2 = scope.$watch('phase', function (newValue) {
+                                        if (newValue === 'ready') {
+                                            unwatch2();
+                                            for (subkeyCtr = 0 ; subkeyCtr < subkeys.length ; subkeyCtr ++) {
+                                                var info = subkeys[subkeyCtr],
+                                                    arrayOffset,
+                                                    matching;
+
+                                                var dataVal = scope.record[info.name] = scope.record[info.name] || [];
+                                                for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
+                                                    matching = true;
+                                                    for (var keyField in info.subkey.keyList) {
+                                                        if (info.subkey.keyList.hasOwnProperty(keyField)) {
+                                                            // Not (currently) concerned with objects here - just simple types
+                                                            if (dataVal[arrayOffset][keyField] !== info.subkey.keyList[keyField]) {
+                                                                matching = false;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                    if (matching) {
+                                                        break;
+                                                    }
+                                                }
+                                                if (!matching) {
+                                                    // There is no matching array element - we need to create one
+                                                    arrayOffset = scope.record[info.name].push(info.subkey.keyList) - 1;
+                                                }
+                                                scope['__arrayOffset_' + info.name.replace(/\./g,'_')] = arrayOffset;
+                                            }
+                                        }
+                                    });
+                                }
+
                                 $rootScope.$broadcast('formInputDone');
 
                                 if (scope.updateDataDependentDisplay) {
