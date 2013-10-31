@@ -188,7 +188,7 @@ formsAngular
                             default:
                                 result.before = '<div class="' + info.containerType + '">';
                                 if (info.title) {
-                                    var titleLook = info.titleTagOrClass || "";
+                                    var titleLook = info.titleTagOrClass || "h4";
                                     if (titleLook.match(/h[1-6]/)) {
                                         result.before += '<' + titleLook + '>' + info.title + '</' + info.titleLook + '>';
                                     } else {
