@@ -104,8 +104,8 @@ body {
   }
 }
 
-form.form-horizontal {
-  .compact {
+form {
+  &.form-horizontal.compact {
     .control-group {
       margin-bottom: 2px;
     }
@@ -118,10 +118,6 @@ form.form-horizontal {
       margin: 8px 0;
     }
   }
-}
-
-form {
-
   button.form-btn {
     width: 8em;
     height: 2em;
@@ -174,13 +170,12 @@ form {
   .fng-select2 {
     width: 220px;
   }
-}
-
-.form-inline > .sub-doc {
-  padding: 0 5px;
-  border: none;
-  background-color: @bodyBackground;
-  box-shadow: none;
+  .form-inline > .sub-doc {
+    padding: 0 5px;
+    border: none;
+    background-color: @bodyBackground;
+    box-shadow: none;
+  }
 }
 
 .global-search {

@@ -10524,21 +10524,21 @@ body {
   font-weight: bold;
 }
 
-form.form-horizontal .compact .control-group {
+form.form-horizontal.compact .control-group {
   margin-bottom: 2px;
 }
 
-form.form-horizontal .compact input + .help-block,
-form.form-horizontal .compact select + .help-block,
-form.form-horizontal .compact textarea + .help-block,
-form.form-horizontal .compact .uneditable-input + .help-block,
-form.form-horizontal .compact .input-prepend + .help-block,
-form.form-horizontal .compact .input-append + .help-block {
+form.form-horizontal.compact input + .help-block,
+form.form-horizontal.compact select + .help-block,
+form.form-horizontal.compact textarea + .help-block,
+form.form-horizontal.compact .uneditable-input + .help-block,
+form.form-horizontal.compact .input-prepend + .help-block,
+form.form-horizontal.compact .input-append + .help-block {
   margin-top: 0;
   margin-bottom: 2px;
 }
 
-form.form-horizontal .compact hr {
+form.form-horizontal.compact hr {
   margin: 8px 0;
 }
 
@@ -10610,7 +10610,7 @@ form .fng-select2 {
   width: 220px;
 }
 
-.form-inline > .sub-doc {
+form .form-inline > .sub-doc {
   padding: 0 5px;
   background-color: #ffffff;
   border: none;
