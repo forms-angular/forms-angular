@@ -203,9 +203,8 @@ describe('Search API', function() {
                 }
                 var aData = JSON.parse(stdout);
                 assert.notEqual(aData.moreCount,0);
-                assert.equal(aData.results[0].text, 'Smith, Anne');  // Special Weighting
-                assert.equal(aData.results[1].text, 'Smith04 John04')  // Double hit
-                assert.equal(aData.results[2].text, 'Smith00 John00')  // normal weighting
+                assert.equal(aData.results[0].text, 'Smith04 John04');  // Double hit
+                assert.equal(aData.results[1].text, 'Smith00 John00');  // normal weighting
                 done();
             });
     })
@@ -300,7 +299,7 @@ describe('Secure fields', function () {
             assert.equal(data[0].surname, 'Anderson');
             assert.equal(data[0].passwordHash, undefined);
             assert.notEqual(data[0].interview.score, undefined);
-            assert.equal(data[0].interview.interviewHash, undefined)
+            assert.equal(data[0].interview.interviewHash, undefined);
             done();
         });
     });

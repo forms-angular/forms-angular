@@ -152,6 +152,21 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
         return string;
     }
 
+    // return a string that determines the sort order of the resultObject
+    function calcResultValue(obj) {
+
+        function padLeft(number, reqLength, str){
+            return Array(reqLength-String(number).length+1).join(str||'0')+number;
+        }
+
+        var sortString = '';
+        sortString += padLeft(obj.addHits || 9, 1);
+        sortString += padLeft(obj.searchImportance || 99, 2);
+        sortString += padLeft(obj.weighting || 9999, 4);
+        sortString += obj.text;
+        return sortString;
+    }
+
     if (filter) {
         filter = JSON.parse(filter)
     }
@@ -207,10 +222,10 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                 searchDoc[item.field] = searchCriteria;
             }
 
-            // The +30 in the next line is an arbitrary safety zone for situations where items that match the string
+            // The +60 in the next line is an arbitrary safety zone for situations where items that match the string
             // in more than one index get filtered out.
             // TODO : Figure out a better way to deal with this
-            that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 30, null, function (err, docs) {
+            that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 60, null, function (err, docs) {
                 if (!err && docs && docs.length > 0) {
                     for (var k = 0; k < docs.length; k++) {
 
@@ -218,7 +233,6 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                         var thisId = docs[k]._id,
                             resultObject,
                             resultPos;
-
                         for (resultPos = results.length - 1; resultPos >= 0 ; resultPos--) {
                             if (results[resultPos].id.id === thisId.id) {
                                 break;
@@ -229,46 +243,34 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                             resultObject = {};
                             extend(resultObject, results[resultPos]);
                             // If they have already matched then improve their weighting
-                            if (typeof resultObject.weighting === "number") {
-                                resultObject.weighting = resultObject.weighting * 0.5;
-                            } else {
-                                resultObject.weighting = String.fromCharCode(resultObject.weighting.charCodeAt()+1/2)+resultObject.weighting.slice(1);
-                            }
+                            resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 1);
                             // remove it from current position
                             results.splice(resultPos,1);
                             // and re-insert where appropriate
-                            results.splice(_.sortedIndex(results, resultObject, function (obj) {
-                                return obj.weighting
-                            }), 0, resultObject)
+                            results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject)
                         } else {
                             // Otherwise add them new...
                             // Use special listings format if defined
                             var specialListingFormat = item.resource.options.searchResultFormat;
                             if (specialListingFormat) {
                                 resultObject = specialListingFormat.apply(docs[k]);
-                                if (item.resource.options.localisationData) {
-                                    resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, 'resource');
-                                    resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
-                                }
-                                results.splice(_.sortedIndex(results, resultObject, function (obj) {
-                                    return obj.weighting
-                                }), 0, resultObject)
                             } else {
                                 resultObject = {
                                     id: thisId,
-                                    weighting: '~~',
+                                    weighting: 9999,
                                     text: that.getListFields(item.resource, docs[k])
                                 };
                                 if (resourceCount > 1) {
                                     resultObject.resource = resultObject.resourceText = item.resource.resource_name;
                                 }
-                                results.push(resultObject);
                             }
+                            resultObject.searchImportance = item.resource.options.searchImportance || 99;
+                            if (item.resource.options.localisationData) {
+                                resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, 'resource');
+                                resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
+                            }
+                            results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject)
                         }
-                    }
-                    if (results.length > limit) {
-                        moreCount += results.length - limit;
-                        results.splice(limit);
                     }
                 }
                 cb(err)
@@ -280,6 +282,10 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                 delete aResult.weighting;
                 return aResult
             });
+            if (results.length > limit) {
+                moreCount += results.length - limit;
+                results.splice(limit);
+            }
             callback({results: results, moreCount: moreCount});
         }
     );
