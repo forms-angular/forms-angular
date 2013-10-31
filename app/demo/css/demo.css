@@ -10643,6 +10643,12 @@ form .form-inline > .sub-doc {
           box-shadow: 10px 10px 10px #888;
 }
 
+@media (max-width: 979px) {
+  .global-search {
+    padding-right: 1em;
+  }
+}
+
 .navbar .brand {
   padding: 14px 20px 16px;
   font-family: 'Telex', sans-serif;
