@@ -86,8 +86,8 @@ and handle querying and updating the server</p>
                 in the model definitions files for <a href="/code/f_nested_schema.js">f_nested_schema</a> and <a
                         href="/code/g_conditional_fields.js">g_conditional_fields</a>.</p>
             <ul>
-                <li><strong>searchImportance</strong> can be used to determine the order of table searches. There is an example
-                    in <a href="/code/g_conditional_fields.js">this</a> model.
+                <li><strong>searchImportance</strong> is a value from 0 to 99 (default) that can be used to determine the order
+                    of table searches. There is an example in <a href="/code/g_conditional_fields.js">this</a> model.
                 </li>
                 <li><strong>searchOrder</strong> can be used to set the default ordering of the search results within a model.
                     It is normally used in conjunction with searchImportance.
@@ -99,14 +99,26 @@ and handle querying and updating the server</p>
                         </li>
                         <li><strong>resourceText</strong> the display name for the resource</li>
                         <li><strong>id</strong> the id to link to</li>
-                        <li><strong>weighting</strong> specifies the sort ordering</li>
+                        <li><strong>weighting</strong> is a value from 0 to 9999 (default) that specifies the sort ordering</li>
                         <li><strong>text</strong> the display text for the item</li>
                     </ul>
+                    Both the resource and resourceText can be localised by a line of code like
+                    <pre><code>DataFormHandler.getResource('person').options.localisationData = [{from: 'person/customer', to: 'person/client', context: 'resource'},{from:'Customer', to:'Client', context: 'resourceText'}];
+                    </code></pre>.
                 </li>
             </ul>
 
             A truthy <strong>noSearch</strong> key means index on a schema type is not used in the searchBox searches.
             A use case for this would be an index that is used in reports for grouping which has no meaning in a search.
+
+            The top 10 search results appear below the search form, where the ordering is by a string built up as follows:
+            <ul>
+                <li>One digit 'hit weighting' where a record that has matched one string in the search query scores 9,
+                    a record that has had two matches scores 8 etc.</li>
+                <li>Two digit searchImportance</li>
+                <li>Four digit weighting</li>
+                <li>The display text</li>
+            </ul>
         </section>
     </section>
 
