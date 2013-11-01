@@ -22,8 +22,10 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         afterSelectionChange: function (rowItem) {
             var url = $scope.reportSchema.drilldown;
             if (url) {
-                url = url.replace(/!.+!/g,function(match){
-                    return rowItem.entity[match.slice(1,-1)];
+                url = url.replace(/!.+?!/g,function(match){
+                    var param = match.slice(1,-1),
+                        isParamTest = /\((.+)\)/.exec(param);
+                    return isParamTest ? $scope.reportSchema.params[isParamTest[1]].value : rowItem.entity[param];
                 });
                 window.location = url;
             }
