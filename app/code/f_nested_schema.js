@@ -56,7 +56,6 @@ FSchema.statics.form = function(layout) {
                 exams: {subkey:[{keyList:{subject:'English'}, containerType:'well', title:'English Exam'},{keyList:{subject:'Maths'}, containerType:'well', title:'Maths Exam'}]}
             };
             break;
-
     }
     return formSchema;
 };
