@@ -167,25 +167,6 @@
 
 </section>
 
-<section id="custom" name="Custom Schemas" affix-scroll>
-    <h3>Custom Schemas</h3>
-
-    <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the
-        fields to include and any options. See the static in <a href="/code/b_using_options.js">this example</a>.
-        The custom form schemas are invoked as follows:
-    </p>
-    <ul>
-        <li><strong>/#/:model/:formschema</strong> (<a href="/#/b_using_options/justnameandpostcode/">example
-            here</a>)
-        </li>
-        <li><strong>/#/:model/:formschema/new</strong> (<a
-                href="/#/b_using_options/justnameandpostcode/new">example
-            here</a>)
-        </li>
-        <li><strong>/#/:model/:formschema/:id/edit</strong></li>
-    </ul>
-</section>
-
 <section id="containers" name="Containers" affix-scroll>
     <h3>Containers</h3>
 
@@ -224,10 +205,53 @@
 ]" schema="names"&gt&lt/form-input&gt
 </pre>
     <p>Where container type is seen as a class for a div and a titleTagOrClass of h1..h6 is interpreted as a
-        heading tag
-        and anything else as a class to be applied to a paragraph (as in the example).</p>
+        heading tag and anything else as a class to be applied to a paragraph (as in the example).  If a title is
+        specified without a corresponding titleTagOrClass then &lt;h4&gt; is used as a default.</p>
 </section>
 
+<section id="custom" name="Custom Schemas" affix-scroll>
+    <h3>Custom Schemas</h3>
+
+    <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the
+        fields to include and any options. See the static in <a href="/code/b_using_options.js">this example</a>.
+        The custom form schemas are invoked as follows:
+    </p>
+    <ul>
+        <li><strong>/#/:model/:formschema</strong> (<a href="/#/b_using_options/justnameandpostcode/">example
+            here</a>)
+        </li>
+        <li><strong>/#/:model/:formschema/new</strong> (<a
+                href="/#/b_using_options/justnameandpostcode/new">example
+            here</a>)
+        </li>
+        <li><strong>/#/:model/:formschema/:id/edit</strong></li>
+    </ul>
+
+    <h4>Subkeys</h4>
+<p>Custom schemas are a good way to allow access to only part of a document, for instance if a customer record contained operational
+    and accounts information an accounts user would require a different view of the data (that would include account balance)
+    than a user from operations (who would not have access to the account balance).  Consider the following:</p>
+    <pre><code>var AddressSchema = new Schema({
+    type: { type: String, default: 'Home', enum: ['Delivery', 'Invoice', 'Historic'] },
+    street: String,
+    town: String,
+    postalCode: String
+    }, {_id: false});</code></pre>
+    <p>and in the customer model</p>
+    <pre><code>addressList: {type: [AddressSchema], mergeKey: 'type', form: {pane: 'Address', labels: 'Addresses'}}</code></pre>
+    <p>We need a way of having the delivery address appear on one form (for the operation user) and the invoice address on the
+    finance form, even though they are in the same field.</p>
+    <p>forms-angular has the concept of a <strong>subkey</strong> for this scenario.  The custom schema for the operations user would contain:</p>
+    <pre><code>addressList: {subkey: {keyList: {type: 'Delivery'}, containerType: 'well-small', title: 'Address', titleTagOrClass: 'h5'}}</code></pre>
+    <p>while that for finance might include</p>
+    <pre><code>addressList: {subkey:
+    [
+        {keyList: {type: 'Invoice'}, containerType: 'well-small', title: 'Invoice To:'},
+        {keyList: {type: 'Delivery'}, containerType: 'well-small', title: 'Deliver To:'}
+    ]
+}</code></pre>
+<p>Note that subkey can be an object or an array of objects</p>
+</section>
 </div>
 </div>
 </div>
