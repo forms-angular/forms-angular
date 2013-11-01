@@ -22,7 +22,7 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         afterSelectionChange: function (rowItem) {
             var url = $scope.reportSchema.drilldown;
             if (url) {
-                url = url.replace(/%.+%/g,function(match){
+                url = url.replace(/!.+!/g,function(match){
                     return rowItem.entity[match.slice(1,-1)];
                 });
                 window.location = url;

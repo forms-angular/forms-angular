@@ -58,9 +58,9 @@
                     display:'Male'},{value:'F', display:'Female'}]</strong></li>
             </ul>
         </li>
-        <li><strong>drilldown</strong> a url that clicking on the row will navigate to. A %fieldname% will be replaced
+        <li><strong>drilldown</strong> a url that clicking on the row will navigate to. A !fieldname! will be replaced
             with the value of the fieldname in the current row. For example a report
-            listing one row per item might have a drilldown of <em>/#/model/%_id%/edit</em></li>
+            listing one row per item might have a drilldown of <em>/#/model/!_id!/edit</em></li>
         <li><strong>params</strong> contains an array of parameters that can be used in the pipeline, normally in a
             $match such as {$match:{sex:("sex")}}. Parameters can have the following properties:
             <ul>
