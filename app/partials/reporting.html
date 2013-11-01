@@ -85,34 +85,18 @@
             </ul>
         </li>
     </ul>
-    <p>Use of date parameters is quite tricky. The following works:</p>
+    <p>Use of date parameters is quite tricky. The following works (quotes omitted for clarity):</p>
         <pre>
         reportSchema = {
             pipeline: [
-                {$match:{birth:"(ageMatch)"}},
+                { '$match': {$and : [{birth : {$lt:"(periodFinish)"}},{birth : {$gt:"(periodStart)"}}]}},
                 {$group:{_id:'People',count:{$sum:1}}
             ],
             params: {
-                ageGroup: {value:'All', type:'select', enum:['All','65 and over','Under 65'], required:true, size:'medium'},
-                ageMatch: {value:{$gt:"1800-01-01T00:00:00.000Z"}, type:'text', noInput: true, conversionExpression: "record | ageMatch"}
+                periodStart: {value: "1800-01-01T00:00:00.000Z", type: 'text', add: 'ui-date ui-date-format ', conversionExpression: "param | date:'yyyy-MM-ddThh:mm:ss.sssZ'"},
+                periodFinish: {value: "2099-01-01T00:00:00.000Z", type: 'text', add: 'ui-date ui-date-format ', conversionExpression: "param | date:'yyyy-MM-ddThh:mm:ss.sssZ'"}
                 }
         };
-        </pre>
-    with this filter:
-        <pre>
-        myApp.filter('ageMatch',[function() {
-            return function(record) {
-                var thisYear = new Date().getYear();
-                switch (record.ageGroup) {
-                    case 'All' :
-                        return '{"$gt":"1800-01-01T00:00:00.000Z"}';
-                    case '65 and over':
-                        return '{"$lt":"' + (thisYear - 64) + '-01-01T00:00:00.000Z"}';
-                    case 'Under 65' :
-                        return '{"$gte":"' + (thisYear - 64) + '-01-01T00:00:00.000Z"}';
-                }
-            }
-        }]);
         </pre>
 
     <p>Using these options the report above can be <a

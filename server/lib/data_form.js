@@ -504,15 +504,16 @@ DataForm.prototype.report = function () {
                 runPipeline = JSON.parse(runPipeline);
 
                 // Replace variables that cannot be serialised / deserialised.  Bit of a hack, but needs must...
-                // Anything formatted 1800-01-01T00:00:00.000Z is converted to a Date
+                // Anything formatted 1800-01-01T00:00:00.000Z or 1800-01-01T00:00:00.000+0000 is converted to a Date
                 // Only handles the cases I need for now
                 // TODO: handle arrays etc
                 var hackVariables = function (obj) {
                     for (var prop in obj) {
                         if (obj.hasOwnProperty(prop)) {
                             if (typeof obj[prop] === 'string') {
-                                if (obj[prop].match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/)) {
-                                    obj[prop] = new Date(obj[prop])
+                                var dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(obj[prop]);
+                                if (dateTest) {
+                                    obj[prop] = new Date(dateTest[1]+'Z')
                                 }
                             } else if (_.isObject(obj[prop])) {
                                 hackVariables(obj[prop]);

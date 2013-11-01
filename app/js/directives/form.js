@@ -298,8 +298,11 @@ formsAngular
                     var processInstructions = function (instructionsArray, topLevel, groupId) {
                         for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
                             var info = instructionsArray[anInstruction];
-                            if (anInstruction === 0  && topLevel && !attrs.schema.match(/__schema_/) ) {
-                                info.add = ((info.add || '') + "autofocus ");
+                            if (anInstruction === 0  && topLevel && !attrs.schema.match(/__schema_/)) {
+                                info.add = (info.add || '');
+                                if (info.add.indexOf('ui-date') == -1) {
+                                    info.add = info.add + "autofocus ";
+                                }
                             }
                             var callHandleField = true;
                             if (info.directive) {

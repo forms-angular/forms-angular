@@ -191,6 +191,7 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                                         label: thisPart.label || $filter('titleCase')(param),
                                         type : thisPart.type || 'text',
                                         required: true,
+                                        add: thisPart.add || undefined,
                                         size: thisPart.size || 'small'
                                     });
                                     if (thisPart.type === 'select') {
