@@ -400,7 +400,7 @@ formsAngular
                                     var unwatch2 = scope.$watch('phase', function (newValue) {
                                         if (newValue === 'ready') {
                                             unwatch2();
-                                            for (subkeyCtr = 0 ; subkeyCtr < subkeys.length ; subkeyCtr ++) {
+                                            for (var subkeyCtr = 0 ; subkeyCtr < subkeys.length ; subkeyCtr ++) {
                                                 var info = subkeys[subkeyCtr],
                                                     arrayOffset,
                                                     matching,
@@ -412,7 +412,7 @@ formsAngular
                                                     arrayToProcess = info.subkey;
                                                 }
                                                 for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
-                                                    thisSubkeyList = arrayToProcess[thisOffset].keyList;
+                                                    var thisSubkeyList = arrayToProcess[thisOffset].keyList;
                                                     var dataVal = scope.record[info.name] = scope.record[info.name] || [];
                                                     for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
                                                         matching = true;
