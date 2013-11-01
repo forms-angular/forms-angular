@@ -213,6 +213,17 @@ formsAngular
                         return labelHTML;
                     };
 
+                    var processSubKey = function(niceName, thisSubkey, schemaDefName, info) {
+                        scope['__arrayOffset_' + niceName] = 0;
+                        var topAndTail = containerInstructions(thisSubkey);
+                        var markup = topAndTail.before;
+                        markup += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey' + '"></form-input>';
+                        markup += topAndTail.after;
+
+                        subkeys.push(info);
+                        return markup;
+                    };
+
                     var handleField = function (info, parentId) {
 
                         var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '')
@@ -225,18 +236,18 @@ formsAngular
                             var schemaDefName = '__schema_' + niceName;
                             scope[schemaDefName] = info.schema;
 
-                            // Check for subkey - selecting out one of the array
+                            // Check for subkey - selecting out one or more of the array
                             if (info.subkey) {
                                 info.subkey.path = info.name;
                                 scope[schemaDefName+'_subkey'] = info.subkey;
-                                scope['__arrayOffset_' + niceName] = 0;
 
-                                var topAndTail = containerInstructions(info.subkey);
-                                template += topAndTail.before;
-                                template += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey' + '"></form-input>';
-                                template += topAndTail.after;
-
-                                subkeys.push(info);
+                                if (angular.isArray(info.subkey)) {
+                                    for (var arraySel = 0 ; arraySel < info.subkey.length; arraySel++) {
+                                        template += processSubKey(niceName, info.subkey[arraySel], schemaDefName, info);
+                                    }
+                                } else {
+                                    template += processSubKey(niceName, info.subkey, schemaDefName, info);
+                                }
                             } else {
                                 template += '<div class="schema-head">' + info.label + '</div>' +
                                     '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +

@@ -71,6 +71,7 @@ describe('Subkeys', function () {
 
             it('generates correct fields', function () {
                 // correct number of fields - excluding subkey
+                dump(elm);
                 var input = elm.find('input');
                 expect(input.length).toBe(3);
 
