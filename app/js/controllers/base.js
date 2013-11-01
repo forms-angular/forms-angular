@@ -451,11 +451,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             master = convertToAngularModel($scope.formSchema, data, 0);
             $scope.phase = 'ready';
             $scope.cancel();
-            if (typeof $scope.dataEventFunctions.onRecordChange === "function") {
-                $scope.$watch('record', function (newValue, oldValue) {
-                    $scope.dataEventFunctions.onRecordChange(newValue, oldValue);
-                }, true);
-            }
             }).error(function () {
                 $location.path("/404");
             });
