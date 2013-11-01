@@ -426,30 +426,5 @@ describe('Data Events', function(){
 //        });
     });
 
-    describe('On record change', function() {
-
-        it('should call function when record changes', function() {
-            inject(function(_$httpBackend_, $rootScope, $controller, $location) {
-                $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/collection').respond({"name":{"enumValues":[],"regExp":null,"path":"name","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"label":"Organisation Name"},"list":true},"_index":null}});
-                $httpBackend.whenGET('api/collection/125').respond({"name":"Alan", "_id":"125"});
-                $location.$$path = '/collection/125/edit';
-                var scope = $rootScope.$new();
-                $controller("BaseCtrl", {$scope: scope});
-
-                scope.dataEventFunctions.onRecordChange = function(data) {
-                    data.name = 'George';
-                };
-
-                $httpBackend.flush();
-                scope.record.name = "Philip";
-
-                scope.$digest();
-                expect(scope.record.name).toEqual('George');
-            });
-        });
-
-    })
-
 });
 

@@ -240,12 +240,12 @@ describe('Models API', function () {
 describe('MongoDB selection API', function () {
 
     it('Should filter', function (done) {
-        exec('curl 0.0.0.0:3001/api/f_nested_schema?f=%7B%22exams.subject%22:%22Maths%22%7D', function (err, stdout) {
+        exec('curl 0.0.0.0:3001/api/f_nested_schema?f=%7B%22exams.subject%22:%22Physics%22%7D', function (err, stdout) {
             if (err) {
                 throw new Error('curl f with filter failed')
             }
             var data = JSON.parse(stdout);
-            assert.equal(data.length, 2);
+            assert.equal(data.length, 1);
             done();
         })
     });
