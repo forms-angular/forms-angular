@@ -7,7 +7,7 @@ var ExamsSchema = new Schema({
     score: Number,
     result: {type: String, enum:['distinction','merit','pass','fail']},
     grader: { type: Schema.Types.ObjectId, ref: 'b_using_options', form:{select2:{fngAjax:true}}}
-});
+}, {_id: false});
 
 var FSchema = new Schema({
     surname: {type: String, index:true, list:{}},
@@ -26,7 +26,7 @@ F.prototype.searchResultFormat = function() {
     // ordering within a collection
     var weighting;
 
-    weighting = this.forename === 'John' ? 1 : 3;
+    weighting = this.forename === 'John' ? 2 : 3;
 
     return {
         resource: 'f_nested_schema',
@@ -35,6 +35,29 @@ F.prototype.searchResultFormat = function() {
         weighting: weighting,
         text: this.surname + ', ' + this.forename
     }
+};
+
+FSchema.statics.form = function(layout) {
+    var formSchema = '';
+    switch (layout) {
+        case 'English' :
+            // Just the English exam from the array
+            formSchema = {
+                surname: {},
+                forename:  {},
+                exams: {subkey:{keyList:{subject:'English'}, containerType:'well', title:'English Exam'}}
+            };
+            break;
+        case 'EnglishAndMaths' :
+            // English and Maths exams from the array
+            formSchema = {
+                surname: {},
+                forename:  {},
+                exams: {subkey:[{keyList:{subject:'English'}, containerType:'well', title:'English Exam'},{keyList:{subject:'Maths'}, containerType:'well', title:'Maths Exam'}]}
+            };
+            break;
+    }
+    return formSchema;
 };
 
 module.exports = {

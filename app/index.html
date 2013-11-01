@@ -2,32 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>forms-angular</title>
 
     <!-- what forms-angular depends on -->
-    <script type="text/javascript" src="components/jquery/jquery.js"></script>
-    <script type="text/javascript" src="components/jquery-ui/ui/jquery-ui.js"></script>
-    <link rel="stylesheet" href="components/jquery-ui/themes/smoothness/jquery-ui.css">
-    <script type="text/javascript" src="components/angular/angular.js"></script>
-    <script type="text/javascript" src="components/angular-route/angular-route.js"></script>
-    <script type="text/javascript" src="components/angular-sanitize/angular-sanitize.js"></script>
-    <script type="text/javascript" src="components/underscore/underscore.js"></script>
-    <script type="text/javascript" src="components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script> <!-- is now in fngTabs.js  -->
-    <script type="text/javascript" src="components/angular-ui-date/src/date.js"></script>
-    <script type="text/javascript" src="components/angular-ui-select2/src/select2.js"></script>
-    <script type="text/javascript" src="components/ngInfiniteScroll/ng-infinite-scroll.js"></script>
-    <script type="text/javascript" src="components/jspdf/dist/jspdf.source.js"></script>
-    <link rel="stylesheet" href="components/ng-grid/ng-grid.css">
-    <script type="text/javascript" src="components/ng-grid/build/ng-grid.js"></script>
+    <script type="text/javascript" src="bower_components/jquery/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
+    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript" src="bower_components/angular-route/angular-route.js"></script>
+    <script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script type="text/javascript" src="bower_components/underscore/underscore.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script> <!-- is now in fngTabs.js  -->
+    <script type="text/javascript" src="bower_components/angular-ui-date/src/date.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-select2/src/select2.js"></script>
+    <script type="text/javascript" src="bower_components/ngInfiniteScroll/ng-infinite-scroll.js"></script>
+    <script type="text/javascript" src="bower_components/jspdf/dist/jspdf.source.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/js/bootstrap-transition.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/js/bootstrap-collapse.js"></script>
+    <link rel="stylesheet" href="bower_components/ng-grid/ng-grid.css">
+    <script type="text/javascript" src="bower_components/ng-grid/build/ng-grid.js"></script>
 
-    <link rel="stylesheet" href="components/select2/select2.css">
-    <script type="text/javascript" src="components/angular-elastic/elastic.js"></script>
-    <script type="text/javascript" src="components/select2/select2.js"></script>
-    <script type="text/javascript" src="components/angular-dragdrop/src/angular-dragdrop.js"></script>
-    <script type="text/javascript" src="components/angular-ui-sortable/src/sortable.js"></script>
+    <link rel="stylesheet" href="bower_components/select2/select2.css">
+    <script type="text/javascript" src="bower_components/angular-elastic/elastic.js"></script>
+    <script type="text/javascript" src="bower_components/select2/select2.js"></script>
+    <script type="text/javascript" src="bower_components/angular-dragdrop/src/angular-dragdrop.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-sortable/src/sortable.js"></script>    
 
     <!-- forms-angular stuff -->
-    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="demo/css/demo.css">
     <script src="js/forms-angular.js"></script>
     <script src="js/services/location-parse.js"></script>
     <script src="js/services/data.js"></script>
@@ -55,10 +58,12 @@
 
     <!--Demo application stuff-->
     <script src="demo/demo.js"></script>
-    <script src="demo/bespoke-field.js"></script>
-    <script src="demo/b-using-options.js"></script>
-    <script src="demo/b-using-options-justnameandpostcode.js"></script>
-    <script src="demo/d-array-example.js"></script>
+    <script src="demo/directives/bespoke-field.js"></script>
+    <script src="demo/directives/affix.js"></script>
+    <script src="demo/controllers/b-using-options.js"></script>
+    <script src="demo/controllers/in-the-wild.js"></script>
+    <script src="demo/controllers/b-using-options-justnameandpostcode.js"></script>
+    <script src="demo/controllers/d-array-example.js"></script>
 
     <!--[if lt IE 9]>
     <script src="components/html5shiv-dist/html5shiv.js"></script>
@@ -81,25 +86,22 @@
     </script>
 </head>
 <body ng-app="myDemoApp" ng-controller="NavCtrl">
-<a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png"
-                                                         style="position: fixed; right: 0; top: 0;"></a>
+<div class="visible-desktop">
+    <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032"></a>
+</div>
 
-<div class="navbar row" ng-hide="routing.index">
+<div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
-        <ul class="nav">
-            <li><a href="/">Home</a></li>
-            <li ng-show="items.length > 0" class="dropdown" >
-                <a class="dropdown-toggle">
-                    {{contextMenu}}
-                </a>
-                <ul class="dropdown-menu">
-                    <li ng-repeat="choice in items">
-                        <a class="dropdown-option" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        <div class="span9">
+        <div class="container-fluid">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <div class="pull-left">
+                <a class="brandpluslogo" href="/#/index"><img src="/img/Home_icon_black.png" width="45" alt="Click on logo to go to home page"></a>
+            </div>
+            <div class="visible-desktop pull-right span2"></div>   <!-- Leave some space for github flash -->
             <div ng-controller="SearchCtrl" class="global-search">
                 <form class="navbar-search pull-right">
                     <div id="search-cg" class="control-group" ng-class="errorClass">
@@ -114,12 +116,47 @@
                     </div>
                 </div>
             </div>
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li><a href="/#/get-started">Get Started</a></li>
+                    <li><a href="/#/schemas">Schemas</a></li>
+                    <li><a href="/#/forms">Forms</a></li>
+                    <li><a href="/#/reporting">Reporting</a></li>
+                    <li class="dropdown"><a class="dropdown-toggle">More</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-option" href="/#/examples">Examples</a></li>
+                            <li><a class="dropdown-option" href="/#/api-docs">API Documentation</a></li>
+                            <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
+                            <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
+                            <li><a class="dropdown-option" href="/#/in-the-wild">Who Uses It?</a></li>
+                        </ul>
+                    </li>
+
+                    <li ng-show="items.length > 0" class="dropdown" >
+                        <a class="dropdown-toggle">
+                            {{contextMenu}}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="choice in items">
+                                <a class="dropdown-option" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
-<div class="container-fluid">
-    <div ng-view></div>
-</div>
-
+<div ng-view></div>
+<footer class="footer">
+    <div class="container-fluid">
+        <p>Code licensed under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <ul class="footer-links">
+            <li><a href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
+            <li class="muted">·</li>
+            <li><a href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
+        </ul>
+    </div>
+</footer>
 </body>
 </html>

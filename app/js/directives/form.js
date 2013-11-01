@@ -24,15 +24,13 @@ formsAngular
 //                    <input type="text" class="input-small" placeholder="Email">
 
                     var elementHtml = ''
+                        , subkeys = []
                         , tabsSetup = false;
 
-                        scope.toggleFolder = function(groupId) {
-
-                            scope['showHide'+groupId] = !scope['showHide' + groupId];
-
-                            $('i.' + groupId).toggleClass('icon-folder-open icon-folder-close');
-
-                        };
+                    scope.toggleFolder = function(groupId) {
+                        scope['showHide'+groupId] = !scope['showHide' + groupId];
+                        $('i.' + groupId).toggleClass('icon-folder-open icon-folder-close');
+                    };
 
                     var isHorizontalStyle = function(formStyle) {
                         return (!formStyle || formStyle === "undefined" || formStyle === 'horizontal' || formStyle === 'horizontalCompact');
@@ -59,8 +57,14 @@ formsAngular
                                 // Schema handling - need to massage the ngModel and the id
                                 var compoundName = fieldInfo.name,
                                     lastPartStart = compoundName.lastIndexOf('.');
-                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$index + '.' + compoundName.slice(lastPartStart + 1);
-                                idString = modelString.slice(7).replace(/\./g, '-')
+
+                                if (attrs.subkey) {
+                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '[' + '__arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '_' + attrs.subkeyno + '].' + compoundName.slice(lastPartStart + 1);
+                                    idString = compoundName + '_subkey';
+                                } else {
+                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$index + '.' + compoundName.slice(lastPartStart + 1);
+                                    idString = modelString.slice(7).replace(/\./g, '-')
+                                }
                             } else {
                                 modelString = (attrs.model || 'record') + '.' + fieldInfo.name;
                             }
@@ -72,7 +76,7 @@ formsAngular
 
                         if (attrs.formstyle === 'inline') placeHolder = placeHolder || fieldInfo.label;
                         var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (placeHolder ? ('placeholder="' + placeHolder + '" ') : "");
-                        common +=   addAll("Field");
+                        common += addAll("Field");
                         if (fieldInfo.type === 'select') {
                             common += (fieldInfo.readonly ? 'disabled ' : '');
                             if (fieldInfo.select2) {
@@ -94,7 +98,7 @@ formsAngular
                                 value += '</select>';
                             }
                         } else if (fieldInfo.type === 'link') {
-                            value = '<a ng-href="/#/' + fieldInfo.ref + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
+                            value = '<a ng-href="/#/' + fieldInfo.ref + (fieldInfo.form ? '/'+fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
                         } else {
                             common += (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                             if (fieldInfo.type == 'textarea') {
@@ -145,6 +149,72 @@ formsAngular
                         }
                     };
 
+                    var containerInstructions = function(info) {
+                        var result = {before:'', after:''};
+                        switch (info.containerType) {
+                            case 'pane' :
+                                result.before = '<pane heading="' + info.title + '" active="' + (info.active || 'false') + '">';
+                                result.after = '</pane>';
+                                break;
+                            case 'tab' :
+                                result.before = '<tabs>';
+                                result.after = '</tabs>';
+                                break;
+                            case 'well' :
+                                result.before = '<div class="well">';
+                                if (info.title) {
+                                    result.before += '<h4>' + info.title + '</h4>';
+                                }
+                                result.after = '</div>';
+                                break;
+                            case 'well-large' :
+                                result.before = '<div class="well well-large">';
+                                result.after = '</div>';
+                                break;
+                            case 'well-small' :
+                                result.before = '<div class="well well-small">';
+                                result.after = '</div>';
+                                break;
+                            case 'fieldset' :
+                                result.before = '<fieldset>';
+                                if (info.title) {
+                                    result.before += '<legend>' + info.title + '</legend>';
+                                }
+                                result.after = '</fieldset>';
+                                break;
+                            case 'container' :
+                                result.before = '<fieldset>';
+                                if (info.title) {
+                                    result.before += '<a ng-click="toggleFolder(\''+ info.id +'\')" class="container-header"><i class="icon-folder-open ' + info.id + '"></i>';
+                                    result.before +=  info.title ;
+                                    result.before += '</a><i class="icon-plus-sign"></i>';
+
+                                }
+                                processInstructions(info.content, null, info.id);
+                                result.after = '</fieldset>';
+                                break;
+                            case undefined:
+                                break;
+                            case null:
+                                break;
+                            case '':
+                                break;
+                            default:
+                                result.before = '<div class="' + info.containerType + '">';
+                                if (info.title) {
+                                    var titleLook = info.titleTagOrClass || "h4";
+                                    if (titleLook.match(/h[1-6]/)) {
+                                        result.before += '<' + titleLook + '>' + info.title + '</' + info.titleLook + '>';
+                                    } else {
+                                        result.before += '<p class="' + titleLook + '">'+ info.title +'</p>'
+                                    }
+                                }
+                                result.after = '</div>';
+                                break;
+                        }
+                        return result;
+                    };
+
                     var generateLabel = function (fieldInfo, addButtonMarkup) {
                         var labelHTML = '';
                         if ((attrs.formstyle !== 'inline' && fieldInfo.label !== '') || addButtonMarkup) {
@@ -155,6 +225,15 @@ formsAngular
                             labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
                         }
                         return labelHTML;
+                    };
+
+                    var processSubKey = function(niceName, thisSubkey, schemaDefName, info, subkeyNo) {
+                        scope['__arrayOffset_' + niceName + '_' + subkeyNo] = 0;
+                        var topAndTail = containerInstructions(thisSubkey);
+                        var markup = topAndTail.before;
+                        markup += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey" subkeyno = "' + subkeyNo + '"></form-input>';
+                        markup += topAndTail.after;
+                        return markup;
                     };
 
                     var handleField = function (info, parentId) {
@@ -173,33 +252,47 @@ formsAngular
                             var niceName = info.name.replace(/\./g,'_');
                             var schemaDefName = '__schema_' + niceName;
                             scope[schemaDefName] = info.schema;
-                            template += '<div class="schema-head">' + info.label + '</div>' +
-                                '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
-                                '<div class="row-fluid sub-doc">' +
-                                '<div class="pull-left">' +
-                                '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + info.formStyle + '"></form-input>' +
-                                '</div>';
 
-                            if (!info.noRemove) {
-                                template += '<div class="pull-left sub-doc-btns">' +
-                                    '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(\''+info.name+'\',$index)">' +
-                                    '<i class="icon-minus"></i> Remove' +
-                                    '</button>' +
-                                    '</div> '
+                            // Check for subkey - selecting out one or more of the array
+                            if (info.subkey) {
+                                info.subkey.path = info.name;
+                                scope[schemaDefName+'_subkey'] = info.subkey;
+
+                                if (angular.isArray(info.subkey)) {
+                                    for (var arraySel = 0 ; arraySel < info.subkey.length; arraySel++) {
+                                        template += processSubKey(niceName, info.subkey[arraySel], schemaDefName, info, arraySel);
+                                    }
+                                } else {
+                                    template += processSubKey(niceName, info.subkey, schemaDefName, info, '0');
+                                }
+                                subkeys.push(info);
+                            } else {
+                                template += '<div class="schema-head">' + info.label + '</div>' +
+                                    '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
+                                    '<div class="row-fluid sub-doc">' +
+                                    '<div class="pull-left">' +
+                                    '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + info.formStyle + '"></form-input>' +
+                                    '</div>';
+
+                                if (!info.noRemove) {
+                                    template += '<div class="pull-left sub-doc-btns">' +
+                                        '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(\''+info.name+'\',$index)">' +
+                                        '<i class="icon-minus"></i> Remove' +
+                                        '</button>' +
+                                        '</div> '
+                                }
+
+                                template += '</div>' +
+                                    '</div>' +
+                                    '<div class = "schema-foot">';
+                                if (!info.noAdd) {
+                                    template += '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(\''+info.name+'\')">' +
+                                        '<i class="icon-plus"></i> Add' +
+                                        '</button>'
+                                }
+                                template += '</div>';
                             }
-
-                            template += '</div>' +
-                                '</div>' +
-                                '<div class = "schema-foot">';
-                            if (!info.noAdd) {
-                                template += '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(\''+info.name+'\')">' +
-                                    '<i class="icon-plus"></i> Add' +
-                                    '</button>'
-                            }
-                            template += '</div>';
-                        }
-
-                          else {
+                        } else {
                             // Handle arrays here
                             var controlClass = (isHorizontalStyle(attrs.formstyle)) ? ' class="controls"' : '';
                             if (info.array) {
@@ -224,9 +317,13 @@ formsAngular
                     var processInstructions = function (instructionsArray, topLevel, groupId) {
                         for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
                             var info = instructionsArray[anInstruction];
-                            if (anInstruction === 0  && topLevel && !attrs.schema.match(/__schema_/) ) {
-                                info.add = ((info.add || '') + "autofocus ");
+                            if (anInstruction === 0  && topLevel && !attrs.schema.match(/__schema_/)) {
+                                info.add = (info.add || '');
+                                if (info.add.indexOf('ui-date') == -1) {
+                                    info.add = info.add + "autofocus ";
+                                }
                             }
+                            var callHandleField = true;
                             if (info.directive) {
                                 var directiveName = info.directive;
                                 var newElement = '<' + directiveName;
@@ -254,7 +351,9 @@ formsAngular
                                 }
                                 newElement += '></' + directiveName + '>';
                                 elementHtml += newElement;
+                                callHandleField = false;
                             } else if (info.containerType) {
+                                var parts = containerInstructions(info);
                                 switch (info.containerType) {
                                     case 'pane' :
                                         // maintain support for simplified pane syntax for now
@@ -262,65 +361,38 @@ formsAngular
                                             tabsSetup = 'forced';
                                             elementHtml += '<tabs>';
                                         }
-                                        elementHtml += '<pane heading="' + info.title + '" active="' + (info.active || 'false') + '">';
+
+                                        elementHtml += parts.before;
                                         processInstructions(info.content);
-                                        elementHtml += '</pane>';
+                                        elementHtml += parts.after;
                                         break;
                                     case 'tab' :
-                                        elementHtml += '<tabs>';
-                                        processInstructions(info.content);
-                                        elementHtml += '</tabs>';
                                         tabsSetup = true;
-                                        break;
-                                    case 'well' :
-                                        elementHtml += '<div class="well">';
+                                        elementHtml += parts.before;
                                         processInstructions(info.content);
-                                        elementHtml += '</div>';
-                                        break;
-                                    case 'well-large' :
-                                        elementHtml += '<div class="well well-large">';
-                                        processInstructions(info.content);
-                                        elementHtml += '</div>';
-                                        break;
-                                    case 'well-small' :
-                                        elementHtml += '<div class="well well-small">';
-                                        processInstructions(info.content);
-                                        elementHtml += '</div>';
-                                        break;
-                                    case 'fieldset' :
-                                        elementHtml += '<fieldset>';
-                                        if (info.title) {
-                                            elementHtml += '<legend>' + info.title + '</legend>';
-                                        }
-                                        processInstructions(info.content);
-                                        elementHtml += '</fieldset>';
+                                        elementHtml += parts.after;
                                         break;
                                     case 'container' :
-                                        elementHtml += '<fieldset>';
-                                        if (info.title) {
-                                            elementHtml += '<a ng-click="toggleFolder(\''+ info.id +'\')" class="container-header"><i class="icon-folder-open ' + info.id + '"></i>';
-                                            elementHtml +=  info.title ;
-                                            elementHtml += '</a><i class="icon-plus-sign"></i>';
-
-                                        }
+                                        elementHtml += parts.before;
                                         processInstructions(info.content, null, info.id);
-                                        elementHtml += '</fieldset>';
-                                        break; 
+                                        elementHtml += parts.after;
+                                        break;
                                     default:
-                                        elementHtml += '<div class="' + info.containerType + '">';
-                                        if (info.title) {
-                                            var titleLook = info.titleTagOrClass || "";
-                                            if (titleLook.match(/h[1-6]/)) {
-                                                elementHtml += '<' + titleLook + '>' + info.title + '</' + info.titleLook + '>';
-                                            } else {
-                                                elementHtml += '<p class="' + titleLook + '">'+ info.title +'</p>'
-                                            }
-                                        }
+                                        // includes wells, fieldset
+                                        elementHtml += parts.before;
                                         processInstructions(info.content);
-                                        elementHtml += '</fieldset>';
+                                        elementHtml += parts.after;
                                         break;
                                 }
-                            } else {
+                                callHandleField = false;
+                            } else if (attrs.subkey) {
+                                // Don't do fields that form part of the subkey
+                                var objectToSearch = angular.isArray(scope[attrs.subkey]) ? scope[attrs.subkey][0].keyList : scope[attrs.subkey].keyList;
+                                if (_.find(objectToSearch, function(value, key){return scope[attrs.subkey].path + '.' + key === info.name})) {
+                                    callHandleField = false;
+                                }
+                            }
+                            if (callHandleField) {
                                 if (groupId) {
                                     scope['showHide' + groupId] = true;
                                 }
@@ -343,6 +415,53 @@ formsAngular
                                     elementHtml += '</tabs>';
                                 }
                                 element.replaceWith($compile(elementHtml)(scope));
+
+                                // If there are subkeys we need to fix up ng-model references when record is read
+                                if (subkeys.length > 0) {
+
+                                    var unwatch2 = scope.$watch('phase', function (newValue) {
+                                        if (newValue === 'ready') {
+                                            unwatch2();
+                                            for (var subkeyCtr = 0 ; subkeyCtr < subkeys.length ; subkeyCtr ++) {
+                                                var info = subkeys[subkeyCtr],
+                                                    arrayOffset,
+                                                    matching,
+                                                    arrayToProcess;
+
+                                                if (!angular.isArray(info.subkey)) {
+                                                    arrayToProcess = [info.subkey];
+                                                } else {
+                                                    arrayToProcess = info.subkey;
+                                                }
+                                                for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
+                                                    var thisSubkeyList = arrayToProcess[thisOffset].keyList;
+                                                    var dataVal = scope.record[info.name] = scope.record[info.name] || [];
+                                                    for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
+                                                        matching = true;
+                                                        for (var keyField in thisSubkeyList) {
+                                                            if (thisSubkeyList.hasOwnProperty(keyField)) {
+                                                                // Not (currently) concerned with objects here - just simple types
+                                                                if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField]) {
+                                                                    matching = false;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                        if (matching) {
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (!matching) {
+                                                        // There is no matching array element - we need to create one
+                                                        arrayOffset = scope.record[info.name].push(thisSubkeyList) - 1;
+                                                    }
+                                                    scope['__arrayOffset_' + info.name.replace(/\./g,'_') + '_' + thisOffset] = arrayOffset;
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+
                                 $rootScope.$broadcast('formInputDone');
 
                                 if (scope.updateDataDependentDisplay) {

@@ -60,20 +60,4 @@ describe('Global search capability', function() {
         expect( element('.search-result:first').text()).toMatch('John')                     // test weighting)
     });
 
-    it('should support searchImportance option', function() {
-        browser().navigateTo('/');
-        input('searchTarget').enter('Smi');
-        expect( repeater( '.search-result' ).count() ).toEqual(10);
-        expect( element('.search-result').text()).not().toMatch('Exams')
-    });
-
-    it('should support searchOrder option', function() {
-        browser().navigateTo('/');
-        input('searchTarget').enter('Smi');
-        expect( repeater( '.search-result' ).count() ).toEqual(10);
-        expect( element('.search-result:first').text()).toMatch('Smith00')
-        expect( element('.search-result:last').text()).toMatch('Smith10')
-        expect( element('.search-result').text()).not().toMatch('John07')
-    });
-
 });

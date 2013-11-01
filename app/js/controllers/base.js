@@ -5,6 +5,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var allowLocationChange = true;   // Set when the data arrives..
 
     $scope.record = sharedStuff.record;
+    $scope.phase = 'init';
     $scope.disableFunctions = sharedStuff.disableFunctions;
     $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
     $scope.formSchema = [];
@@ -133,6 +134,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (formInstructions.link && formInstructions.link.linkOnly) {
                 formInstructions.type = 'link';
                 formInstructions.linkText = formInstructions.link.text;
+                formInstructions.form = formInstructions.link.form;
                 delete formInstructions.link;
             } else {
                 formInstructions.type = 'select';
@@ -462,12 +464,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 $scope.dataEventFunctions.onAfterRead(data);
             }
             master = convertToAngularModel($scope.formSchema, data, 0);
+            $scope.phase = 'ready';
             $scope.cancel();
-            if (typeof $scope.dataEventFunctions.onRecordChange === "function") {
-                $scope.$watch('record', function (newValue, oldValue) {
-                    $scope.dataEventFunctions.onRecordChange(newValue, oldValue);
-                }, true);
-            }
             }).error(function () {
                 $location.path("/404");
             });
@@ -528,7 +526,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     $scope.readRecord();
                 }
             } else {
+                // New record
                 master = {};
+                $scope.phase = 'ready';
                 $scope.cancel();
             }
         }

@@ -148,6 +148,69 @@ describe('Update Data API', function () {
     })
 });
 
+describe('Search API', function() {
+
+    it('should support searchImportance option', function(done) {
+        exec('curl 0.0.0.0:3001/api/search?q=Smi',
+            function (error, stdout) {
+                if (error) {
+                    throw new Error('curl failed')
+                }
+                var aData = JSON.parse(stdout);
+                assert(aData.results.length,10);
+                assert(JSON.stringify(aData.results).indexOf('Exams'),-1);
+                done();
+            });
+
+    });
+
+    it('should support searchOrder option', function(done) {
+        exec('curl 0.0.0.0:3001/api/search?q=Smi',
+            function (error, stdout) {
+                if (error) {
+                    throw new Error('curl failed')
+                }
+                var aData = JSON.parse(stdout);
+                assert(aData.results.length,10);
+                assert(aData.results[0].text, 'Smith00 John00');
+                assert(aData.results[9].text, 'Smith10 John10');
+                assert(JSON.stringify(aData.results).indexOf('John07'),-1);
+                done();
+            });
+    });
+
+    it('should find a record from a partial initial string', function(done){
+        exec('curl 0.0.0.0:3001/api/search?q=ann',
+            function (error, stdout) {
+                if (error) {
+                    throw new Error('curl failed')
+                }
+                var aData = JSON.parse(stdout);
+                assert.equal(aData.results.length,1);
+                assert.equal(aData.results[0].id, "51c583d5b5c51226db418f16");
+                assert.equal(aData.results[0].resource, 'f_nested_schema');
+                assert.equal(aData.results[0].resourceText, 'Exams');
+                assert.equal(aData.results[0].text, 'Smith, Anne');
+                done();
+            });
+    });
+
+    it('should find a record from multiple partial initial strings', function(done){
+        exec('curl 0.0.0.0:3001/api/search?q=smi%20john04',
+            function (error, stdout) {
+                if (error) {
+                    throw new Error('curl failed')
+                }
+                var aData = JSON.parse(stdout);
+                assert.notEqual(aData.moreCount,0);
+                assert.equal(aData.results[0].text, 'Smith04 John04');  // Double hit
+                assert.equal(aData.results[1].text, 'Smith00 John00');  // normal weighting
+                done();
+            });
+    })
+
+});
+
 describe('Models API', function () {
 
     var aData;
@@ -177,12 +240,12 @@ describe('Models API', function () {
 describe('MongoDB selection API', function () {
 
     it('Should filter', function (done) {
-        exec('curl 0.0.0.0:3001/api/f_nested_schema?f=%7B%22exams.subject%22:%22Maths%22%7D', function (err, stdout) {
+        exec('curl 0.0.0.0:3001/api/f_nested_schema?f=%7B%22exams.subject%22:%22Physics%22%7D', function (err, stdout) {
             if (err) {
                 throw new Error('curl f with filter failed')
             }
             var data = JSON.parse(stdout);
-            assert.equal(data.length, 2);
+            assert.equal(data.length, 1);
             done();
         })
     });
@@ -236,7 +299,7 @@ describe('Secure fields', function () {
             assert.equal(data[0].surname, 'Anderson');
             assert.equal(data[0].passwordHash, undefined);
             assert.notEqual(data[0].interview.score, undefined);
-            assert.equal(data[0].interview.interviewHash, undefined)
+            assert.equal(data[0].interview.interviewHash, undefined);
             done();
         });
     });

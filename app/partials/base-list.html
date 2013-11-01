@@ -1,23 +1,22 @@
-<div ng-controller="BaseCtrl" class="row-fluid">
-    <div class="row-fluid">
-        <div class="hero-unit span12">
-            <div class="row-fluid">
-                <div class="pull-left">
-                    <h1>{{modelNameDisplay}}</h1>
-                </div>
-                <div class="pull-right">
-                    <br/>
-                    <button class="btn" ng-click="new()"><i class="icon-plus"></i> New</button>
-                </div>
+<div ng-controller="BaseCtrl">
+    <div class="container-fluid page-header list-header">
+        <div class="row-fluid">
+            <div class="header-lhs span9">
+                <h1>{{modelNameDisplay}}</h1>
+            </div>
+            <div class="header-rhs span2">
+                <button class="btn pull-right" ng-click="new()"><i class="icon-plus"></i> New</button>
             </div>
         </div>
     </div>
-    <div class="row-fluid" infinite-scroll="scrollTheList()">
-        <a ng-repeat="record in recordList" ng-href="/#/{{modelName}}/{{formPlusSlash}}{{record['_id']}}/edit">
-            <div class="well well-small list-well">
-                <div class="span{{12/listSchema.length}}" ng-repeat="field in listSchema">{{getListData(record, field.name)}} </div>
-            </div>
-        </a>
+    <div class="container-fluid page-body list-body">
+        <div class="row-fluid" infinite-scroll="scrollTheList()">
+            <a ng-repeat="record in recordList" ng-href="/#/{{modelName}}/{{formPlusSlash}}{{record['_id']}}/edit">
+                <div class="list-item">
+                    <div class="span{{12/listSchema.length}}" ng-repeat="field in listSchema">{{getListData(record, field.name)}} </div>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 

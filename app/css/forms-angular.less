@@ -1,7 +1,82 @@
-@import "../components/bootstrap/less/bootstrap.less";
 @icon-font-path: "../fonts/glyphicons/";
 
-@import "../components/select2-bootstrap-css/lib/select2-bootstrap.less";
+// Default styling for the forms-angular classes
+body {
+  position: relative;
+  padding-top: 40px;
+}
+
+.list-item {
+  .well;
+  .well-small;
+}
+
+.list-header, .edit-header {
+  .fixed-header;
+}
+
+.list-body {
+  padding-top: 100px;
+}
+
+.edit-header {
+  padding-top: 10px;
+}
+
+.edit-body {
+  padding-top: 100px;
+}
+
+.page-header {
+  padding-left: 20px;
+  font-family: @headingsFontFamily;
+  font-weight: @headingsFontWeight;
+  color: @headingsColor;
+  font-size: @fontSizeLarge;
+  border-bottom: 2px solid @headingsColor;
+  min-height: @navbarHeight;
+}
+
+.header-rhs {
+  width: 185px;
+  padding-right: 60px;
+  min-height: 40px;
+}
+
+.list-header .header-rhs {
+  margin: 15px 0;
+}
+
+// "Mixins"
+.fixed-header {
+  position: fixed;
+  width: 100%;
+  background-color: @bodyBackground;
+  margin-top: 11px;
+  z-index: 1;
+}
+
+@media (max-width: @navbarCollapseWidth) {
+
+  // UNFIX THE TOPBAR
+  // ----------------
+//  // Remove any padding from the page body
+  .page-body {
+    padding-top: 0;
+  }
+  // Unfix the navbars
+  .page-header {
+    position: static;
+  }
+}
+
+.header-rhs {
+  width: inherited !important;
+  padding-right: 20px !important;
+  padding-bottom: 5px;
+  display: block;
+}
+
 
 // Modifications to ngGrid style
 
@@ -29,8 +104,8 @@
   }
 }
 
-form.form-horizontal {
-  .compact {
+form {
+  &.form-horizontal.compact {
     .control-group {
       margin-bottom: 2px;
     }
@@ -43,10 +118,6 @@ form.form-horizontal {
       margin: 8px 0;
     }
   }
-}
-
-form {
-
   button.form-btn {
     width: 8em;
     height: 2em;
@@ -99,13 +170,12 @@ form {
   .fng-select2 {
     width: 220px;
   }
-}
-
-.form-inline > .sub-doc {
-  padding: 0 5px;
-  border: none;
-  background-color: @bodyBackground;
-  box-shadow: none;
+  .form-inline > .sub-doc {
+    padding: 0 5px;
+    border: none;
+    background-color: @bodyBackground;
+    box-shadow: none;
+  }
 }
 
 .global-search {
@@ -134,6 +204,12 @@ form {
     border-radius: 15px;
 }
 
+@media (max-width: @navbarCollapseWidth) {
+
+  .global-search {
+    padding-right : 1em;
+  }
+}
 
 .hierarchy-list {
 
@@ -188,5 +264,7 @@ form {
 .roothoverindicator {
     background-color: #eee;
 }
+
+
 
 
