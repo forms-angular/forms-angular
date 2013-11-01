@@ -71,7 +71,6 @@ describe('Subkeys', function () {
 
             it('generates correct fields', function () {
                 // correct number of fields - excluding subkey
-                dump(elm);
                 var input = elm.find('input');
                 expect(input.length).toBe(3);
 
@@ -229,6 +228,102 @@ describe('Subkeys', function () {
             it('creates a new array element', function () {
                 expect(scope.record.exams.length).toBe(1);
                 expect(scope.record.exams[0].subject).toBe('English');
+            });
+
+        });
+
+    });
+
+    describe('two subkeys', function () {
+
+        var $httpBackend, scope, ctrl, elm,
+            subkeySchema = {
+                "surname": {"enumValues": [], "regExp": null, "path": "surname", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"index": true, "list": {}}, "_index": true, "$conditionalHandlers": {}},
+                "forename": {"enumValues": [], "regExp": null, "path": "forename", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"index": true, "list": true}, "_index": true, "$conditionalHandlers": {}},
+                "exams": {
+                    "schema": {
+                        "subject": {"enumValues": [], "regExp": null, "path": "subject", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {}, "_index": null, "$conditionalHandlers": {}},
+                        "score": {"path": "score", "instance": "Number", "validators": [], "setters": [], "getters": [], "options": {}, "_index": null, "$conditionalHandlers": {}}
+                    },
+                    "options": {
+                        "form": {
+                            "formStyle": "inline",
+                            "subkey": [
+                                {
+                                    "keyList": {"subject": "English"},
+                                    "container": "fieldset",
+                                    "title": "English Exam"
+                                },
+                                {
+                                    "keyList": {"subject": "Maths"},
+                                    "container": "fieldset",
+                                    "title": "Maths Exam"
+                                }
+                            ]
+                        }
+                    }
+                }
+            };
+
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+            $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        describe('existing data with selected data', function () {
+
+            beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
+                $httpBackend = _$httpBackend_;
+                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
+                $httpBackend.whenGET('api/f_nested_schema/51c583d5b5c51226db418f16').respond({
+                    "_id": "51c583d5b5c51226db418f16",
+                    "surname": "Smith",
+                    "forename": "Anne",
+                    "exams": [
+                        {
+                            "subject": "English",
+                            "score": 83
+                        },
+                        {
+                            "subject": "French",
+                            "score": 34
+                        },
+                        {
+                            "subject": "Maths",
+                            "score": 97
+                        }
+                    ]
+                });
+                $location.$$path = '/f_nested_schema/English/51c583d5b5c51226db418f16/edit';
+                elm = angular.element(
+                    '<form name="myForm" class="form-horizontal compact">' +
+                        '<form-input schema="formSchema"></form-input>' +
+                        '</form>');
+                scope = $rootScope.$new();
+                $compile(elm)(scope);
+                scope.$digest();
+                ctrl = $controller("BaseCtrl", {$scope: scope});
+                $httpBackend.flush();
+            }));
+
+            it('generates correct fields', function () {
+                // correct number of fields - excluding subkey
+                var input = elm.find('input');
+                expect(input.length).toBe(4);
+
+                var label = angular.element(elm.find('label')[0]);
+                expect(label.text()).toBe('Surname');
+                label = angular.element(elm.find('label')[1]);
+                expect(label.text()).toBe('Forename');
+                label = angular.element(elm.find('label')[2]);
+                expect(label.text()).toBe('Score');
+                label = angular.element(elm.find('label')[3]);
+                expect(label.text()).toBe('Score');
+
+                input = angular.element(elm.find('input')[2]);
+                expect(input.val()).toBe('83');
+                input = angular.element(elm.find('input')[3]);
+                expect(input.val()).toBe('97');
             });
 
         });

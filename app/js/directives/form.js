@@ -45,7 +45,7 @@ formsAngular
                                     lastPartStart = compoundName.lastIndexOf('.');
 
                                 if (attrs.subkey) {
-                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '[' + '__arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '].' + compoundName.slice(lastPartStart + 1);
+                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '[' + '__arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '_' + attrs.subkeyno + '].' + compoundName.slice(lastPartStart + 1);
                                     idString = compoundName + '_subkey';
                                 } else {
                                     modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$index + '.' + compoundName.slice(lastPartStart + 1);
@@ -213,14 +213,12 @@ formsAngular
                         return labelHTML;
                     };
 
-                    var processSubKey = function(niceName, thisSubkey, schemaDefName, info) {
-                        scope['__arrayOffset_' + niceName] = 0;
+                    var processSubKey = function(niceName, thisSubkey, schemaDefName, info, subkeyNo) {
+                        scope['__arrayOffset_' + niceName + '_' + subkeyNo] = 0;
                         var topAndTail = containerInstructions(thisSubkey);
                         var markup = topAndTail.before;
-                        markup += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey' + '"></form-input>';
+                        markup += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey" subkeyno = "' + subkeyNo + '"></form-input>';
                         markup += topAndTail.after;
-
-                        subkeys.push(info);
                         return markup;
                     };
 
@@ -243,11 +241,12 @@ formsAngular
 
                                 if (angular.isArray(info.subkey)) {
                                     for (var arraySel = 0 ; arraySel < info.subkey.length; arraySel++) {
-                                        template += processSubKey(niceName, info.subkey[arraySel], schemaDefName, info);
+                                        template += processSubKey(niceName, info.subkey[arraySel], schemaDefName, info, arraySel);
                                     }
                                 } else {
-                                    template += processSubKey(niceName, info.subkey, schemaDefName, info);
+                                    template += processSubKey(niceName, info.subkey, schemaDefName, info, '0');
                                 }
+                                subkeys.push(info);
                             } else {
                                 template += '<div class="schema-head">' + info.label + '</div>' +
                                     '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
@@ -302,6 +301,7 @@ formsAngular
                             if (anInstruction === 0  && topLevel && !attrs.schema.match(/__schema_/) ) {
                                 info.add = ((info.add || '') + "autofocus ");
                             }
+                            var callHandleField = true;
                             if (info.directive) {
                                 var directiveName = info.directive;
                                 var newElement = '<' + directiveName;
@@ -329,6 +329,7 @@ formsAngular
                                 }
                                 newElement += '></' + directiveName + '>';
                                 elementHtml += newElement;
+                                callHandleField = false;
                             } else if (info.containerType) {
                                 var parts = containerInstructions(info);
                                 switch (info.containerType) {
@@ -361,9 +362,15 @@ formsAngular
                                         elementHtml += parts.after;
                                         break;
                                 }
-                            } else if (attrs.subkey && _.find(scope[attrs.subkey].keyList, function(value, key){return scope[attrs.subkey].path + '.' + key === info.name})) {
+                                callHandleField = false;
+                            } else if (attrs.subkey) {
                                 // Don't do fields that form part of the subkey
-                            } else {
+                                var objectToSearch = angular.isArray(scope[attrs.subkey]) ? scope[attrs.subkey][0].keyList : scope[attrs.subkey].keyList;
+                                if (_.find(objectToSearch, function(value, key){return scope[attrs.subkey].path + '.' + key === info.name})) {
+                                    callHandleField = false;
+                                }
+                            }
+                            if (callHandleField) {
                                 if (groupId) {
                                     scope['showHide' + groupId] = true;
                                 }
@@ -396,29 +403,38 @@ formsAngular
                                             for (subkeyCtr = 0 ; subkeyCtr < subkeys.length ; subkeyCtr ++) {
                                                 var info = subkeys[subkeyCtr],
                                                     arrayOffset,
-                                                    matching;
+                                                    matching,
+                                                    arrayToProcess;
 
-                                                var dataVal = scope.record[info.name] = scope.record[info.name] || [];
-                                                for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
-                                                    matching = true;
-                                                    for (var keyField in info.subkey.keyList) {
-                                                        if (info.subkey.keyList.hasOwnProperty(keyField)) {
-                                                            // Not (currently) concerned with objects here - just simple types
-                                                            if (dataVal[arrayOffset][keyField] !== info.subkey.keyList[keyField]) {
-                                                                matching = false;
-                                                                break;
+                                                if (!angular.isArray(info.subkey)) {
+                                                    arrayToProcess = [info.subkey];
+                                                } else {
+                                                    arrayToProcess = info.subkey;
+                                                }
+                                                for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
+                                                    thisSubkeyList = arrayToProcess[thisOffset].keyList;
+                                                    var dataVal = scope.record[info.name] = scope.record[info.name] || [];
+                                                    for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
+                                                        matching = true;
+                                                        for (var keyField in thisSubkeyList) {
+                                                            if (thisSubkeyList.hasOwnProperty(keyField)) {
+                                                                // Not (currently) concerned with objects here - just simple types
+                                                                if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField]) {
+                                                                    matching = false;
+                                                                    break;
+                                                                }
                                                             }
                                                         }
+                                                        if (matching) {
+                                                            break;
+                                                        }
                                                     }
-                                                    if (matching) {
-                                                        break;
+                                                    if (!matching) {
+                                                        // There is no matching array element - we need to create one
+                                                        arrayOffset = scope.record[info.name].push(thisSubkeyList) - 1;
                                                     }
+                                                    scope['__arrayOffset_' + info.name.replace(/\./g,'_') + '_' + thisOffset] = arrayOffset;
                                                 }
-                                                if (!matching) {
-                                                    // There is no matching array element - we need to create one
-                                                    arrayOffset = scope.record[info.name].push(info.subkey.keyList) - 1;
-                                                }
-                                                scope['__arrayOffset_' + info.name.replace(/\./g,'_')] = arrayOffset;
                                             }
                                         }
                                     });
