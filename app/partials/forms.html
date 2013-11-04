@@ -48,8 +48,9 @@ and handle querying and updating the server</p>
         <h3>Listing Form</h3>
 
             <p>The listing routes (of the format <strong>/#/:model</strong>) are used to build a page
-                containing a list of documents in the collection, showing the fields that have a truthy <strong>list</strong>
-                key. If none of the schema objects have a list key the first two string fields are used.
+                containing a list of documents in the collection, showing the <a href="/#/schemas#list-fields">list fields</a>.  You can
+                specify a sort order by adding a <strong>listOrder</strong> value to the model as shown in <a href="/code/g_conditional_fields.js">this</a> model.
+                Alternatively you can specify a sort order at run-time using the o parameter as in <a href="/#/f_nested_schema?o=%7B%22forename%22:1%7D">this</a> example.
             </p>
 
             <p>Listing routes support filters, such as</p>
@@ -90,6 +91,7 @@ and handle querying and updating the server</p>
                     of table searches. There is an example in <a href="/code/g_conditional_fields.js">this</a> model.
                 </li>
                 <li><strong>searchOrder</strong> can be used to set the default ordering of the search results within a model.
+                    There is an example in <a href="/code/g_conditional_fields.js">this</a> model.
                     It is normally used in conjunction with searchImportance.
                 </li>
                 <li><strong>searchResultFormat</strong> allows fine control of the display of search results. It points to a
