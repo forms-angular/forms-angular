@@ -481,6 +481,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
         addParameter('f', $routeParams.f);
         addParameter('a', $routeParams.a);
+        addParameter('o', $routeParams.o);
         addParameter('s', $scope.pages_loaded * $scope.page_size);
         $scope.pages_loaded++;
         return queryString;
