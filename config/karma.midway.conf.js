@@ -21,7 +21,7 @@ files = [
     'app/js/forms-angular.js',
     'app/js/**/*.js',
     'app/demo/demo.js',
-    'app/demo/bespoke-field.js',
+    'app/demo/directives/bespoke-field.js',
     'test/midway/**/*.js'
     
     //load templates and use html2js to add to the $templateCache

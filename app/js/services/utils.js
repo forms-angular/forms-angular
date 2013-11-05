@@ -3,29 +3,27 @@ formsAngular.service('utils', function() {
 
     this.getAddAllGroupOptions = function(scope, attrs, classes) {
         return getAddAllOptions(scope, attrs, "Group", classes);
-    }
+    };
 
     this.getAddAllFieldOptions = function(scope, attrs, classes) {
         return getAddAllOptions(scope, attrs, "Field", classes);
-    }
+    };
 
     this.getAddAllLabelOptions = function(scope, attrs, classes) {
         return getAddAllOptions(scope, attrs, "Label", classes);
-    }
+    };
 
     function getAddAllOptions(scope, attrs, type, classes) {
 
-
-
         var addAllOptions = [],
             classList = [],
-            tmp, options;
+            tmp, i, options;
 
         type = "addAll" + type;
 
         if (typeof(classes) === 'string') {
             tmp = classes.split(' ');
-            for (var i = 0; i < tmp.length; i++) {
+            for (i = 0; i < tmp.length; i++) {
                 classList.push(tmp[i]);
             }
         }
@@ -53,9 +51,9 @@ formsAngular.service('utils', function() {
 
             } else if (typeof(attrs[type]) === "string") {
 
-                var tmp = attrs[type].split(' ');
+                tmp = attrs[type].split(' ');
 
-                for (var i = 0; i < tmp.length; i++) {
+                for (i = 0; i < tmp.length; i++) {
                     if (tmp[i].indexOf('class=') === 0) {
                         classList.push(tmp[i].substring(6, tmp[i].length));
                     } else {
@@ -87,7 +85,7 @@ formsAngular.service('utils', function() {
         return str.replace(/\w\S*/g, function(txt) {
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         });
-    };
+    }
 
     function getNewItem(item, readOnly, parentContainer) {
 
@@ -229,22 +227,21 @@ formsAngular.service('utils', function() {
 
                 }
 
-            };
+            }
             return el;
         }
 
         return sortRecurse(tree);
 
-    }
+    };
 
     this.findInArray = function(array, key, value) {
 
         for (var i = 0, len = arr.length; i < len; i++) {
             if (name in arr[i] && arr[i][name] == value) return i;
-        };
+        }
         return false;
-
-    }
+    };
 
     this.index = function index(obj, is, value) {
         if (typeof is == 'string')
@@ -255,46 +252,32 @@ formsAngular.service('utils', function() {
             return obj;
         else
             return index(obj[is[0]], is.slice(1), value);
-    }
+    };
 
     this.getIndex = function(record, model, elementNo) {
-
-        var index = -1;
-
         for (var i = 0; i < record[model].length; i++) {
             if (record[model][i]['elementNo'] === elementNo) {
                 return i;
             }
         }
-
         return i;
-
-    }
+    };
 
     this.updateOrder = function(scope) {
-
         var that = this;
-
 
         function traverse(el) {
             var index;
-
             for (var i = el.length - 1; i >= 0; i--) {
-
                 index = that.getIndex(scope.record, scope.model, el[i].elementNo);
-
                 scope.record[scope.model][index].order = el[i].order;
-
                 if (el[i].content) {
                     traverse(el[i].content);
                 }
-
-            };
-
-
+            }
         }
 
         traverse(scope.hierarchy);
-
     }
+
 });

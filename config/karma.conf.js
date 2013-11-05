@@ -18,7 +18,6 @@ files = [
     'app/bower_components/angular-mocks/angular-mocks.js',
     'app/bower_components/angular-elastic/elastic.js',
     'app/bower_components/angular-dragdrop/src/angular-dragdrop.js',
-    'app/bower_components/angular-ui-sortable/src/sortable.js',    
     'app/js/forms-angular.js',
     'app/js/**/*.js',
     'app/demo/demo.js',
