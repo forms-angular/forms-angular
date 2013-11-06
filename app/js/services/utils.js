@@ -1,6 +1,5 @@
 formsAngular.service('utils', function() {
 
-
     this.getAddAllGroupOptions = function(scope, attrs, classes) {
         return getAddAllOptions(scope, attrs, "Group", classes);
     };
@@ -119,7 +118,7 @@ formsAngular.service('utils', function() {
         newItem.label = toTitleCase(!item.label ? newItem.name : item.label);
 
         newItem.type = !item.dataType ? 'text' : item.dataType;
-        newItem.order = !item.order ? undefined : item.order;
+        newItem.order = item.order;
 
         if (newItem.type === 'textarea') {
             newItem.rows = "auto";
@@ -188,51 +187,37 @@ formsAngular.service('utils', function() {
 
         var fields = buildHierarchy(assessmentLayout, readOnly);
         return this.sort(fields);
-
-
     };
 
-//custom sort function to 
+//custom sort function
     this.sort = function(tree) {
 
         var order = 0;
 
         function comparator(a, b) {
-
             if (a.order === undefined) {
                 a.order = order;
                 order++;
-            } else {
             }
-
             if (b.order === undefined) {
                 b.order = order;
                 order++;
-            } else {
             }
-
-            return a.order < b.order ? 0 : 1;
-
+            return (a.order- b.order);
         }
 
         function sortRecurse(el) {
-
             order = 0;
-
             el.sort(comparator);
             for (var i = el.length - 1; i >= 0; i--) {
                 if (el[i].content) {
-
                     sortRecurse(el[i].content);
-
                 }
-
             }
             return el;
         }
 
         return sortRecurse(tree);
-
     };
 
     this.findInArray = function(array, key, value) {
