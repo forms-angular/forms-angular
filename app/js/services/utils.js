@@ -80,62 +80,34 @@ formsAngular.service('utils', function() {
 
     }
 
-    function toTitleCase(str) {
-        return str.replace(/\w\S*/g, function(txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
-    }
-
     function getNewItem(item, readOnly, parentContainer) {
 
         //return an item in it's correct form
 
         //build in loads of stuff to ensure correct fields are returned
         var newItem = {};
+        newItem = angular.copy(item);
         //sort the name field:
 
-        if (!item.name) {
-            if (!item.personFieldName) {
-                if (!item.fieldName) {
-                    if (!item.label) {
-                        newItem.name = '';
-                    } else {
-                        newItem.name = item.label;
-                    }
-
-                } else {
-                    newItem.name = item.fieldName;
-                }
-            } else {
-                newItem.name = item.personFieldName;
-            }
+        if (!item.label) {
+            newItem.name = '';
         } else {
-            newItem.name = item.name;
+            newItem.name = item.label;
         }
 
         newItem.id = 'f_' + item.elementNo;
 
-        newItem.label = toTitleCase(!item.label ? newItem.name : item.label);
+//        newItem.label = toTitleCase(!item.label ? newItem.name : item.label);
 
         newItem.type = !item.dataType ? 'text' : item.dataType;
-        newItem.order = item.order;
 
         if (newItem.type === 'textarea') {
             newItem.rows = "auto";
         }
 
-
-        if (item.mapsTo !== undefined) {
-
-            newItem.mapsTo = item.mapsTo;
-
-        }
-
-        newItem.elementNo = item.elementNo;
         newItem.readonly = readOnly;
         newItem.parentReference = parentContainer;
         return newItem;
-
     }
 
     var buildHierarchy = function(arry, readOnly) {

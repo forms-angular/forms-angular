@@ -411,13 +411,17 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (!formData.hidden) {
                     if (mongooseType.schema) {
                         if (doRecursion && destForm) {
-                            var schemaSchema = [];
+                            var schemaSchema = [], schemaList;
 
                             if (formData.hierarchy) {
+                                // This list implmemtation restricts us to using one hierarchy schema per model - not sure that is a problem
                                 mongooseType.schema.options = {hierarchy: true};
+                                schemaList = $scope['_hierarchy_list_'] = [];
+                            } else {
+                                schemaList = null;
                             }
 
-                            handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true);
+                            handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, schemaList, field + '.', true);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
                             if (formData.pane) handlePaneInfo(formData.pane, sectionInstructions);
