@@ -1,51 +1,30 @@
 [{
-		"Name": "test1",
-		"_id": "524d2994e0b439101f000007",
-		"Hierarchy": [{
-			"elementNo": 0,
-			"name": "test",
-			"label": "testlabel",
-			"dataType": "container"
+		"name": "test1",
+		"_id": ObjectId("524d2994e0b439101f000007"),
+		"parts": [{
+			"fngh_elementNo": 0,
+			"description": "Sub Assembly 1",
+			"fngh_isContainer": true
 		}, {
-			"elementNo": 3,
-			"name": "dfd",
-			"dataType": "container"
+			"fngh_elementNo": 1,
+			"description": "Empty Vessel",
+            "fngh_isContainer": true
 		}, {
-			"elementNo": 3,
-			"name": "yes!",
-			"dataType": "text"
+			"fngh_elementNo": 2,
+			"description": "Spare part"
 		}, {
-			"elementNo": 3,
-			"parent": 0,
-			"name": "this is a child",
-			"dataType": "container"
+			"fngh_elementNo": 3,
+			"fngh_parent": 0,
+			"description": "Component",
+            "fngh_isContainer": true
 		}, {
-			"elementNo": 4,
-			"name": "This looks like a new one",
-			"dataType": "container"
+			"fngh_elementNo": 4,
+			"description": "Sub Assembly 2",
+            "fngh_isContainer": true
 		}, {
-			"elementNo": 5,
-			"parent": 4,
-			"name": "This is a new lower one",
-			"dataType": "text"
-		}]
-	}
-
-	{
-		"Name": "test2",
-		"_id": "524e73ae7d7f3c9047000005",
-		"Hierarchy": [{
-			"elementNo": 0,
-			"name": "This is a new hierarchy",
-			"dataType": "container"
-		}, {
-			"elementNo": 1,
-			"parent": 0,
-			"name": "lower",
-			"dataType": "text"
-		}, {
-			"elementNo": 2,
-			"name": "secon"
+			"fngh_elementNo": 5,
+			"fngh_parent": 4,
+			"description": "Part of SA 2"
 		}]
 	}
 ]

@@ -26,6 +26,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         // Walk through subdocs to find the required key
         // for instance walkTree(master,'address.street.number',element)
         // called by getData and setData
+
+        // element is used when accessing in the context of a input, as the id (like exams-2-grader)
+        // gives us the element of an array (one level down only for now)
+        // TODO: nesting breaks this
         var parts = fieldname.split('.')
             , higherLevels = parts.length - 1
             , workingRec = object
@@ -357,22 +361,58 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return record;
     };
 
-    $scope.updateDataDependentDisplay = function (curValue, oldValue, force) {
+    //TODO: Put this in a directive
+    $scope.updateDataDependentDisplay = function (curValue, oldValue) {
+        var depends, i, j, k, id, element;
+
         for (var field in $scope.dataDependencies) {
-            if ($scope.dataDependencies.hasOwnProperty(field) && (force || (curValue[field] != oldValue[field]))) {
-                var depends = $scope.dataDependencies[field];
-                for (var i = 0; i < depends.length; i += 1) {
-                    var id = depends[i];
-                    for (var j = 0; j < $scope.formSchema.length; j += 1) {
-                        if ($scope.formSchema[j].id === id) {
-                            var control = $('#cg_' + id);
-                            if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
-                                control.show();
-                            } else {
-                                control.hide();
+            if ($scope.dataDependencies.hasOwnProperty(field)) {
+                var parts = field.split('.');
+                // TODO: what about a simple (non array) subdoc?
+                if (parts.length === 1) {
+                    if (!oldValue || curValue[field] != oldValue[field]) {
+                        depends = $scope.dataDependencies[field];
+                        for (i = 0; i < depends.length; i += 1) {
+                            id = depends[i];
+                            for (j = 0; j < $scope.formSchema.length; j += 1) {
+                                if ($scope.formSchema[j].id === id) {
+                                    element = angular.element('#cg_' + id);
+                                    if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
+                                        element.show();
+                                    } else {
+                                        element.hide();
+                                    }
+                                }
                             }
                         }
                     }
+                } else if (parts.length === 2) {
+                    if (curValue[parts[0]]) {
+                        var subdocPtr = [];
+                        for (k=0; k <= curValue[parts[0]].length; k++) {
+                            // We want to carry on if this is new array element or it is changed
+                            if (!oldValue[parts[0]] || curValue[parts[0]][k][field] != oldValue[parts[0]][k][field]) {
+                                depends = $scope.dataDependencies[field];
+                                for (i = 0; i < depends.length; i += 1) {
+                                    var idParts = depends[i].split('.');
+                                    if (idParts.length !== 2) throw new Error("Conditional display must control dependent fields at same level ")
+                                    for (j = 0; j < $scope.formSchema.length; j += 1) {
+                                        if ($scope.formSchema[j].id === id) {
+                                            element = $('#cg_' + id);
+                                            if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
+                                                element.show();
+                                            } else {
+                                                element.hide();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // TODO: this needs rewrite for nesting
+                    throw new Error("You can only go down one level of subdocument with showIf")
                 }
             }
         }
@@ -414,9 +454,19 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             var schemaSchema = [], schemaList;
 
                             if (formData.hierarchy) {
-                                // This list implmemtation restricts us to using one hierarchy schema per model - not sure that is a problem
+                                // This current implementation restricts us to using one hierarchy schema per model - not sure that is a problem
                                 mongooseType.schema.options = {hierarchy: true};
-                                schemaList = $scope['_hierarchy_list_'] = [];
+                                $scope.hierarchyOptions = {
+                                                    elementNoFld: 'fngh_elementNo',
+                                                    parentFld : 'fngh_parent',
+                                                    displayStatusFld : 'fngh_displayStatus',
+                                                    orderFld : 'fngh_order',
+                                                    isContainerFld: 'fngh_isContainer'
+                                                    };
+                                if (angular.isObject(formData.hierarchy)) {
+                                    angular.extend($scope.hierarchyOptions, formData.hierarchy)
+                                }
+                                schemaList = $scope['_hierarchy_list_'] = []
                             } else {
                                 schemaList = null;
                             }
@@ -425,26 +475,24 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
                             if (formData.pane) handlePaneInfo(formData.pane, sectionInstructions);
-                            destForm.push(sectionInstructions);
-                            
+                            if (formData.order !== undefined) {
+                                destForm.splice(formData.order,0,sectionInstructions);
+                            } else {
+                                destForm.push(sectionInstructions);
+                            }
                         }
                     } else {
                         if (destForm) {
                             var formInstructions = basicInstructions(field, formData, prefix);
-
-                            // if (source.options && source.options.hierarchy) {
-
-                            // } else {
-
-                                if (handleConditionals(formInstructions.showIf, formInstructions.id) && field !== 'options') {
-                                    var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
-                                    if (formInst.pane) handlePaneInfo(formInst.pane, formInst);
+                            if (handleConditionals(formInstructions.showIf, formInstructions.id) && field !== 'options') {
+                                var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
+                                if (formInst.pane) handlePaneInfo(formInst.pane, formInst);
+                                if (formData.order !== undefined) {
+                                    destForm.splice(formData.order,0,formInst);
+                                } else {
                                     destForm.push(formInst);
                                 }
-
-                            // }
-
-                            
+                            }
                         }
                         if (destList) {
                             handleListInfo(destList, mongooseOptions.list, field);
@@ -470,7 +518,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             master = convertToAngularModel($scope.formSchema, data, 0);
             $scope.phase = 'ready';
             $scope.cancel();
-            }).error(function () {
+        }).error(function () {
                 $location.path("/404");
             });
     };
@@ -514,7 +562,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 //                });
         } else {
             $scope.$watch('record', function (newValue, oldValue) {
-                $scope.updateDataDependentDisplay(newValue, oldValue, false)
+                $scope.updateDataDependentDisplay(newValue, oldValue)
             }, true);
 
             if ($scope.id) {

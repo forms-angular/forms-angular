@@ -38,35 +38,27 @@ formsAngular
 
                     var generateInput = function (fieldInfo, modelString, isRequired, idString) {
                         if (!modelString) {
-
-
-                            if (attrs.subschema && fieldInfo.name.indexOf('.') != -1 && attrs.index) { //scope.$index doesn't work for hierarchies
-
+                            modelString = (attrs.model || 'record') + '.';
+                            if (attrs.subschema && fieldInfo.name.indexOf('.') != -1) {
                                 // Schema handling - need to massage the ngModel and the id
                                 var compoundName = fieldInfo.name,
                                     lastPartStart = compoundName.lastIndexOf('.'),
-                                    // thisArrayIndex = scope.record[compoundName.slice(0, lastPartStart)].length-1;
-                                modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + attrs.index + '.' + compoundName.slice(lastPartStart + 1);
-                                idString = modelString.slice(7).replace(/\./g, '-')
-
-                            }
-
-                            // We are dealing with an array of sub schemas
-                            else
-                             if (attrs.subschema && fieldInfo.name.indexOf('.') != -1) {
-                                // Schema handling - need to massage the ngModel and the id
-                                var compoundName = fieldInfo.name,
-                                    lastPartStart = compoundName.lastIndexOf('.');
-
-                                if (attrs.subkey) {
-                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '[' + '__arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '_' + attrs.subkeyno + '].' + compoundName.slice(lastPartStart + 1);
-                                    idString = compoundName + '_subkey';
-                                } else {
-                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$index + '.' + compoundName.slice(lastPartStart + 1);
+                                    lastPart = compoundName.slice(lastPartStart + 1);
+                                if (attrs.index) {
+                                    modelString += compoundName.slice(0, lastPartStart) + '.' + attrs.index + '.' + lastPart;
                                     idString = modelString.slice(7).replace(/\./g, '-')
+                                } else  {
+                                    modelString += compoundName.slice(0, lastPartStart);
+                                    if (attrs.subkey) {
+                                        modelString += '[' + '__arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '_' + attrs.subkeyno + '].' + lastPart;
+                                        idString = compoundName + '_subkey';
+                                    } else {
+                                        modelString += '.' + scope.$index + '.' + lastPart;
+                                        idString = modelString.slice(7).replace(/\./g, '-')
+                                    }
                                 }
                             } else {
-                                modelString = (attrs.model || 'record') + '.' + fieldInfo.name;
+                                modelString += fieldInfo.name;
                             }
                         }
                         var value
@@ -76,6 +68,9 @@ formsAngular
 
                         if (attrs.formstyle === 'inline') placeHolder = placeHolder || fieldInfo.label;
                         var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' ') + (placeHolder ? ('placeholder="' + placeHolder + '" ') : "");
+                        if (fieldInfo.popup) {
+                            common += 'title="' + fieldInfo.popup + '" ';
+                        }
                         common += addAll("Field");
                         if (fieldInfo.type === 'select') {
                             common += (fieldInfo.readonly ? 'disabled ' : '');

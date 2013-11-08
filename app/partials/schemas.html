@@ -119,6 +119,9 @@
         <li><strong>placeHolder</strong> adds placeholder text to the input (depending on data type).</li>
         <li><strong>help</strong> adds help text under the input.</li>
         <li><strong>helpInline</strong> adds help to the right of the input.</li>
+        <li><strong>popup</strong> adds popup help as specified.</li>
+        <li><strong>order</strong> allows user to specify the order / tab order of this field in the form.  This
+            overrides the position in the Mongoose schema.</li>
         <li><strong>size</strong> sets <a href="http://twitter.github.io/bootstrap/base-css.html#forms">control
             width</a>.
             Options are: mini, small, medium (default), large, xlarge, xxlarge and block-level.
@@ -141,6 +144,18 @@
         <li><strong>pane</strong> used to divide a large form up into panes accessed by tabs
             (see <a href="/#/i_tabbed_forms/new">example</a>).
         </li>
+        <li><strong>showIf</strong> allows conditional display of fields based on values elsewhere.  For example having
+            prompted whether someone is a smoker you may want a field asking how many they smoke a day:
+<pre><code>smoker: {type: Boolean},
+howManyPerDay: {type: Number, form:{showIf:{lhs:"$smoker", comp:"eq", rhs:true}}}</code></pre>
+            <p>As you can see from the example there are three parts to the showIf object:
+            <ul>
+                <li><strong>lhs</strong> (left hand side) a value to be compared.  To use the current value of another
+                    field in the document preceed it with $.</li>
+                <li><strong>comp</strong> supported comparators are 'eq' for equality and 'ne' for not equals
+                    <em>(devs: feel free to submit a pull request - look for evaluateConditional in base.js)</em></li>
+                <li><strong>rhs</strong> (right hand side) the other value to be compared.  Details as for lhs.</li>
+            </ul></p> </li>
         <li><strong>hierarchy</strong> set to true if this field is an array of a schema which contains the following:
             <ul>
                 <li>Number <strong>elementNo</strong> field (normally hidden)</li>
