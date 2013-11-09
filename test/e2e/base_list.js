@@ -14,8 +14,12 @@ describe('Base list', function() {
     });
 
     it('should support the model name override', function() {
+        browser().navigateTo('/#/h_deep_nesting');
+        expect(element('h1').text()).toMatch(/^Nesting /);
+    });
+
+    it('should support dropdown text override', function() {
         browser().navigateTo('/#/b_using_options');
-        expect(element('h1').text()).toMatch('Override the name');
         expect(element('li.dropdown').text()).toMatch('Custom Dropdown');
     });
 

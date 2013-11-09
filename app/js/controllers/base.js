@@ -292,7 +292,18 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         function evaluateSide(side) {
             var result = side;
             if (typeof side === "string" && side.slice(0, 1) === '$') {
-                result = $scope.getListData(data, side.slice(1))
+                var sideParts = side.split('.');
+                switch (sideParts.length) {
+                    case 1:
+                        result = $scope.getListData(data, side.slice(1));
+                        break;
+                    case 2 :
+                        // this is a sub schema element, and the appropriate array element has been passed
+                        result = $scope.getListData(data,sideParts[1]);
+                        break;
+                    default:
+                        throw new Error("Unsupported showIf format")
+                }
             }
             return result;
         }
@@ -361,8 +372,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return record;
     };
 
-    //TODO: Put this in a directive
-    $scope.updateDataDependentDisplay = function (curValue, oldValue) {
+    // Conventional view is that this should go in a directive.  I reckon it is quicker here.
+    $scope.updateDataDependentDisplay = function (curValue, oldValue, force) {
         var depends, i, j, k, id, element;
 
         for (var field in $scope.dataDependencies) {
@@ -370,7 +381,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 var parts = field.split('.');
                 // TODO: what about a simple (non array) subdoc?
                 if (parts.length === 1) {
-                    if (!oldValue || curValue[field] != oldValue[field]) {
+                    if (force || !oldValue || curValue[field] != oldValue[field]) {
                         depends = $scope.dataDependencies[field];
                         for (i = 0; i < depends.length; i += 1) {
                             id = depends[i];
@@ -388,21 +399,28 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     }
                 } else if (parts.length === 2) {
                     if (curValue[parts[0]]) {
-                        var subdocPtr = [];
                         for (k=0; k <= curValue[parts[0]].length; k++) {
                             // We want to carry on if this is new array element or it is changed
-                            if (!oldValue[parts[0]] || curValue[parts[0]][k][field] != oldValue[parts[0]][k][field]) {
+                            if (force || !oldValue || !oldValue[parts[0]] || !oldValue[parts[0]][k] || curValue[parts[0]][k][parts[1]] != oldValue[parts[0]][k][parts[1]]) {
                                 depends = $scope.dataDependencies[field];
                                 for (i = 0; i < depends.length; i += 1) {
                                     var idParts = depends[i].split('.');
-                                    if (idParts.length !== 2) throw new Error("Conditional display must control dependent fields at same level ")
+                                    if (idParts.length !== 2) throw new Error("Conditional display must control dependent fields at same level ");
                                     for (j = 0; j < $scope.formSchema.length; j += 1) {
-                                        if ($scope.formSchema[j].id === id) {
-                                            element = $('#cg_' + id);
-                                            if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
-                                                element.show();
-                                            } else {
-                                                element.hide();
+                                        if ($scope.formSchema[j].id === idParts[0]) {
+                                            var subSchema = $scope.formSchema[j].schema;
+                                            for (var l = 0; l < subSchema.length ; l++) {
+                                                if (subSchema[l].id === depends[i]) {
+//                                                    if ('cg_' + depends[i].replace('.','-'+k+'-') === 'cg_f_parts-2-sku') {
+//                                                        debugger;
+//                                                    }
+                                                    element = angular.element('#cg_' + depends[i].replace('.','-'+k+'-'));
+                                                    if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
+                                                        element.show();
+                                                    } else {
+                                                        element.hide();
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -466,6 +484,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                 if (angular.isObject(formData.hierarchy)) {
                                     angular.extend($scope.hierarchyOptions, formData.hierarchy)
                                 }
+                                $scope.hierarchyOptions.name = field;
                                 schemaList = $scope['_hierarchy_list_'] = []
                             } else {
                                 schemaList = null;

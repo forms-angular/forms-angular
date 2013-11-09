@@ -46,7 +46,7 @@ formsAngular
                                     lastPart = compoundName.slice(lastPartStart + 1);
                                 if (attrs.index) {
                                     modelString += compoundName.slice(0, lastPartStart) + '.' + attrs.index + '.' + lastPart;
-                                    idString = modelString.slice(7).replace(/\./g, '-')
+                                    idString = 'f_'+modelString.slice(7).replace(/\./g, '-')
                                 } else  {
                                     modelString += compoundName.slice(0, lastPartStart);
                                     if (attrs.subkey) {
@@ -235,7 +235,10 @@ formsAngular
 
                         var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '')
                         , styling = isHorizontalStyle(attrs.formstyle)
-                        , template = styling ? '<div' + addAll("Group", 'control-group') + parentString + ' id="cg_' + info.id + '">' : '<span ' + parentString + ' id="cg_' + info.id + '">';
+                        , template = styling ? '<div' + addAll("Group", 'control-group') : '<span ';
+
+//                        if (info.id.indexOf('sku') !== -1) debugger;
+                        template += parentString + ' id="cg_' + info.id.replace('.','-'+attrs.index+'-') + '">';
 
                         if (info.schema && info.hierarchy) {//display as a hierarchy not control group
                             var schemaDefName = ('__schema_'+info.name).replace(/\./g,'_');

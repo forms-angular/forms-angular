@@ -1,5 +1,5 @@
 [{
-		"name": "test1",
+		"name": "Assembly 1",
 		"_id": ObjectId("524d2994e0b439101f000007"),
 		"parts": [{
 			"fngh_elementNo": 0,
