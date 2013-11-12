@@ -399,7 +399,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     }
                 } else if (parts.length === 2) {
                     if (curValue[parts[0]]) {
-                        for (k=0; k <= curValue[parts[0]].length; k++) {
+                        for (k=0; k < curValue[parts[0]].length; k++) {
                             // We want to carry on if this is new array element or it is changed
                             if (force || !oldValue || !oldValue[parts[0]] || !oldValue[parts[0]][k] || curValue[parts[0]][k][parts[1]] != oldValue[parts[0]][k][parts[1]]) {
                                 depends = $scope.dataDependencies[field];
