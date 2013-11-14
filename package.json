@@ -9,12 +9,12 @@
     "npm": "1.x"
   },
   "dependencies": {
-    "express": "= 3.x",
-    "mongoose": "= 3.x",
-    "underscore": "= 1.x",
-    "node.extend": "= 1.x",
-    "async": "=0.2.x",
-    "bower": ">= 1.x"
+    "bower": ">= 1.x",
+    "express": "~3.4.4",
+    "mongoose": "~3.8.0",
+    "underscore": "~1.5.2",
+    "node.extend": "~1.0.8",
+    "async": "~0.2.9"
   },
   "scripts": {
     "start": "node ./server/server.js",
@@ -36,8 +36,6 @@
     "RESTful API"
   ],
   "devDependencies": {
-    "karma": "= 0.8.1",
-    "mocha": "~1.9.0",
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-concat": "~0.3.0",
@@ -60,7 +58,12 @@
     "grunt-concurrent": "~0.3.0",
     "grunt-contrib-nodeunit": "~0.1.2",
     "grunt-bump": "0.0.11",
-    "matchdep": "~0.1.2"
+    "matchdep": "~0.1.2",
+    "karma-phantomjs-launcher": "~0.1.0",
+    "karma": "~0.10.4",
+    "mocha": "~1.14.0",
+    "karma-junit-reporter": "~0.1.0",
+    "karma-ng-scenario": "~0.1.0"
   },
   "license": "MIT"
 }

@@ -11,7 +11,7 @@
     </div>
     <div class="container-fluid page-body list-body">
         <div class="row-fluid" infinite-scroll="scrollTheList()">
-            <a ng-repeat="record in recordList" ng-href="/#/{{modelName}}/{{formPlusSlash}}{{record['_id']}}/edit">
+            <a ng-repeat="record in recordList" ng-href="/#/{{modelName}}/{{formPlusSlash}}{{getId(record)}}/edit">
                 <div class="list-item">
                     <div class="span{{12/listSchema.length}}" ng-repeat="field in listSchema">{{getListData(record, field.name)}} </div>
                 </div>

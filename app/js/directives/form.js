@@ -45,7 +45,7 @@ formsAngular
                                     lastPartStart = compoundName.lastIndexOf('.');
 
                                 if (attrs.subkey) {
-                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '[' + '__arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '_' + attrs.subkeyno + '].' + compoundName.slice(lastPartStart + 1);
+                                    modelString = 'record.' + compoundName.slice(0, lastPartStart) + '[' + '$_arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '_' + attrs.subkeyno + '].' + compoundName.slice(lastPartStart + 1);
                                     idString = compoundName + '_subkey';
                                 } else {
                                     modelString = 'record.' + compoundName.slice(0, lastPartStart) + '.' + scope.$index + '.' + compoundName.slice(lastPartStart + 1);
@@ -214,7 +214,7 @@ formsAngular
                     };
 
                     var processSubKey = function(niceName, thisSubkey, schemaDefName, info, subkeyNo) {
-                        scope['__arrayOffset_' + niceName + '_' + subkeyNo] = 0;
+                        scope['$_arrayOffset_' + niceName + '_' + subkeyNo] = 0;
                         var topAndTail = containerInstructions(thisSubkey);
                         var markup = topAndTail.before;
                         markup += '<form-input schema="' + schemaDefName + '" subschema="true" formStyle="' + attrs.formstyle + '" subkey="' + schemaDefName+'_subkey" subkeyno = "' + subkeyNo + '"></form-input>';
@@ -231,7 +231,7 @@ formsAngular
                             //schemas (which means they are arrays in Mongoose)
 
                             var niceName = info.name.replace(/\./g,'_');
-                            var schemaDefName = '__schema_' + niceName;
+                            var schemaDefName = '$_schema_' + niceName;
                             scope[schemaDefName] = info.schema;
 
                             // Check for subkey - selecting out one or more of the array
@@ -298,7 +298,7 @@ formsAngular
                     var processInstructions = function (instructionsArray, topLevel, groupId) {
                         for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
                             var info = instructionsArray[anInstruction];
-                            if (anInstruction === 0  && topLevel && !attrs.schema.match(/__schema_/)) {
+                            if (anInstruction === 0  && topLevel && !attrs.schema.match(/$_schema_/)) {
                                 info.add = (info.add || '');
                                 if (info.add.indexOf('ui-date') == -1) {
                                     info.add = info.add + "autofocus ";
@@ -436,7 +436,7 @@ formsAngular
                                                         // There is no matching array element - we need to create one
                                                         arrayOffset = scope.record[info.name].push(thisSubkeyList) - 1;
                                                     }
-                                                    scope['__arrayOffset_' + info.name.replace(/\./g,'_') + '_' + thisOffset] = arrayOffset;
+                                                    scope['$_arrayOffset_' + info.name.replace(/\./g,'_') + '_' + thisOffset] = arrayOffset;
                                                 }
                                             }
                                         }
