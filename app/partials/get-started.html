@@ -32,8 +32,15 @@ and a more feature-filled one <a href="/#/b_using_options/new">here</a>.</p>
     <li>Install <a href="http://nodejs.org">Node JS</a> (installation depends on operating system)</li>
     <li>Install <a href="http://expressjs.com">Express JS</a> - <code>npm install -g express</code></li>
     <li>Install <a href="http://www.mongodb.org">MongoDB</a> (installation depends on operating system)</li>
-    <li>Install <a href="http://bower.io">Bower</a> - <code>npm install -g bower</code>
+    <li>Install <a href="http://bower.io">Bower</a> - <code>npm install -g bower</code></li>
+    <li>Install <a href="http://git-scm.com/downloads">Git</a> (installation depends on operating system)</li>
 </ul>
+
+<p>You have the option at this point (if you are <em>really</em> lazy and you aren't worried about
+    stuff happening in scripts you have never seen) you can do
+    <code>wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/get-started/get-started.sh && bash get-started.sh</code>.
+    If you want to understand a bit more about how the example app works you are better off working through
+    the instructions below.</p>
 
 <p>Several other packages / components are installed by npm / bower, and some of them need to be
     understood before you can make best use of forms-angular (though you can do simple forms
@@ -53,10 +60,10 @@ In the shell do:
 cd myapp
 express
 npm install
-npm install forms-angular --save
+npm install forms-angular-test --save
 npm install mongoose --save
 cd public
-bower install forms-angular
+bower install forms-angular#dev
 cd ..</code></pre>
 </section>
 <section id="server-code" name="Server Code" affix-scroll>
@@ -71,7 +78,7 @@ var Schema = mongoose.Schema;
 
 var ApplicantSchema = new Schema({
     surname: {type:String, required:true, index:true},
-    forename: {type:String, index:true},
+    forename: {type:String, index:true}
 });
 
 var Applicant = mongoose.model(&apos;Applicant&apos;, ApplicantSchema);

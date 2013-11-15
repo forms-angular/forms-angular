@@ -17,5 +17,5 @@ mkdir public/partials
 wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/get-started/partials-index.html -O public/partials/index.html
 wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/base-edit.html -O public/partials/base-edit.html
 wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/base-list.html -O public/partials/base-list.html
-wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/base-analysis -O public/partials/base-analysis.html
+wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/base-analysis.html -O public/partials/base-analysis.html
 node app.js
