@@ -1,7 +1,9 @@
 #!/bin/bash
 
+wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/get-started/get-started-create.sh
 bash get-started-create.sh
-cat app.js public/partials/get-started/adds-app.js" > tempapp.js
+wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/get-started/adds-app.js
+cat app.js adds-app.js > tempapp.js
 mv tempapp.js app.js
 sed -i s_app.get_//app.get_ app.js
 wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/get-started/index.html -O public/index.html
