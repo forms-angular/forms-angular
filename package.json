@@ -2,8 +2,8 @@
   "name": "forms-angular-demo",
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
-  "homepage": "http://forms-ng.herokuapp.com/#/index",
-  "version": "0.0.27",
+  "homepage": "http://forms-angular.org",
+  "version": "0.0.34",
   "engines": {
     "node": "0.10.x",
     "npm": "1.x"
@@ -63,7 +63,8 @@
     "karma": "~0.10.4",
     "mocha": "~1.14.0",
     "karma-junit-reporter": "~0.1.0",
-    "karma-ng-scenario": "~0.1.0"
+    "karma-ng-scenario": "~0.1.0",
+    "grunt-expand-include-with-subs": "~0.9.7"
   },
   "license": "MIT"
 }

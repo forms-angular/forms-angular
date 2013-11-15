@@ -2,8 +2,7 @@
 
 ## No nonsense forms for the MEAN stack
 
-This is the server side part of forms-angular.  The client side part is a
-bower package (also called forms-angular).
+This is the server side part of forms-angular.  The client side part is a bower package (also called forms-angular).
 
 ## Installation
 
@@ -11,12 +10,7 @@ bower package (also called forms-angular).
 
 ## Demonstration and Documentation
 
-There is a demonstration application with detailed documentation and several 
-example schemas running at http://forms-ng.herokuapp.com.
-
-Although it is a bit premature for production use (though I am doing it) the
-"minimal" folder shows how you might go about doing it in the simplest way.  
-It has its own README file.
+Visit http://forms-angular.org
 
 ## Contributing, Tests
 

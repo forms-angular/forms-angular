@@ -7,7 +7,7 @@ var _ = require('underscore'),
     async = require('async'),
     url = require('url'),
     mongoose = require('mongoose'),
-    debug = true;
+    debug = false;
 
 mongoose.set('debug', debug);
 
