@@ -6,6 +6,7 @@
     <title>forms-angular</title>
 
     <!-- what forms-angular depends on -->
+    <!-- *** Section must be copied to partials/get-started/index.html if it is changed *** -->
     <script type="text/javascript" src="bower_components/jquery/jquery.js"></script>
     <script type="text/javascript" src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
     <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
@@ -22,10 +23,12 @@
     <script type="text/javascript" src="bower_components/bootstrap/js/bootstrap-collapse.js"></script>
     <link rel="stylesheet" href="bower_components/ng-grid/ng-grid.css">
     <script type="text/javascript" src="bower_components/ng-grid/build/ng-grid.js"></script>
-
     <link rel="stylesheet" href="bower_components/select2/select2.css">
     <script type="text/javascript" src="bower_components/angular-elastic/elastic.js"></script>
     <script type="text/javascript" src="bower_components/select2/select2.js"></script>
+    <!--[if lt IE 9]>
+    <script src="components/html5shiv-dist/html5shiv.js"></script>
+    <![endif]-->
 
     <!-- forms-angular stuff -->
     <link rel="stylesheet" href="demo/css/demo.css">
@@ -59,9 +62,6 @@
     <script src="demo/controllers/b-using-options-justnameandpostcode.js"></script>
     <script src="demo/controllers/d-array-example.js"></script>
 
-    <!--[if lt IE 9]>
-    <script src="components/html5shiv-dist/html5shiv.js"></script>
-    <![endif]-->
     <script type="text/javascript">
         if (window.location.hostname != '0.0.0.0') {
             var _gaq = _gaq || [];
