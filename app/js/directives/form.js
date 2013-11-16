@@ -50,7 +50,7 @@ formsAngular
                                 } else  {
                                     modelString += compoundName.slice(0, lastPartStart);
                                     if (attrs.subkey) {
-                                        modelString += '[' + '__arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '_' + attrs.subkeyno + '].' + lastPart;
+                                        modelString += '[' + '$_arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g,'_') + '_' + attrs.subkeyno + '].' + lastPart;
                                         idString = compoundName + '_subkey';
                                     } else {
                                         modelString += '.' + scope.$index + '.' + lastPart;
@@ -241,7 +241,7 @@ formsAngular
                         template += parentString + ' id="cg_' + info.id.replace('.','-'+attrs.index+'-') + '">';
 
                         if (info.schema && info.hierarchy) {//display as a hierarchy not control group
-                            var schemaDefName = ('__schema_'+info.name).replace(/\./g,'_');
+                            var schemaDefName = ('$_schema_'+info.name).replace(/\./g,'_');
                             scope[schemaDefName] = info.schema;
                             template += '<fng-hierarchy-list data-record="record.' + info.name + '" data-schema="' + schemaDefName + '"></fng-hierarchy-list>';
                         } else
