@@ -2,16 +2,16 @@
   "name": "forms-angular",
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
-  "homepage": "http://forms-ng.herokuapp.com/#/index",
-  "version": "0.0.27",
+  "homepage": "http://forms-angular.org",
+  "version": "0.1.1",
   "engines": {
-    "node": "0.10.6",
+    "node": "0.10.x",
     "npm": "1.x"
   },
   "dependencies": {
-    "underscore": "1.4.4",
-    "node.extend": "=1.0.0",
-    "async": "=0.2.x"
+    "underscore": "~1.5.2",
+    "node.extend": "~1.0.8",
+    "async": "~0.2.9"
   },
   "main": "lib/data_form.js",
   "repository": {

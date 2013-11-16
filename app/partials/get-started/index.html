@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>My App</title>
+
+    <script type="text/javascript" src="bower_components/jquery/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
+    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript" src="bower_components/angular-route/angular-route.js"></script>
+    <script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script type="text/javascript" src="bower_components/underscore/underscore.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script> <!-- is now in fngTabs.js  -->
+    <script type="text/javascript" src="bower_components/angular-ui-date/src/date.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-select2/src/select2.js"></script>
+    <script type="text/javascript" src="bower_components/ngInfiniteScroll/ng-infinite-scroll.js"></script>
+    <script type="text/javascript" src="bower_components/jspdf/dist/jspdf.source.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/js/bootstrap-transition.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/js/bootstrap-collapse.js"></script>
+    <link rel="stylesheet" href="bower_components/ng-grid/ng-grid.css">
+    <script type="text/javascript" src="bower_components/ng-grid/build/ng-grid.js"></script>
+    <link rel="stylesheet" href="bower_components/select2/select2.css">
+    <script type="text/javascript" src="bower_components/angular-elastic/elastic.js"></script>
+    <script type="text/javascript" src="bower_components/select2/select2.js"></script>
+    <!--[if lt IE 9]>
+    <script src="bower_components/html5shiv-dist/html5shiv.js"></script>
+    <![endif]-->
+
+    <!--forms-angular stuff-->
+    <link rel="stylesheet" href="bower_components/forms-angular/forms-angular.css">
+    <script type="text/javascript" src="bower_components/forms-angular/forms-angular.js"></script>
+    <script src="myapp.js"></script>
+
+</head>
+
+<!--The NavCtrl controller is responsible for parsing the URL and loading the menu for the model and form-->
+<body ng-app="myApp" ng-controller="NavCtrl">
+<div class="navbar row">
+    <div class="navbar-inner">
+        <ul class="nav">
+            <li><a href="get-started/">Home</a></li>
+            <!--if The NavCtrl has loaded any menu items we display them here-->
+            <li ng-show="items.length > 0" class="dropdown" >
+                <a class="dropdown-toggle">
+                    {{contextMenu}}
+                </a>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="choice in items">
+                        <a class="dropdown-option" href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <div class="span9">
+            <!--The SearchCtrl handles AJAX searches of the database (which can be customised)-->
+            <div class="global-search" ng-controller="SearchCtrl">
+                <form class="navbar-search pull-right">
+                    <div id="search-cg" class="control-group" ng-class="errorClass">
+                        <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
+                    </div>
+                </form>
+                <div class="search-results" ng-show="results.length >= 1">
+                    <div ng-repeat="result in results">
+                        <a class="search-result" ng-href="#/{{result.resource}}/{{result.id}}/edit">
+                            {{result.resourceText}} {{result.text}}
+                        </a>
+                    </div>
+                    <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div ng-view></div>
+</div>
+</body>
+
+</html>

@@ -1,15 +1,20 @@
+<!--Specify the controller.  BaseCtrl handles all the REST operations and much more-->
 <form name="myForm" class="form-horizontal compact" ng-controller="BaseCtrl">
     <!--This is the header section-->
     <div class="page-header edit-header row-fluid">
+        <!--The left hand side contains important fields from the data-->
         <div class="header-lhs span9">
-            <h4>{{modelNameDisplay}} : <span
-                    ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span></h4>
+            <h4>{{modelNameDisplay}} :
+                <span ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span>
+            </h4>
         </div>
+        <!--The right hand side contains buttons to Save, Cancel, Delete and create New-->
         <div class="header-rhs span2">
             <div form-buttons></div>
         </div>
     </div>
     <div class="container-fluid page-body edit-body">
+        <!--This section only appears when there is an error message to display-->
         <div ng-show="errorMessage" class="row-fluid">
             <div class="span6 offset3 alert alert-error">
                 <button type="button" class="close" ng-click="dismissError()">&times;</button>
@@ -17,6 +22,7 @@
                 <div ng-bind-html="errorMessage"></div>
             </div>
         </div>
+        <!--This is the section that displays the input fields-->
         <div ng-if="!panes.length">
             <form-input schema="formSchema" formStyle="horizontal"></form-input>
         </div>

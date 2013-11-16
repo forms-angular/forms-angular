@@ -1,3 +1,8 @@
+<!--*******************************************************-->
+<!--**** Only edit the get-started-template.html file. ****-->
+<!--**** The get-started.html file is created by Grunt ****-->
+<!--*******************************************************-->
+<!--*******************************************************-->
 <div class="row-fluid">
     <div class="page-header">
         <h1>Getting Started</h1>
@@ -27,8 +32,15 @@ and a more feature-filled one <a href="/#/b_using_options/new">here</a>.</p>
     <li>Install <a href="http://nodejs.org">Node JS</a> (installation depends on operating system)</li>
     <li>Install <a href="http://expressjs.com">Express JS</a> - <code>npm install -g express</code></li>
     <li>Install <a href="http://www.mongodb.org">MongoDB</a> (installation depends on operating system)</li>
-    <li>Install <a href="http://bower.io">Bower</a> - <code>npm install -g bower</code>
+    <li>Install <a href="http://bower.io">Bower</a> - <code>npm install -g bower</code></li>
+    <li>Install <a href="http://git-scm.com/downloads">Git</a> (installation depends on operating system)</li>
 </ul>
+
+<p>You have the option at this point (if you are <em>really</em> lazy and you aren't worried about
+    stuff happening in scripts you have never seen) you can do
+    <code>wget https://raw.github.com/mchapman/forms-angular/dev/app/partials/get-started/get-started.sh && bash get-started.sh</code>.
+    If you want to understand a bit more about how the example app works you are better off working through
+    the instructions below.</p>
 
 <p>Several other packages / components are installed by npm / bower, and some of them need to be
     understood before you can make best use of forms-angular (though you can do simple forms
@@ -44,37 +56,35 @@ idea for all but the simplest of forms, and knowledge of <a href="http://getboot
 <h3>Create</h3>
 
 In the shell do:
-<pre>
-<code>mkdir myapp
+<pre><code>mkdir myapp
 cd myapp
 express
 npm install
-npm install forms-angular --save
+npm install forms-angular-test --save
 npm install mongoose --save
 cd public
-bower install forms-angular
-cd ..</code>
-</pre>
+bower install forms-angular#dev
+cd ..</code></pre>
 </section>
 <section id="server-code" name="Server Code" affix-scroll>
 <h3>Modify generated server code</h3>
 Add the following to app.js (see the <a href="/#/schemas">Schemas page</a> for details about setting up schemas):
-<pre><code>var mongoose = require('mongoose');
-var formsAngular = require('forms-angular');
+<pre><code>var mongoose = require(&apos;mongoose&apos;);
+var formsAngular = require(&apos;forms-angular&apos;);
 
-mongoose.connect('mongodb://localhost/mydb');
+mongoose.connect(&apos;mongodb://localhost/mydb&apos;);
 
 var Schema = mongoose.Schema;
 
 var ApplicantSchema = new Schema({
     surname: {type:String, required:true, index:true},
-    forename: {type:String, index:true},
+    forename: {type:String, index:true}
 });
 
-var Applicant = mongoose.model('Applicant', ApplicantSchema);
+var Applicant = mongoose.model(&apos;Applicant&apos;, ApplicantSchema);
 
 var DataFormHandler = new (formsAngular)(app);
-DataFormHandler.addResource('applicant', Applicant);   // Create and add more schemas to taste</code></pre>
+DataFormHandler.addResource(&apos;applicant&apos;, Applicant);   // Create and add more schemas to taste</code></pre>
 
 <p>and comment out any lines that start with <code>app.get(</code>:</p><pre><code>// app.get('/', routes.index);
 // app.get('/users', user.list);</code></pre>
@@ -86,175 +96,179 @@ DataFormHandler.addResource('applicant', Applicant);   // Create and add more sc
 <p>Create the following files:</p>
 <p id="index-html"><strong>public/index.html</strong></p>
 <pre><code ng-non-bindable>&lt;!doctype html&gt;
-&lt;html lang="en"&gt;
+&lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
-&lt;meta charset="utf-8"&gt;
-&lt;title&gt;My App&lt;/title&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;My App&lt;/title&gt;
 
-&lt;script type="text/javascript" src="bower_components/jquery/jquery.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="bower_components/jquery-ui/ui/jquery-ui.js"&gt;&lt;/script&gt;
-&lt;link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css"&gt;
-&lt;script type="text/javascript" src="bower_components/angular/angular.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="bower_components/underscore/underscore.js"&gt;&lt;/script&gt;
-&lt;link rel="stylesheet" href="bower_components/bootstrap.css/css/bootstrap.css"&gt;
-&lt;link rel="stylesheet" href="bower_components/bootstrap.css/css/bootstrap-responsive.css"&gt;
-&lt;script type="text/javascript" src="bower_components/angular-ui-date/src/date.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="bower_components/angular-ui-select2/src/select2.js"&gt;&lt;/script&gt;
-&lt;link rel="stylesheet" href="bower_components/select2/select2.css"&gt;
-&lt;script type="text/javascript" src="bower_components/select2/select2.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="bower_components/forms-angular/forms-angular.js"&gt;&lt;/script&gt;
-&lt;link rel="stylesheet" href="bower_components/forms-angular/forms-angular.css"&gt;
-&lt;!--[if lt IE 9]&gt;
-    &lt;script src="bower_components/html5shiv-dist/html5shiv.js"&gt;&lt;/script&gt;
-&lt;![endif]--&gt;
-&lt;script src="myapp.js"&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/jquery/jquery.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/jquery-ui/ui/jquery-ui.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/jquery-ui/themes/smoothness/jquery-ui.css&quot;&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular/angular.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/underscore/underscore.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/bootstrap.css/css/bootstrap.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/bootstrap.css/css/bootstrap-responsive.css&quot;&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-ui-date/src/date.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-ui-select2/src/select2.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/select2/select2.css&quot;&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/select2/select2.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/forms-angular/forms-angular.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/forms-angular/forms-angular.css&quot;&gt;
+    &lt;!--[if lt IE 9]&gt;
+    &lt;script src=&quot;bower_components/html5shiv-dist/html5shiv.js&quot;&gt;&lt;/script&gt;
+    &lt;![endif]--&gt;
+    &lt;script src=&quot;get-started/myapp.js&quot;&gt;&lt;/script&gt;
 
 &lt;/head&gt;
 
 &lt;!--The NavCtrl controller is responsible for parsing the URL and loading the menu for the model and form--&gt;
-&lt;body ng-app="myApp" ng-controller="NavCtrl"&gt;
-&lt;div class="navbar row"&gt;
-    &lt;div class="navbar-inner"&gt;
-        &lt;ul class="nav"&gt;
-            &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+&lt;body ng-app=&quot;myApp&quot; ng-controller=&quot;NavCtrl&quot;&gt;
+&lt;div class=&quot;navbar row&quot;&gt;
+    &lt;div class=&quot;navbar-inner&quot;&gt;
+        &lt;ul class=&quot;nav&quot;&gt;
+            &lt;li&gt;&lt;a href=&quot;get-started/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
             &lt;!--if The NavCtrl has loaded any menu items we display them here--&gt;
-            &lt;li ng-show="items.length &gt; 0" class="dropdown" &gt;
-                &lt;a class="dropdown-toggle"&gt;
+            &lt;li ng-show=&quot;items.length &gt; 0&quot; class=&quot;dropdown&quot; &gt;
+                &lt;a class=&quot;dropdown-toggle&quot;&gt;
                     {{contextMenu}}
                 &lt;/a&gt;
-                &lt;ul class="dropdown-menu"&gt;
-                    &lt;li ng-repeat="choice in items"&gt;
-                        &lt;a class="dropdown-option" href="{{choice.url}}" ng-click="doClick($index)"&gt;{{choice.text}}&lt;/a&gt;
+                &lt;ul class=&quot;dropdown-menu&quot;&gt;
+                    &lt;li ng-repeat=&quot;choice in items&quot;&gt;
+                        &lt;a class=&quot;dropdown-option&quot; href=&quot;{{choice.url}}&quot; ng-click=&quot;doClick($index)&quot;&gt;{{choice.text}}&lt;/a&gt;
                     &lt;/li&gt;
                 &lt;/ul&gt;
             &lt;/li&gt;
         &lt;/ul&gt;
-        &lt;div class="span9"&gt;
+        &lt;div class=&quot;span9&quot;&gt;
             &lt;!--The SearchCtrl handles AJAX searches of the database (which can be customised)--&gt;
-            &lt;div class="global-search" ng-controller="SearchCtrl"&gt;
-                &lt;form class="navbar-search pull-right"&gt;
-                    &lt;div id="search-cg" class="control-group" ng-class="errorClass"&gt;
-                        &lt;input type="text" ng-model="searchTarget" class="search-query" placeholder="Search"&gt;
+            &lt;div class=&quot;global-search&quot; ng-controller=&quot;SearchCtrl&quot;&gt;
+                &lt;form class=&quot;navbar-search pull-right&quot;&gt;
+                    &lt;div id=&quot;search-cg&quot; class=&quot;control-group&quot; ng-class=&quot;errorClass&quot;&gt;
+                        &lt;input type=&quot;text&quot; ng-model=&quot;searchTarget&quot; class=&quot;search-query&quot; placeholder=&quot;Search&quot;&gt;
                     &lt;/div&gt;
                 &lt;/form&gt;
-                &lt;div class="search-results" ng-show="results.length &gt;= 1"&gt;
-                    &lt;div ng-repeat="result in results"&gt;
-                        &lt;a class="search-result" ng-href="#/{{result.resource}}/{{result.id}}/edit"&gt;
+                &lt;div class=&quot;search-results&quot; ng-show=&quot;results.length &gt;= 1&quot;&gt;
+                    &lt;div ng-repeat=&quot;result in results&quot;&gt;
+                        &lt;a class=&quot;search-result&quot; ng-href=&quot;#/{{result.resource}}/{{result.id}}/edit&quot;&gt;
                             {{result.resourceText}} {{result.text}}
                         &lt;/a&gt;
                     &lt;/div&gt;
-                    &lt;div ng-show="moreCount &gt; 0"&gt;(plus more - continue typing to narrow down search...)&lt;/div&gt;
+                    &lt;div ng-show=&quot;moreCount &gt; 0&quot;&gt;(plus more - continue typing to narrow down search...)&lt;/div&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-&lt;div class="container-fluid"&gt;
+&lt;div class=&quot;container-fluid&quot;&gt;
     &lt;div ng-view&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/body&gt;
 
 &lt;/html&gt;</code></pre>
 <p><strong>public/myapp.js</strong></p>
-<pre><code>
-var myApp = angular.module('myApp', ['formsAngular']);
+<pre><code>var myApp = angular.module(&apos;myApp&apos;, [&apos;formsAngular&apos;]);
 
-myApp.config(['$routeProvider', function($routeProvider) {
+myApp.config([&apos;$routeProvider&apos;, function($routeProvider) {
     $routeProvider.
-        when('/index', {templateUrl: 'partials/index.html'} ).
-        when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html'}).
-        when('/:model/new', {templateUrl: 'partials/base-edit.html'}).
-        when('/:model', {templateUrl: 'partials/base-list.html'}).
-        otherwise({redirectTo: '/index'});
-}]);</code></pre>
+        when(&apos;/index&apos;, {templateUrl: &apos;partials/index.html&apos;} ).
+        when(&apos;/:model/:id/edit&apos;, {templateUrl: &apos;partials/base-edit.html&apos;}).
+        when(&apos;/:model/new&apos;, {templateUrl: &apos;partials/base-edit.html&apos;}).
+        when(&apos;/:model&apos;, {templateUrl: &apos;partials/base-list.html&apos;}).
+        otherwise({redirectTo: &apos;/index&apos;});
+}]);
+</code></pre>
 <p><strong>public/partials/index.html</strong></p>
 <pre><code ng-non-bindable>&lt;h1&gt;Applicants&lt;/h1&gt;
 &lt;ul&gt;
-    &lt;li&gt;Create a new applicant at &lt;code&gt;&lt;a href="http://0.0.0.0:3000/#/applicant/new"&gt;http://0.0.0.0:3000/#/applicant/new&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
-    &lt;li&gt;List applicants at &lt;code&gt;&lt;a href="http://0.0.0.0:3000/#/applicant"&gt;http://0.0.0.0:3000/#/applicant&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
-    &lt;li&gt;Edit existing applicants by clicking on the links in the &lt;a href="http://0.0.0.0:3000/#/applicant"&gt;list&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;Show applicants in a &lt;a href="http://0.0.0.0:3000/#/analyse/applicant"&gt;grid report&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</code></pre>
+    &lt;li&gt;Create a new applicant at &lt;code&gt;&lt;a href=&quot;http://0.0.0.0:3000/#/applicant/new&quot;&gt;http://0.0.0.0:3000/#/applicant/new&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;List applicants at &lt;code&gt;&lt;a href=&quot;http://0.0.0.0:3000/#/applicant&quot;&gt;http://0.0.0.0:3000/#/applicant&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;Edit existing applicants by clicking on the links in the &lt;a href=&quot;http://0.0.0.0:3000/#/applicant&quot;&gt;list&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;Show applicants in a &lt;a href=&quot;http://0.0.0.0:3000/#/analyse/applicant&quot;&gt;grid report&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
 <p id="base-edit-html"><strong>public/partials/base-edit.html</strong></p>
-<pre><code ng-non-bindable>&lt;!--Specify the controller.  BaseCtrl handles all the REST operations and much more--&gt;
-&lt;form name="myForm" class="form-horizontal compact" ng-controller="BaseCtrl"&gt;
+<pre><code ng-non-bindable>&lt;form name=&quot;myForm&quot; class=&quot;form-horizontal compact&quot; ng-controller=&quot;BaseCtrl&quot;&gt;
     &lt;!--This is the header section--&gt;
-    &lt;div class="row-fluid form-header"&gt;
-        &lt;div class="span12 well"&gt;
-            &lt;!--The left hand side contains important fields from the data--&gt;
-            &lt;div class="span11"&gt;
-                &lt;h4&gt;{{modelNameDisplay}} :
-                    &lt;span ng-repeat="field in listSchema"&gt;{{getListData(record, field.name)}} &lt;/span&gt;
-                &lt;/h4&gt;
+    &lt;div class=&quot;page-header edit-header row-fluid&quot;&gt;
+        &lt;!--The left hand side contains important fields from the data--&gt;
+        &lt;div class=&quot;header-lhs span9&quot;&gt;
+            &lt;h4&gt;{{modelNameDisplay}} :
+                &lt;span ng-repeat=&quot;field in listSchema&quot;&gt;{{getListData(record, field.name)}} &lt;/span&gt;
+            &lt;/h4&gt;
+        &lt;/div&gt;
+        &lt;!--The right hand side contains buttons to Save, Cancel, Delete and create New--&gt;
+        &lt;div class=&quot;header-rhs span2&quot;&gt;
+            &lt;div form-buttons&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;container-fluid page-body edit-body&quot;&gt;
+        &lt;!--This section only appears when there is an error message to display--&gt;
+        &lt;div ng-show=&quot;errorMessage&quot; class=&quot;row-fluid&quot;&gt;
+            &lt;div class=&quot;span6 offset3 alert alert-error&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;&amp;times;&lt;/button&gt;
+                &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
+                &lt;div ng-bind-html=&quot;errorMessage&quot;&gt;&lt;/div&gt;
             &lt;/div&gt;
-            &lt;!--The right hand side contains buttons to Save, Cancel, Delete and create New--&gt;
-            &lt;div class="span1"&gt;
-                &lt;div form-buttons&gt;&lt;/div&gt;
-            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!--This is the section that displays the input fields--&gt;
+        &lt;div ng-if=&quot;!panes.length&quot;&gt;
+            &lt;form-input schema=&quot;formSchema&quot; formStyle=&quot;horizontal&quot;&gt;&lt;/form-input&gt;
+        &lt;/div&gt;
+        &lt;div ng-if=&quot;panes.length&quot;&gt;
+            &lt;form-input schema=&quot;panes&quot; formStyle=&quot;horizontal&quot;&gt;&lt;/form-input&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-    &lt;!--This section only appears when there is an error message to display--&gt;
-    &lt;div ng-show="errorMessage" class="row-fluid"&gt;
-        &lt;div class="span6 offset3 alert alert-error"&gt;
-            &lt;button type="button" class="close" ng-click="dismissError()"&gt;&times;&lt;/button&gt;
-            &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
-            &lt;div ng-bind-html="errorMessage"&gt;&lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div class="row-fluid"&gt;
-            &lt;!--This is the row that displays the input fields--&gt;
-            &lt;form-input schema="formSchema"&gt;&lt;/form-input&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/form&gt;</code></pre>
+&lt;/form&gt;
+</code></pre>
 <p><strong>public/partials/base-list.html</strong></p>
-<pre><code ng-non-bindable>&lt;!--BaseCtrl is used for listing data in the database as well--&gt;
-&lt;div ng-controller="BaseCtrl" class="row-fluid"&gt;
-    &lt;div class="hero-unit span12"&gt;
-        &lt;div class="row-fluid"&gt;
-            &lt;div class="pull-left"&gt;
+<pre><code ng-non-bindable>&lt;div ng-controller=&quot;BaseCtrl&quot;&gt;
+    &lt;div class=&quot;container-fluid page-header list-header&quot;&gt;
+        &lt;div class=&quot;row-fluid&quot;&gt;
+            &lt;div class=&quot;header-lhs span9&quot;&gt;
                 &lt;h1&gt;{{modelNameDisplay}}&lt;/h1&gt;
             &lt;/div&gt;
-            &lt;div class="pull-right"&gt;
-                &lt;br/&gt;
-                &lt;button class="btn" ng-click="new()"&gt;&lt;i class="icon-plus"&gt;&lt;/i&gt; New&lt;/button&gt;
+            &lt;div class=&quot;header-rhs span2&quot;&gt;
+                &lt;button class=&quot;btn pull-right&quot; ng-click=&quot;new()&quot;&gt;&lt;i class=&quot;icon-plus&quot;&gt;&lt;/i&gt; New&lt;/button&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class="row-fluid" infinite-scroll="scrollTheList()"&gt;
-        &lt;a ng-repeat="record in recordList" ng-href="/#/{{modelName}}/{{formPlusSlash}}{{record['_id']}}/edit"&gt;
-            &lt;div class="well well-small list-well"&gt;
-                &lt;div class="span{{12/listSchema.length}}" ng-repeat="field in listSchema"&gt;{{getListData(record, field.name)}} &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/a&gt;
-    &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-
-<p><strong>public/partials/base-analysis.html</strong></p>
-<pre><code ng-non-bindable>&lt;div ng-controller="AnalysisCtrl" class="row-fluid"&gt;
-    &lt;div class="row-fluid form-header"&gt;
-        &lt;div class="span12 well"&gt;
-            &lt;form name="paramForm" ng-show="paramSchema" class="pull-right form form-horizontal compact"&gt;
-                &lt;form-input schema="paramSchema"&gt;&lt;/form-input&gt;
-            &lt;/form&gt;
-            &lt;div&gt;
-                &lt;h1&gt;{{ reportSchema.title }}&lt;/h1&gt;
-            &lt;/div&gt;
+    &lt;div class=&quot;container-fluid page-body list-body&quot;&gt;
+        &lt;div class=&quot;row-fluid&quot; infinite-scroll=&quot;scrollTheList()&quot;&gt;
+            &lt;a ng-repeat=&quot;record in recordList&quot; ng-href=&quot;/#/{{modelName}}/{{formPlusSlash}}{{getId(record)}}/edit&quot;&gt;
+                &lt;div class=&quot;list-item&quot;&gt;
+                    &lt;div class=&quot;span{{12/listSchema.length}}&quot; ng-repeat=&quot;field in listSchema&quot;&gt;{{getListData(record, field.name)}} &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/a&gt;
         &lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div ng-show="errorMessage" class="row-fluid"&gt;
-        &lt;div class="span6 offset3 alert alert-error"&gt;
-            &lt;button type="button" class="close" ng-click="dismissError()"&gt;&times;&lt;/button&gt;
-            &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
-            &lt;div ng-bind-html="errorMessage"&gt;&lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;div class="row-fluid"&gt;
-        &lt;div class="gridStyle" ng-grid="gridOptions"&gt;&lt;/div&gt;
     &lt;/div&gt;
 &lt;/div&gt;
+
+</code></pre>
+<p><strong>public/partials/base-analysis.html</strong></p>
+<pre><code ng-non-bindable>&lt;div ng-controller=&quot;AnalysisCtrl&quot;&gt;
+    &lt;div class=&quot;container-fluid page-header report-header&quot;&gt;
+        &lt;div class=&quot;row-fluid&quot;&gt;
+            &lt;div class=&quot;header-lhs span7&quot;&gt;
+                &lt;h1&gt;{{ reportSchema.title }}&lt;/h1&gt;
+            &lt;/div&gt;
+            &lt;form name=&quot;paramForm&quot; ng-show=&quot;paramSchema&quot; class=&quot;span4 header-rhs form form-horizontal compact&quot;&gt;
+                &lt;form-input schema=&quot;paramSchema&quot;&gt;&lt;/form-input&gt;
+            &lt;/form&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;container-fluid page-body report-body&quot;&gt;
+        &lt;div ng-show=&quot;errorMessage&quot; class=&quot;row-fluid&quot;&gt;
+            &lt;div class=&quot;span6 offset3 alert alert-error&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;&amp;times;&lt;/button&gt;
+                &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
+                &lt;div ng-bind-html=&quot;errorMessage&quot;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row-fluid&quot;&gt;
+            &lt;div class=&quot;gridStyle&quot; ng-grid=&quot;gridOptions&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
 </code></pre>
 
 </section>

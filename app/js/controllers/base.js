@@ -21,6 +21,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
+    $scope.getId = function(obj) {return obj._id;}
 
     $scope.walkTree = function (object, fieldname, element) {
         // Walk through subdocs to find the required key

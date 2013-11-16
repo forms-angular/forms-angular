@@ -603,4 +603,3 @@ describe('formInput', function () {
     });
 
 });
-

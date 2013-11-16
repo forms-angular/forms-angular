@@ -1,6 +1,6 @@
 {
   "name": "forms-angular",
-  "version": "0.0.24",
+  "version": "0.1.1",
   "homepage": "https://github.com/mchapman/forms-angular",
   "description": "No nonsense forms for the MEAN stack",
   "keywords": [
@@ -19,11 +19,11 @@
     "components"
   ],
   "dependencies": {
-    "angular": "1.2.0-rc.3",
-    "angular-route": "1.2.0-rc.3",
-    "angular-mocks": "1.2.0-rc.3",
+    "angular": "1.2.1",
+    "angular-route": "1.2.1",
+    "angular-mocks": "1.2.1",
     "angular-ui-bootstrap-bower": "0.5.0",
-    "angular-sanitize": "1.2.0-rc.3",
+    "angular-sanitize": "1.2.1",
     "angular-ui-select2": "git://github.com/mchapman/ui-select2#d6544d9d6b3098e8bfd31f06de79176ac90d2fe5",
     "bootstrap": "2.3.2",
     "html5shiv-dist": "3.6.2",
@@ -40,6 +40,6 @@
     "jspdf": "git://github.com/mchapman/jsPDF#table-footer"
   },
   "resolutions": {
-    "angular": "1.2.0-rc.3"
+    "angular": "1.2.1"
   }
 }
