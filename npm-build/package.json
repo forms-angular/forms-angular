@@ -1,9 +1,9 @@
 {
-  "name": "forms-angular-test",
+  "name": "forms-angular",
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
-  "version": "0.0.35",
+  "version": "0.0.36",
   "engines": {
     "node": "0.10.x",
     "npm": "1.x"
