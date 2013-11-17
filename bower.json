@@ -36,6 +36,7 @@
     "ng-grid": "~2.0.7",
     "angular-elastic": "~2.0.0",
     "select2-bootstrap-css": "~1",
+    "components-font-awesome": "3.2.1",
     "jspdf": "git://github.com/mchapman/jsPDF#table-footer"
   },
   "resolutions": {
