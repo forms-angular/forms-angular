@@ -1,6 +1,6 @@
 {
   "name": "forms-angular",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/mchapman/forms-angular",
   "description": "No nonsense forms for the MEAN stack",
   "keywords": [
@@ -37,6 +37,7 @@
     "angular-elastic": "~2.0.0",
     "angular-dragdrop": "~1.0.5",
     "select2-bootstrap-css": "~1",
+    "components-font-awesome": "3.2.1",
     "jspdf": "git://github.com/mchapman/jsPDF#table-footer"
   },
   "resolutions": {
