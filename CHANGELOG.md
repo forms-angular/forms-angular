@@ -1,5 +1,9 @@
 # forms-angular
 
+## 0.1 to 0.2
+### Summary
+* Added support for hierarchy fields
+
 ## 0.0.x to 0.1.0
 ### Summary
 * Started CHANGELOG.md (but for now it is far from definitive, but is intended to include all breaking changes)
