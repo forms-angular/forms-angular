@@ -476,11 +476,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                 // This current implementation restricts us to using one hierarchy schema per model - not sure that is a problem
                                 mongooseType.schema.options = {hierarchy: true};
                                 $scope.hierarchyOptions = {
-                                                    elementNoFld: 'fngh_elementNo',
-                                                    parentFld : 'fngh_parent',
-                                                    displayStatusFld : 'fngh_displayStatus',
-                                                    orderFld : 'fngh_order',
-                                                    isContainerFld: 'fngh_isContainer'
+                                                    elementNoFld: 'elementNo',
+                                                    parentFld : 'parent',
+                                                    displayStatusFld : 'displayStatus',
+                                                    orderFld : 'order',
+                                                    isContainerFld: 'isContainer'
                                                     };
                                 if (angular.isObject(formData.hierarchy)) {
                                     angular.extend($scope.hierarchyOptions, formData.hierarchy)

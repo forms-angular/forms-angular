@@ -3,11 +3,11 @@ var mongoose = require('mongoose'),
 
 function fngHierarchy(schema, options) {
     schema.add({
-        fngh_elementNo: {type: Number, required: true, form:{ hidden: true}},
-        fngh_parent: { type: Number, form: {hidden: true} },
-        fngh_displayStatus: {type: Boolean, form: {hidden: true}},
-        fngh_order: {type: Number, form: {hidden: true}},
-        fngh_isContainer: {type: Boolean, form:{popup:"Is this a container?", order:0}}
+        elementNo: {type: Number, required: true, form:{ hidden: true}},
+        parent: { type: Number, form: {hidden: true} },
+        displayStatus: {type: Boolean, form: {hidden: true}},
+        order: {type: Number, form: {hidden: true}},
+        isContainer: {type: Boolean, form:{popup:"Is this a container?", order:0}}
     });
 }
 
