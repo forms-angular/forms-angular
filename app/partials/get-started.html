@@ -60,10 +60,10 @@ In the shell do:
 cd myapp
 express
 npm install
-npm install forms-angular-test --save
+npm install forms-angular --save
 npm install mongoose --save
 cd public
-bower install forms-angular#dev
+bower install forms-angular
 cd ..</code></pre>
 </section>
 <section id="server-code" name="Server Code" affix-scroll>
@@ -105,18 +105,28 @@ DataFormHandler.addResource(&apos;applicant&apos;, Applicant);   // Create and a
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/jquery-ui/ui/jquery-ui.js&quot;&gt;&lt;/script&gt;
     &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/jquery-ui/themes/smoothness/jquery-ui.css&quot;&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular/angular.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-route/angular-route.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-sanitize/angular-sanitize.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/underscore/underscore.js&quot;&gt;&lt;/script&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/bootstrap.css/css/bootstrap.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/bootstrap.css/css/bootstrap-responsive.css&quot;&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js&quot;&gt;&lt;/script&gt; &lt;!-- is now in fngTabs.js  --&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-ui-date/src/date.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-ui-select2/src/select2.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ngInfiniteScroll/ng-infinite-scroll.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/jspdf/dist/jspdf.source.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/bootstrap/js/bootstrap-transition.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/bootstrap/js/bootstrap-collapse.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/ng-grid/ng-grid.css&quot;&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ng-grid/build/ng-grid.js&quot;&gt;&lt;/script&gt;
     &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/select2/select2.css&quot;&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-elastic/elastic.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/select2/select2.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/forms-angular/forms-angular.js&quot;&gt;&lt;/script&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/forms-angular/forms-angular.css&quot;&gt;
     &lt;!--[if lt IE 9]&gt;
     &lt;script src=&quot;bower_components/html5shiv-dist/html5shiv.js&quot;&gt;&lt;/script&gt;
     &lt;![endif]--&gt;
+
+    &lt;!--forms-angular stuff--&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/forms-angular/forms-angular.css&quot;&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/forms-angular/forms-angular.js&quot;&gt;&lt;/script&gt;
     &lt;script src=&quot;get-started/myapp.js&quot;&gt;&lt;/script&gt;
 
 &lt;/head&gt;
