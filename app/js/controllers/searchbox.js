@@ -3,22 +3,30 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.results = [];
     $scope.moreCount = 0;
 
+    var clearSearchResults = function() {
+        $scope.errorClass = "";
+        $scope.results = [];
+    };
+
     $scope.$watch('searchTarget', function(newValue) {
         if (newValue && newValue.length > 0) {
             $http.get('api/search?q=' + newValue).success(function (data) {
-                $scope.results = data.results;
-                $scope.moreCount = data.moreCount;
-                $scope.errorClass = $scope.results.length === 0 ? "error" : "";
+                if ($scope.searchTarget.length > 0) {
+                    $scope.results = data.results;
+                    $scope.moreCount = data.moreCount;
+                    $scope.errorClass = $scope.results.length === 0 ? "error" : "";
+                } else {
+                    clearSearchResults();
+                }
             }).error(function (data, status) {
                 console.log("Error in searchbox.js : " + data + ' (status=' + status + ')');
             });
         } else {
-            $scope.errorClass = "";
-            $scope.results = [];
+            clearSearchResults();
         }
     },true);
 
-    $scope.$on("$routeChangeStart", function (event, next) {
+    $scope.$on("$routeChangeStart", function () {
         $scope.searchTarget = '';
     });
 
