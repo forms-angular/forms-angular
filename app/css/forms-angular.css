@@ -9233,6 +9233,11 @@ body {
   font-weight: bold;
 }
 
+button.form-btn {
+  width: 8em;
+  height: 2em;
+}
+
 form.form-horizontal.compact .control-group {
   margin-bottom: 2px;
 }
@@ -9249,11 +9254,6 @@ form.form-horizontal.compact .input-append + .help-block {
 
 form.form-horizontal.compact hr {
   margin: 8px 0;
-}
-
-form button.form-btn {
-  width: 8em;
-  height: 2em;
 }
 
 form .schema-head,

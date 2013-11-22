@@ -21,7 +21,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
-    $scope.getId = function(obj) {return obj._id;}
+    $scope.getId = function(obj) {return obj._id;};
 
     $scope.walkTree = function (object, fieldname, element) {
         // Walk through subdocs to find the required key
@@ -1112,8 +1112,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         var pos = _.sortedIndex(optionsList, option);
                         // handle dupes (ideally people will use unique indexes to stop them but...)
                         if (optionsList[pos] === option) {
-                            option = option + '    (' + data[i]._id + ')'
-                            var pos = _.sortedIndex(optionsList, option);
+                            option = option + '    (' + data[i]._id + ')';
+                            pos = _.sortedIndex(optionsList, option);
                         }
                         optionsList.splice(pos, 0, option);
                         idList.splice(pos, 0, data[i]._id);
@@ -1146,6 +1146,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $('#' + $(ev.currentTarget).data('select2-open')).select2('open')
     };
 
-}])
-;
+    $scope.toJSON = function(obj) {
+        return JSON.stringify(obj, null, 2);
+    };
+    $scope.toJSON = function(obj) {
+        return JSON.stringify(obj, null, 2);
+    };
+
+}]);
 

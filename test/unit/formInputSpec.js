@@ -4,18 +4,17 @@ describe('formInput', function () {
     // load the form code
     beforeEach(angular.mock.module('formsAngular'));
 
-    describe('simple text input', function () {
+    ddescribe('simple text input', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact">' +
-                    '<form-input schema="formSchema"></form-input>' +
-                    '</form>');
+            elm = angular.element('<form-input formStyle="horizontalCompact" schema="formSchema"></form-input>');
 
             scope = $rootScope;
             scope.formSchema = {name: "desc", id: "desc_id", label: "Description", type: "text"};
             $compile(elm)(scope);
+console.log('compile done');
             scope.$digest();
+            dump(elm);
         }));
 
         it('should have a label', function () {
@@ -31,6 +30,10 @@ describe('formInput', function () {
             expect(input).toHaveClass('ng-valid');
             expect(input.attr('id')).toBe('desc_id');
             expect(input.attr('type')).toBe('text');
+        });
+
+        it('should connect the input to the form', function() {
+            expect(scope.form.desc.$pristine).toBe(true);
         });
 
     });

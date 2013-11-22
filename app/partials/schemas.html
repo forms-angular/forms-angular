@@ -23,18 +23,19 @@
     {id:'f_surname',label:'Surname',name:'surname',type:'text'},
     {id:'f_forename',label:'Forename',name:'forename',type:'text'}
     ]"&gt;
-    &lt;form&gt;
-        &lt;form-input schema="name" /&gt;
-    &lt;/form&gt;
+    &lt;form-input schema="name" /&gt;
 &lt;div&gt;</pre>
-    <p>This simple bit of markup creates a small schema and stores it in the $scope as <em>name</em>(you
+    <p>This simple bit of markup creates a small schema and stores it in the $scope as <em>name</em> (you
         wouldn't normally it like this, but it illustrates things well)
-        then in a form invokes the form-input directive, telling it to use the schema just created.</p>
+        then in a form invokes the form-input directive, telling it to use the schema just created to create
+        a form with the appropriate input fields.</p>
 
     <p>Unfortunately displaying the resulting form stops the page scrolling to the internal links, so we have
         decided to
         omit it - there are plenty of examples accessible elsewhere on the site.</p>
-    <!--TODO: plunker or similar-->
+    <!--TODO: sort this out or do a plunker or similar-->
+
+    <p>There is more information about the forms-input directive on the <a href="/#/forms">forms page</a>.</p>
 </section>
 
 <section id="mongoose" name="Mongoose Schemas" affix-scroll>

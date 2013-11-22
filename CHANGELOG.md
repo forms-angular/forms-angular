@@ -3,6 +3,11 @@
 ## 0.1 to 0.2
 ### Summary
 * Added support for hierarchy fields
+* Added schema
+* Form is now created within the form-input directive
+
+### BREAKING CHANGES
+* Changes form-input directive so that it creates a
 
 ## 0.0.x to 0.1.0
 ### Summary

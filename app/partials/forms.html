@@ -125,32 +125,38 @@ and handle querying and updating the server</p>
         </section>
     </section>
 
-    <section id="form-styles" name="Form Styles" affix-scroll>
-        <h3>Form Styles</h3>
+    <section id="form-input-directive" name="form-input Directive" affix-scroll>
+        <h3>The form-input Directive</h3>
 
-        <p>The <strong>formstyle</strong> attribute can take the values <strong>vertical</strong>, <strong>horizontal</strong>,
-            <strong>inline</strong> and <strong>horizontalCompact</strong>.
-            The first three generate the markup for a Twitter Bootstrap 2 style and the last slightly modified style. <strong>vertical</strong>
-            generates markup that works with the default form style, and the others needs classes adding as follows:</p>
-        <table class="table table-striped">
-            <tr>
-                <th>formstyle</th>
-                <th>Associated Bootstrap class(es)</th>
-            </tr>
-            <tr>
-                <td>horizontal</td>
-                <td>form-horizontal</td>
-            </tr>
-            <tr>
-                <td>horizontalCompact</td>
-                <td>form-horizontal compact</td>
-            </tr>
-            <tr>
-                <td>inline</td>
-                <td>form-inline</td>
-            </tr>
-        </table>
-        <p>Sub forms that are created by the directive will have these classes added in the appropriate place.</p>
+        <p>The form-input directive, which is the core component of forms-angular, takes one mandatory attribute - schema -
+            which is documented at the top of the <a href="/#/schema.html">page</a> and some optional attributes.</p>
+
+        <p>The optional attributes that can be passed for form-input are:</p>
+        <ul>
+            <li><strong>formstyle</strong> this attribute can take the values <strong>vertical</strong>, <strong>horizontal</strong>,
+            <strong>inline</strong> and <strong>horizontalCompact</strong>.  The first three generate the markup for a Twitter Bootstrap 2 style and the last slightly modified style. <strong>vertical</strong>
+            generates markup that works with the default form style, and the others needs classes adding as follows:
+                <table class="table table-striped">
+                    <tr>
+                        <th>formstyle</th>
+                        <th>Associated Bootstrap class(es)</th>
+                    </tr>
+                    <tr>
+                        <td>horizontal</td>
+                        <td>form-horizontal</td>
+                    </tr>
+                    <tr>
+                        <td>horizontalCompact</td>
+                        <td>form-horizontal compact</td>
+                    </tr>
+                    <tr>
+                        <td>inline</td>
+                        <td>form-inline</td>
+                    </tr>
+                </table>
+                <p>Forms and sub forms that are created by the directive will have these classes added in the appropriate place.</p></li>
+<!--TODO complete this list            -->
+        </ul>
     </section>
 
     <section id="client-side-customisation" name="Client Side Customization" affix-scroll>

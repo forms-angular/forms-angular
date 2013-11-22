@@ -1,5 +1,5 @@
 <!--Specify the controller.  BaseCtrl handles all the REST operations and much more-->
-<form name="myForm" class="form-horizontal compact" ng-controller="BaseCtrl">
+<div class="form-horizontal compact" ng-controller="BaseCtrl">
     <!--This is the header section-->
     <div class="page-header edit-header row-fluid">
         <!--The left hand side contains important fields from the data-->
@@ -23,12 +23,12 @@
             </div>
         </div>
         <!--This is the section that displays the input fields-->
-        <div ng-if="!panes.length">
-            <form-input schema="formSchema" formStyle="horizontal"></form-input>
-        </div>
-        <div ng-if="panes.length">
-            <form-input schema="panes" formStyle="horizontal"></form-input>
-        </div>
+        <!--<div ng-if="!panes.length">-->
+            <form-input schema="formSchema" formStyle="horizontalCompact"></form-input>
+        <!--</div>-->
+        <!--<div ng-if="panes.length">-->
+            <!--<form-input schema="panes" formStyle="horizontal"></form-input>-->
+        <!--</div>-->
     </div>
 
     <!--Record-->
@@ -39,4 +39,7 @@
     <!--<pre>{{listSchema}}</pre>-->
     <!--Panes-->
     <!--<pre>{{panes}}</pre>-->
-</form>
+    Invalid: {{ myForm.$invalid }} <br />
+    Pristine: {{ myForm.$pristine }} <br />
+    Form: <pre>{{ toJSON(myForm) }}</pre>
+</div>
