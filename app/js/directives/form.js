@@ -410,9 +410,7 @@ formsAngular
                                 elementHtml += '</tabs>';
                             }
                             elementHtml += '</form>';
-                            console.log('Before replace',element,elementHtml);
                             element.replaceWith($compile(elementHtml)(scope));
-                            console.log('New element',element);
                             // If there are subkeys we need to fix up ng-model references when record is read
                             if (subkeys.length > 0) {
 

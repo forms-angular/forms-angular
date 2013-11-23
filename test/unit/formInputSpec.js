@@ -4,17 +4,19 @@ describe('formInput', function () {
     // load the form code
     beforeEach(angular.mock.module('formsAngular'));
 
-    ddescribe('simple text input', function () {
+    describe('simple text input', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
-            elm = angular.element('<form-input formStyle="horizontalCompact" schema="formSchema"></form-input>');
+            // TODO: All these tests only work OK when they have the explicit form in the angular element.  The real code doesn't need this so need to figure out how to remove them.
+            elm = angular.element('<form name="myForm2" class="form-horizontal compact"> ' +
+                '<form-input formStyle="horizontalCompact" schema="formSchema"></form-input>' +
+                '</form>'
+            );
 
             scope = $rootScope;
             scope.formSchema = {name: "desc", id: "desc_id", label: "Description", type: "text"};
             $compile(elm)(scope);
-console.log('compile done');
             scope.$digest();
-            dump(elm);
         }));
 
         it('should have a label', function () {
@@ -33,7 +35,7 @@ console.log('compile done');
         });
 
         it('should connect the input to the form', function() {
-            expect(scope.form.desc.$pristine).toBe(true);
+            expect(scope.myForm.desc_id.$pristine).toBe(true);
         });
 
     });

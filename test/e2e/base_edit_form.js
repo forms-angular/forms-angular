@@ -8,17 +8,15 @@ describe('Base edit form', function() {
             toMatch( /Surname/ );
     });
 
-    it('should display an error message if field level validation fails', function() {
+    it('should display an error message if server validation fails', function() {
         browser().navigateTo('/#/b_using_options/new');
         input('record.surname').enter('Smith');
-        element('#saveButton').click();
-        expect( element('.alert-error').text()).toMatch(/Accepted/);
         input('record.accepted').check();
         input('record.freeText').enter('this is a rude word');
         element('#saveButton').click();
-        expect( element('.alert-error').text()).toMatch(/Error!/)
-        expect( element('.alert-error').text()).toMatch(/Wash your mouth!/)
-        expect( element('.alert-error').text()).not().toMatch(/eye/)
+        expect( element('.alert-error').text()).toMatch(/Error!/);
+        expect( element('.alert-error').text()).toMatch(/Wash your mouth!/);
+        expect( element('.alert-error').text()).not().toMatch(/eye/);
     });
 
     describe('should display deletion confirmation modal', function() {
@@ -79,7 +77,19 @@ describe('Base edit form', function() {
             browser().navigateTo('/#/b_using_options/519a6075b320153869b155e0/edit');
             expect(element('#f_freeText').val()).toMatch(/polite thing/);
         });
-    })
+    });
+
+    describe('form button changes',function() {
+
+        it('enables cancel button after a change', function() {
+            browser().navigateTo('/#/b_using_options/new');
+            input('record.surname').enter('Smith');
+            expect( element('#f_surname').val() ).toMatch( /Smith/ );
+            element('#cancelButton').click();
+            expect( element('#f_surname').val() ).not().toMatch( /Smith/ );
+        });
+
+    });
 
 });
 

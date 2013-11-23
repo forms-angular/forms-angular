@@ -619,14 +619,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
         $.extend(true, $scope.record, master);
         $scope.dismissError();
-
-//  TODO: Sort all this pristine stuff now we are on 1.2
-//        if ($scope.myForm) {
-//            console.log('Calling set pristine')
-//            $scope.myForm.$setPristine();
-//        } else {
-//            console.log("No form");
-//        }
+        if ($scope.myForm) {
+            $scope.myForm.$setPristine();
+        }
     };
 
     //listener for any child scopes to display messages
@@ -842,7 +837,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (typeof $scope.disableFunctions.isCancelDisabled === "function") {
             return $scope.disableFunctions.isCancelDisabled($scope.record, master, $scope.myForm);
         } else {
-            return angular.equals(master, $scope.record);
+            return $scope.myForm && $scope.myForm.$pristine;
         }
     };
 
@@ -850,7 +845,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (typeof $scope.disableFunctions.isSaveDisabled === "function") {
             return $scope.disableFunctions.isSaveDisabled($scope.record, master, $scope.myForm);
         } else {
-            return ($scope.myForm && $scope.myForm.$invalid) || angular.equals(master, $scope.record);
+            return ($scope.myForm && ($scope.myForm.$invalid || $scope.myForm.$pristine));
         }
     };
 
@@ -858,7 +853,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (typeof $scope.disableFunctions.isDeleteDisabled === "function") {
             return $scope.disableFunctions.isDeleteDisabled($scope.record, master, $scope.myForm);
         } else {
-            return false;
+            return (!$scope.id);
         }
     };
 
@@ -1146,9 +1141,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $('#' + $(ev.currentTarget).data('select2-open')).select2('open')
     };
 
-    $scope.toJSON = function(obj) {
-        return JSON.stringify(obj, null, 2);
-    };
     $scope.toJSON = function(obj) {
         return JSON.stringify(obj, null, 2);
     };

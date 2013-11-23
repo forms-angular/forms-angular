@@ -352,8 +352,9 @@ describe('"BaseCtrl"', function () {
                     "lookupField": {"path": "lookupField", "instance": "ObjectID", "options": {"ref": "Person"}, "_index": null},
                     "arrayOfString": {"caster": {"instance": "String"}, "path": "arrayOfString", "options": {"type": [null]}, "_index": null},
                     "arrayOfLookup": {"caster": {"path": null, "instance": "ObjectID", "options": {}, "_index": null}, "path": "arrayOfLookup", "options": {"type": [null], "ref": "referral_format", "form": {"label": "Referral Format"}}, "_index": null},
-                    "arrayOfEnum": {"caster": {"path": "arrayOfEnum", "instance": "String"}, "path": "arrayOfEnum", "options": {"type": [null], "enum": ["Football", "Hockey", "Cricket"]}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}},
-                    "arrayOfEnumIn.SubDoc": {"caster": {"path": "arrayOfEnumIn.SubDoc", "instance": "String"}, "path": "arrayOfEnumIn.SubDoc", "options": {"type": [null], "enum": ["Ash", "Birch", "Chestnut"]}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}
+                    "arrayOfEnum": {"caster": {"path": "arrayOfEnum", "instance": "String"}, "path": "arrayOfEnum", "options": {"type": [null], "enum": ["Football", "Hockey", "Cricket"]}, "_index": null, "$conditionalHandlers": {}},
+                    "arrayOfEnumIn.SubDoc": {"caster": {"path": "arrayOfEnumIn.SubDoc", "instance": "String"}, "path": "arrayOfEnumIn.SubDoc", "options": {"type": [null], "enum": ["Ash", "Birch", "Chestnut"]}, "_index": null, "$conditionalHandlers": {}},
+                    "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}
                 });
             $httpBackend.whenGET('api/schema/referral_format').respond(
                 {"description": {"enumValues": [], "regExp": null, "path": "description", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"list": true}, "_index": null},
@@ -806,26 +807,6 @@ describe('"BaseCtrl"', function () {
         });
 
     });
-
-    describe('Save button enables when appropriate', function () {
-
-        it('changes to array', function () {
-            inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
-                $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/collection').respond({"specialSubjects":{"caster":{"enumValues":[],"regExp":null,"path":"specialSubjects","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"path":"specialSubjects","validators":[],"setters":[],"getters":[],"options":{"type":[null]},"_index":null,"$conditionalHandlers":{}}});
-                $httpBackend.whenGET('api/collection/3').respond({"surname":"Accepted","forename":"John","accepted":true,"_id":"3","specialSubjects":["English"]});
-                $location.$$path = '/collection/3/edit';
-                scope = $rootScope.$new();
-                ctrl = $controller("BaseCtrl", {$scope: scope});
-                $httpBackend.flush();
-                expect(scope.isSaveDisabled()).toEqual(true);
-                scope.record.specialSubjects = [];
-                expect(scope.isSaveDisabled()).toEqual(false);
-            });
-        });
-
-    });
-
 
 });
 
