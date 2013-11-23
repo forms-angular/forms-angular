@@ -4,9 +4,9 @@
             <div class="header-lhs span7">
                 <h1>{{ reportSchema.title }}</h1>
             </div>
-            <form name="paramForm" ng-show="paramSchema" class="span4 header-rhs form form-horizontal compact">
-                <form-input schema="paramSchema"></form-input>
-            </form>
+            <div class="header-rhs span4">
+                <form-input schema="paramSchema" name="paramForm" ng-show="paramSchema" formstyle="horizontalCompact"></form-input>
+            </div>
         </div>
     </div>
     <div class="container-fluid page-body report-body">

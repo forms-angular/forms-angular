@@ -404,7 +404,8 @@ formsAngular
                         }
                         if (newValue.length > 0) {
                             unwatch();
-                            elementHtml = '<form name="' + (attrs.name || 'myForm') + '" class="' + convertFormStyleToClass(attrs.style) + ' novalidate">';
+                            scope.topLevelFormName = attrs.name || 'myForm';
+                            elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.style) + ' novalidate">';
                             processInstructions(newValue, true);
                             if (tabsSetup === 'forced') {
                                 elementHtml += '</tabs>';

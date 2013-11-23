@@ -8,6 +8,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.phase = 'init';
     $scope.disableFunctions = sharedStuff.disableFunctions;
     $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
+    $scope.topLevelFormName = 'marker';
     $scope.formSchema = [];
     $scope.panes = [];
     $scope.listSchema = [];
@@ -619,8 +620,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
         $.extend(true, $scope.record, master);
         $scope.dismissError();
-        if ($scope.myForm) {
-            $scope.myForm.$setPristine();
+        if ($scope[$scope.topLevelFormName]) {
+            $scope[$scope.topLevelFormName].$setPristine();
         }
     };
 
@@ -835,23 +836,23 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.isCancelDisabled = function () {
         if (typeof $scope.disableFunctions.isCancelDisabled === "function") {
-            return $scope.disableFunctions.isCancelDisabled($scope.record, master, $scope.myForm);
+            return $scope.disableFunctions.isCancelDisabled($scope.record, master, $scope[$scope.topLevelFormName]);
         } else {
-            return $scope.myForm && $scope.myForm.$pristine;
+            return $scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine;
         }
     };
 
     $scope.isSaveDisabled = function () {
         if (typeof $scope.disableFunctions.isSaveDisabled === "function") {
-            return $scope.disableFunctions.isSaveDisabled($scope.record, master, $scope.myForm);
+            return $scope.disableFunctions.isSaveDisabled($scope.record, master, $scope[$scope.topLevelFormName]);
         } else {
-            return ($scope.myForm && ($scope.myForm.$invalid || $scope.myForm.$pristine));
+            return ($scope[$scope.topLevelFormName] && ($scope[$scope.topLevelFormName].$invalid || $scope[$scope.topLevelFormName].$pristine));
         }
     };
 
     $scope.isDeleteDisabled = function () {
         if (typeof $scope.disableFunctions.isDeleteDisabled === "function") {
-            return $scope.disableFunctions.isDeleteDisabled($scope.record, master, $scope.myForm);
+            return $scope.disableFunctions.isDeleteDisabled($scope.record, master, $scope[$scope.topLevelFormName]);
         } else {
             return (!$scope.id);
         }
@@ -859,7 +860,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.isNewDisabled = function () {
         if (typeof $scope.disableFunctions.isNewDisabled === "function") {
-            return $scope.disableFunctions.isNewDisabled($scope.record, master, $scope.myForm);
+            return $scope.disableFunctions.isNewDisabled($scope.record, master, $scope[$scope.topLevelFormName]);
         } else {
             return false;
         }
@@ -1144,6 +1145,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.toJSON = function(obj) {
         return JSON.stringify(obj, null, 2);
     };
+
+    $scope.baseSchema = function() {
+        return ($scope.panes.length ? $scope.panes : $scope.formSchema)
+    }
 
 }]);
 

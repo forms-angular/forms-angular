@@ -1,4 +1,3 @@
-<!--Specify the controller.  BaseCtrl handles all the REST operations and much more-->
 <div ng-controller="BaseCtrl">
     <!--This is the header section-->
     <div class="page-header edit-header row-fluid">
@@ -22,24 +21,6 @@
                 <div ng-bind-html="errorMessage"></div>
             </div>
         </div>
-        <!--This is the section that displays the input fields-->
-        <!--<div ng-if="!panes.length">-->
-            <form-input schema="formSchema" formStyle="horizontalCompact"></form-input>
-        <!--</div>-->
-        <!--<div ng-if="panes.length">-->
-            <!--<form-input schema="panes" formStyle="horizontal"></form-input>-->
-        <!--</div>-->
+        <form-input name="baseForm" schema="baseSchema()" formStyle="horizontalCompact"></form-input>
     </div>
-
-    <!--Record-->
-    <!--<pre>{{record}}</pre>-->
-    <!--FormSchema-->
-    <!--<pre>{{formSchema}}</pre>-->
-    <!--ListSchema-->
-    <!--<pre>{{listSchema}}</pre>-->
-    <!--Panes-->
-    <!--<pre>{{panes}}</pre>-->
-    Invalid: {{ myForm.$invalid }} <br />
-    Pristine: {{ myForm.$pristine }} <br />
-    Form: <pre>{{ toJSON(myForm) }}</pre>
 </div>
