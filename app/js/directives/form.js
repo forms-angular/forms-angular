@@ -405,12 +405,12 @@ formsAngular
                         if (newValue.length > 0) {
                             unwatch();
                             scope.topLevelFormName = attrs.name || 'myForm';
-                            elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.style) + ' novalidate">';
+                            elementHtml = attrs.subschema ? '<ng-form>' : '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.style) + ' novalidate">';
                             processInstructions(newValue, true);
                             if (tabsSetup === 'forced') {
                                 elementHtml += '</tabs>';
                             }
-                            elementHtml += '</form>';
+                            elementHtml += attrs.subschema ? '</ng-form>' : '</form>';
                             element.replaceWith($compile(elementHtml)(scope));
                             // If there are subkeys we need to fix up ng-model references when record is read
                             if (subkeys.length > 0) {
