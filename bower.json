@@ -24,7 +24,7 @@
     "angular-mocks": "1.2.1",
     "angular-ui-bootstrap-bower": "0.5.0",
     "angular-sanitize": "1.2.1",
-    "angular-ui-select2": "git://github.com/mchapman/ui-select2#d6544d9d6b3098e8bfd31f06de79176ac90d2fe5",
+    "angular-ui-select2": "0.0.4",
     "bootstrap": "2.3.2",
     "html5shiv-dist": "3.6.2",
     "jquery": "1.10.2",
