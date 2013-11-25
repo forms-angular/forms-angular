@@ -275,50 +275,52 @@ form {
   }
 }
 
-.hierarchy-list {
+// Hierarchy styles
+.hierarchy {
+  min-height: 20px;
+  padding: 5px;
+  margin: 10px 0;
+  border: 1px solid darken(@wellBackground,10%);
+  .border-radius(@baseBorderRadius);
+  .box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
 
-    width: 50%;
-    /*border: red solid 1px;*/
-    margin: 0;
-    padding: 0 0.25%;
-
+  .new-node-line {
+    padding-left: 2%;
+  }
 }
 
-.hierarchy-list .name {
+.hierarchy-child:nth-child(odd) {
+    background-color: #f6f6f6;
+}
+
+.hierarchy-list {
+  width: 50%;
+  margin: 0;
+  padding-top: 0.25%;
+  padding-bottom: 0.25%;
+  padding-left: 2%;
+  background-color: inherit;
+
+  .name {
     font-size: 1.3em;
     width: 250px;
     display: inline-block;
+  }
 
-}
+  .name i {
+    margin-top: 4px;
+    width: 22px;
+  }
 
-.hierarchy-list .name i {
-   margin-top: 4px;
-   width: 22px;
-}
-
-.hierarchy-list button {
+  button {
     margin: 5px;
-}
+  }
 
-.hierarchy-list .hierarchy-controls {
+  .hierarchy-controls {
     display: inline-block;
     float: right;
     padding-right: 2px;
-}
-
-
-.hierarchy-list:nth-child(odd) {
-
-    background-color: #f6f6f6;
-
-
-}
-
-.hierarchy-list .hierarchy-list {
-    width: 98%;
-    padding-top: 0.25%;
-    padding-bottom: 0.25%;
-    padding-left: 2%;
+  }
 }
 
 .hoverindicator {
