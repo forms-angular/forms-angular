@@ -32,14 +32,4 @@ myDemoApp.config(['$routeProvider', function ($routeProvider) {
 
             otherwise({redirectTo: '/index'});
     }]
-    )
-
-//    .config(['uiDateConfig', function (uiDateConfig) {
-//        angular.extend(uiDateConfig, {
-//            dateFormat: 'dd/mm/yy',
-//            firstDay: 1
-//        });
-//    }]
-//    )
-;
-
+);
