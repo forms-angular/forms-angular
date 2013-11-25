@@ -4,19 +4,15 @@ myDemoApp
         return {
             restrict: 'E',
             replace: true,
-            transclude: true,
-            template: '<ul class="hidden-phone nav nav-tabs nav-stacked docs-sidenav" ui-scrollfix="-50">' +
-                '<li ng-repeat="affix in affixes" id="{{affix.id}}"><a href="{{hrefBase}}/#{{affix.id}}"><i class="icon-chevron-right pull-right"></i>{{affix.name}}</a></li>' +
+            template: '<ul class="hidden-phone nav nav-tabs nav-stacked docs-sidenav" ui-scrollfix="-80">' +
+                '<li id="{{affix.id}}Opt" ng-repeat="affix in affixes" ng-click="scrollToSection(affix.id)"><a href=""><i class="icon-chevron-right pull-right"></i>{{affix.name}}</a></li>' +
                 '</ul>',
-            scope: {},
             compile: function() {
                 var body = $('body');
                 var affixes = [];
-                var hrefBase = '#'+$location.path();
                 return {
                     post: function(scope, element) {
                         scope.affixes = affixes;
-                        scope.hrefBase = hrefBase;
                         $('.affix-section', body).find('section').each(function() {
                             var section = $(this);
                             affixes.push({
@@ -49,7 +45,7 @@ myDemoApp
                         offset = iebody.scrollTop;
                     }
 
-                    var modal = $('li#'+id);
+                    var modal = $('li#'+id+'Opt');
                     if (top < offset && offset < bottom) {
                         if (!modal.hasClass('active')) {
                             modal.addClass('active');
