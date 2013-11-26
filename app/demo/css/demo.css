@@ -9382,11 +9382,8 @@ form .form-inline > .sub-doc {
 }
 
 .hierarchy-list {
-  width: 50%;
-  padding-top: 0.25%;
-  padding-bottom: 0.25%;
-  padding-left: 2%;
-  margin: 0;
+  padding: 0;
+  margin-left: 8px;
   background-color: inherit;
 }
 
@@ -11720,8 +11717,8 @@ i[class^="icon-"] {
   top: 50px;
 }
 
-.hierarchy-list {
-  min-width: 550px;
+.hierarchy {
+  width: 600px;
 }
 
 /* Add additional stylesheets below
