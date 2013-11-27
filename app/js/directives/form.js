@@ -270,7 +270,7 @@ formsAngular
 
                                 if (!info.noRemove) {
                                     template += '<div class="pull-left sub-doc-btns">' +
-                                        '<button id="remove_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index)">' +
+                                        '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
                                         '<i class="icon-minus"></i> Remove' +
                                         '</button>' +
                                         '</div> '
@@ -280,7 +280,7 @@ formsAngular
                                     '</div>' +
                                     '<div class = "schema-foot">';
                                 if (!info.noAdd) {
-                                    template += '<button id="add_' + info.id + '_btn" class="btn btn-mini form-btn" ng-click="add(\'' + info.name + '\')">' +
+                                    template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
                                         '<i class="icon-plus"></i> Add' +
                                         '</button>'
                                 }

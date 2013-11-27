@@ -881,7 +881,14 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return text;
     };
 
-    $scope.add = function (fieldName) {
+    $scope.setFormDirty = function(event) {
+        if (event) {
+            var form = angular.element(event.target).inheritedData('$formController');
+            form.$setDirty();
+        }
+    };
+
+    $scope.add = function (fieldName, $event) {
         var arrayField;
         var fieldParts = fieldName.split('.');
         arrayField = $scope.record;
@@ -896,9 +903,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             arrayField = arrayField[fieldParts[i]];
         }
         arrayField.push({});
+        $scope.setFormDirty($event);
     };
 
-    $scope.remove = function (fieldName, value) {
+    $scope.remove = function (fieldName, value, $event) {
         // Remove an element from an array
         var fieldParts = fieldName.split('.');
         var arrayField = $scope.record;
@@ -906,6 +914,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             arrayField = arrayField[fieldParts[i]];
         }
         arrayField.splice(value, 1);
+        $scope.setFormDirty($event);
     };
 
 // Split a field name into the next level and all following levels
