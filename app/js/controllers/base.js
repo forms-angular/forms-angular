@@ -1,4 +1,4 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$dialog', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $dialog) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$dialog', '$controller', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $dialog, $controller) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -34,20 +34,13 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         // TODO: nesting breaks this
         var parts = fieldname.split('.')
             , higherLevels = parts.length - 1
-            , workingRec = object
-            , re
-            , id;
+            , workingRec = object;
 
-        if (element) {
-            id = element.context.id;
-        }
         for (var i = 0; i < higherLevels; i++) {
             workingRec = workingRec[parts[i]];
             if (angular.isArray(workingRec)) {
                 // If we come across an array we need to find the correct position
-                // or raise an exception
-                re = new RegExp(parts[i] + "-([0-9])-" + parts[i + 1]);
-                workingRec = workingRec[parseInt(id.match(re)[1])]
+                workingRec = workingRec[element.scope().$index]
             }
         }
         return {lastObject: workingRec, key: parts[higherLevels]};
@@ -153,17 +146,31 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             allowClear: !mongooseOptions.required,
                             minimumInputLength: 2,
                             initSelection: function (element, callback) {
-                                $http.get('api/' + mongooseOptions.ref + '/' + element.val() + '/list').success(function (data) {
-                                    if (data.success === false) {
-                                        $location.path("/404");
-                                    }
-                                    var display = {id: element.val(), text: data.list};
-                                    $scope.setData(master, formInstructions.name, element, display);
-                                    callback(display);
-
-                                }).error(function () {
-                                        $location.path("/404");
-                                    });
+                                var theId = element.val();
+                                if (theId && theId !== '') {
+                                    $http.get('api/' + mongooseOptions.ref + '/' + theId + '/list').success(function (data) {
+                                        if (data.success === false) {
+                                            $location.path("/404");
+                                        }
+                                        var display = {id: theId, text: data.list};
+                                        $scope.setData(master, formInstructions.name, element, display);
+                                        // stop the form being set to dirty
+                                        var modelController = element.inheritedData('$ngModelController')
+                                          , isClean = modelController.$pristine;
+                                        if (isClean) {
+                                            // fake it to dirty here and reset after callback()
+                                            modelController.$pristine = false;
+                                        }
+                                        callback(display);
+                                        if (isClean) {
+                                            modelController.$pristine = true;
+                                        }
+                                    }).error(function () {
+                                            $location.path("/404");
+                                        });
+//                                } else {
+//                                    throw new Error('select2 initSelection called without a value');
+                                }
                             },
                             ajax: {
                                 url: "/api/search/" + mongooseOptions.ref,

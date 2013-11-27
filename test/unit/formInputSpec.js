@@ -133,9 +133,6 @@ describe('formInput', function () {
                 thisElm = elm.find('input[type="number"]');
                 expect(thisElm.length).toBe(2);
 
-                expect(thisElm[0].id).toBe('exams-0-score');
-                expect(thisElm[1].id).toBe('exams-1-score');
-
                 thisElm = elm.find('.sub-doc button:first');
                 expect(thisElm.text()).toBe(' Remove');
             });
