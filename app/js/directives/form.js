@@ -178,7 +178,7 @@ formsAngular
                             }
                             result.after = '</fieldset>';
                             break;
-//  Don't understand this seems to be introducing geneic container as containerType?  Removing for now
+//  Don't understand this seems to be introducing generic container as containerType?  Removing for now
 //                        case 'container' :
 //                            result.before = '<fieldset>';
 //                            if (info.title) {
@@ -240,7 +240,7 @@ formsAngular
                         var schemaDefName = '$_schema_' + niceName;
                         scope[schemaDefName] = info.schema;
                         if (info.hierarchy) {//display as a hierarchy
-                            template += '<fng-hierarchy-list data-record="record.' + info.name + '" data-schema="' + schemaDefName + '"></fng-hierarchy-list>';
+                            template += '<fng-hierarchy-list data-record="' + (options.model || 'record') + '.' + info.name + '" data-schema="' + schemaDefName + '"></fng-hierarchy-list>';
                         } else if (info.schema) { // display as a control group
                             //schemas (which means they are arrays in Mongoose)
                             // Check for subkey - selecting out one or more of the array
@@ -250,10 +250,6 @@ formsAngular
 
                                 var subKeyArray = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
                                 for (var arraySel = 0; arraySel < subKeyArray.length; arraySel++) {
-//    template += processSubKey(niceName, info.subkey[arraySel], schemaDefName, info, arraySel);
-
-//    var processSubKey = function(niceName, thisSubkey, schemaDefName, info, subkeyNo) {
-                                    scope['$_arrayOffset_' + niceName + '_' + arraySel] = 0;
                                     var topAndTail = containerInstructions(subKeyArray[arraySel]);
                                     template += topAndTail.before;
                                     template += processInstructions(info.schema, null, {subschema: true, formStyle: options.formstyle, subkey: schemaDefName + '_subkey', subkeyno: arraySel});
@@ -262,7 +258,7 @@ formsAngular
                                 subkeys.push(info);
                             } else {
                                 template += '<div class="schema-head">' + info.label + '</div>' +
-                                    '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in record.' + info.name + ' track by $index">' +
+                                    '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
                                     '<div class="row-fluid sub-doc">' +
                                     '<div class="pull-left">' +
                                     processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle}) +
@@ -294,7 +290,7 @@ formsAngular
                         if (info.array) {
                             if (options.formstyle === 'inline') throw "Cannot use arrays in an inline form";
                             template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\')" class="icon-plus-sign"></i>', options) +
-                                '<div ' + controlClass + ' id="' + info.id + 'List" ng-repeat="arrayItem in record.' + info.name + '">' +
+                                '<div ' + controlClass + ' id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
                                 generateInput(info, "arrayItem.x", true, info.id + '_{{$index}}', options) +
                                 '<i ng-click="remove(\'' + info.name + '\',$index)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
                                 '</div>';
@@ -371,7 +367,7 @@ formsAngular
                                     result += processInstructions(info.content, null, options);
                                     result += parts.after;
                                     break;
-//  Don't understand this seems to be introducing geneic container as containerType?  Removing for now
+//  Don't understand this seems to be introducing generic container as containerType?  Removing for now
 //                                case 'container' :
 //                                    result += parts.before;
 //                                    processInstructions(info.content, null, info.id);
@@ -386,7 +382,7 @@ formsAngular
                             }
                             callHandleField = false;
                         } else if (options.subkey) {
-                            // Don't do fields that form part of the subkey
+                            // Don't display fields that form part of the subkey, as they should not be edited (because in these circumstances they form some kind of key)
                             var objectToSearch = angular.isArray(scope[options.subkey]) ? scope[options.subkey][0].keyList : scope[options.subkey].keyList;
                             if (_.find(objectToSearch, function (value, key) {
                                 return scope[options.subkey].path + '.' + key === info.name
@@ -401,27 +397,26 @@ formsAngular
                             result += handleField(info, options);
                         }
                     }
+                    if (tabsSetup === 'forced') {
+                        result += '</tabs>';
+                    }
                     return result;
                 };
 
                 var unwatch = scope.$watch(attrs.schema, function (newValue) {
                     if (newValue) {
-                        if (!angular.isArray(newValue)) {
-                            newValue = [newValue];   // otherwise some old tests stop working for no real reason
-                        }
+                        newValue = angular.isArray(newValue) ? newValue : [newValue];   // otherwise some old tests stop working for no real reason
                         if (newValue.length > 0) {
                             unwatch();
-                            scope.topLevelFormName = attrs.name || 'myForm';
+                            scope.topLevelFormName = attrs.name || 'myForm';     // Form name defaults to myForm
+                            var theRecord = scope[attrs.model || 'record'];      // By default data comes from scope.record
                             var elementHtml = attrs.subschema ? '' : '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.style) + ' novalidate">';
                             elementHtml += processInstructions(newValue, true, attrs);
-                            if (tabsSetup === 'forced') {
-                                elementHtml += '</tabs>';
-                            }
                             elementHtml += attrs.subschema ? '' : '</form>';
                             element.replaceWith($compile(elementHtml)(scope));
+
                             // If there are subkeys we need to fix up ng-model references when record is read
                             if (subkeys.length > 0) {
-
                                 var unwatch2 = scope.$watch('phase', function (newValue) {
                                     if (newValue === 'ready') {
                                         unwatch2();
@@ -429,16 +424,11 @@ formsAngular
                                             var info = subkeys[subkeyCtr],
                                                 arrayOffset,
                                                 matching,
-                                                arrayToProcess;
+                                                arrayToProcess = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
 
-                                            if (!angular.isArray(info.subkey)) {
-                                                arrayToProcess = [info.subkey];
-                                            } else {
-                                                arrayToProcess = info.subkey;
-                                            }
                                             for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
                                                 var thisSubkeyList = arrayToProcess[thisOffset].keyList;
-                                                var dataVal = scope.record[info.name] = scope.record[info.name] || [];
+                                                var dataVal = theRecord[info.name] = theRecord[info.name] || [];
                                                 for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
                                                     matching = true;
                                                     for (var keyField in thisSubkeyList) {
@@ -456,7 +446,7 @@ formsAngular
                                                 }
                                                 if (!matching) {
                                                     // There is no matching array element - we need to create one
-                                                    arrayOffset = scope.record[info.name].push(thisSubkeyList) - 1;
+                                                    arrayOffset = theRecord[info.name].push(thisSubkeyList) - 1;
                                                 }
                                                 scope['$_arrayOffset_' + info.name.replace(/\./g, '_') + '_' + thisOffset] = arrayOffset;
                                             }
@@ -469,7 +459,7 @@ formsAngular
 
                             if (scope.updateDataDependentDisplay) {
                                 // If this is not a test force the data dependent updates to the DOM
-                                scope.updateDataDependentDisplay(scope.record, null, true);
+                                scope.updateDataDependentDisplay(theRecord, null, true);
                             }
                         }
                     }
