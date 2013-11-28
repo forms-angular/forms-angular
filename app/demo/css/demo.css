@@ -9382,7 +9382,7 @@ form .form-inline > .sub-doc {
 }
 
 .hierarchy-list {
-  padding: 0;
+  padding: 1px 0;
   margin-left: 8px;
   background-color: inherit;
 }

@@ -296,7 +296,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
     };
 
-    var evaluateConditional = function (condition, data) {
+    var evaluateConditional = function (condition, data, levelsDown) {
 
         function evaluateSide(side) {
             var result = side;
@@ -420,9 +420,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                             var subSchema = $scope.formSchema[j].schema;
                                             for (var l = 0; l < subSchema.length ; l++) {
                                                 if (subSchema[l].id === depends[i]) {
-//                                                    if ('cg_' + depends[i].replace('.','-'+k+'-') === 'cg_f_parts-2-sku') {
-//                                                        debugger;
-//                                                    }
                                                     element = angular.element('#cg_' + depends[i].replace('.','-'+k+'-'));
                                                     if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
                                                         element.show();

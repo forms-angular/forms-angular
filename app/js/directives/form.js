@@ -38,13 +38,13 @@ formsAngular
                     var nameString;
                     if (!modelString) {
                         modelString = (options.model || 'record') + '.';
-                        var cut = modelString.length + 1;
                         if (options.subschema && fieldInfo.name.indexOf('.') != -1) {
                             // Schema handling - need to massage the ngModel and the id
                             var compoundName = fieldInfo.name,
                                 lastPartStart = compoundName.lastIndexOf('.'),
                                 lastPart = compoundName.slice(lastPartStart + 1);
                             if (options.index) {
+                                var cut = modelString.length;
                                 modelString += compoundName.slice(0, lastPartStart) + '.' + options.index + '.' + lastPart;
                                 idString = 'f_' + modelString.slice(cut).replace(/\./g, '-')
                             } else {
@@ -228,12 +228,30 @@ formsAngular
                 var handleField = function (info, options) {
 
 //                    var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '')
-                    var styling = isHorizontalStyle(options.formstyle)
-                        , template = styling ? '<div' + addAll("Group", 'control-group', options) : '<span ';
+                    var template = '', closeTag = '';
+                    if (isHorizontalStyle(options.formstyle)) {
+                        template += '<div' + addAll("Group", 'control-group', options);
+                        closeTag = '</div>';
+                    } else {
+                        template += '<span ';
+                        closeTag = '</span>';
+                    }
 
-//                        if (info.id.indexOf('sku') !== -1) debugger;
-//                    template += (parentId ? ' ui-toggle="showHide' + parentId + '"' : '') + ' id="cg_' + info.id.replace('.', '-' + attrs.index + '-') + '">';
-                    template += ' id="cg_' + info.id.replace(/\./g,'-') + '">';
+//                  template += (parentId ? ' ui-toggle="showHide' + parentId + '"' : '') + ' id="cg_' + info.id.replace('.', '-' + attrs.index + '-') + '">';
+                    var includeIndex = false;
+                    if (options.index) {
+                        try {
+                            parseInt(options.index);
+                            includeIndex = true
+                        } catch(err) {
+                            // Nothing to do
+                        }
+                    }
+                    if (includeIndex) {
+                        template += ' id="cg_' + info.id.replace('.', '-' + attrs.index + '-') + '">';
+                    } else {
+                        template += ' id="cg_' + info.id.replace(/\./g,'-') + '">';
+                    }
 
                     if (info.schema) {
                         var niceName = info.name.replace(/\./g, '_');
@@ -302,7 +320,7 @@ formsAngular
                             if (controlClass !== '') template += '</div>';
                         }
                     }
-                    template += styling ? '</div>' : '</span>';
+                    template += closeTag;
                     return template;
                 };
 
