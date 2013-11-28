@@ -475,28 +475,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (!formData.hidden) {
                     if (mongooseType.schema) {
                         if (doRecursion && destForm) {
-                            var schemaSchema = [], schemaList;
-
-                            if (formData.hierarchy) {
-                                // This current implementation restricts us to using one hierarchy schema per model - not sure that is a problem
-                                mongooseType.schema.options = {hierarchy: true};
-                                $scope.hierarchyOptions = {
-                                                    elementNoFld: 'elementNo',
-                                                    parentFld : 'parent',
-                                                    displayStatusFld : 'displayStatus',
-                                                    orderFld : 'order',
-                                                    isContainerFld: 'isContainer'
-                                                    };
-                                if (angular.isObject(formData.hierarchy)) {
-                                    angular.extend($scope.hierarchyOptions, formData.hierarchy)
-                                }
-                                $scope.hierarchyOptions.name = field;
-                                schemaList = $scope['_hierarchy_list_'] = []
-                            } else {
-                                schemaList = null;
-                            }
-
-                            handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, schemaList, field + '.', true);
+                            var schemaSchema = [];
+                            handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
                             if (formData.pane) handlePaneInfo(formData.pane, sectionInstructions);

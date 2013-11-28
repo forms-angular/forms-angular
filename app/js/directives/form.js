@@ -25,11 +25,6 @@ formsAngular
                 var subkeys = []
                     , tabsSetup = false;
 
-                scope.toggleFolder = function (groupId) {
-                    scope['showHide' + groupId] = !scope['showHide' + groupId];
-                    $('i.' + groupId).toggleClass('icon-folder-open icon-folder-close');
-                };
-
                 var isHorizontalStyle = function (formStyle) {
                     return (!formStyle || formStyle === "undefined" || formStyle === 'horizontal' || formStyle === 'horizontalCompact');
                 };
@@ -257,9 +252,7 @@ formsAngular
                         var niceName = info.name.replace(/\./g, '_');
                         var schemaDefName = '$_schema_' + niceName;
                         scope[schemaDefName] = info.schema;
-                        if (info.hierarchy) {//display as a hierarchy
-                            template += '<fng-hierarchy-list data-record="' + (options.model || 'record') + '.' + info.name + '" data-schema="' + schemaDefName + '"></fng-hierarchy-list>';
-                        } else if (info.schema) { // display as a control group
+                        if (info.schema) { // display as a control group
                             //schemas (which means they are arrays in Mongoose)
                             // Check for subkey - selecting out one or more of the array
                             if (info.subkey) {
@@ -339,11 +332,14 @@ formsAngular
                         var callHandleField = true;
                         if (info.directive) {
                             var directiveName = info.directive;
-                            var newElement = '<' + directiveName;
+                            var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
                             var thisElement = element[0];
                             for (var i = 0; i < thisElement.attributes.length; i++) {
                                 var thisAttr = thisElement.attributes[i];
                                 switch (thisAttr.nodeName) {
+//    if (info.hierarchy) {//display as a hierarchy
+//        template += '<fng-hierarchy-list data-record="' + (options.model || 'record') + '.' + info.name + '" data-schema="' + schemaDefName + '"></fng-hierarchy-list>';
+//    } else
                                     case 'ng-repeat' :
                                         break;
                                     case 'class' :
@@ -353,10 +349,10 @@ formsAngular
                                         }
                                         break;
                                     case 'schema' :
-                                        var instructionsCopy = angular.copy(info);
-                                        delete instructionsCopy.directive;
                                         var bespokeSchemaDefName = ('bespoke_' + info.name).replace(/\./g, '_');
-                                        newElement += ' ng-init="' + bespokeSchemaDefName + '=[' + JSON.stringify(instructionsCopy).replace(/\"/g, "'") + ']" schema="' + bespokeSchemaDefName + '"';
+                                        scope[bespokeSchemaDefName] = angular.copy(info);
+                                        delete scope[bespokeSchemaDefName].directive;
+                                        newElement += ' schema="' + bespokeSchemaDefName + '"';
                                         break;
                                     default :
                                         newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.nodeValue + '"';

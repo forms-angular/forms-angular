@@ -2,12 +2,12 @@
 
 ## 0.1 to 0.2
 ### Summary
-* Added support for hierarchy fields
-* Added schema
-* Form is now created within the form-input directive
+* Internal changes to make better use of Angular JS forms capabilities
 
 ### BREAKING CHANGES
-* Changes form-input directive so that it creates a
+* Changed form-input directive so that it creates a form tag, and rather than creating a <form-input>
+per sub document it now creates a <ng-form> and builds the sub-form in the same pass.  Only when using
+directives are multiple passes required.
 
 ## 0.0.x to 0.1.0
 ### Summary
