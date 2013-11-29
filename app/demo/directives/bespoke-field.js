@@ -6,7 +6,7 @@ myDemoApp.directive('emailField', function ($compile) {
             compile: function () {
                 return function (scope, element, attrs) {
                     scope.$watch(attrs.formInput, function () {
-                        var info = scope[attrs.schema][0];
+                        var info = scope[attrs.schema];
                         var template = '<div class="control-group" id="cg_' + info.id + '">';
                         if (info.label !== '') {
                             template += '<label class="control-label" for="' + info.id + '">' + info.label + '</label>';

@@ -8,6 +8,14 @@
 * Changed form-input directive so that it creates a form tag, and rather than creating a <form-input>
 per sub document it now creates a <ng-form> and builds the sub-form in the same pass.  Only when using
 directives are multiple passes required.
+* Bespoke directives that use schema need to be modified (changes will normally be from something like
+```
+    var info = scope[attrs.schema][0];
+```
+to
+```
+    var info = scope[attrs.schema];
+```
 
 ## 0.0.x to 0.1.0
 ### Summary
@@ -33,7 +41,7 @@ rather than a MongooseJS Query such as
 ```
     model.find().where('field', 'value')
 ```
-* Bespoke directives need to be modified (changes will normally be from something like
+* Bespoke directives that use schema need to be modified (changes will normally be from something like
 ```
     var info = JSON.parse(attrs.info);
 ```

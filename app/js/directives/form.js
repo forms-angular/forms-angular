@@ -337,11 +337,6 @@ formsAngular
                             for (var i = 0; i < thisElement.attributes.length; i++) {
                                 var thisAttr = thisElement.attributes[i];
                                 switch (thisAttr.nodeName) {
-//    if (info.hierarchy) {//display as a hierarchy
-//        template += '<fng-hierarchy-list data-record="' + (options.model || 'record') + '.' + info.name + '" data-schema="' + schemaDefName + '"></fng-hierarchy-list>';
-//    } else
-                                    case 'ng-repeat' :
-                                        break;
                                     case 'class' :
                                         var classes = thisAttr.nodeValue.replace('ng-scope', '');
                                         if (classes.length > 0) {

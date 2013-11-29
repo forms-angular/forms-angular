@@ -15,7 +15,6 @@ if [ $1 ]; then
 	    cp $BASE_DIR/../app/partials/base-list.html $BASE_DIR/../../$1/app/partials/base-list.html
 	    cp $BASE_DIR/../app/partials/base-analysis.html $BASE_DIR/../../$1/app/partials/base-analysis.html
 	    cp $BASE_DIR/../server/lib/data_form.js $BASE_DIR/../../$1/server/lib/data_form.js
-	    cp $BASE_DIR/../server/lib/fng-hierarchy-plugin.js $BASE_DIR/../../$1/server/lib/fng-hierarchy-plugin.js
 
 		clear
 	    echo ""

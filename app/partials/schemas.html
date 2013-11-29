@@ -127,7 +127,6 @@
             width</a>.
             Options are: mini, small, medium (default), large, xlarge, xxlarge and block-level.
         </li>
-        <li><strong>directive</strong> allows you to specify custom behaviour.</li>
         <li><strong>readonly</strong> adds the readonly attribute to the generated input (doesn't work with
             date - and perhaps other types). </li>
         <li><strong>select2</strong> in an enum field or a reference field tells the system to use the
@@ -157,22 +156,12 @@ howManyPerDay: {type: Number, form:{showIf:{lhs:"$smoker", comp:"eq", rhs:true}}
                     <em>(devs: feel free to submit a pull request - look for evaluateConditional in base.js)</em></li>
                 <li><strong>rhs</strong> (right hand side) the other value to be compared.  Details as for lhs.</li>
             </ul></p> </li>
-        <li><strong>hierarchy</strong> set to true if this field is an array of a schema which contains the following:
-            <ul>
-                <li>Number <strong>elementNo</strong> field (normally hidden)</li>
-                <li>Number <strong>parent</strong> field (normally hidden)</li>
-                <li>Number <strong>order</strong> field (normally hidden)</li>
-                <li>Boolean <strong>displayStatus</strong> field (normally hidden)</li>
-<!--TODO - complete docs regarding containers                -->
-                <li>container field - </li>
-                <li>At least one list field</li>
-            </ul>
-        </li>
         <li><strong>noAdd</strong> inhibits an Add button being generated for arrays.</li>
         <li><strong>noRemove</strong> inhibits a Remove button being generated for array elements.</li>
         <li><strong>add</strong> allows arbitrary attributes to be added to the input tag. Useful for adding
-            classes.
-        </li>
+            classes.</li>
+        <li><strong>directive</strong> allows you to specify custom behaviour.  Gets passed attributes from form-input (with
+        <em>schema</em> replaced with the current element - so <em>add</em> can be used to pass data into directives).</li>
         <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a
                 href='/#/forms#form-styles'>form style section</a> for options.
         </li>
@@ -184,6 +173,7 @@ howManyPerDay: {type: Number, form:{showIf:{lhs:"$smoker", comp:"eq", rhs:true}}
                 </li>
                 <li><em>text</em> the text used for the link.</li>
             </ul>
+        </li>
     </ul>
 
     <p><a href="/code/b_using_options.js">This example schema</a> and <a href="/#/b_using_options/new">this
