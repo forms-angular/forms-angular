@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var BSchema = new Schema({
     surname: {type:String,required:true,index:true,list:{}}, // this field appears in a listing and the default edit form header
     forename:  {type: String, list:true, index:true},        // this field appears in a listing and the default edit form header
+    website: {type: String, form:{type:'url'}},
     login: {type: String, secure:true, form:{hidden:true}},  // secure prevents the data from being sent by the API, hidden from being shown on the default form
     passwordHash: {type: String, secure:true, form:{hidden:true}},
     address: {
@@ -11,7 +12,9 @@ var BSchema = new Schema({
         line2: {type: String, form:{label: null}},           // null label - gives a blank label
         line3: {type: String, form:{label: null, add:'class="some classes here"'}},
         town: {type: String, form:{label: 'Town', placeHolder: "Post town"}},          // You can specify place holders
-        postcode: {type: String, form:{label: 'Postcode', size:'small', help:'Enter your postcode or zip code'}},  // help displays on the line under the control, size adds matching bootstrap input- class
+        postcode: {type: String, required:true,
+            match: '(GIR 0AA)|([A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2})',
+            form:{label: 'Postcode', size:'small', help:'Enter your UK postcode (for example TN2 1AA)'}},  // help displays on the line under the control, size adds matching bootstrap input- class
         country: {type: String, form:{label:"Country", hidden:true}},
         surveillance: {type: Boolean, secure:true, form:{hidden:true}}
     },
@@ -19,10 +22,10 @@ var BSchema = new Schema({
     // The email field is indexed, but the noSearch property means the index is not used in the searchBox searches
     // A use case for this would be an index that is used in reports for grouping which has no meaning in a search.
     //
-    // The field has a custom directive (which is defined in /app/js/directives/bespoke-field.js)
+    // The field has a custom directive to prepend (which is defined in /app/demo/directives/bespoke-field.js)
     email: {type: String, index:true, noSearch: true, form:{directive: 'email-field'}},
-
-    weight: {type : Number, form:{label:"Weight (lbs)"}},    // this label overrides the one generated from the field name
+    weight: {type : Number, min:5, max:300, form:{label:"Approx Weight (lbs)",  // this label overrides the one generated from the field name
+        step:5}},                         // input uses the min and max from the Mongoose schema, and the step from the form object
 
     eyeColour: {
         type: String,

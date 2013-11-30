@@ -14,7 +14,7 @@ myDemoApp.directive('emailField', function ($compile) {
                         template += '<div class="controls">' +
                             '<div class="input-prepend">' +
                             '<span class="add-on">@</span>' +
-                            '<input type="text" ng-model="record.' + info.name + '" id="' + info.id + '" name="' + info.id + '" />' +
+                            '<input type="email" ng-model="record.' + info.name + '" id="' + info.id + '" name="' + info.id + '" />' +
                             '</div>' +
                             '</div>';
                         template += '</div>';

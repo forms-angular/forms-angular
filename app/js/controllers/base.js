@@ -22,7 +22,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
-    $scope.getId = function(obj) {return obj._id;};
+    $scope.getId = function (obj) {
+        return obj._id;
+    };
 
     $scope.walkTree = function (object, fieldname, element) {
         // Walk through subdocs to find the required key
@@ -71,146 +73,39 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     var handleFieldType = function (formInstructions, mongooseType, mongooseOptions) {
 
-        var select2ajaxName;
-        if (mongooseType.caster) {
-            formInstructions.array = true;
-            mongooseType = mongooseType.caster;
-            $.extend(mongooseOptions, mongooseType.options)
-        }
-        if (mongooseType.instance == 'String') {
-            if (mongooseOptions.enum) {
-                formInstructions.type = 'select';
-                // Hacky way to get required styling working on select controls
-                if (mongooseOptions.required) {
-
-                    $scope.$watch('record.' + formInstructions.name, function (newValue) {
-                        updateInvalidClasses(newValue, formInstructions.id, formInstructions.select2);
-                    }, true);
-                    setTimeout(function () {
-                        updateInvalidClasses($scope.record[formInstructions.name], formInstructions.id, formInstructions.select2);
-                    }, 0)
-                }
-                if (formInstructions.select2) {
-                    $scope['select2' + formInstructions.name] = {
-                        allowClear: !mongooseOptions.required,
-                        initSelection: function (element, callback) {
-                            var myVal = element.val();
-                            var display = {id: myVal, text: myVal};
-                            callback(display);
-                        },
-                        query: function (query) {
-                            var data = {results: []},
-                                searchString = query.term.toUpperCase();
-                            for (var i = 0; i < mongooseOptions.enum.length; i++) {
-                                if (mongooseOptions.enum[i].toUpperCase().indexOf(searchString) !== -1) {
-                                    data.results.push({id: i, text: mongooseOptions.enum[i]})
-                                }
-                            }
-                            query.callback(data);
-                        }
-                    };
-                    _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
-                    formInstructions.select2.s2query = 'select2' + formInstructions.name;
-                    $scope.select2List.push(formInstructions.name)
-                } else {
-                    formInstructions.options = suffixCleanId(formInstructions, 'Options');
-                    $scope[formInstructions.options] = mongooseOptions.enum;
-                }
-            } else if (!formInstructions.type) {
-                var passwordOverride, isPassword;
-                if (mongooseOptions.form) {
-                    passwordOverride = mongooseOptions.form.password
-                }
-                if (passwordOverride !== undefined) {
-                    isPassword = passwordOverride;
-                } else {
-                    isPassword = (formInstructions.name.toLowerCase().indexOf('password') !== -1)
-                }
-                formInstructions.type = isPassword ? 'password' : 'text';
+            var select2ajaxName;
+            if (mongooseType.caster) {
+                formInstructions.array = true;
+                mongooseType = mongooseType.caster;
+                $.extend(mongooseOptions, mongooseType.options)
             }
-        } else if (mongooseType.instance == 'ObjectID') {
-            formInstructions.ref = mongooseOptions.ref;
-            if (formInstructions.link && formInstructions.link.linkOnly) {
-                formInstructions.type = 'link';
-                formInstructions.linkText = formInstructions.link.text;
-                formInstructions.form = formInstructions.link.form;
-                delete formInstructions.link;
-            } else {
-                formInstructions.type = 'select';
-                if (formInstructions.select2) {
-                    $scope.select2List.push(formInstructions.name);
-                    if (formInstructions.select2.fngAjax) {
-                        // create the instructions for select2
-                        select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
-                        $scope[select2ajaxName] = {
-                            allowClear: !mongooseOptions.required,
-                            minimumInputLength: 2,
-                            initSelection: function (element, callback) {
-                                var theId = element.val();
-                                if (theId && theId !== '') {
-                                    $http.get('api/' + mongooseOptions.ref + '/' + theId + '/list').success(function (data) {
-                                        if (data.success === false) {
-                                            $location.path("/404");
-                                        }
-                                        var display = {id: theId, text: data.list};
-                                        $scope.setData(master, formInstructions.name, element, display);
-                                        // stop the form being set to dirty
-                                        var modelController = element.inheritedData('$ngModelController')
-                                          , isClean = modelController.$pristine;
-                                        if (isClean) {
-                                            // fake it to dirty here and reset after callback()
-                                            modelController.$pristine = false;
-                                        }
-                                        callback(display);
-                                        if (isClean) {
-                                            modelController.$pristine = true;
-                                        }
-                                    }).error(function () {
-                                            $location.path("/404");
-                                        });
-//                                } else {
-//                                    throw new Error('select2 initSelection called without a value');
-                                }
-                            },
-                            ajax: {
-                                url: "/api/search/" + mongooseOptions.ref,
-                                data: function (term, page) { // page is the one-based page number tracked by Select2
-                                    return {
-                                        q: term, //search term
-                                        page_limit: 10, // page size
-                                        page: page // page number
-                                    }
-                                },
-                                results: function (data) {
-                                    return {results: data.results, more: data.moreCount > 0};
-                                }
-                            }
-                        };
-                        _.extend($scope[select2ajaxName], formInstructions.select2);
-                        formInstructions.select2.fngAjax = select2ajaxName;
-                    } else {
-                        if (formInstructions.select2 == true) {
-                            formInstructions.select2 = {};
-                        }
+            if (mongooseType.instance == 'String') {
+                if (mongooseOptions.enum) {
+                    formInstructions.type = 'select';
+                    // Hacky way to get required styling working on select controls
+                    if (mongooseOptions.required) {
+
+                        $scope.$watch('record.' + formInstructions.name, function (newValue) {
+                            updateInvalidClasses(newValue, formInstructions.id, formInstructions.select2);
+                        }, true);
+                        setTimeout(function () {
+                            updateInvalidClasses($scope.record[formInstructions.name], formInstructions.id, formInstructions.select2);
+                        }, 0)
+                    }
+                    if (formInstructions.select2) {
                         $scope['select2' + formInstructions.name] = {
                             allowClear: !mongooseOptions.required,
                             initSelection: function (element, callback) {
-                                var myId,
-                                    myVal = element.val();
-                                if ($scope[formInstructions.options].length > 0) {
-                                    myId = convertListValueToId(myVal, $scope[formInstructions.options], $scope[formInstructions.ids], formInstructions.name)
-                                } else {
-                                    myId = myVal;
-                                }
-                                var display = {id: myId, text: myVal};
+                                var myVal = element.val();
+                                var display = {id: myVal, text: myVal};
                                 callback(display);
                             },
                             query: function (query) {
                                 var data = {results: []},
                                     searchString = query.term.toUpperCase();
-                                for (var i = 0; i < $scope[formInstructions.options].length; i++) {
-                                    if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
-                                        data.results.push({id: $scope[formInstructions.ids][i], text: $scope[formInstructions.options][i]})
+                                for (var i = 0; i < mongooseOptions.enum.length; i++) {
+                                    if (mongooseOptions.enum[i].toUpperCase().indexOf(searchString) !== -1) {
+                                        data.results.push({id: i, text: mongooseOptions.enum[i]})
                                     }
                                 }
                                 query.callback(data);
@@ -218,36 +113,150 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         };
                         _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
                         formInstructions.select2.s2query = 'select2' + formInstructions.name;
+                        $scope.select2List.push(formInstructions.name)
+                    } else {
+                        formInstructions.options = suffixCleanId(formInstructions, 'Options');
+                        $scope[formInstructions.options] = mongooseOptions.enum;
+                    }
+                } else {
+                    if (!formInstructions.type) {
+                        formInstructions.type = (formInstructions.name.toLowerCase().indexOf('password') !== -1) ? 'password' : 'text';
+                    }
+                    if (mongooseOptions.match) {
+                        formInstructions.add = 'pattern="' + mongooseOptions.match + '" ' + (formInstructions.add || '');
+                    }
+                }
+            } else if (mongooseType.instance == 'ObjectID') {
+                formInstructions.ref = mongooseOptions.ref;
+                if (formInstructions.link && formInstructions.link.linkOnly) {
+                    formInstructions.type = 'link';
+                    formInstructions.linkText = formInstructions.link.text;
+                    formInstructions.form = formInstructions.link.form;
+                    delete formInstructions.link;
+                } else {
+                    formInstructions.type = 'select';
+                    if (formInstructions.select2) {
                         $scope.select2List.push(formInstructions.name);
+                        if (formInstructions.select2.fngAjax) {
+                            // create the instructions for select2
+                            select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
+                            $scope[select2ajaxName] = {
+                                allowClear: !mongooseOptions.required,
+                                minimumInputLength: 2,
+                                initSelection: function (element, callback) {
+                                    var theId = element.val();
+                                    if (theId && theId !== '') {
+                                        $http.get('api/' + mongooseOptions.ref + '/' + theId + '/list').success(function (data) {
+                                            if (data.success === false) {
+                                                $location.path("/404");
+                                            }
+                                            var display = {id: theId, text: data.list};
+                                            $scope.setData(master, formInstructions.name, element, display);
+                                            // stop the form being set to dirty
+                                            var modelController = element.inheritedData('$ngModelController')
+                                                , isClean = modelController.$pristine;
+                                            if (isClean) {
+                                                // fake it to dirty here and reset after callback()
+                                                modelController.$pristine = false;
+                                            }
+                                            callback(display);
+                                            if (isClean) {
+                                                modelController.$pristine = true;
+                                            }
+                                        }).error(function () {
+                                                $location.path("/404");
+                                            });
+//                                } else {
+//                                    throw new Error('select2 initSelection called without a value');
+                                    }
+                                },
+                                ajax: {
+                                    url: "/api/search/" + mongooseOptions.ref,
+                                    data: function (term, page) { // page is the one-based page number tracked by Select2
+                                        return {
+                                            q: term, //search term
+                                            page_limit: 10, // page size
+                                            page: page // page number
+                                        }
+                                    },
+                                    results: function (data) {
+                                        return {results: data.results, more: data.moreCount > 0};
+                                    }
+                                }
+                            };
+                            _.extend($scope[select2ajaxName], formInstructions.select2);
+                            formInstructions.select2.fngAjax = select2ajaxName;
+                        } else {
+                            if (formInstructions.select2 == true) {
+                                formInstructions.select2 = {};
+                            }
+                            $scope['select2' + formInstructions.name] = {
+                                allowClear: !mongooseOptions.required,
+                                initSelection: function (element, callback) {
+                                    var myId,
+                                        myVal = element.val();
+                                    if ($scope[formInstructions.options].length > 0) {
+                                        myId = convertListValueToId(myVal, $scope[formInstructions.options], $scope[formInstructions.ids], formInstructions.name)
+                                    } else {
+                                        myId = myVal;
+                                    }
+                                    var display = {id: myId, text: myVal};
+                                    callback(display);
+                                },
+                                query: function (query) {
+                                    var data = {results: []},
+                                        searchString = query.term.toUpperCase();
+                                    for (var i = 0; i < $scope[formInstructions.options].length; i++) {
+                                        if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
+                                            data.results.push({id: $scope[formInstructions.ids][i], text: $scope[formInstructions.options][i]})
+                                        }
+                                    }
+                                    query.callback(data);
+                                }
+                            };
+                            _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
+                            formInstructions.select2.s2query = 'select2' + formInstructions.name;
+                            $scope.select2List.push(formInstructions.name);
+                            formInstructions.options = suffixCleanId(formInstructions, 'Options');
+                            formInstructions.ids = suffixCleanId(formInstructions, '_ids');
+                            setUpSelectOptions(mongooseOptions.ref, formInstructions);
+                        }
+                    } else {
                         formInstructions.options = suffixCleanId(formInstructions, 'Options');
                         formInstructions.ids = suffixCleanId(formInstructions, '_ids');
                         setUpSelectOptions(mongooseOptions.ref, formInstructions);
                     }
-                } else {
-                    formInstructions.options = suffixCleanId(formInstructions, 'Options');
-                    formInstructions.ids = suffixCleanId(formInstructions, '_ids');
-                    setUpSelectOptions(mongooseOptions.ref, formInstructions);
                 }
+            } else if (mongooseType.instance == 'Date') {
+                formInstructions.type = 'text';
+                formInstructions.add = 'ui-date ui-date-format ';
+            } else if (mongooseType.instance == 'boolean') {
+                formInstructions.type = 'checkbox';
+            } else if (mongooseType.instance == 'Number') {
+                formInstructions.type = 'number';
+                if (mongooseOptions.min) {
+                    formInstructions.add = 'min="' + mongooseOptions.min + '" ' + (formInstructions.add || '');
+                }
+                if (mongooseOptions.max) {
+                    formInstructions.add = 'max="' + mongooseOptions.max + '" ' + (formInstructions.add || '');
+                }
+                if (formInstructions.step) {
+                    formInstructions.add = 'step="' + formInstructions.step + '" ' + (formInstructions.add || '');
+                }
+            } else {
+                throw new Error("Field " + formInstructions.name + " is of unsupported type " + mongooseType.instance);
             }
-        } else if (mongooseType.instance == 'Date') {
-            formInstructions.type = 'text';
-            formInstructions.add = 'ui-date ui-date-format ';
-        } else if (mongooseType.instance == 'boolean') {
-            formInstructions.type = 'checkbox';
-        } else if (mongooseType.instance == 'Number') {
-            formInstructions.type = 'number';
-        } else {
-            throw new Error("Field " + formInstructions.name + " is of unsupported type " + mongooseType.instance);
+            if (mongooseOptions.required) {
+                formInstructions.required = true;
+            }
+            if (mongooseOptions.readonly) {
+                formInstructions.readonly = true;
+            }
+            return formInstructions;
         }
-        if (mongooseOptions.required) {
-            formInstructions.required = true;
-        }
-        if (mongooseOptions.readonly) {
-            formInstructions.readonly = true;
-        }
-        return formInstructions;
-    };
+        ;
 
+    // TODO: Do this in form
     var basicInstructions = function (field, formData, prefix) {
         formData.name = prefix + field;
         formData.id = formData.id || 'f_' + prefix + field.replace(/\./g, '_');
@@ -296,7 +305,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
     };
 
-    var evaluateConditional = function (condition, data, levelsDown) {
+    var evaluateConditional = function (condition, data) {
 
         function evaluateSide(side) {
             var result = side;
@@ -308,7 +317,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         break;
                     case 2 :
                         // this is a sub schema element, and the appropriate array element has been passed
-                        result = $scope.getListData(data,sideParts[1]);
+                        result = $scope.getListData(data, sideParts[1]);
                         break;
                     default:
                         throw new Error("Unsupported showIf format")
@@ -408,7 +417,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     }
                 } else if (parts.length === 2) {
                     if (curValue[parts[0]]) {
-                        for (k=0; k < curValue[parts[0]].length; k++) {
+                        for (k = 0; k < curValue[parts[0]].length; k++) {
                             // We want to carry on if this is new array element or it is changed
                             if (force || !oldValue || !oldValue[parts[0]] || !oldValue[parts[0]][k] || curValue[parts[0]][k][parts[1]] != oldValue[parts[0]][k][parts[1]]) {
                                 depends = $scope.dataDependencies[field];
@@ -418,9 +427,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                     for (j = 0; j < $scope.formSchema.length; j += 1) {
                                         if ($scope.formSchema[j].id === idParts[0]) {
                                             var subSchema = $scope.formSchema[j].schema;
-                                            for (var l = 0; l < subSchema.length ; l++) {
+                                            for (var l = 0; l < subSchema.length; l++) {
                                                 if (subSchema[l].id === depends[i]) {
-                                                    element = angular.element('#cg_' + depends[i].replace('.','-'+k+'-'));
+                                                    element = angular.element('#cg_' + depends[i].replace('.', '-' + k + '-'));
                                                     if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
                                                         element.show();
                                                     } else {
@@ -481,7 +490,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             sectionInstructions.schema = schemaSchema;
                             if (formData.pane) handlePaneInfo(formData.pane, sectionInstructions);
                             if (formData.order !== undefined) {
-                                destForm.splice(formData.order,0,sectionInstructions);
+                                destForm.splice(formData.order, 0, sectionInstructions);
                             } else {
                                 destForm.push(sectionInstructions);
                             }
@@ -493,7 +502,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                 var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
                                 if (formInst.pane) handlePaneInfo(formInst.pane, formInst);
                                 if (formData.order !== undefined) {
-                                    destForm.splice(formData.order,0,formInst);
+                                    destForm.splice(formData.order, 0, formInst);
                                 } else {
                                     destForm.push(formInst);
                                 }
@@ -858,7 +867,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return text;
     };
 
-    $scope.setFormDirty = function(event) {
+    $scope.setFormDirty = function (event) {
         if (event) {
             var form = angular.element(event.target).inheritedData('$formController');
             form.$setDirty();
@@ -1135,13 +1144,15 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $('#' + $(ev.currentTarget).data('select2-open')).select2('open')
     };
 
-    $scope.toJSON = function(obj) {
+    $scope.toJSON = function (obj) {
         return JSON.stringify(obj, null, 2);
     };
 
-    $scope.baseSchema = function() {
+    $scope.baseSchema = function () {
         return ($scope.panes.length ? $scope.panes : $scope.formSchema)
     }
 
-}]);
+}
+])
+;
 
