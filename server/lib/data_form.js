@@ -371,6 +371,9 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
                 if (paths[element].options.secure) {
                     hiddenFields.push(element);
                 }
+                if (paths[element].options.match) {
+                    outPath[element].options.match = paths[element].options.match.source;
+                }
                 if (paths[element].options.list) {
                     listFields.push({field: element, params: paths[element].options.list})
                 }

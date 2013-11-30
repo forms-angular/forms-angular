@@ -3,6 +3,7 @@
 ## 0.1 to 0.2
 ### Summary
 * Internal changes to make better use of Angular JS forms capabilities
+* Added support for HTMLr capabilities: pattern, min, max, step
 
 ### BREAKING CHANGES
 * Changed form-input directive so that it creates a form tag, and rather than creating a <form-input>
@@ -16,6 +17,8 @@ to
 ```
     var info = scope[attrs.schema];
 ```
+* Password type is still used generated automatically if the label contains the string 'password', but the override
+method is now to use the form type (password is it is a password, text if not).
 
 ## 0.0.x to 0.1.0
 ### Summary

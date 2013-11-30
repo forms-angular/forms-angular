@@ -31,7 +31,7 @@ describe('formBespokeInput', function () {
             expect(input).toHaveClass('ng-pristine');
             expect(input).toHaveClass('ng-valid');
             expect(input.attr('id')).toBe('1');
-            expect(input.attr('type')).toBe('text');
+            expect(input.attr('type')).toBe('email');
             var prepend = elm.find('div.input-prepend');
             expect(prepend.length).toBe(1);
             expect(prepend.text()).toBe('@');

@@ -269,10 +269,7 @@ describe('"BaseCtrl"', function () {
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
-
-
-                {"password": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"password": false}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
-
+                {"password": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"type": "text"}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
             );
             scope = $rootScope.$new();
             $location.$$path = '/collection/new';
@@ -295,10 +292,7 @@ describe('"BaseCtrl"', function () {
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
-
-
-                {"password": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"password": true}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
-
+                {"forename": {"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true,"index":true,"form":{"type":"password"}},"_index":true,"$conditionalHandlers":{}}}
             );
             scope = $rootScope.$new();
             $location.$$path = '/collection/new';
@@ -323,7 +317,7 @@ describe('"BaseCtrl"', function () {
             $httpBackend.whenGET('api/schema/collection').respond(
 
 
-                {"secret": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"password": true}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
+                {"secret": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"type": "password"}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
 
             );
             scope = $rootScope.$new();

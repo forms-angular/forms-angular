@@ -111,8 +111,11 @@
     <p>The mark-up of generated forms can be influenced by use of the <strong>form</strong> object in the
         schema type: <code>surname: {type:String, form:{label:'Family Name', size:'large'}}</code></p>
 
-    <p>The form object can have the following keys:</p>
+    <p>The form object can have the following optional keys:</p>
     <ul>
+        <li><strong>type</strong> the input type to be generated - which must be compatible with the Mongoose type.
+            Common examples are <em>email</em>, <em>url</em>.  Note that if the field type is String and the name (or label) contains the string 'password'
+            then type="password" will be used <em>unless</em> type="text"</li>.
         <li><strong>hidden</strong> inhibits this schema key from appearing on the generated form.</li>
         <li><strong>label</strong> overrides the default input label. label:null suppresses the label
             altogether.
