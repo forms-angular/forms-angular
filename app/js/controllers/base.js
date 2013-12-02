@@ -96,9 +96,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         $scope['select2' + formInstructions.name] = {
                             allowClear: !mongooseOptions.required,
                             initSelection: function (element, callback) {
-                                var myVal = element.val();
-                                var display = {id: myVal, text: myVal};
-                                callback(display);
+                                callback(element.select2('data'));
                             },
                             query: function (query) {
                                 var data = {results: []},
