@@ -24,7 +24,7 @@ describe('Base edit form', function() {
         beforeEach(function () {
 
             browser().navigateTo('/#/a_unadorned_mongoose/666a6075b320153869b17599/edit');
-        })
+        });
 
         it('should display deletion confirmation modal', function() {
             
@@ -90,6 +90,16 @@ describe('Base edit form', function() {
         });
 
     });
+
+    describe('tab sets', function() {
+
+        it('shows multiple tabs when appropriate',function() {
+            browser().navigateTo('/#/i_tabbed_forms/new');
+            element('a:contains("first")').click();
+            element('a:contains("second")').click();
+        })
+
+    })
 
 });
 
