@@ -17,7 +17,6 @@ module.exports = function(config) {
             "app/bower_components/select2/select2.js",
             'app/bower_components/angular-mocks/angular-mocks.js',
             'app/bower_components/angular-elastic/elastic.js',
-            'app/bower_components/angular-dragdrop/src/angular-dragdrop.js',
             'app/js/forms-angular.js',
             'app/js/**/*.js',
             'app/demo/demo.js',
