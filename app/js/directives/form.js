@@ -406,9 +406,6 @@ formsAngular
                             result += handleField(info, options);
                         }
                     }
-                    if (tabsSetup === 'forced') {
-                        result += '</tabs>';
-                    }
                     return result;
                 };
 
@@ -421,6 +418,9 @@ formsAngular
                             var theRecord = scope[attrs.model || 'record'];      // By default data comes from scope.record
                             var elementHtml = attrs.subschema ? '' : '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.style) + ' novalidate">';
                             elementHtml += processInstructions(newValue, true, attrs);
+                            if (tabsSetup === 'forced') {
+                                elementHtml += '</tabs>';
+                            }
                             elementHtml += attrs.subschema ? '' : '</form>';
                             element.replaceWith($compile(elementHtml)(scope));
 
