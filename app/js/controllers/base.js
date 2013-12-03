@@ -1,4 +1,4 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$dialog', '$controller', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $dialog, $controller) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$dialog', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $dialog) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -601,6 +601,13 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             $location.path("/404");
         });
 
+    $scope.setPristine = function() {
+        $scope.dismissError();
+        if ($scope[$scope.topLevelFormName]) {
+            $scope[$scope.topLevelFormName].$setPristine();
+        }
+    };
+
     $scope.cancel = function () {
 
         for (var prop in $scope.record) {
@@ -610,10 +617,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
 
         $.extend(true, $scope.record, master);
-        $scope.dismissError();
-        if ($scope[$scope.topLevelFormName]) {
-            $scope[$scope.topLevelFormName].$setPristine();
-        }
+        $scope.setPristine();
     };
 
     //listener for any child scopes to display messages
@@ -690,9 +694,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     window.location = options.redirect;
                 } else {
                     master = angular.copy($scope.record);
-                    $scope.dismissError();
-//                  Alternatively we could copy data into master and update all look ups and then call cancel (which calls dismissError).
-//                  This is harder and I can't currently see the need.
+                    $scope.setPristine();
                 }
             } else {
                 showError(data);
@@ -869,6 +871,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (event) {
             var form = angular.element(event.target).inheritedData('$formController');
             form.$setDirty();
+        } else {
+            console.log("setFormDirty called without an event (fine in a unit test)")
         }
     };
 

@@ -89,6 +89,16 @@ describe('Base edit form', function() {
             expect( element('#f_surname').val() ).not().toMatch( /Smith/ );
         });
 
+        it('enables cancel button after deleting an array element', function() {
+            browser().navigateTo('/#/d_array_example/51a6182aea4ea77715000005/edit');
+            expect(repeater('.fng-array').count()).toEqual(1);
+            element('#remove_f_specialSubjects_0').click();
+            expect(repeater('.fng-array').count()).toEqual(0);
+            element('#saveButton').click();
+            browser().navigateTo('/#/d_array_example/51a6182aea4ea77715000005/edit');
+            expect(repeater('.fng-array').count()).toEqual(0);
+        });
+
     });
 
     describe('tab sets', function() {

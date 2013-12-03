@@ -297,13 +297,14 @@ formsAngular
                     }
                     else {
                         // Handle arrays here
-                        var controlClass = (isHorizontalStyle(options.formstyle)) ? ' class="controls"' : '';
+                        var controlClass = ['fng-array'];
+                        if (isHorizontalStyle(options.formstyle)) {controlClass.push('controls'); }
                         if (info.array) {
                             if (options.formstyle === 'inline') throw "Cannot use arrays in an inline form";
-                            template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\')" class="icon-plus-sign"></i>', options) +
-                                '<div ' + controlClass + ' id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
+                            template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="icon-plus-sign"></i>', options) +
+                                '<div class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
                                 generateInput(info, "arrayItem.x", true, info.id + '_{{$index}}', options) +
-                                '<i ng-click="remove(\'' + info.name + '\',$index)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
+                                '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
                                 '</div>';
                         } else {
                             // Single fields here
