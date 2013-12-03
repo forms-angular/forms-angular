@@ -297,9 +297,10 @@ formsAngular
                     }
                     else {
                         // Handle arrays here
-                        var controlClass = ['fng-array'];
+                        var controlClass = [];
                         if (isHorizontalStyle(options.formstyle)) {controlClass.push('controls'); }
                         if (info.array) {
+                            controlClass.push('fng-array');
                             if (options.formstyle === 'inline') throw "Cannot use arrays in an inline form";
                             template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="icon-plus-sign"></i>', options) +
                                 '<div class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
@@ -309,7 +310,7 @@ formsAngular
                         } else {
                             // Single fields here
                             template += generateLabel(info, null, options);
-                            if (controlClass !== '') template += '<div ' + controlClass + '>';
+                            if (controlClass !== '') template += '<div class="' + controlClass.join(' ') + '">';
                             template += generateInput(info, null, options.required, info.id, options);
                             if (controlClass !== '') template += '</div>';
                         }
