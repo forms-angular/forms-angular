@@ -26,7 +26,7 @@ formsAngular
                     , tabsSetup = false;
 
                 var isHorizontalStyle = function (formStyle) {
-                    return (!formStyle || formStyle === "undefined" || formStyle === 'horizontal' || formStyle === 'horizontalCompact');
+                    return (!formStyle || formStyle === "undefined" || ['vertical','inline'].indexOf(formStyle) === -1);
                 };
 
                 var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
@@ -310,9 +310,9 @@ formsAngular
                         } else {
                             // Single fields here
                             template += generateLabel(info, null, options);
-                            if (controlClass !== '') template += '<div class="' + controlClass.join(' ') + '">';
+                            if (controlClass.length > 0) template += '<div class="' + controlClass.join(' ') + '">';
                             template += generateInput(info, null, options.required, info.id, options);
-                            if (controlClass !== '') template += '</div>';
+                            if (controlClass.length > 0) template += '</div>';
                         }
                     }
                     template += closeTag;
@@ -418,7 +418,7 @@ formsAngular
                             unwatch();
                             scope.topLevelFormName = attrs.name || 'myForm';     // Form name defaults to myForm
                             var theRecord = scope[attrs.model || 'record'];      // By default data comes from scope.record
-                            var elementHtml = attrs.subschema ? '' : '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.style) + ' novalidate">';
+                            var elementHtml = attrs.subschema ? '' : '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate">';
                             elementHtml += processInstructions(newValue, true, attrs);
                             if (tabsSetup === 'forced') {
                                 elementHtml += '</tabs>';
