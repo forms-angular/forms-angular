@@ -268,30 +268,39 @@ formsAngular
                                 }
                                 subkeys.push(info);
                             } else {
-                                template += '<div class="schema-head">' + info.label + '</div>' +
-                                    '<div ng-form class="' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
-                                    '<div class="row-fluid sub-doc">' +
-                                    '<div class="pull-left">' +
-                                    processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle}) +
-                                    '</div>';
+                                template +=         '<div class="schema-head">' + info.label
+                                template +=         '</div>' +
+                                                    '<div ng-form class="row-fluid ' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
+                                                    '   <div class="row-fluid sub-doc">' +
+                                                    '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle}) +
+                                                    '      </div>';
 
-                                if (!info.noRemove) {
-                                    template += '<div class="pull-left sub-doc-btns">' +
-                                        '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                                        '<i class="icon-minus"></i> Remove' +
-                                        '</button>' +
-                                        '</div> '
+                                if (!info.noRemove || info.customSubDoc) {
+                                    template +=     '   <div class="pull-left sub-doc-btns">';
+                                    if (info.customFooter) {
+                                        template += info.customSubDoc;
+                                    }
+                                    if (!info.noRemove) {
+                                        template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
+                                                    '          <i class="icon-minus"></i> Remove' +
+                                                    '      </button>';
+                                    }
+                                    template +=     '  </div> ';
                                 }
-
-                                template += '</div>' +
-                                    '</div>' +
-                                    '<div class = "schema-foot">';
-                                if (!info.noAdd) {
-                                    template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                                        '<i class="icon-plus"></i> Add' +
-                                        '</button>'
+                                template +=         '   </div>' +
+                                                    '</div>';
+                                if (!info.noAdd || info.customFooter) {
+                                    template +=     '<div class = "schema-foot">';
+                                    if (info.customFooter) {
+                                        template += info.customFooter;
+                                    }
+                                    if (!info.noAdd) {
+                                        template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                                                    '        <i class="icon-plus"></i> Add' +
+                                                    '    </button>'
+                                    }
+                                    template +=     '</div>';
                                 }
-                                template += '</div>';
                             }
                         }
                     }
