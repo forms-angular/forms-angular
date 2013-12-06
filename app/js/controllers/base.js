@@ -571,13 +571,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
         if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
             allowLocationChange = true;
-// ngInfiniteList does all this
-//            $scope.pages_loaded = 0;
-//            $http.get('api/' + $scope.modelName + generateListQuery()).success(function (data) {
-//                $scope.recordList = data;
-//            }).error(function () {
-//                    $location.path("/404");
-//                });
         } else {
             $scope.$watch('record', function (newValue, oldValue) {
                 $scope.updateDataDependentDisplay(newValue, oldValue)

@@ -12,6 +12,8 @@ var ExamsSchema = new Schema({
 var FSchema = new Schema({
     surname: {type: String, index:true, list:{}},
     forename:  {type: String, index:true, list:true},
+    aTest: { type: Schema.Types.ObjectId, ref: 'b_using_options'},
+
 //    exams: [ExamsSchema]    // defaults to horizontal compact form
     // or
     exams: {type:[ExamsSchema], form:{formStyle:"inline"}}
