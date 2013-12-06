@@ -120,7 +120,7 @@ describe('formInput', function () {
 
                 thisElm = elm.find('.schema-foot button');
                 expect(thisElm.length).toBe(1);
-                expect((thisElm).text()).toBe(' Add');
+                expect((thisElm).text()).toMatch(/Add/);
 
                 thisElm = elm.find('.sub-doc');
                 expect(thisElm.length).toBe(2);
@@ -134,7 +134,7 @@ describe('formInput', function () {
                 expect(thisElm.length).toBe(2);
 
                 thisElm = elm.find('.sub-doc button:first');
-                expect(thisElm.text()).toBe(' Remove');
+                expect(thisElm.text()).toMatch(/Remove/);
             });
         });
 
@@ -160,21 +160,29 @@ describe('formInput', function () {
                 scope.$digest();
             }));
 
-            it('has amended Exams section', function() {
+            it('has amended Exams section head', function() {
                 var thisElm = elm.find('.schema-head');
                 expect(thisElm.length).toBe(1);
                 expect((thisElm).text()).toBe('Exams');
+            });
 
-                thisElm = elm.find('.schema-foot');
-                expect(thisElm.length).toBe(1);
-
-                thisElm = elm.find('.schema-foot button');
+            it('has amended Exams section foot', function() {
+                var thisElm = elm.find('.schema-foot');
                 expect(thisElm.length).toBe(0);
+            });
 
-                thisElm = elm.find('.sub-doc');
+            it('has amended Exams section foot button', function() {
+                var thisElm = elm.find('.schema-foot button');
+                expect(thisElm.length).toBe(0);
+            });
+
+            it('has amended Exams section subdoc', function() {
+                var thisElm = elm.find('.sub-doc');
                 expect(thisElm.length).toBe(2);
+            });
 
-                thisElm = elm.find('.sub-doc button:first');
+            it('has amended Exams subdoc button', function() {
+                var thisElm = elm.find('.sub-doc button:first');
                 expect(thisElm.length).toBe(0);
             });
         });
