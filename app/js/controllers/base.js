@@ -527,6 +527,14 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
         }
 
+        //now add a hash for the active tab if none exists
+
+        if ($scope.panes.length > 0 && !$location.hash()) {
+
+            $location.hash($scope.panes[0]['title']);
+
+        }
+
         if (destList && destList.length === 0) {
             handleEmptyList(description, destList, destForm, source);
         }
