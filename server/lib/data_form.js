@@ -516,7 +516,7 @@ DataForm.prototype.report = function () {
                             if (typeof obj[prop] === 'string') {
                                 var dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(obj[prop]);
                                 if (dateTest) {
-                                    obj[prop] = new Date(dateTest[1]+'Z')
+                                    obj[prop] = new Date(dateTest[1]+'Z');
                                 }
                             } else if (_.isObject(obj[prop])) {
                                 hackVariables(obj[prop]);
