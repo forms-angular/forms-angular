@@ -7,10 +7,17 @@ describe('Select 2', function() {
         expect(element('#s2id_f_eyeColour').text()).toMatch(/Brown/);
     });
 
-    // Cannot get this to work, but it works fine outside of test.  Losing it for now...
-    xit('should handle lookups with collection read', function () {
+    it('should handle lookups with collection read', function () {
         browser().navigateTo('/#/e_referencing_another_collection/51d1b2ca8c8683571c000005/edit');
-        expect(element('#s2id_f_teacher').text()).toMatch(/IsAccepted/);
+        setTimeout(function(){
+            expect(element('#s2id_f_teacher').text()).toMatch(/IsAccepted/);
+//            element('#s2id_f_teacher').click();
+//            setTimeout(function(){
+//                expect(element('#select2-drop ul li:last').text()).toMatch(/Jones/);
+//                element('#select2-drop ul li:last').click();
+//                expect(element('#s2id_f_teacher').text()).toMatch(/Jones/);
+//            },1);
+        },0);
     });
 
     it('should handle lookups using Ajax', function () {

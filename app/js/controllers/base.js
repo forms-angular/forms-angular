@@ -191,15 +191,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             $scope['select2' + formInstructions.name] = {
                                 allowClear: !mongooseOptions.required,
                                 initSelection: function (element, callback) {
-                                    var myId,
-                                        myVal = element.val();
-                                    if ($scope[formInstructions.options].length > 0) {
-                                        myId = convertListValueToId(myVal, $scope[formInstructions.options], $scope[formInstructions.ids], formInstructions.name)
-                                    } else {
-                                        myId = myVal;
+                                    var myId = element.val();
+                                    if (myId !== '') {
+                                        var myVal = convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name)
+                                        var display = {id: myId, text: myVal};
+                                        callback(display);
                                     }
-                                    var display = {id: myId, text: myVal};
-                                    callback(display);
                                 },
                                 query: function (query) {
                                     var data = {results: []},
@@ -1075,7 +1072,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
             return returnArray;
         } else {
-            return convertIdToListValue(input, ids, values, schemaElement.name);
+            return {id: input, text : convertIdToListValue(input, ids, values, schemaElement.name)};
         }
     }
 

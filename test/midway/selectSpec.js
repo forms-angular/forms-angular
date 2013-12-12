@@ -1,4 +1,4 @@
-describe('formInput', function () {
+describe('Select.', function () {
     var elm, scope;
 
     // load the form code
@@ -66,8 +66,8 @@ describe('formInput', function () {
         }));
 
         it('should convert to forms-angular format', function() {
-            expect(scope.record.lookupField.id).toBe(3);
-            expect(scope.record.lookupField.data).toBe("Jenny Rogers");
+            expect(scope.record.lookupField.id).toBe('3');
+            expect(scope.record.lookupField.text).toBe("Jenny Rogers");
         });
 
 //        it('should have combobox', function () {

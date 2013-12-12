@@ -384,7 +384,8 @@ describe('"BaseCtrl"', function () {
         describe('mongo to front end', function () {
 
             it('converts lookup id to lookup', function () {
-                expect(scope.record.lookupField).toEqual('John Smith');
+                expect(scope.record.lookupField.id).toEqual(123456789);
+                expect(scope.record.lookupField.text).toEqual('John Smith');
             });
 
             it('converts string array to object array', function () {

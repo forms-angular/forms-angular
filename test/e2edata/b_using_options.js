@@ -35,5 +35,23 @@
         accepted: true,
         interviewScore: 89,
         freeText: "Here is some tex blah blah"
+    },
+    {
+        _id: ObjectId("519a6075b440153869b155e0"),
+        surname: "Jones",
+        forename: "Alan",
+        address: {
+            line1: "14 High Street",
+            town: "Anothertown",
+            postcode: "AB4 3ES"},
+        email: "ReportingIndex@somewhere.com",
+        weight: 145,
+        dateOfBirth: "04 Dec 1968",
+        eyeColour: "Brown",
+        login: "AlanJ",
+        passwordHash: "sha1$22b5fc3b$1$60a33af349b5a95cc0ab3f29b4c95a819d944e75",
+        accepted: true,
+        interviewScore: 93
     }
+
 ]

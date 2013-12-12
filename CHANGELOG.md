@@ -3,7 +3,9 @@
 ## 0.1 to 0.2
 ### Summary
 * Internal changes to make better use of Angular JS forms capabilities
-* Added support for HTMLr capabilities: pattern, min, max, step
+* Added support for HTML5 input capabilities: pattern, min, max, step
+* All lookups are now handled as {id:xxx, text:yyy} on the client
+
 
 ### BREAKING CHANGES
 * Changed form-input directive so that it creates a form tag, and rather than creating a <form-input>

@@ -41,7 +41,7 @@ describe('Read Data API', function () {
     });
 
     it('should filter out records that do not match the find func', function () {
-        assert.equal(bData.length, 1);
+        assert.equal(bData.length, 2);
     });
 
     it('should not send secure fields of a modified schema', function () {

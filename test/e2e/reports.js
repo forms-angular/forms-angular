@@ -16,7 +16,7 @@ describe('Reports', function() {
 
     it('should generate a default report', function() {
         browser().navigateTo('/#/analyse/b_using_options');
-        expect(repeater('.ngRow').count()).toEqual(1);
+        expect(repeater('.ngRow').count()).toEqual(2);
         element('.ngRow').click();
         expect(browser().window().hash()).toMatch('\/b_using_options/519a6075b320153869b155e0/edit');
     })

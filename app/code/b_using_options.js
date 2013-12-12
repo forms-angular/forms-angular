@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var BSchema = new Schema({
     surname: {type:String,required:true,index:true,list:{}}, // this field appears in a listing and the default edit form header
-    forename:  {type: String, list:true, index:true, form:{type:'password'}},        // this field appears in a listing and the default edit form header
+    forename:  {type: String, list:true, index:true},        // this field appears in a listing and the default edit form header
     website: {type: String, form:{type:'url'}},
     login: {type: String, secure:true, form:{hidden:true}},  // secure prevents the data from being sent by the API, hidden from being shown on the default form
     passwordHash: {type: String, secure:true, form:{hidden:true}},
