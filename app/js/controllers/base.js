@@ -517,27 +517,25 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 }
             }
         }
-        //if a hash is defined then make that the selected tab is displayed
-        if ($scope.panes.length > 0 && $location.hash()) {
-            var pane = _.find($scope.panes, function (aPane) {
-                return aPane.title === $location.hash();
-            });
-
-            if (pane) {
-                for (var i = 0; i < $scope.panes.length; i++) {
-                    $scope.panes[i].active = false;
-                }
-                pane.active = true;
-            }
-        }
-
-        //now add a hash for the active tab if none exists
-
-        if ($scope.panes.length > 0 && !$location.hash()) {
-
-            $location.hash($scope.panes[0]['title']);
-
-        }
+//        //if a hash is defined then make that the selected tab is displayed
+//        if ($scope.panes.length > 0 && $location.hash()) {
+//            var pane = _.find($scope.panes, function (aPane) {
+//                return aPane.title === $location.hash();
+//            });
+//
+//            if (pane) {
+//                for (var i = 0; i < $scope.panes.length; i++) {
+//                    $scope.panes[i].active = false;
+//                }
+//                pane.active = true;
+//            }
+//        }
+//
+//        //now add a hash for the active tab if none exists
+//        if ($scope.panes.length > 0 && !$location.hash()) {
+//            console.log($scope.panes[0]['title'])
+//            $location.hash($scope.panes[0]['title']);
+//        }
 
         if (destList && destList.length === 0) {
             handleEmptyList(description, destList, destForm, source);

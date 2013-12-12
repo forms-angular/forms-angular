@@ -57,12 +57,12 @@ angular.module('fng.ui.bootstrap.tabs', [])
                 pane.selected = false;
             });
             pane.selected = true;
-            $location.hash(pane.heading);
+//            $location.hash(pane.heading);
         };
 
         this.addPane = function addPane(pane) {
             if (!panes.length) {
-                // $scope.select(pane);
+                $scope.select(pane);
             }
             panes.push(pane);
         };
@@ -72,7 +72,7 @@ angular.module('fng.ui.bootstrap.tabs', [])
             panes.splice(index, 1);
             //Select a new pane if removed pane was selected
             if (pane.selected && panes.length > 0) {
-                // $scope.select(panes[index < panes.length ? index : index-1]);
+                $scope.select(panes[index < panes.length ? index : index-1]);
             }
         };
     }])
