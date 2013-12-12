@@ -202,6 +202,10 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                                         $scope.paramSchema[newLen-1].options = param + '_Opts';
                                     }
                                 }
+                                var dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(thisPart.value);
+                                if (dateTest) {
+                                    thisPart.value = (moment(dateTest[1]).format('YYYY-MM-DDTHH:mm:ss.SSS'))+'Z';
+                                }
                                 $scope.record[param] = thisPart.value;
                             }
                         }
