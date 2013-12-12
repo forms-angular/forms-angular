@@ -12,7 +12,7 @@ case ${A:0:4} in
 		;;
 	* )
 		NODE_ENV=test node server/server.js > /dev/null &
-		sleep 1 # give server time to start
+		sleep 3 # give server time to start
 		B=`lsof -Pnl +M -i4 | grep '3001' | grep -m 1 -o -E 'node\s+[0-9]+' | sed 's/node\s*//'`
 		;;
 esac
