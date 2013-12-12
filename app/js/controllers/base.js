@@ -5,6 +5,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var allowLocationChange = true;   // Set when the data arrives..
 
     $scope.record = sharedStuff.record;
+    sharedStuff.baseScope = $scope;
     $scope.phase = 'init';
     $scope.disableFunctions = sharedStuff.disableFunctions;
     $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
