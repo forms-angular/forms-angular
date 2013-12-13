@@ -779,6 +779,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             '</div>',
                 controller: 'SaveChangesModalCtrl'
             });
+console.log(modalInstance);
 
             modalInstance.result.then(
                 function (result) {

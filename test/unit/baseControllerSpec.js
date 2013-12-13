@@ -717,30 +717,18 @@ describe('"BaseCtrl"', function () {
 
     describe('deletion confirmation modal', function () {
 
-        var $scope, ctrl, $dialog, fakeDialog, provider, resolveCallback;
+        var $scope, ctrl, provider, resolveCallback, deferred;
 
-        //this fake object replaces the actual dialog object, as the functions are not visible to the test runner.
-        fakeDialog = {
-            isOpen: false,
-            open: function () {
-                fakeDialog.isOpen = true;
-                return {
-                    then: resolveCallback
-                };
-            },
-            close: function () {
-            }
-        };
         //default version of mock function so that delete http request is not called.
         //Same as clicking no on the dialog.
         resolveCallback = function (callback) { };
 
         beforeEach(function () {
-            module(function ($dialogProvider) {
-                provider = $dialogProvider;
+            module(function ($modalProvider) {
+                provider = $modalProvider;
             });
-            inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location, _$dialog_) {
-                $dialog = _$dialog_;
+            inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location, _$modal_, $q) {
+                $modal = _$modal_;
                 $httpBackend = _$httpBackend_;
                 $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
                 $httpBackend.whenGET('api/collection/125').respond({"name": "Alan"});
@@ -748,9 +736,13 @@ describe('"BaseCtrl"', function () {
                 $scope = $rootScope.$new();
                 ctrl = $controller("BaseCtrl", {
                     $scope: $scope,
-                    $dialog: $dialog
+                    $modal: $modal
                 });
-                spyOn($dialog, 'messageBox').andReturn(fakeDialog);
+
+                deferred = $q.defer();
+                var fakeModal = {result: deferred.promise};
+                spyOn($modal, 'open').andReturn(fakeModal);
+
                 $scope.record._id = 1;
             });
         });
@@ -760,44 +752,29 @@ describe('"BaseCtrl"', function () {
             expect(provider).toBeDefined();
         });
 
-        it('dialog service should be injected', function () {
+        it('modal service should be injected', function () {
             $httpBackend.flush();
-            expect($dialog).toBeDefined();
+            expect($modal).toBeDefined();
         });
 
-        it('dialog messageBox should be defined', function () {
+        it('modal messageBox should be defined', function () {
 
             $scope.delete();
             $httpBackend.flush();
-            expect($dialog.messageBox).toHaveBeenCalled();
+            expect($modal.open).toHaveBeenCalled();
         });
 
-
-        it('should call dialog open when $scope.delete() is called', function () {
+        it('should not delete when No is clicked', function () {
             $scope.delete();
+            deferred.resolve(false);    // Same as clicking on Yes
             $httpBackend.flush();
-            expect(fakeDialog.isOpen).toEqual(true);
-        });
-
-        it('should close the dialog when No is clicked', function () {
-            resolveCallback = function (callback) {
-                callback('no');
-            };
-            fakeDialog.close = function () {
-                fakeDialog.isOpen = false;
-            };
-            $scope.delete();
-            $httpBackend.flush();
-            expect(fakeDialog.isOpen).toEqual(false);
         });
 
         it('send a delete request when yes is clicked', function () {
             $httpBackend.when('DELETE', 'api/collection/125').respond(200, 'SUCCESS');
             $httpBackend.expectDELETE('api/collection/125');
-            resolveCallback = function (callback) {
-                callback('yes');
-            };
             $scope.delete();
+            deferred.resolve(true);    // Same as clicking on Yes
             $httpBackend.flush();
         });
 
