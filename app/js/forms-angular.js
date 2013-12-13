@@ -5,7 +5,6 @@ var formsAngular = angular.module('formsAngular', [
     , 'ngSanitize'
     , 'ui.select2'
     , 'ui.date'
-    , 'fng.ui.bootstrap'
     , 'ui.bootstrap'
     , 'ngGrid'
     , 'infinite-scroll'

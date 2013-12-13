@@ -2,20 +2,20 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ISchema = new Schema({
-    surname: {type: String, required: true, list:{}, form:{pane:'first'}},
-    forename:  {type: String, list:true, form:{pane:'first'}},
+    surname: {type: String, required: true, list:{}, form:{tab:'first'}},
+    forename:  {type: String, list:true, form:{tab:'first'}},
     address: {
-        line1: {type: String, form:{label: 'Address',pane:'first'}},
-        line2: {type: String, form:{label: null,pane:'first'}},
-        line3: {type: String, form:{label: null,pane:'first'}},
-        town: {type: String, form:{label: 'Town', pane:'first'}},
-        postcode: {type: String, form:{label: 'Postcode',pane:'first'}}
+        line1: {type: String, form:{label: 'Address',tab:'first'}},
+        line2: {type: String, form:{label: null,tab:'first'}},
+        line3: {type: String, form:{label: null,tab:'first'}},
+        town: {type: String, form:{label: 'Town', tab:'first'}},
+        postcode: {type: String, form:{label: 'Postcode',tab:'first'}}
     },
-    weight: {type : Number, form:{label:"Weight (lbs)",pane:'second'}},
-    dateOfBirth: {type:Date, form:{pane:'second'}},
-    accepted: {type: Boolean, form:{pane:'second'}},
-    interviewScore:{type:Number,form:{pane:'second'},list:{}},
-    freeText: {type: String, form:{type: 'textarea', rows:5, pane:'second'}}
+    weight: {type : Number, form:{label:"Weight (lbs)",tab:'second'}},
+    dateOfBirth: {type:Date, form:{tab:'second'}},
+    accepted: {type: Boolean, form:{tab:'second'}},
+    interviewScore:{type:Number,form:{tab:'second'},list:{}},
+    freeText: {type: String, form:{type: 'textarea', rows:5, tab:'second'}}
 });
 
 var I;

@@ -143,13 +143,13 @@ formsAngular
                 var containerInstructions = function (info) {
                     var result = {before: '', after: ''};
                     switch (info.containerType) {
-                        case 'pane' :
-                            result.before = '<pane heading="' + info.title + '" active="' + (info.active || 'false') + '">';
-                            result.after = '</pane>';
-                            break;
                         case 'tab' :
-                            result.before = '<tabs>';
-                            result.after = '</tabs>';
+                            result.before = '<tab heading="' + info.title + '">';
+                            result.after = '</tab>';
+                            break;
+                        case 'tabset' :
+                            result.before = '<tabset>';
+                            result.after = '</tabset>';
                             break;
                         case 'well' :
                             result.before = '<div class="well">';
@@ -268,8 +268,8 @@ formsAngular
                                 }
                                 subkeys.push(info);
                             } else {
-                                template +=         '<div class="schema-head">' + info.label
-                                template +=         '</div>' +
+                                template +=         '<div class="schema-head">' + info.label +
+                                                    '</div>' +
                                                     '<div ng-form class="row-fluid ' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
                                                     '   <div class="row-fluid sub-doc">' +
                                                     '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle}) +
@@ -370,18 +370,18 @@ formsAngular
                         } else if (info.containerType) {
                             var parts = containerInstructions(info);
                             switch (info.containerType) {
-                                case 'pane' :
-                                    // maintain support for simplified pane syntax for now
+                                case 'tab' :
+                                    // maintain support for simplified tabset syntax for now
                                     if (!tabsSetup) {
                                         tabsSetup = 'forced';
-                                        result += '<tabs>';
+                                        result += '<tabset>';
                                     }
 
                                     result += parts.before;
                                     result += processInstructions(info.content, null, options);
                                     result += parts.after;
                                     break;
-                                case 'tab' :
+                                case 'tabset' :
                                     tabsSetup = true;
                                     result += parts.before;
                                     result += processInstructions(info.content, null, options);
@@ -430,7 +430,7 @@ formsAngular
                             var elementHtml = attrs.subschema ? '' : '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate">';
                             elementHtml += processInstructions(newValue, true, attrs);
                             if (tabsSetup === 'forced') {
-                                elementHtml += '</tabs>';
+                                elementHtml += '</tabset>';
                             }
                             elementHtml += attrs.subschema ? '' : '</form>';
                             element.replaceWith($compile(elementHtml)(scope));

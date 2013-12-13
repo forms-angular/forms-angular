@@ -1,4 +1,4 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$dialog', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $dialog) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -10,7 +10,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
     $scope.topLevelFormName = 'marker';
     $scope.formSchema = [];
-    $scope.panes = [];
+    $scope.tabs = [];
     $scope.listSchema = [];
     $scope.recordList = [];
     $scope.dataDependencies = {};
@@ -454,27 +454,24 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     var handleSchema = function (description, source, destForm, destList, prefix, doRecursion) {
 
-        function handlePaneInfo(paneName, thisInst) {
-            var paneTitle = angular.copy(paneName);
-            var pane = _.find($scope.panes, function (aPane) {
-                return aPane.title === paneTitle
+        function handletabInfo(tabName, thisInst) {
+            var tabTitle = angular.copy(tabName);
+            var tab = _.find($scope.tabs, function (atab) {
+                return atab.title === tabTitle
             });
-            if (!pane) {
-                var active = false;
-                if ($scope.panes.length === 0) {
+            if (!tab) {
+                if ($scope.tabs.length === 0) {
                     if ($scope.formSchema.length > 0) {
-                        $scope.panes.push({title: 'Main', content: [], active: true});
-                        pane = $scope.panes[0];
+                        $scope.tabs.push({title: 'Main', content: []});
+                        tab = $scope.tabs[0];
                         for (var i = 0; i < $scope.formSchema.length; i++) {
-                            pane.content.push($scope.formSchema[i])
+                            tab.content.push($scope.formSchema[i])
                         }
-                    } else {
-                        active = true;
                     }
                 }
-                pane = $scope.panes[$scope.panes.push({title: paneTitle, containerType: 'pane', content: [], active: active}) - 1]
+                tab = $scope.tabs[$scope.tabs.push({title: tabTitle, containerType: 'tab', content: []}) - 1]
             }
-            pane.content.push(thisInst);
+            tab.content.push(thisInst);
         }
 
         for (var field in source) {
@@ -489,7 +486,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
-                            if (formData.pane) handlePaneInfo(formData.pane, sectionInstructions);
+                            if (formData.tab) handletabInfo(formData.tab, sectionInstructions);
                             if (formData.order !== undefined) {
                                 destForm.splice(formData.order, 0, sectionInstructions);
                             } else {
@@ -501,7 +498,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             var formInstructions = basicInstructions(field, formData, prefix);
                             if (handleConditionals(formInstructions.showIf, formInstructions.id) && field !== 'options') {
                                 var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
-                                if (formInst.pane) handlePaneInfo(formInst.pane, formInst);
+                                if (formInst.tab) handletabInfo(formInst.tab, formInst);
                                 if (formData.order !== undefined) {
                                     destForm.splice(formData.order, 0, formInst);
                                 } else {
@@ -517,23 +514,23 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
         }
 //        //if a hash is defined then make that the selected tab is displayed
-//        if ($scope.panes.length > 0 && $location.hash()) {
-//            var pane = _.find($scope.panes, function (aPane) {
-//                return aPane.title === $location.hash();
+//        if ($scope.tabs.length > 0 && $location.hash()) {
+//            var tab = _.find($scope.tabs, function (atab) {
+//                return atab.title === $location.hash();
 //            });
 //
-//            if (pane) {
-//                for (var i = 0; i < $scope.panes.length; i++) {
-//                    $scope.panes[i].active = false;
+//            if (tab) {
+//                for (var i = 0; i < $scope.tabs.length; i++) {
+//                    $scope.tabs[i].active = false;
 //                }
-//                pane.active = true;
+//                tab.active = true;
 //            }
 //        }
 //
 //        //now add a hash for the active tab if none exists
-//        if ($scope.panes.length > 0 && !$location.hash()) {
-//            console.log($scope.panes[0]['title'])
-//            $location.hash($scope.panes[0]['title']);
+//        if ($scope.tabs.length > 0 && !$location.hash()) {
+//            console.log($scope.tabs[0]['title'])
+//            $location.hash($scope.tabs[0]['title']);
 //        }
 
         if (destList && destList.length === 0) {
@@ -767,81 +764,70 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.$on('$locationChangeStart', function (event, next) {
         if (!allowLocationChange && !$scope.isCancelDisabled()) {
-            $dialog.messageBox('Record modified', 'Would you like to save your changes?', [
-                    { label: 'Yes', result: 'yes', cssClass: 'dlg-yes'},
-                    {label: 'No', result: 'no', cssClass: 'dlg-no'},
-                    { label: 'Cancel', result: 'cancel', cssClass: 'dlg-cancel'}
-                ])
-                .open()
-                .then(function (result) {
-                    switch (result) {
-                        case 'no' :
-                            allowLocationChange = true;
-                            window.location = next;
-//                            $location.url = next;
-                            break;
-                        case 'yes' :
-                            $scope.save({redirect: next, allowChange: true});    // save changes
-                        // break;   fall through to get the preventDefault
-                        case 'cancel' :
-                            break;
-                    }
-                });
             event.preventDefault();
+            var modalInstance = $modal.open({
+                template:   '<div class="modal-header">' +
+                            '   <h3>Record modified</h3>' +
+                            '</div>' +
+                            '<div class="modal-body">' +
+                            '   <p>Would you like to save your changes?</p>' +
+                            '</div>' +
+                            '<div class="modal-footer">' +
+                            '    <button class="btn btn-primary dlg-yes" ng-click="yes()">Yes</button>' +
+                            '    <button class="btn btn-warning dlg-no" ng-click="no()">No</button>' +
+                            '    <button class="btn dlg-cancel" ng-click="cancel()">Cancel</button>' +
+                            '</div>',
+                controller: 'SaveChangesModalCtrl'
+            });
+
+            modalInstance.result.then(
+                function (result) {
+                    if (result) {
+                        $scope.save({redirect: next, allowChange: true});    // save changes
+                    } else {
+                        allowLocationChange = true;
+                        window.location = next;
+                    }
+                }
+            );
         }
     });
 
     $scope.delete = function () {
-
-        var boxResult;
-
         if ($scope.record._id) {
+            var modalInstance = $modal.open({
+                template:   '<div class="modal-header">' +
+                    '   <h3>Delete Item</h3>' +
+                    '</div>' +
+                    '<div class="modal-body">' +
+                    '   <p>Are you sure you want to delete this record?</p>' +
+                    '</div>' +
+                    '<div class="modal-footer">' +
+                    '    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>' +
+                    '    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>' +
+                    '</div>',
+                controller: 'SaveChangesModalCtrl'
+            });
 
-            var msgBox = $dialog.messageBox('Delete Item', 'Are you sure you want to delete this record?', [
-                {
-                    label: 'Yes',
-                    result: 'yes'
-                },
-                {
-                    label: 'No',
-                    result: 'no'
-                }
-            ]);
-
-            msgBox.open().then(function (result) {
-
-                if (result === 'yes') {
-
-                    if (typeof $scope.dataEventFunctions.onBeforeDelete === "function") {
-                        $scope.dataEventFunctions.onBeforeDelete(master, function (err) {
-
-                            if (err) {
-                                showError(err);
-                            } else {
-
-                                $scope.deleteRecord($scope.modelName, $scope.id);
-
-                            }
-
-                        });
-                    } else {
-
-                        $scope.deleteRecord($scope.modelName, $scope.id);
-
+            modalInstance.result.then(
+                function (result) {
+                    if (result) {
+                        if (typeof $scope.dataEventFunctions.onBeforeDelete === "function") {
+                            $scope.dataEventFunctions.onBeforeDelete(master, function (err) {
+                                if (err) {
+                                    showError(err);
+                                } else {
+                                    $scope.deleteRecord($scope.modelName, $scope.id);
+                                }
+                            });
+                        } else {
+                            $scope.deleteRecord($scope.modelName, $scope.id);
+                        }
                     }
                 }
-
-                if (result === 'no') {
-                    boxResult = result;
-                }
-            });
-            //can't close the msxBox from within itself as it breaks it.
-            if (boxResult === 'no') {
-                msgBox.close();
-            }
+            );
         }
     };
-
 
     $scope.isCancelDisabled = function () {
         if (typeof $scope.disableFunctions.isCancelDisabled === "function") {
@@ -1167,10 +1153,19 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.baseSchema = function () {
-        return ($scope.panes.length ? $scope.panes : $scope.formSchema)
+        return ($scope.tabs.length ? $scope.tabs : $scope.formSchema)
     }
 
 }
 ])
-;
-
+.controller(SaveChangesModalCtrl = function ($scope, $modalInstance) {
+    $scope.yes = function () {
+        $modalInstance.close(true);
+    };
+    $scope.no = function () {
+        $modalInstance.close(false);
+    };
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+});
