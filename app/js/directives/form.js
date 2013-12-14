@@ -425,9 +425,14 @@ formsAngular
                         newValue = angular.isArray(newValue) ? newValue : [newValue];   // otherwise some old tests stop working for no real reason
                         if (newValue.length > 0) {
                             unwatch();
-                            scope.topLevelFormName = attrs.name || 'myForm';     // Form name defaults to myForm
+                            var elementHtml = '';
                             var theRecord = scope[attrs.model || 'record'];      // By default data comes from scope.record
-                            var elementHtml = attrs.subschema ? '' : '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate">';
+                            if (attrs.subschema || attrs.model) {
+                                elementHtml = '';
+                            } else {
+                                scope.topLevelFormName = attrs.name || 'myForm';     // Form name defaults to myForm
+                                elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate">';
+                            }
                             elementHtml += processInstructions(newValue, true, attrs);
                             if (tabsSetup === 'forced') {
                                 elementHtml += '</tabset>';

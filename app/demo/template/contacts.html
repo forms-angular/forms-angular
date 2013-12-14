@@ -1,0 +1,26 @@
+<div ng-controller="ContactCtrl">
+    <div ng-form="newContactForm" ng-show="showAdd">
+        <h3>Add Contact</h3>
+        <form-input schema="contactSchema" model="newContact" info="{{field}}"></form-input>
+        <div class="form-actions">
+            <button ng-click="saveContact()" ng-disabled="isContactSaveDisabled()" class="btn btn-primary">Save contact</button>
+            <button ng-click="showAdd=false" class="btn">Cancel</button>
+        </div>
+        <hr>
+    </div>
+    <div style="min-height:3.5em;">
+        <div class="pull-right" ng-hide="showAdd">
+            <button ng-click="showAddForm()"><i class="icon-plus"></i>Add another contact</button>
+        </div>
+        <div class="contacts-head">
+            <div>{{popupInstructions}}{{popupName}}<br/>{{popupPhone}}</div>
+        </div>
+    </div>
+    <div class="contacts">
+        <div class="contact" ng-repeat="contact in record.contactList" ng-mouseover="showDetails(contact)"
+             ng-mouseleave="hideDetails(contact)">
+            <a ng-href="/#/a_unadorned_mongoose/{{contact.contact}}/edit">{{contact.type}} {{contact.relationship}}</a>
+            <button type="button" class="close" ng-click="removeContact(contact)">&times;</button>
+        </div>
+    </div>
+</div>

@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var ASchema = new Schema({
     surname: {type:String, required:true, index:true},
     forename: {type:String, index:true},
+    phone: {type:String},
     weight: Number,
     eyeColour: {type: String, required:true, enum:['Blue','Brown','Green','Hazel']},
     dateOfBirth: Date,
