@@ -193,7 +193,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                 initSelection: function (element, callback) {
                                     var myId = element.val();
                                     if (myId !== '') {
-                                        var myVal = convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name)
+                                        var myVal = convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
                                         var display = {id: myId, text: myVal};
                                         callback(display);
                                     }
@@ -779,7 +779,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             '</div>',
                 controller: 'SaveChangesModalCtrl'
             });
-console.log(modalInstance);
 
             modalInstance.result.then(
                 function (result) {
@@ -1159,7 +1158,7 @@ console.log(modalInstance);
 
 }
 ])
-.controller(SaveChangesModalCtrl = function ($scope, $modalInstance) {
+.controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
     $scope.yes = function () {
         $modalInstance.close(true);
     };
@@ -1169,4 +1168,4 @@ console.log(modalInstance);
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
-});
+}]);
