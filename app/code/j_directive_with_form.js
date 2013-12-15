@@ -1,15 +1,15 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var ContactSchema = new Schema({
-    contact: { type: Schema.Types.ObjectId, ref: 'a_unadorned_mongoose', form: {select2: {fngAjax: true}} },
-    type: { type: String, enum: ['teacher', 'friend', 'other']}
+var FriendSchema = new Schema({
+    friend: { type: Schema.Types.ObjectId, ref: 'a_unadorned_mongoose', form: {select2: {fngAjax: true}} },
+    type: { type: String, enum: ['best friend', 'partner', 'colleague', 'acquaintance', 'other']}
 }, {_id: false});
 
 var JSchema = new Schema({
     surname: {type: String, required: true, list:{}},
     forename:  {type: String, list:true},
-    contactList: {type: [ContactSchema], form: {directive: 'contacts'}}
+    friendList: {type: [FriendSchema], form: {directive: 'friends'}}
 });
 
 var J;

@@ -20,7 +20,8 @@ module.exports = function(config) {
             'app/js/forms-angular.js',
             'app/js/**/*.js',
             'app/demo/demo.js',
-            'app/demo/directives/bespoke-field.js',
+            'app/demo/**/*.js',
+            'app/demo/template/*.html',
             'test/midway/**/*.js'
         ],
 
@@ -41,9 +42,13 @@ module.exports = function(config) {
             'karma-jasmine',
             'karma-chrome-launcher',
             'karma-phantomjs-launcher',
+            'karma-ng-html2js-preprocessor',
             'karma-firefox-launcher',
             'karma-junit-reporter'
-        ]
+        ],
+        preprocessors: {
+            'app/demo/template/*.html': 'ng-html2js'
+        }
     });
 };
 

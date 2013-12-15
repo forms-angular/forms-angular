@@ -1,4 +1,4 @@
-describe('formInput', function () {
+describe('nesting', function () {
     var elm, scope, ctrl;
 
     // load the form code
