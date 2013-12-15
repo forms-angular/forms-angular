@@ -1,6 +1,5 @@
-var friends = angular.module('friends', []);
-
-friends.controller('FriendCtrl',['$scope', '$routeParams', '$location', '$http', function($scope, $routeParams, $location, $http) {
+myDemoApp.controller('FriendCtrl',['$scope', '$routeParams', '$location', '$http', function($scope, $routeParams, $location, $http) {
+        console.log('Hello');
     $scope.frdShowAdd = false;
     $scope.frdNewFriend = {};
     $scope.frdHideDetails = function() {
@@ -56,6 +55,6 @@ friends.controller('FriendCtrl',['$scope', '$routeParams', '$location', '$http',
             replace: true,
             priority: 1,
             controller: 'FriendCtrl',
-            templateUrl: 'app/demo/template/friends.html'
+            templateUrl: 'demo/template/friends.html'
         }
     });

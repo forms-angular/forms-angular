@@ -46,6 +46,10 @@ module.exports = function(config) {
             'karma-firefox-launcher',
             'karma-junit-reporter'
         ],
+        ngHtml2JsPreprocessor: {
+            // strip this from the file path
+            stripPrefix: 'app/'
+        },
         preprocessors: {
             'app/demo/template/*.html': 'ng-html2js'
         }

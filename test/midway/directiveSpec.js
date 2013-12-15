@@ -13,8 +13,7 @@ describe('directive with form', function () {
     beforeEach(function() {
         angular.mock.module('formsAngular');
         angular.mock.module('myDemoApp');
-        angular.mock.module('friends');
-        angular.mock.module('app/demo/template/friends.html');
+        angular.mock.module('demo/template/friends.html');
     });
 
     afterEach(function () {
@@ -64,7 +63,6 @@ describe('directive with form', function () {
             expect(elem.text()).toMatch(/colleague/);
         });
 
-
         it('shows the friend name', function() {
             $httpBackend.whenGET('api/a_unadorned_mongoose/666a6075b320153869b17599').respond({"_id":"666a6075b320153869b17599","surname":"TestPerson2","forename":"Andrew","weight":142,"eyeColour":"Brown","accepted":true});
             var friend = scope.record.friendList[0];
@@ -74,6 +72,19 @@ describe('directive with form', function () {
             expect(elem.text()).toMatch(/Andrew/);
             expect(elem.text()).toMatch(/TestPerson2/);
         });
+
+        it('disables save friend button until a change is made', function() {
+            scope.frdShowAddForm();
+            expect(scope.frdIsFriendSaveDisabled()).toEqual(true);
+        });
+
+        it('enables save friend button when a change is made', function() {
+            scope.frdShowAddForm();
+            var elem = angular.element(elm.find('#newFriendForm input:last')[0]);
+            elem.val('New comment');
+            elem.change();
+            expect(scope.frdIsFriendSaveDisabled()).toEqual(false);
+        })
 
     });
 
