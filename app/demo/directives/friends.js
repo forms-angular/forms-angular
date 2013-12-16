@@ -1,5 +1,4 @@
 myDemoApp.controller('FriendCtrl',['$scope', '$routeParams', '$location', '$http', function($scope, $routeParams, $location, $http) {
-        console.log('Hello');
     $scope.frdShowAdd = false;
     $scope.frdNewFriend = {};
     $scope.frdHideDetails = function() {
