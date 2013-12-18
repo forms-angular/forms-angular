@@ -8,7 +8,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.phase = 'init';
     $scope.disableFunctions = sharedStuff.disableFunctions;
     $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
-    $scope.topLevelFormName = 'marker';
+    $scope.topLevelFormName = undefined;
     $scope.formSchema = [];
     $scope.tabs = [];
     $scope.listSchema = [];
@@ -192,7 +192,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                 allowClear: !mongooseOptions.required,
                                 initSelection: function (element, callback) {
                                     var myId = element.val();
-                                    if (myId !== '') {
+                                    if (myId !== '' && $scope[formInstructions.ids].length > 0) {
                                         var myVal = convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
                                         var display = {id: myId, text: myVal};
                                         callback(display);
@@ -1055,8 +1055,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 returnArray.push({x: convertIdToListValue(input[j], ids, values, schemaElement.name)});
             }
             return returnArray;
-        } else {
+        } else if (schemaElement.select2) {
             return {id: input, text : convertIdToListValue(input, ids, values, schemaElement.name)};
+        } else {
+            return convertIdToListValue(input, ids, values, schemaElement.name);
         }
     }
 
@@ -1128,8 +1130,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     var updateRecordWithLookupValues = function (schemaElement) {
         // Update the master and the record with the lookup values
-        if (angular.equals(master[schemaElement.name], $scope.record[schemaElement.name]) ||
-            (schemaElement.select2 && $scope.record[schemaElement.name] && angular.equals(master[schemaElement.name], $scope.record[schemaElement.name].text))) {
+        if (!$scope.topLevelFormName || $scope[$scope.topLevelFormName].$pristine) {
             updateObject(schemaElement.name, master, function (value) {
                 return( convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement, '_ids')]));
             });
@@ -1137,9 +1138,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (master[schemaElement.name]) {
                 $scope.record[schemaElement.name] = master[schemaElement.name];
             }
-            // TODO Reintroduce after conversion to Angular 1.1+ and introduction of ng-if
-//        } else {
-//            throw new Error("Record has been changed from "+master[schemaElement.name]+" to "+ $scope.record[schemaElement.name] +" in lookup "+schemaElement.name+".  Cannot convert.")
         }
     };
 

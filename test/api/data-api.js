@@ -295,7 +295,7 @@ describe('Secure fields', function () {
                 throw new Error('curl c_subdoc_example failed')
             }
             var data = JSON.parse(stdout);
-            assert.equal(data.length, 1);
+            assert.equal(data.length, 2);
             assert.equal(data[0].surname, 'Anderson');
             assert.equal(data[0].passwordHash, undefined);
             assert.notEqual(data[0].interview.score, undefined);
