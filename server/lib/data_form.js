@@ -201,7 +201,15 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
     var that = this,
         results = [],
         moreCount = 0,
+        searchCriteria;
+
+    if (req.route.path === '/api/search') {
+        // Called from search box - treat words as separate strings
         searchCriteria = {$regex: '^(' + searchFor.split(' ').join('|') +')', $options: 'i'};
+    } else {
+        // called from somewhere else (probably select2 ajax) preserve spaces
+        searchCriteria = {$regex: '^' + searchFor, $options: 'i'};
+    }
 
     this.searchFunc(
         searches
