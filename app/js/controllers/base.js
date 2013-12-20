@@ -574,7 +574,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.scrollTheList = function () {
         $http.get('api/' + $scope.modelName + generateListQuery()).success(function (data) {
-            $scope.recordList = $scope.recordList.concat(data);
+            if (angular.isArray(data)) {
+                $scope.recordList = $scope.recordList.concat(data);
+            } else {
+                showError(data, "Invalid query");
+            }
         }).error(function () {
                 $location.path("/404");
             });
