@@ -45,13 +45,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 // If we come across an array we need to find the correct position
                 workingRec = workingRec[element.scope().$index]
             }
+            if (!workingRec) {
+                break;
+            }
         }
-        return {lastObject: workingRec, key: parts[higherLevels]};
+        return {lastObject: workingRec, key: workingRec ? parts[higherLevels] : undefined};
     };
 
     $scope.getData = function (object, fieldname, element) {
         var leafData = $scope.walkTree(object, fieldname, element);
-        return leafData.lastObject[leafData.key]
+        return (leafData.lastObject && leafData.key) ? leafData.lastObject[leafData.key] : undefined;
     };
 
     $scope.setData = function (object, fieldname, element, value) {
