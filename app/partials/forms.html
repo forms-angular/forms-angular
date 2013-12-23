@@ -180,6 +180,17 @@ and handle querying and updating the server</p>
             taken from the model controller's <strong>dropDownDisplay</strong> variable, if present. If not present it will
             fall back to the modelNameDisplay (see above) and if that is not present the model name.</p>
 
+        <p>Sometimes menu options only apply to a subset of records in a collection.  In this case they can be hidden by
+            specifying an <strong>isHidden($index)</strong> function.  For example to hide the option when a field has a
+            certain value:</p>
+
+        <pre><code>$scope.contextMenu = [{
+            text: 'Do something',
+            fn : function() {// some code},
+            isHidden: function() {return $scope.record._id ? $scope.record.field === 'value' : true; },
+            ...
+            }];</code></pre>
+
         <h5 id="postprocessing">Post form-input generation processing</h5>
 
         <p>The form-input directive broadcasts a <strong>formInputDone</strong> message when it has

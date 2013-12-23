@@ -133,7 +133,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li ng-repeat="choice in items">
-                                <a class="dropdown-option" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                                <a class="dropdown-option" ng-hide="isHidden($index)" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
                             </li>
                         </ul>
                     </li>

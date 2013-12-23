@@ -100,5 +100,10 @@ formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '
                     break;
             }
         }
-    }
+    };
+
+    $scope.isHidden = function (index) {
+        return $scope.items[index].isHidden ? $scope.items[index].isHidden() : false;
+    };
+
 }]);
