@@ -3,7 +3,7 @@
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "engines": {
     "node": "0.10.x",
     "npm": "1.x"
