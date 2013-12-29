@@ -201,15 +201,17 @@ describe('formInput', function () {
             scope = $rootScope;
             scope.schema = [
                 {name: "name", id: "1", label: "Name", type: "text"},
+                {name: "nickname", type: "text"},
+                {name: "hairColour", label: null, type: "text"},
                 {name: "eyecolour", id: "2", label: "", type: "text"}
             ];
             $compile(elm)(scope);
             scope.$digest();
         }));
 
-        it('should have 2 inputs', function () {
+        it('should have 3 inputs', function () {
             var input = elm.find('input');
-            expect(input.length).toBe(2);
+            expect(input.length).toBe(4);
             input = elm.find('input:first');
             expect(input).toHaveClass('ng-pristine');
             expect(input).toHaveClass('ng-valid');
@@ -220,11 +222,15 @@ describe('formInput', function () {
             expect(input.attr('type')).toBe('text');
         });
 
-        it('should have 1 label', function () {
+        it('should have 2 label', function () {
             var label = elm.find('label');
-            expect(label.length).toBe(1);
+            expect(label.length).toBe(2);
+            label = elm.find('label:first');
             expect((label).text()).toBe('Name');
             expect(label.attr('for')).toBe('1');
+            label = elm.find('label:last');
+            expect((label).text()).toBe('Nickname');
+            expect(label.attr('for')).toBe('f_nickname');
         });
 
     });

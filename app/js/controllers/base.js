@@ -72,7 +72,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     }
 
     var suffixCleanId = function (inst, suffix) {
-        return inst.id.replace(/\./g, '_') + suffix;
+        return (inst.id || 'f_' + inst.name).replace(/\./g, '_') + suffix;
     };
 
     var handleFieldType = function (formInstructions, mongooseType, mongooseOptions) {
@@ -264,8 +264,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     // TODO: Do this in form
     var basicInstructions = function (field, formData, prefix) {
         formData.name = prefix + field;
-        formData.id = formData.id || 'f_' + prefix + field.replace(/\./g, '_');
-        formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || $filter('titleCase')(field));
+//        formData.id = formData.id || 'f_' + prefix + field.replace(/\./g, '_');
+//        formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || $filter('titleCase')(field));
         return formData;
     };
 

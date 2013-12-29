@@ -1,5 +1,5 @@
 formsAngular
-    .directive('formInput', ['$compile', '$rootScope', 'utils', function ($compile, $rootScope, utils) {
+    .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', function ($compile, $rootScope, utils, $filter) {
         return {
             restrict: 'EA',
             link: function (scope, element, attrs) {
@@ -222,6 +222,10 @@ formsAngular
 
                 var handleField = function (info, options) {
 
+                    info.type = info.type || 'text';
+                    info.id = info.id || 'f_' + info.name.replace(/\./g, '_');
+                    info.label = (info.label !== undefined) ? (info.label === null ? '' : info.label) : $filter('titleCase')(info.name.split('.').slice(-1)[0]);
+
 //                    var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '')
                     var template = '', closeTag = '';
                     if (isHorizontalStyle(options.formstyle)) {
@@ -336,7 +340,7 @@ formsAngular
                         var info = instructionsArray[anInstruction];
                         if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/)) {
                             info.add = (info.add || '');
-                            if (info.add.indexOf('ui-date') == -1) {
+                            if (info.add.indexOf('ui-date') == -1 && !options.noautofocus) {
                                 info.add = info.add + "autofocus ";
                             }
                         }
@@ -427,7 +431,7 @@ formsAngular
                             unwatch();
                             var elementHtml = '';
                             var theRecord = scope[attrs.model || 'record'];      // By default data comes from scope.record
-                            if (attrs.subschema || attrs.model) {
+                            if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                                 elementHtml = '';
                             } else {
                                 scope.topLevelFormName = attrs.name || 'myForm';     // Form name defaults to myForm

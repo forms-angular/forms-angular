@@ -11646,6 +11646,10 @@ i[class^="icon-"] {
   opacity: 0.8;
 }
 
+.schema-page form {
+  margin: 0;
+}
+
 .big-box {
   height: 17em;
   padding: 21px;

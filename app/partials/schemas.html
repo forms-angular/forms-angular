@@ -5,7 +5,7 @@
     </div>
 </div>
 
-<div class="container-fluid" ng-controller="DemoCtrl">
+<div class="container-fluid schema-page" ng-controller="DemoCtrl">
 <div class="row-fluid">
 <div class="span3">
     <affix></affix>
@@ -19,23 +19,73 @@
         takes a <em>schema</em> in the scope and creates inputs. These schemas can be very simple as in the
         example below:</p>
     <pre>
-&lt;div ng-init="name=[
-    {id:'f_surname',label:'Surname',name:'surname',type:'text'},
-    {id:'f_forename',label:'Forename',name:'forename',type:'text'}
-    ]"&gt;
+&lt;div ng-init="name=[{name:'surname'},{name:'forename']"&gt;
     &lt;form-input schema="name" /&gt;
 &lt;div&gt;</pre>
-    <p>This simple bit of markup creates a small schema and stores it in the $scope as <em>name</em> (you
-        wouldn't normally it like this, but it illustrates things well)
-        then in a form invokes the form-input directive, telling it to use the schema just created to create
-        a form with the appropriate input fields.</p>
+    <p>This simple bit of markup creates a small schema and stores it in the scope as <em>name</em> (you
+        wouldn't normally it like this, but it illustrates things well) then invokes the form-input directive,
+        telling it to use the schema just created to create a form with the appropriate input fields.</p>
 
-    <p>Unfortunately displaying the resulting form stops the page scrolling to the internal links, so we have
-        decided to
-        omit it - there are plenty of examples accessible elsewhere on the site.</p>
-    <!--TODO: sort this out or do a plunker or similar-->
+    <div class="well well-small" ng-init="name=[{name:'surname'},{name:'forename'}]">
+        <form-input schema="name" noautofocus="true" />
+        <!--Add a noautofocus here otherwise the resulting form stops the page scrolling to the internal links-->
+    </div>
+    <pre ng-show="record">Record content: {{record}}</pre>
 
     <p>There is more information about the forms-input directive on the <a href="/#/forms">forms page</a>.</p>
+</section>
+<section id="formschema" name="Form Schemas" affix-scroll>
+    <h3>Form Schemas</h3>
+
+    <p>The form-input directive can get a good deal richer than the simple example above.  The following
+        options are available in a form schema element:</p>
+    <ul>
+        <li><strong>type</strong> sets the type of input control generated.  In addition to the
+            <a href="http://www.html5rocks.com/en/tutorials/forms/html5forms/">standard
+            HTML5 types</a> there are some 'special' types:<ul>
+                <li><strong>textarea</strong> a textarea control</li>
+                <li><strong>select</strong> a select control</li>
+            </ul></li>
+        <li><strong>id</strong> specifies the id of the input field (which defaults to f_<em>name</em>)</li>
+        <li><strong>label</strong> specifies the label of the input field (which defaults to <em>name</em> converted to title case)</li>
+        <li><strong>required</strong> validates the field</li>
+        <li><strong>placeHolder</strong> allows placeholder text to be specified</li>
+        <li><strong>help</strong> is for specifying help text</li>
+        <li><strong>helpInline</strong> is for specifying help text which is displayed inline</li>
+        <li><strong>add</strong> allows anything else to be added to the input html.  For example
+            <code>"add": "ui-date ui-date-format "</code> (note the space at the end - add always needs this)
+            brings up the angular-ui date picker.
+        </li>
+        <li><strong>rows</strong> (in conjunction with a textarea type) allows the depth of the control to be
+            specified.  The <strong>auto</strong> option creates a textarea that automatically expands</li>
+        <li><strong>options</strong> (in conjunction with a select type) allows the options for the select to
+        be specified.  You do this by putting the options in an array in the scope and passing the name of the array</li>
+    </ul>
+
+    <h5>Example</h5>
+    <pre>
+&lt;div ng-init="colours=['brown','black','blonde','grey']"&gt;&lt;/div&gt;
+&lt;div ng-init="example2=[
+        {name:'surname',label:'Family Name',required:true},
+        {name:'forename',id:'fnameinput'},
+        {name:'dateOfBirth',type:'date'},
+        {name:'hairColour',type:'select',options:'colours'}]"&gt;
+    &lt;form-input schema="example2" /&gt;
+&lt;div&gt;</pre>
+    <p>which looks like:</p>
+    <div ng-init="colours=['brown','black','blonde','grey']"></div>
+    <div class="well well-small" ng-init="example2=[
+        {name:'surname',label:'Family Name',required:true},
+        {name:'forename',id:'fnameinput'},
+        {name:'dateOfBirth',type:'date'},
+        {name:'hairColour',type:'select',options:'colours'}]">
+        <!--Add a noautofocus & forceform here and modify the model-->
+        <form>
+            <form-input schema="example2" model="exampledata" forceForm="true" noautofocus="true"/>
+        </form>
+    </div>
+    <pre ng-show="exampledata">Record content: {{exampledata}}</pre>
+
 </section>
 
 <section id="mongoose" name="Mongoose Schemas" affix-scroll>

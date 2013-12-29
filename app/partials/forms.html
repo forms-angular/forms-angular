@@ -155,7 +155,12 @@ and handle querying and updating the server</p>
                     </tr>
                 </table>
                 <p>Forms and sub forms that are created by the directive will have these classes added in the appropriate place.</p></li>
+            <li><strong>model</strong> the object in the scope to be bound to the model controller.  Specifying
+            the model inhibits the generation of the <strong>form</strong> tag unless the <strong>forceform</strong> attribute is set to true</li>
             <li><strong>name</strong> the name to be given to the form</li>
+            <li><strong>forceform</strong> can be set to true to force the generation of the <strong>form</strong>
+            attribute under circumstances where it would generally not be generated (generally if a model attribute is used)</li>
+            <li><strong>noautofocus</strong> can be set to true if you don't want the first field to receive focus</li>
 <!--TODO complete this list            -->
         </ul>
     </section>

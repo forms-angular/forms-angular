@@ -30,8 +30,8 @@ describe('Condition display', function() {
 
         it('can hide fields', function () {
             expect(scope.formSchema.length).toBe(2);
-            expect(scope.formSchema[0].label).toBe('Name');
-            expect(scope.formSchema[1].label).toBe('Show Me');
+            expect(scope.formSchema[0].name).toBe('name');
+            expect(scope.formSchema[1].name).toBe('show_me');
         });
     });
 

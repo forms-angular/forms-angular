@@ -70,17 +70,18 @@ describe('"BaseCtrl"', function () {
             expect(scope.formSchema.length).toBe(1);
         });
 
-        describe('generate defaults', function () {
-
-            it('sets up id', function () {
-                expect(scope.formSchema[0].id).toBe('f_name');
-            });
-
-            it('generates a label', function () {
-                expect(scope.formSchema[0].label).toBe('Name');
-            });
-
-        });
+//        describe('generate defaults', function () {
+        // Does this in form now, so you can have simplified formSchema
+//
+//            it('sets up id', function () {
+//                expect(scope.formSchema[0].id).toBe('f_name');
+//            });
+//
+//            it('generates a label', function () {
+//                expect(scope.formSchema[0].label).toBe('Name');
+//            });
+//
+//        });
     });
 
     describe('handles references', function () {
@@ -130,37 +131,38 @@ describe('"BaseCtrl"', function () {
 
     });
 
-    describe('handles null labels', function () {
-
-        var scope, ctrl;
-
-        beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
-            $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
-                {"name": {"instance": "String"}, "noLabel": {"instance": "String", "options": {"form": {"label": null}}}}
-            );
-            scope = $rootScope.$new();
-            $location.$$path = '/collection/new';
-            ctrl = $controller("BaseCtrl", {$scope: scope});
-            $httpBackend.flush();
-        }));
-
-        it('creates a schema element', function () {
-            expect(scope.formSchema.length).toBe(2);
-        });
-
-        describe('generate defaults', function () {
-
-            it('sets up id', function () {
-                expect(scope.formSchema[1].id).toBe('f_noLabel');
-            });
-
-            it('generates an empty label', function () {
-                expect(scope.formSchema[1].label).toBe('');
-            });
-
-        });
-    });
+// Now handled by the form
+//    describe('handles null labels', function () {
+//
+//        var scope, ctrl;
+//
+//        beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
+//            $httpBackend = _$httpBackend_;
+//            $httpBackend.whenGET('api/schema/collection').respond(
+//                {"name": {"instance": "String"}, "noLabel": {"instance": "String", "options": {"form": {"label": null}}}}
+//            );
+//            scope = $rootScope.$new();
+//            $location.$$path = '/collection/new';
+//            ctrl = $controller("BaseCtrl", {$scope: scope});
+//            $httpBackend.flush();
+//        }));
+//
+//        it('creates a schema element', function () {
+//            expect(scope.formSchema.length).toBe(2);
+//        });
+//
+//        describe('generate defaults', function () {
+//
+//            it('sets up id', function () {
+//                expect(scope.formSchema[1].id).toBe('f_noLabel');
+//            });
+//
+//            it('generates an empty label', function () {
+//                expect(scope.formSchema[1].label).toBe('');
+//            });
+//
+//        });
+//    });
 
     describe('handles required fields', function () {
 
