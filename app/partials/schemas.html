@@ -274,6 +274,9 @@ howManyPerDay: {type: Number, form:{showIf:{lhs:"$smoker", comp:"eq", rhs:true}}
     <p>Where container type is seen as a class for a div and a titleTagOrClass of h1..h6 is interpreted as a
         heading tag and anything else as a class to be applied to a paragraph (as in the example).  If a title is
         specified without a corresponding titleTagOrClass then &lt;h4&gt; is used as a default.</p>
+
+    <p>If you need even more flexibility then you can create a function that returns an object of the form
+    {before: <em>markup before container contents</em>, after:<em>markup after container contents</em>}.</p>
 </section>
 
 <section id="custom" name="Custom Schemas" affix-scroll>

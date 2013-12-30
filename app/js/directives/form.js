@@ -142,67 +142,59 @@ formsAngular
 
                 var containerInstructions = function (info) {
                     var result = {before: '', after: ''};
-                    switch (info.containerType) {
-                        case 'tab' :
-                            result.before = '<tab heading="' + info.title + '">';
-                            result.after = '</tab>';
-                            break;
-                        case 'tabset' :
-                            result.before = '<tabset>';
-                            result.after = '</tabset>';
-                            break;
-                        case 'well' :
-                            result.before = '<div class="well">';
-                            if (info.title) {
-                                result.before += '<h4>' + info.title + '</h4>';
-                            }
-                            result.after = '</div>';
-                            break;
-                        case 'well-large' :
-                            result.before = '<div class="well well-large">';
-                            result.after = '</div>';
-                            break;
-                        case 'well-small' :
-                            result.before = '<div class="well well-small">';
-                            result.after = '</div>';
-                            break;
-                        case 'fieldset' :
-                            result.before = '<fieldset>';
-                            if (info.title) {
-                                result.before += '<legend>' + info.title + '</legend>';
-                            }
-                            result.after = '</fieldset>';
-                            break;
-//  Don't understand this seems to be introducing generic container as containerType?  Removing for now
-//                        case 'container' :
-//                            result.before = '<fieldset>';
-//                            if (info.title) {
-//                                result.before += '<a ng-click="toggleFolder(\''+ info.id +'\')" class="container-header"><i class="icon-folder-open ' + info.id + '"></i>';
-//                                result.before +=  info.title ;
-//                                result.before += '</a><i class="icon-plus-sign"></i>';
-//
-//                            }
-//                            processInstructions(info.content, null, info.id);
-//                            result.after = '</fieldset>';
-//                            break;
-                        case undefined:
-                            break;
-                        case null:
-                            break;
-                        case '':
-                            break;
-                        default:
-                            result.before = '<div class="' + info.containerType + '">';
-                            if (info.title) {
-                                var titleLook = info.titleTagOrClass || "h4";
-                                if (titleLook.match(/h[1-6]/)) {
-                                    result.before += '<' + titleLook + '>' + info.title + '</' + info.titleLook + '>';
-                                } else {
-                                    result.before += '<p class="' + titleLook + '">' + info.title + '</p>'
+                    if (typeof info.containerType === 'function') {
+                        result = info.containerType(info);
+                    } else {
+                        switch (info.containerType) {
+                            case 'tab' :
+                                result.before = '<tab heading="' + info.title + '">';
+                                result.after = '</tab>';
+                                break;
+                            case 'tabset' :
+                                result.before = '<tabset>';
+                                result.after = '</tabset>';
+                                break;
+                            case 'well' :
+                                result.before = '<div class="well">';
+                                if (info.title) {
+                                    result.before += '<h4>' + info.title + '</h4>';
                                 }
-                            }
-                            result.after = '</div>';
-                            break;
+                                result.after = '</div>';
+                                break;
+                            case 'well-large' :
+                                result.before = '<div class="well well-large">';
+                                result.after = '</div>';
+                                break;
+                            case 'well-small' :
+                                result.before = '<div class="well well-small">';
+                                result.after = '</div>';
+                                break;
+                            case 'fieldset' :
+                                result.before = '<fieldset>';
+                                if (info.title) {
+                                    result.before += '<legend>' + info.title + '</legend>';
+                                }
+                                result.after = '</fieldset>';
+                                break;
+                            case undefined:
+                                break;
+                            case null:
+                                break;
+                            case '':
+                                break;
+                            default:
+                                result.before = '<div class="' + info.containerType + '">';
+                                if (info.title) {
+                                    var titleLook = info.titleTagOrClass || "h4";
+                                    if (titleLook.match(/h[1-6]/)) {
+                                        result.before += '<' + titleLook + '>' + info.title + '</' + info.titleLook + '>';
+                                    } else {
+                                        result.before += '<p class="' + titleLook + '">' + info.title + '</p>'
+                                    }
+                                }
+                                result.after = '</div>';
+                                break;
+                        }
                     }
                     return result;
                 };
@@ -391,12 +383,6 @@ formsAngular
                                     result += processInstructions(info.content, null, options);
                                     result += parts.after;
                                     break;
-//  Don't understand this seems to be introducing generic container as containerType?  Removing for now
-//                                case 'container' :
-//                                    result += parts.before;
-//                                    processInstructions(info.content, null, info.id);
-//                                    result += parts.after;
-//                                    break;
                                 default:
                                     // includes wells, fieldset
                                     result += parts.before;
