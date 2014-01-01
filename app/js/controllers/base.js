@@ -351,7 +351,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 //    Conditionals
 //    $scope.dataDependencies is of the form {fieldName1: [fieldId1, fieldId2], fieldName2:[fieldId2]}
 
-    var handleConditionals = function (condInst, id) {
+    var handleConditionals = function (condInst, name) {
 
         var dependency = 0;
 
@@ -359,7 +359,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (typeof theVar === "string" && theVar.slice(0, 1) === '$') {
                 var fieldName = theVar.slice(1);
                 var fieldDependencies = $scope.dataDependencies[fieldName] || [];
-                fieldDependencies.push(id);
+                fieldDependencies.push(name);
                 $scope.dataDependencies[fieldName] = fieldDependencies;
                 dependency += 1;
             }
@@ -408,10 +408,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     if (force || !oldValue || curValue[field] != oldValue[field]) {
                         depends = $scope.dataDependencies[field];
                         for (i = 0; i < depends.length; i += 1) {
-                            id = depends[i];
+                            name = depends[i];
                             for (j = 0; j < $scope.formSchema.length; j += 1) {
-                                if ($scope.formSchema[j].id === id) {
-                                    element = angular.element('#cg_' + id);
+                                if ($scope.formSchema[j].name === name) {
+                                    element = angular.element('#cg_' + $scope.formSchema[j].id);
                                     if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
                                         element.show();
                                     } else {
@@ -429,14 +429,14 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             if (force || !oldValue || !oldValue[parts[0]] || !oldValue[parts[0]][k] || curValue[parts[0]][k][parts[1]] != oldValue[parts[0]][k][parts[1]]) {
                                 depends = $scope.dataDependencies[field];
                                 for (i = 0; i < depends.length; i += 1) {
-                                    var idParts = depends[i].split('.');
-                                    if (idParts.length !== 2) throw new Error("Conditional display must control dependent fields at same level ");
+                                    var nameParts = depends[i].split('.');
+                                    if (nameParts.length !== 2) throw new Error("Conditional display must control dependent fields at same level ");
                                     for (j = 0; j < $scope.formSchema.length; j += 1) {
-                                        if ($scope.formSchema[j].id === idParts[0]) {
+                                        if ($scope.formSchema[j].name === nameParts[0]) {
                                             var subSchema = $scope.formSchema[j].schema;
                                             for (var l = 0; l < subSchema.length; l++) {
-                                                if (subSchema[l].id === depends[i]) {
-                                                    element = angular.element('#'+idParts[0]+'List_'+k+' #cg_' + depends[i].replace('.', '-'));
+                                                if (subSchema[l].name === depends[i]) {
+                                                    element = angular.element('#f_'+nameParts[0]+'List_'+k+' #cg_f_' + depends[i].replace('.', '-'));
                                                     if (element.length > 0) {
                                                         forceNextTime = false;  // Because the sub schema has been rendered we don't need to do this again until the record changes
                                                         if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
@@ -506,7 +506,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     } else {
                         if (destForm) {
                             var formInstructions = basicInstructions(field, formData, prefix);
-                            if (handleConditionals(formInstructions.showIf, formInstructions.id) && field !== 'options') {
+                            if (handleConditionals(formInstructions.showIf, formInstructions.name) && field !== 'options') {
                                 var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
                                 if (formInst.tab) handletabInfo(formInst.tab, formInst);
                                 if (formData.order !== undefined) {
