@@ -9,5 +9,10 @@ describe('Conditionals', function() {
         expect( element('#cg_f_startingPosition:visible').count() ).toBe(1);
     });
 
+    it('should not show hidden fields in sub schemas', function () {
+        browser().navigateTo('/#/f_nested_schema/51c583d5b5c51226db418f17/edit');
+        expect( element('.hasDatepicker:visible').count() ).toBe(4);
+    });
+
 });
 

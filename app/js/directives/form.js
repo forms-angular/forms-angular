@@ -482,7 +482,7 @@ formsAngular
 
                             $rootScope.$broadcast('formInputDone');
 
-                            if (scope.updateDataDependentDisplay) {
+                            if (scope.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
                                 // If this is not a test force the data dependent updates to the DOM
                                 scope.updateDataDependentDisplay(theRecord, null, true);
                             }

@@ -399,6 +399,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.updateDataDependentDisplay = function (curValue, oldValue, force) {
         var depends, i, j, k, id, element;
 
+        var forceNextTime;
         for (var field in $scope.dataDependencies) {
             if ($scope.dataDependencies.hasOwnProperty(field)) {
                 var parts = field.split('.');
@@ -421,6 +422,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         }
                     }
                 } else if (parts.length === 2) {
+                    if (forceNextTime === undefined) {forceNextTime = true}
                     if (curValue[parts[0]]) {
                         for (k = 0; k < curValue[parts[0]].length; k++) {
                             // We want to carry on if this is new array element or it is changed
@@ -434,11 +436,14 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                             var subSchema = $scope.formSchema[j].schema;
                                             for (var l = 0; l < subSchema.length; l++) {
                                                 if (subSchema[l].id === depends[i]) {
-                                                    element = angular.element('#cg_' + depends[i].replace('.', '-' + k + '-'));
-                                                    if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
-                                                        element.show();
-                                                    } else {
-                                                        element.hide();
+                                                    element = angular.element('#'+idParts[0]+'List_'+k+' #cg_' + depends[i].replace('.', '-'));
+                                                    if (element.length > 0) {
+                                                        forceNextTime = false;  // Because the sub schema has been rendered we don't need to do this again until the record changes
+                                                        if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
+                                                            element.show();
+                                                        } else {
+                                                            element.hide();
+                                                        }
                                                     }
                                                 }
                                             }
@@ -454,6 +459,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 }
             }
         }
+        return forceNextTime;
     };
 
     var handleSchema = function (description, source, destForm, destList, prefix, doRecursion) {
@@ -594,8 +600,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
             allowLocationChange = true;
         } else {
+            var force = true;
             $scope.$watch('record', function (newValue, oldValue) {
-                $scope.updateDataDependentDisplay(newValue, oldValue)
+                if (newValue !== oldValue) {
+                    force = $scope.updateDataDependentDisplay(newValue, oldValue, force);
+                }
             }, true);
 
             if ($scope.id) {
