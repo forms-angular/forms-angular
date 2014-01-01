@@ -436,7 +436,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                             var subSchema = $scope.formSchema[j].schema;
                                             for (var l = 0; l < subSchema.length; l++) {
                                                 if (subSchema[l].name === depends[i]) {
-                                                    element = angular.element('#f_'+nameParts[0]+'List_'+k+' #cg_f_' + depends[i].replace('.', '-'));
+                                                    element = angular.element('#f_'+nameParts[0]+'List_'+k+' #cg_f_' + depends[i].replace('.', '_'));
                                                     if (element.length > 0) {
                                                         forceNextTime = false;  // Because the sub schema has been rendered we don't need to do this again until the record changes
                                                         if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
@@ -506,7 +506,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     } else {
                         if (destForm) {
                             var formInstructions = basicInstructions(field, formData, prefix);
-                            if (handleConditionals(formInstructions.showIf, formInstructions.id) && field !== 'options') {
+                            if (handleConditionals(formInstructions.showIf, formInstructions.name) && field !== 'options') {
                                 var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
                                 if (formInst.tab) handletabInfo(formInst.tab, formInst);
                                 if (formData.order !== undefined) {

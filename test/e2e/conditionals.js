@@ -1,6 +1,6 @@
 'use strict';
 
-ddescribe('Conditionals', function() {
+describe('Conditionals', function() {
 
     it('should not show hidden fields', function () {
         browser().navigateTo('/#/g_conditional_fields/51c583d5b9991226db418f00/edit');
