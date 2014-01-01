@@ -328,86 +328,92 @@ formsAngular
 //  removing groupId as it was only used when called by containerType container, which is removed for now
                 var processInstructions = function (instructionsArray, topLevel, options) {
                     var result = '';
-                    for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
-                        var info = instructionsArray[anInstruction];
-                        if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/)) {
-                            info.add = (info.add || '');
-                            if (info.add.indexOf('ui-date') == -1 && !options.noautofocus) {
-                                info.add = info.add + "autofocus ";
-                            }
-                        }
-                        var callHandleField = true;
-                        if (info.directive) {
-                            var directiveName = info.directive;
-                            var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
-                            var thisElement = element[0];
-                            for (var i = 0; i < thisElement.attributes.length; i++) {
-                                var thisAttr = thisElement.attributes[i];
-                                switch (thisAttr.nodeName) {
-                                    case 'class' :
-                                        var classes = thisAttr.nodeValue.replace('ng-scope', '');
-                                        if (classes.length > 0) {
-                                            newElement += ' class="' + classes + '"';
-                                        }
-                                        break;
-                                    case 'schema' :
-                                        var bespokeSchemaDefName = ('bespoke_' + info.name).replace(/\./g, '_');
-                                        scope[bespokeSchemaDefName] = angular.copy(info);
-                                        delete scope[bespokeSchemaDefName].directive;
-                                        newElement += ' schema="' + bespokeSchemaDefName + '"';
-                                        break;
-                                    default :
-                                        newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.nodeValue + '"';
+                    if (instructionsArray) {
+                        for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
+                            var info = instructionsArray[anInstruction];
+                            if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/)) {
+                                info.add = (info.add || '');
+                                if (info.add.indexOf('ui-date') == -1 && !options.noautofocus && !info.containerType) {
+                                    info.add = info.add + "autofocus ";
                                 }
                             }
-                            newElement += '></' + directiveName + '>';
-                            result += newElement;
-                            callHandleField = false;
-                        } else if (info.containerType) {
-                            var parts = containerInstructions(info);
-                            switch (info.containerType) {
-                                case 'tab' :
-                                    // maintain support for simplified tabset syntax for now
-                                    if (!tabsSetup) {
-                                        tabsSetup = 'forced';
-                                        result += '<tabset>';
+                            var callHandleField = true;
+                            if (info.directive) {
+                                var directiveName = info.directive;
+                                var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
+                                var thisElement = element[0];
+                                for (var i = 0; i < thisElement.attributes.length; i++) {
+                                    var thisAttr = thisElement.attributes[i];
+                                    switch (thisAttr.nodeName) {
+                                        case 'class' :
+                                            var classes = thisAttr.nodeValue.replace('ng-scope', '');
+                                            if (classes.length > 0) {
+                                                newElement += ' class="' + classes + '"';
+                                            }
+                                            break;
+                                        case 'schema' :
+                                            var bespokeSchemaDefName = ('bespoke_' + info.name).replace(/\./g, '_');
+                                            scope[bespokeSchemaDefName] = angular.copy(info);
+                                            delete scope[bespokeSchemaDefName].directive;
+                                            newElement += ' schema="' + bespokeSchemaDefName + '"';
+                                            break;
+                                        default :
+                                            newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.nodeValue + '"';
                                     }
-
-                                    result += parts.before;
-                                    result += processInstructions(info.content, null, options);
-                                    result += parts.after;
-                                    break;
-                                case 'tabset' :
-                                    tabsSetup = true;
-                                    result += parts.before;
-                                    result += processInstructions(info.content, null, options);
-                                    result += parts.after;
-                                    break;
-                                default:
-                                    // includes wells, fieldset
-                                    result += parts.before;
-                                    result += processInstructions(info.content, null, options);
-                                    result += parts.after;
-                                    break;
-                            }
-                            callHandleField = false;
-                        } else if (options.subkey) {
-                            // Don't display fields that form part of the subkey, as they should not be edited (because in these circumstances they form some kind of key)
-                            var objectToSearch = angular.isArray(scope[options.subkey]) ? scope[options.subkey][0].keyList : scope[options.subkey].keyList;
-                            if (_.find(objectToSearch, function (value, key) {
-                                return scope[options.subkey].path + '.' + key === info.name
-                            })) {
+                                }
+                                newElement += '></' + directiveName + '>';
+                                result += newElement;
                                 callHandleField = false;
+                            } else if (info.containerType) {
+                                var parts = containerInstructions(info);
+                                switch (info.containerType) {
+                                    case 'tab' :
+                                        // maintain support for simplified tabset syntax for now
+                                        if (!tabsSetup) {
+                                            tabsSetup = 'forced';
+                                            result += '<tabset>';
+                                        }
+
+                                        result += parts.before;
+                                        result += processInstructions(info.content, null, options);
+                                        result += parts.after;
+                                        break;
+                                    case 'tabset' :
+                                        tabsSetup = true;
+                                        result += parts.before;
+                                        result += processInstructions(info.content, null, options);
+                                        result += parts.after;
+                                        break;
+                                    default:
+                                        // includes wells, fieldset
+                                        result += parts.before;
+                                        result += processInstructions(info.content, null, options);
+                                        result += parts.after;
+                                        break;
+                                }
+                                callHandleField = false;
+                            } else if (options.subkey) {
+                                // Don't display fields that form part of the subkey, as they should not be edited (because in these circumstances they form some kind of key)
+                                var objectToSearch = angular.isArray(scope[options.subkey]) ? scope[options.subkey][0].keyList : scope[options.subkey].keyList;
+                                if (_.find(objectToSearch, function (value, key) {
+                                    return scope[options.subkey].path + '.' + key === info.name
+                                })) {
+                                    callHandleField = false;
+                                }
+                            }
+                            if (callHandleField) {
+    //                            if (groupId) {
+    //                                scope['showHide' + groupId] = true;
+    //                            }
+                                result += handleField(info, options);
                             }
                         }
-                        if (callHandleField) {
-//                            if (groupId) {
-//                                scope['showHide' + groupId] = true;
-//                            }
-                            result += handleField(info, options);
-                        }
+                    } else {
+                        console.log('Empty array passed to processInstructions')
+                        result = '';
                     }
                     return result;
+
                 };
 
                 var unwatch = scope.$watch(attrs.schema, function (newValue) {
