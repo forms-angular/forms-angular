@@ -51,6 +51,7 @@
         login: "AlanJ",
         passwordHash: "sha1$22b5fc3b$1$60a33af349b5a95cc0ab3f29b4c95a819d944e75",
         accepted: true,
+        freeText: "Here is some tex blah blah",
         interviewScore: 93
     }
 
