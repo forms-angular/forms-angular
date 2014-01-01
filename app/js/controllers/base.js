@@ -412,9 +412,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                 if ($scope.formSchema[j].id === id) {
                                     element = angular.element('#cg_' + id);
                                     if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
-                                        element.show();
+                                        element.removeClass('ng-hide');
                                     } else {
-                                        element.hide();
+                                        element.addClass('ng-hide');
                                     }
                                 }
                             }
@@ -436,9 +436,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                                 if (subSchema[l].id === depends[i]) {
                                                     element = angular.element('#cg_' + depends[i].replace('.', '-' + k + '-'));
                                                     if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
-                                                        element.show();
+                                                        element.removeClass('ng-hide');
                                                     } else {
-                                                        element.hide();
+                                                        element.addClass('ng-hide');
                                                     }
                                                 }
                                             }
@@ -500,7 +500,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     } else {
                         if (destForm) {
                             var formInstructions = basicInstructions(field, formData, prefix);
-                            if (handleConditionals(formInstructions.showIf, formInstructions.id) && field !== 'options') {
+                            if (handleConditionals(formInstructions.showIf, formInstructions.id || 'f_' + formInstructions.name.replace(/\./g, '_')) && field !== 'options') {
                                 var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
                                 if (formInst.tab) handletabInfo(formInst.tab, formInst);
                                 if (formData.order !== undefined) {
