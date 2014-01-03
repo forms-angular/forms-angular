@@ -437,8 +437,13 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                             for (var l = 0; l < subSchema.length; l++) {
                                                 if (subSchema[l].name === depends[i]) {
                                                     element = angular.element('#f_'+nameParts[0]+'List_'+k+' #cg_f_' + depends[i].replace('.', '_'));
-                                                    if (element.length > 0) {
+                                                    if (element.length === 0) {
+                                                        // Bit of a hack for Plait structures
+                                                        element = angular.element('#f_elements-' + curValue[parts[0]][k].elementNo + '-' + nameParts[1]);
+                                                    } else {
                                                         forceNextTime = false;  // Because the sub schema has been rendered we don't need to do this again until the record changes
+                                                    }
+                                                    if (element.length > 0) {
                                                         if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
                                                             element.show();
                                                         } else {
