@@ -273,7 +273,7 @@ formsAngular
 
                                 if (!info.noRemove || info.customSubDoc) {
                                     template +=     '   <div class="pull-left sub-doc-btns">';
-                                    if (info.customFooter) {
+                                    if (info.customSubDoc) {
                                         template += info.customSubDoc;
                                     }
                                     if (!info.noRemove) {
