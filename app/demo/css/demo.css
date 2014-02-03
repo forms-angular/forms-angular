@@ -9288,7 +9288,8 @@ form .schema-head {
 }
 
 form .sub-doc {
-  padding: 5px 0;
+  width: 97%;
+  padding: 0 5px 0 0;
   margin-bottom: 3px;
 }
 
