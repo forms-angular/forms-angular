@@ -239,7 +239,7 @@ formsAngular
                         }
                     }
                     if (includeIndex) {
-                        template += ' id="cg_' + info.id.replace('.', '-' + attrs.index + '-') + '">';
+                        template += ' id="cg_' + info.id.replace('_', '-' + attrs.index + '-') + '">';
                     } else {
                         template += ' id="cg_' + info.id.replace(/\./g,'-') + '">';
                     }
@@ -268,7 +268,7 @@ formsAngular
                                                     '</div>' +
                                                     '<div ng-form class="row-fluid ' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
                                                     '   <div class="row-fluid sub-doc">' +
-                                                    '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle}) +
+                                                    '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model}) +
                                                     '      </div>';
 
                                 if (!info.noRemove || info.customSubDoc) {
