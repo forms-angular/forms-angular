@@ -41,6 +41,18 @@ GSchema.statics.report = function(report) {
                 "columnDefs":[{"field":'surname',"displayName":'Surname',"width":"200", totalsRow:'Total'},{"field":'forename',"displayName":'Forename',"width":200},{"field":"bribeAmount","displayName":"Bribe","align":"right", "width":"200", totalsRow:'$SUM', "cellFilter":"currency"}]
             };
             break;
+        case 'functiondemo' :
+            reportSchema = {
+                "pipeline":[{"$group":{"_id":"$sex","count":{"$sum":1},"functionResult":{"$sum":1}}}],
+                "title":"Numbers of Applicants By Sex",
+                "columnDefs":[{"field":'_id',"displayName":'Sex',"width":"200"},{"field":'count',"displayName":'No of Applicants',"align":"right", "width":"200"}, {"field":'functionResult',"displayName":'Applicants + 10',"align":"right", "width":"200"}],
+                "columnTranslations": [{"field":'_id',"translations":[{"value":'M', "display":'Male'},{"value":'F',"display":'Female'}]}, {field:'functionResult',
+                fn: function(row,cb) {
+                    row.functionResult = row.functionResult + 10;
+                    cb();
+                }}]
+            };
+            break;
         case 'selectbynumber' :
             reportSchema = {
                 "pipeline":[

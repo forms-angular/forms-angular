@@ -549,55 +549,91 @@ DataForm.prototype.report = function () {
                 }
                 };
 
+                var translations = [];  // array of form {ref:'lookupname',translations:[{value:xx, display:'  '}]}
                 // if we need to do any column translations add the function to the tasks list
                 if (reportSchema.columnTranslations) {
                     toDo.apply_translations = ['runAggregation', function (cb, results) {
-                        reportSchema.columnTranslations.forEach(function (columnTranslation) {
+
+                        function doATranslate(column, theTranslation) {
                             results.runAggregation.forEach(function (resultRow) {
-                                var thisTranslation = _.find(columnTranslation.translations, function (option) {
-                                    return resultRow[columnTranslation.field].toString() === option.value.toString()
+                                var thisTranslation = _.find(theTranslation.translations, function (option) {
+                                    return resultRow[column.field].toString() === option.value.toString()
                                 });
-                                resultRow[columnTranslation.field] = thisTranslation.display;
+                                resultRow[column.field] = thisTranslation.display;
                             })
+                        }
+
+                        reportSchema.columnTranslations.forEach(function (columnTranslation) {
+                            if (columnTranslation.translations) {
+                                doATranslate(columnTranslation, columnTranslation);
+                            }
+                            if (columnTranslation.ref) {
+                                var theTranslation = _.find(translations, function(translation){
+                                    return (translation.ref === columnTranslation.ref)
+                                });
+                                doATranslate(columnTranslation, theTranslation);
+                            }
                         });
                         cb(null, null);
                     }];
 
-                    // if any of the column translations are refs, set up the tasks to look up the values and populate the translations
+                    var callFuncs = false;
                     for (var i = 0; i < reportSchema.columnTranslations.length; i++) {
-                        var thisColumnTranslation = reportSchema.columnTranslations[i]
-                            , translateName = thisColumnTranslation.field;
-                        if (translateName) {
+                        var thisColumnTranslation = reportSchema.columnTranslations[i];
+
+                        if (thisColumnTranslation.field) {
+                            // if any of the column translations are adhoc funcs, set up the tasks to perform them
+                            if (thisColumnTranslation.fn) callFuncs = true;
+
+                            // if this column translation is a "ref", set up the tasks to look up the values and populate the translations
                             if (thisColumnTranslation.ref) {
                                 var lookup = self.getResource(thisColumnTranslation.ref);
                                 if (lookup) {
-                                    if (toDo[translateName]) {
-                                        return self.renderError(new Error("Cannot have two columnTranslations for field " + translateName), null, req, res, next);
-                                    } else {
-                                        thisColumnTranslation.translations = thisColumnTranslation.translations || [];
-                                        toDo[translateName] = function (cb) {
+                                    if (!toDo[thisColumnTranslation.ref]) {
+                                        toDo[thisColumnTranslation.ref] = function (cb) {
+                                            var translateObject = {ref:lookup.resource_name, translations: [] };
+                                            translations.push(translateObject);
                                             lookup.model.find({}, {}, {lean: true}, function (err, findResults) {
                                                 if (err) {
+                                                    console.log('@Here',err)
                                                     cb(err);
                                                 } else {
                                                     for (var j = 0; j < findResults.length; j++) {
-                                                        thisColumnTranslation.translations[j] = {value: findResults[j]._id, display: self.getListFields(lookup, findResults[j])};
+                                                        translateObject.translations[j] = {value: findResults[j]._id, display: self.getListFields(lookup, findResults[j])};
                                                     }
                                                     cb(null, null);
                                                 }
                                             })
                                         };
-                                        toDo.apply_translations.unshift(translateName);  // Make sure we populate lookup before doing translation
+                                        toDo.apply_translations.unshift(thisColumnTranslation.ref);  // Make sure we populate lookup before doing translation
                                     }
                                 } else {
-                                    return self.renderError(new Error("Invalid ref property of " + thisColumnTranslation.ref + " in columnTranslations " + translateName), null, req, res, next);
+                                    return self.renderError(new Error("Invalid ref property of " + thisColumnTranslation.ref + " in columnTranslations " + thisColumnTranslation.field), null, req, res, next);
                                 }
-                            } else if (!thisColumnTranslation.translations) {
-                                return self.renderError(new Error("A column translation needs a ref or a translations property - " + translateName + " has neither"), null, req, res, next);
+                            }
+                            if (!thisColumnTranslation.translations && !thisColumnTranslation.ref && !thisColumnTranslation.fn) {
+                                return self.renderError(new Error("A column translation needs a ref, fn or a translations property - " + translateName + " has neither"), null, req, res, next);
                             }
                         } else {
                             return self.renderError(new Error("A column translation needs a field property"), null, req, res, next);
                         }
+                    }
+                    if (callFuncs) {
+                        toDo['callFunctions'] = ['runAggregation', function(cb,results) {
+                            async.each(results.runAggregation, function(row, cb) {
+                                for (var i = 0; i < reportSchema.columnTranslations.length; i++) {
+                                    var thisColumnTranslation = reportSchema.columnTranslations[i]
+                                        , translateName = thisColumnTranslation.field;
+
+                                    if (thisColumnTranslation.fn) {
+                                        thisColumnTranslation.fn(row, cb);
+                                    }
+                                }
+                            }, function(err) {
+                                cb(null)
+                            });
+                        }];
+                        toDo.apply_translations.unshift('callFunctions');  // Make sure we do function before translating its result
                     }
                 }
 
