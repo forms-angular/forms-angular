@@ -32,13 +32,14 @@ function ngGridPdfExportPlugin (options) {
         var headers = [],
             data = [],
             footers = {},
-            gridWidth = self.scope.totalRowWidth();
+            gridWidth = self.scope.totalRowWidth(),
+            margin = 40;  // mm defined as unit when setting up jsPDF
 
         angular.forEach(self.scope.columns, function (col) {
-            if (col.visible) {
+            if (col.visible && (!col.width || col.width > 0)) {
                 headers.push({name: col.field, prompt:col.displayName, width: col.width * (185 / gridWidth), align: (col.colDef.align || 'left')});
                 if (col.colDef.totalsRow) {
-                    footers[col.field] = self.scope.getTotalVal(col.field, col.filter);
+                    footers[col.field] = self.scope.getTotalVal(col.field, col.filter).toString();
                 }
             }
         });
@@ -47,9 +48,10 @@ function ngGridPdfExportPlugin (options) {
             data.push(angular.copy(row.entity));
         });
 
-        var doc = new jsPDF();
+        var doc = new jsPDF('landscape','pt','a4');
         doc.cellInitialize();
-        doc.table(data, headers, footers, {printHeaders: true, autoSize: false, autoStretch: false});
+        doc.table(margin, margin, data, headers, footers, {printHeaders: true, autoSize: true, margins: {left:margin,top:margin,bottom:margin,width:doc.internal.pageSize - margin}});
+//        doc.table(data, headers, footers, {printHeaders: true, autoSize: false, autoStretch: false});
         doc.output('dataurlnewwindow');
     };
 }

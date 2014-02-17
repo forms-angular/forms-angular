@@ -504,18 +504,22 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
                     }
                 }
             }
-            runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function (match) {
-                param = schema.params[match.slice(2, -2)];
-                if (param.type === 'number') {
-                    return param.value;
-                } else if (_.isObject(param.value)) {
-                    return JSON.stringify(param.value);
-                } else if (param.value[0] === '{') {
-                    return param.value;
-                } else {
-                    return '"' + param.value + '"';
-                }
-            });
+
+            // Replace parameters with the value
+            if (runPipeline) {
+                runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function (match) {
+                    param = schema.params[match.slice(2, -2)];
+                    if (param.type === 'number') {
+                        return param.value;
+                    } else if (_.isObject(param.value)) {
+                        return JSON.stringify(param.value);
+                    } else if (param.value[0] === '{') {
+                        return param.value;
+                    } else {
+                        return '"' + param.value + '"';
+                    }
+                });
+            };
 
             // Don't send the 'secure' fields
             for (var hiddenField in self.generateHiddenFields(resource, false)) {
