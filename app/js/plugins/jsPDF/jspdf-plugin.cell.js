@@ -269,14 +269,15 @@
             headerNames = this.getKeys(data[0]);
 
         } else if (headers[0] && (typeof headers[0] !== 'string')) {
-            var px2pt = 0.264583 * 72 / 25.4;
+//            var px2pt = 0.264583 * 72 / 25.4;
+            var constant = 1.5; // arrived at by trial and error
 
             // Split header configs into names and prompts
             for (i = 0, ln = headers.length; i < ln; i += 1) {
                 header = headers[i];
                 headerNames.push(header.name);
                 headerPrompts.push(header.prompt);
-                columnWidths[header.name] = header.width *px2pt;
+                columnWidths[header.name] = header.width * constant;
                 columnAligns[header.name] = header.align;
             }
 
