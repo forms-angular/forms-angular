@@ -49,8 +49,13 @@ function ngGridPdfExportPlugin (options) {
         });
 
         var doc = new jsPDF('landscape','mm','a4');
+        doc.setFontStyle('bold');
+        doc.setFontSize(24);
+        doc.text(self.scope.reportSchema.title,margin,margin);
+        doc.setFontStyle('normal');
+        doc.setFontSize(12);
         doc.cellInitialize();
-        doc.table(margin, margin, data, headers, footers, {printHeaders: true, autoSize: false, margins: {left:margin,top:margin,bottom:margin,width:doc.internal.pageSize - margin}});
+        doc.table(margin, 24, data, {headers:headers, footers:footers, printHeaders: true, autoSize: false, margins: {left:margin,top:margin,bottom:margin,width:doc.internal.pageSize - margin}});
         doc.output('dataurlnewwindow');
     };
 }
