@@ -7,12 +7,7 @@ describe('formInput', function () {
     describe('simple text input', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
-            // TODO: All these tests only work OK when they have the explicit form in the angular element.  The real code doesn't need this so need to figure out how to remove them.
-            elm = angular.element('<form name="myForm2" class="form-horizontal compact"> ' +
-                '<form-input formStyle="horizontalCompact" schema="formSchema"></form-input>' +
-                '</form>'
-            );
-
+            elm = angular.element('<div><form-input formStyle="horizontalCompact" schema="formSchema"></form-input></div>');
             scope = $rootScope;
             scope.formSchema = {name: "desc", id: "desc_id", label: "Description", type: "text"};
             $compile(elm)(scope);
@@ -44,11 +39,7 @@ describe('formInput', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
 
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input schema="formSchema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="formSchema"></form-input></div>');
             scope = $rootScope;
             scope.formSchema = [
                 {name: "name", id: "1", label: "Name", type: "text"},
@@ -90,11 +81,7 @@ describe('formInput', function () {
 
         describe('default behaviour', function() {
             beforeEach(inject(function ($rootScope, $compile) {
-                elm = angular.element(
-                    '<form name="myForm" class="form-horizontal compact"> ' +
-                        '<form-input schema="formSchema"></form-input>' +
-                        '</form>');
-
+                elm = angular.element('<div><form-input schema="formSchema"></form-input></div>');
                 scope = $rootScope;
                 scope.formSchema = [
                     {"name":"surname","id":"f_surname","label":"Surname","type":"text"},
@@ -140,11 +127,7 @@ describe('formInput', function () {
 
         describe('Inhibit add and remove', function() {
             beforeEach(inject(function ($rootScope, $compile) {
-                elm = angular.element(
-                    '<form name="myForm" class="form-horizontal compact"> ' +
-                        '<form-input schema="formSchema"></form-input>' +
-                        '</form>');
-
+                elm = angular.element('<div><form-input schema="formSchema"></form-input></div>');
                 scope = $rootScope;
                 scope.formSchema = [
                     {"name":"surname","id":"f_surname","label":"Surname","type":"text"},
@@ -154,7 +137,6 @@ describe('formInput', function () {
                         {"name":"exams.score","id":"f_exams.score","label":"Score","type":"number"}
                     ]}
                 ];
-
                 scope.record = {"surname":"Smith","forename":"Anne","exams":[{"subject":"English","score":83},{"subject":"Maths","score":97}]};
                 $compile(elm)(scope);
                 scope.$digest();
@@ -193,11 +175,7 @@ describe('formInput', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
 
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input schema="schema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
             scope = $rootScope;
             scope.schema = [
                 {name: "name", id: "1", label: "Name", type: "text"},
@@ -239,11 +217,7 @@ describe('formInput', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
 
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input schema="schema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
             scope = $rootScope;
             scope.schema = [
                 {name: "name", id: "1", label: "Name", type: "text", required: true},
@@ -274,11 +248,7 @@ describe('formInput', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
 
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input schema="schema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
             scope = $rootScope;
             scope.schema = [
                 {name: "name", id: "1", label: "Name", type: "text", help: "This is some help"},
@@ -305,11 +275,7 @@ describe('formInput', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
 
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input schema="schema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
             scope = $rootScope;
             scope.schema = [
                 {name: "name", id: "1", label: "Name", type: "text"},
@@ -340,11 +306,7 @@ describe('formInput', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
 
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input schema="schema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
             scope = $rootScope;
             scope.f_eyeColourOptions = ["Blue", "Brown", "Green", "Hazel"];
             scope.schema = [
@@ -379,12 +341,7 @@ describe('formInput', function () {
     describe('generates password inputs', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
-
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input schema="schema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
             scope = $rootScope;
             scope.schema = [
                 {name: "password", id: "1", label: "Name", type: "password"}
@@ -403,12 +360,7 @@ describe('formInput', function () {
     describe('generates selects for enumerated lists', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
-
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input schema="schema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
             scope = $rootScope;
             scope.f_eyeColourOptions = ["Blue", "Brown", "Green", "Hazel"];
             scope.schema = [
@@ -440,12 +392,7 @@ describe('formInput', function () {
     describe('generates selects for reference lookups', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
-
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact"> ' +
-                    '<form-input schema="schema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
             scope = $rootScope;
             scope.f_eyeColourOptions = ["Blue", "Brown", "Green", "Hazel"];
             scope.f_eyeColour_ids = ["1234", "5678", "90ab", "cdef"];
@@ -511,11 +458,7 @@ describe('formInput', function () {
     describe('supports bootstrap control sizing', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
-            elm = angular.element(
-                '<form name="myForm" class="form-horizontal compact">' +
-                    '<form-input schema="formSchema"></form-input>' +
-                    '</form>');
-
+            elm = angular.element('<div><form-input schema="formSchema"></form-input></div>');
             scope = $rootScope;
             scope.formSchema = {name: "desc", id: "desc_id", label: "Description", size: "small", type: "text"};
             $compile(elm)(scope);
@@ -538,10 +481,7 @@ describe('formInput', function () {
         describe('a text box', function() {
 
             beforeEach(inject(function($rootScope, $compile) {
-                elm = angular.element(
-                    '<form name="myForm" class="form-horizontal compact">' +
-                    '<form-input schema="formSchema" add-all-field="bobby"></form-input>' +
-                    '</form>');
+                elm = angular.element('<div><form-input schema="formSchema" add-all-field="bobby"></form-input></div>');
                 scope = $rootScope;
                 scope.formSchema = {
                     name: "desc",
@@ -561,10 +501,7 @@ describe('formInput', function () {
             describe('a text box label', function() {
 
                 beforeEach(inject(function($rootScope, $compile) {
-                    elm = angular.element(
-                        '<form name="myForm" class="form-horizontal compact">' +
-                        '<form-input schema="formSchema" add-all-label="bobby"></form-input>' +
-                        '</form>');
+                    elm = angular.element('<div><form-input schema="formSchema" add-all-label="bobby"></form-input></div>');
                     scope = $rootScope;
                     scope.formSchema = {
                         name: "desc",
@@ -585,10 +522,7 @@ describe('formInput', function () {
 
             describe('a control group', function() {
                 beforeEach(inject(function($rootScope, $compile) {
-                    elm = angular.element(
-                        '<form name="myForm" class="form-horizontal compact">' +
-                        '<form-input schema="formSchema" add-all-group="bobby"></form-input>' +
-                        '</form>');
+                    elm = angular.element('<div><form-input schema="formSchema" add-all-group="bobby"></form-input></div>');
                     scope = $rootScope;
                     scope.formSchema = {
                         name: "desc",
@@ -605,6 +539,22 @@ describe('formInput', function () {
                     expect(group.attr('bobby')).toBeDefined();
                 });
             });
+        });
+    });
+
+    describe('arbitrary attributes get passed in', function () {
+
+        beforeEach(inject(function ($rootScope, $compile) {
+            elm = angular.element('<div><form-input formStyle="horizontalCompact" schema="formSchema" test-me="A Test"></form-input></div>');
+            scope = $rootScope;
+            scope.formSchema = {name: "desc", id: "desc_id", label: "Description", type: "text"};
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have the test-me attribute', function () {
+            var form = elm.find('form');
+            expect(form.attr('test-me')).toBe('A Test');
         });
     });
 

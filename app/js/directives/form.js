@@ -3,7 +3,6 @@ formsAngular
         return {
             restrict: 'EA',
             link: function (scope, element, attrs) {
-
 //                generate markup for bootstrap forms
 //
 //                Horizontal (default)
@@ -431,7 +430,7 @@ formsAngular
                                 var customAttrs = ""
                                 for (var thisAttr in attrs) {
                                     if (attrs.hasOwnProperty(thisAttr) && thisAttr[0] !== '$' && ['name','formstyle','schema','subschema','model'].indexOf(thisAttr) == -1) {
-                                        customAttrs += ' '+thisAttr+'='+attrs[thisAttr];
+                                        customAttrs += ' '+attrs.$attr[thisAttr]+'="'+attrs[thisAttr]+'"';
                                     }
                                 }
                                 elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate"'+ customAttrs+'>';
@@ -442,7 +441,6 @@ formsAngular
                             }
                             elementHtml += attrs.subschema ? '' : '</form>';
                             element.replaceWith($compile(elementHtml)(scope));
-
                             // If there are subkeys we need to fix up ng-model references when record is read
                             if (subkeys.length > 0) {
                                 var unwatch2 = scope.$watch('phase', function (newValue) {
