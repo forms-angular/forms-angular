@@ -9353,6 +9353,14 @@ form .form-inline > .sub-doc {
           box-shadow: 10px 10px 10px #888;
 }
 
+.search-results .search-result {
+  color: #0088cc;
+}
+
+.search-results .search-result.focus {
+  font-weight: bold;
+}
+
 @media (max-width: 979px) {
   .global-search {
     padding-right: 1em;
