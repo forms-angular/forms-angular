@@ -427,7 +427,14 @@ formsAngular
                                 elementHtml = '';
                             } else {
                                 scope.topLevelFormName = attrs.name || 'myForm';     // Form name defaults to myForm
-                                elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate">';
+                                // Copy attrs we don't process into form
+                                var customAttrs = ""
+                                for (var thisAttr in attrs) {
+                                    if (attrs.hasOwnProperty(thisAttr) && thisAttr[0] !== '$' && ['name','formstyle','schema','subschema','model'].indexOf(thisAttr) == -1) {
+                                        customAttrs += ' '+thisAttr+'='+attrs[thisAttr];
+                                    }
+                                }
+                                elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate"'+ customAttrs+'>';
                             }
                             elementHtml += processInstructions(newValue, true, attrs);
                             if (tabsSetup === 'forced') {
