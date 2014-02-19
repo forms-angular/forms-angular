@@ -4,6 +4,18 @@ formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '
 
     $scope.items = [];
 
+    $scope.globalShortcuts = function(event) {
+        if (event.keyCode === 191 && event.ctrlKey) {
+            // Ctrl+/ takes you to global search
+            var searchInput = angular.element.find('input')[0];
+            if (searchInput && angular.element(searchInput).attr('id') === 'searchinput') {
+                // check that global search directive is in use
+                angular.element(searchInput).focus();
+                $event.preventDefault();
+            }
+        }
+    };
+
     function loadControllerAndMenu(controllerName, level) {
         var locals = {}, addThis;
 

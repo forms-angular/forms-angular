@@ -9358,7 +9358,8 @@ form .form-inline > .sub-doc {
 }
 
 .search-results .search-result.focus {
-  font-weight: bold;
+  color: white;
+  background-color: #005580;
 }
 
 @media (max-width: 979px) {

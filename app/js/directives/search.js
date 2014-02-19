@@ -4,22 +4,33 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function 
     $scope.moreCount = 0;
     $scope.focus = null;
 
+
     $scope.handleKey = function(event) {
-        console.log(event);
-        switch(event.keyCode) {
-            case 38:
-//                if ($scope.focus && $scope.focus < $scope.results
-//                $event.preventDefault();
-                break;
-            case 40:
-                break;
-            case 13:
-                break;
+        if ($scope.results.length > 0) {
+            switch(event.keyCode) {
+                case 38:
+                    // up arrow pressed
+                    if ($scope.focus > 0) {
+                        $scope.setFocus($scope.focus-1);
+                    }
+                    break;
+                case 40:
+                    // down arrow pressed
+                    if ($scope.results.length > $scope.focus + 1) {
+                        $scope.setFocus($scope.focus+1);
+                    }
+                    break;
+                case 13:
+                    if ($scope.focus != null) {
+                        $scope.selectResult($scope.focus);
+                    }
+                    break;
+            }
         }
     };
 
     $scope.setFocus = function(index) {
-        if ($scope.focus) delete data.results[$scope.focus].focussed;
+        if ($scope.focus !== null) delete $scope.results[$scope.focus].focussed;
         $scope.results[index].focussed = true;
         $scope.focus = index;
     };
@@ -74,7 +85,7 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function 
             restrict: 'AE',
             template:   '<form class="navbar-search pull-right">'+
                         '    <div id="search-cg" class="control-group" ng-class="errorClass">'+
-                        '        <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search" ng-keyup="handleKey($event)">'+
+                        '        <input type="text" id="searchinput" ng-model="searchTarget" class="search-query" placeholder="Ctrl+Slash to Search" ng-keyup="handleKey($event)">'+
                         '    </div>'+
                         '</form>'+
                         '<div class="results-container" ng-show="results.length >= 1">'+

@@ -1,11 +1,12 @@
 describe('search', function () {
 
-    var scope, $httpBackend;
+    var scope, $httpBackend, $location;
 
     beforeEach(angular.mock.module('formsAngular'));
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope, $compile) {
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $compile, _$location_) {
         $httpBackend = _$httpBackend_;
+        $location = _$location_;
         elm = angular.element('<div><global-search class="global-search"></global-search></div>');
         scope = $rootScope;
         $compile(elm)(scope);
@@ -63,7 +64,7 @@ describe('search', function () {
             expect(div.attr('class')).toBe('control-group');
         });
 
-        it('should have an error class in the search box when the string is not found', function () {
+        it('formats results', function () {
             $httpBackend.whenGET('api/search?q=hello').respond({"results":[{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}],"moreCount":0});
             scope.searchTarget = 'hello';
             scope.$digest();
@@ -74,6 +75,70 @@ describe('search', function () {
             expect(results.text()).toMatch('Exams');
             expect(results.text()).toMatch('Brown, ');
             expect(results.text()).toMatch('John');
+        });
+
+        it('should focus on the first result returned', function() {
+            $httpBackend.whenGET('api/search?q=hello').respond({"results":[{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}],"moreCount":0});
+            scope.searchTarget = 'hello';
+            scope.$digest();
+            $httpBackend.flush();
+            expect(scope.results.length).toBe(2);
+            expect(scope.results[0].focussed).toBe(true);
+            expect(scope.results[1].focussed).toBe(undefined);
+            expect(scope.focus).toBe(0);
+        });
+
+        it('should focus on the next result when down arrow is pressed', function() {
+            scope.results = [
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99, focussed:true},
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}];
+            scope.focus = 0;
+            scope.handleKey({keyCode: 40});
+            expect(scope.results[0].focussed).toBe(undefined);
+            expect(scope.results[1].focussed).toBe(true);
+            expect(scope.focus).toBe(1);
+        });
+
+        it('should not move focus when down arrow is pressed on last result', function() {
+            scope.results = [
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99, focussed:true}];
+            scope.focus = 1;
+            scope.handleKey({keyCode: 40});
+            expect(scope.results[0].focussed).toBe(undefined);
+            expect(scope.results[1].focussed).toBe(true);
+            expect(scope.focus).toBe(1);
+        });
+
+        it('should focus on the previous result when up arrow is pressed', function() {
+            scope.results = [
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99, focussed:true}];
+            scope.focus = 1;
+            scope.handleKey({keyCode: 38});
+            expect(scope.results[0].focussed).toBe(true);
+            expect(scope.results[1].focussed).toBe(undefined);
+            expect(scope.focus).toBe(0);
+        });
+
+        it('should not move focus when up arrow is pressed on top row', function() {
+            scope.results = [
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99, focussed:true},
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}];
+            scope.focus = 0;
+            scope.handleKey({keyCode: 38});
+            expect(scope.results[0].focussed).toBe(true);
+            expect(scope.results[1].focussed).toBe(undefined);
+            expect(scope.focus).toBe(0);
+        });
+
+        it('should link to the selected result',function() {
+            scope.results = [
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99, focussed:true},
+                {"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}];
+            scope.focus = 0;
+            scope.handleKey({keyCode: 13});
+            expect($location.path()).toBe('/f_nested_schema/51c583d5b5c51226db418f15/edit');
         });
 
     });
