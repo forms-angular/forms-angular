@@ -11,7 +11,7 @@ formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '
             if (searchInput && angular.element(searchInput).attr('id') === 'searchinput') {
                 // check that global search directive is in use
                 angular.element(searchInput).focus();
-                $event.preventDefault();
+                event.preventDefault();
             }
         }
     };

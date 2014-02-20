@@ -13,12 +13,14 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function 
                     if ($scope.focus > 0) {
                         $scope.setFocus($scope.focus-1);
                     }
+                    event.preventDefault();
                     break;
                 case 40:
                     // down arrow pressed
                     if ($scope.results.length > $scope.focus + 1) {
                         $scope.setFocus($scope.focus+1);
                     }
+                    event.preventDefault();
                     break;
                 case 13:
                     if ($scope.focus != null) {
