@@ -141,6 +141,16 @@ describe('search', function () {
             expect($location.path()).toBe('/f_nested_schema/51c583d5b5c51226db418f15/edit');
         });
 
+        it('should clear the target and the reults when Esc is pressed',function() {
+            $httpBackend.whenGET('api/search?q=hello').respond({"results":[{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}],"moreCount":0});
+            scope.searchTarget = 'hello';
+            scope.$digest();
+            scope.handleKey({keyCode: 27});
+            expect(scope.focus).toBe(null);
+            expect(scope.results).toEqual([]);
+            expect(scope.searchTarget).toBe('');
+        });
+
     });
 
 

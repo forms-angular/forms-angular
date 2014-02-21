@@ -1,26 +1,23 @@
 formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
 
-    $scope.results = [];
-    $scope.moreCount = 0;
-    $scope.focus = null;
-
-
     $scope.handleKey = function(event) {
-        if ($scope.results.length > 0) {
+        if (event.keyCode === 27 && $scope.searchTarget.length > 0) {
+            $scope.searchTarget = '';
+        } else if ($scope.results.length > 0) {
             switch(event.keyCode) {
                 case 38:
                     // up arrow pressed
                     if ($scope.focus > 0) {
                         $scope.setFocus($scope.focus-1);
                     }
-                    event.preventDefault();
+                    if (typeof event.preventDefault === "func") event.preventDefault();
                     break;
                 case 40:
                     // down arrow pressed
                     if ($scope.results.length > $scope.focus + 1) {
                         $scope.setFocus($scope.focus+1);
                     }
-                    event.preventDefault();
+                    if (typeof event.preventDefault === "func") event.preventDefault();
                     break;
                 case 13:
                     if ($scope.focus != null) {
@@ -49,8 +46,10 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function 
     };
 
     var clearSearchResults = function() {
+        $scope.moreCount = 0;
         $scope.errorClass = "";
         $scope.results = [];
+        $scope.focus = null;
     };
 
     $scope.$watch('searchTarget', function(newValue) {
