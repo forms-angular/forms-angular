@@ -1,4 +1,5 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window',
+        function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -705,7 +706,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     $scope.dataEventFunctions.onAfterCreate(data);
                 }
                 if (options.redirect) {
-                    window.location = options.redirect
+                    $window.location = options.redirect
                 } else {
                     $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
                     //                    reset?
@@ -726,7 +727,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     if (options.allowChange) {
                         allowLocationChange = true;
                     }
-                    window.location = options.redirect;
+                    $window.location = options.redirect;
                 } else {
                     master = angular.copy($scope.record);
                     $scope.setPristine();
@@ -808,7 +809,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         $scope.save({redirect: next, allowChange: true});    // save changes
                     } else {
                         allowLocationChange = true;
-                        window.location = next;
+                        $window.location = next;
                     }
                 }
             );
