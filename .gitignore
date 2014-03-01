@@ -6,6 +6,10 @@ build.xml
 
 .project
 .settings
+.bower-cache
+.bower-registry
+.bower-tmp
+
 node_modules
 app/e2etest
 .idea/*
