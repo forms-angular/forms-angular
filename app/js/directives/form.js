@@ -84,7 +84,13 @@ formsAngular
                             if (!isRequired) {
                                 value += '<option></option>';
                             }
-                            value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
+                            if (angular.isArray(fieldInfo.options)) {
+                                angular.forEach(fieldInfo.options,function(optValue){
+                                    value += '<option>'+optValue+'</option>';
+                                })
+                            } else {
+                                value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
+                            }
                             value += '</select>';
                         }
                     } else if (fieldInfo.type === 'link') {
@@ -408,7 +414,7 @@ formsAngular
                             }
                         }
                     } else {
-                        console.log('Empty array passed to processInstructions')
+                        console.log('Empty array passed to processInstructions');
                         result = '';
                     }
                     return result;
@@ -427,10 +433,12 @@ formsAngular
                             } else {
                                 scope.topLevelFormName = attrs.name || 'myForm';     // Form name defaults to myForm
                                 // Copy attrs we don't process into form
-                                var customAttrs = ""
+                                var customAttrs = "";
                                 for (var thisAttr in attrs) {
-                                    if (attrs.hasOwnProperty(thisAttr) && thisAttr[0] !== '$' && ['name','formstyle','schema','subschema','model'].indexOf(thisAttr) == -1) {
-                                        customAttrs += ' '+attrs.$attr[thisAttr]+'="'+attrs[thisAttr]+'"';
+                                    if (attrs.hasOwnProperty(thisAttr)) {
+                                        if (thisAttr[0] !== '$' && ['name','formstyle','schema','subschema','model'].indexOf(thisAttr) == -1) {
+                                            customAttrs += ' '+attrs.$attr[thisAttr]+'="'+attrs[thisAttr]+'"';
+                                        }
                                     }
                                 }
                                 elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate"'+ customAttrs+'>';

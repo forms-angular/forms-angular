@@ -357,7 +357,7 @@ describe('formInput', function () {
 
     });
 
-    describe('generates selects for enumerated lists', function () {
+    describe('generates selects for enumerated lists stored in scope', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
             elm = angular.element('<div><form-input schema="schema"></form-input></div>');
@@ -388,6 +388,38 @@ describe('formInput', function () {
         });
 
     });
+
+    ddescribe('generates selects for passed enumerated lists', function () {
+
+        beforeEach(inject(function ($rootScope, $compile) {
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
+            scope = $rootScope;
+            scope.schema = [
+                {name: "name", id: "1", label: "Name", type: "text"},
+                {"name": "eyeColour", "id": "f_eyeColour", "label": "Eye Colour", "type": "select", "options": ["Blue", "Brown", "Green", "Hazel"]}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have combobox', function () {
+            var input = elm.find('select');
+            expect(input.length).toBe(1);
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input.attr('id')).toBe('f_eyeColour');
+            input = elm.find('option');
+            expect(input.length).toBe(5);
+            input = elm.find('option:first');
+            expect(input.attr('value')).toBe("");
+            expect(input.text()).toBe("");
+            input = elm.find('option:last');
+            expect(input.attr('value')).toBe("Hazel");
+            expect(input.text()).toBe("Hazel");
+        });
+
+    });
+
 
     describe('generates selects for reference lookups', function () {
 
