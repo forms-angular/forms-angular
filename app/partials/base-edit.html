@@ -14,7 +14,7 @@
     </div>
     <div class="container-fluid page-body edit-body">
         <!--This section only appears when there is an error message to display-->
-        <div ng-show="errorMessage" class="row-fluid">
+        <div id="display-error" ng-show="errorMessage" class="row-fluid">
             <div class="span6 offset3 alert alert-error">
                 <button type="button" class="close" ng-click="dismissError()">&times;</button>
                 <h4>{{alertTitle}}</h4>
