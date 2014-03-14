@@ -389,7 +389,7 @@ describe('formInput', function () {
 
     });
 
-    ddescribe('generates selects for passed enumerated lists', function () {
+    describe('generates selects for passed enumerated lists', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
             elm = angular.element('<div><form-input schema="schema"></form-input></div>');
@@ -504,6 +504,42 @@ describe('formInput', function () {
             expect(input).toHaveClass('input-small');
             expect(input.attr('id')).toBe('desc_id');
             expect(input.attr('type')).toBe('text');
+        });
+
+    });
+
+    describe('supports showWhen', function () {
+
+        beforeEach(inject(function ($rootScope, $compile) {
+            elm = angular.element('<div><form-input schema="formSchema"></form-input></div>');
+            scope = $rootScope;
+            scope.formSchema = [
+                {name:'boolean', type:'checkbox'},
+                {name: "desc", id: "desc_id", label: "Description", size: "small", type: "text", showWhen:{lhs:'$boolean', comp:'eq', rhs:true}},
+                {"formStyle":"inline","name":"exams","schema":[
+                    {showWhen:{lhs:'$boolean', comp:'eq', rhs:true},"name":"exams.subject","type":"text","id":"f_exams_subject","label":"Subject"},
+                    {"name":"exams.result","type":"select","options":"f_exams_resultOptions","id":"f_exams_result","label":"Result"},
+                    {"showWhen":{"lhs":"$exams.result","comp":"eq","rhs":"fail"},"name":"exams.retakeDate","type":"text","add":"ui-date ui-date-format ","id":"f_exams_retakeDate","label":"Retake Date"}
+                ]}
+            ];
+            scope.record = {boolean:true,name:'any name',exams:[{subject:'Maths'}]};
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('on simple field', function () {
+            var cg = elm.find('#cg_desc_id');
+            expect(cg.attr('ng-show')).toBe('record.boolean===true');
+        });
+
+        it('on nested field', function () {
+            var cg = elm.find('#cg_f_exams_subject');
+            expect(cg.attr('ng-show')).toBe('record.boolean===true');
+        });
+
+        it('dependent on nested field', function () {
+            var cg = elm.find('#cg_f_exams_retakeDate');
+            expect(cg.attr('ng-show')).toBe("record.exams[$index].result==='fail'");
         });
 
     });

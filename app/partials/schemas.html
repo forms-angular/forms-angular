@@ -50,7 +50,11 @@
         <li><strong>label</strong> specifies the label of the input field (which defaults to <em>name</em> converted to title case)</li>
         <li><strong>required</strong> validates the field</li>
         <li><strong>placeHolder</strong> allows placeholder text to be specified</li>
-        <li><strong>array</strong> set to true for array fields</li>
+        <li><strong>showWhen</strong> either:<ol><li>an object of the form {lhs:variable, comp:comparison, rhs:variable} where:<ul>
+            <li><strong>variable</strong> can be a string, number or field in the model preceded by <strong>$</strong></li>
+            <li><strong>comparison</strong> is one of 'eq', 'ne', 'gt', 'gte', 'lt', 'lte'</li></ul><p>or</p>
+            <li>an angular expression</li></ol>
+        </ul></li>
         <li><strong>help</strong> is for specifying help text</li>
         <li><strong>helpInline</strong> is for specifying help text which is displayed inline</li>
         <li><strong>add</strong> allows anything else to be added to the input html.  For example
@@ -199,16 +203,16 @@
         <li><strong>tab</strong> used to divide a large form up into a tabset with multiple tabs
             (see <a href="/#/i_tabbed_forms/new">example</a>).
         </li>
-        <li><strong>showIf</strong> allows conditional display of fields based on values elsewhere.  For example having
+        <li><strong>showWhen</strong> allows conditional display of fields based on values elsewhere.  For example having
             prompted whether someone is a smoker you may want a field asking how many they smoke a day:
 <pre><code>smoker: {type: Boolean},
-howManyPerDay: {type: Number, form:{showIf:{lhs:"$smoker", comp:"eq", rhs:true}}}</code></pre>
+howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true}}}</code></pre>
             <p>As you can see from the example there are three parts to the showIf object:
             <ul>
                 <li><strong>lhs</strong> (left hand side) a value to be compared.  To use the current value of another
                     field in the document preceed it with $.</li>
-                <li><strong>comp</strong> supported comparators are 'eq' for equality and 'ne' for not equals
-                    <em>(devs: feel free to submit a pull request - look for evaluateConditional in base.js)</em></li>
+                <li><strong>comp</strong> supported comparators are 'eq' for equality, 'ne' for not equals,
+                    'gt' (greater than), 'gte' (greater than or equal to), 'lt' (less than) and 'lte' (less than or equal to)</li>
                 <li><strong>rhs</strong> (right hand side) the other value to be compared.  Details as for lhs.</li>
             </ul></p> </li>
         <li><strong>noAdd</strong> inhibits an Add button being generated for arrays.</li>

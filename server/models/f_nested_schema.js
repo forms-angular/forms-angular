@@ -7,7 +7,7 @@ var ExamsSchema = new Schema({
     score: Number,
     result: {type: String, enum:['distinction','merit','pass','fail']},
     grader: { type: Schema.Types.ObjectId, ref: 'b_using_options', form:{select2:{fngAjax:true}}},
-    retakeDate: {type: Date, form:{showIf:{lhs:'$exams.result', comp:'eq', rhs:'fail'}}}
+    retakeDate: {type: Date, form:{showWhen:{lhs:'$exams.result', comp:'eq', rhs:'fail'}}}
 }, {_id: false});
 
 var FSchema = new Schema({

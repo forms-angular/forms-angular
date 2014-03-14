@@ -28,6 +28,35 @@ formsAngular
                     return (!formStyle || formStyle === "undefined" || ['vertical','inline'].indexOf(formStyle) === -1);
                 };
 
+                var generateNgShow = function(showWhen, model) {
+
+                    function evaluateSide(side) {
+                        var result = side;
+                        if (typeof side === "string") {
+                            if (side.slice(0, 1) === '$') {
+                                result = (model || 'record') + '.';
+                                var parts = side.slice(1).split('.');
+                                if (parts.length > 1) {
+                                    var lastBit = parts.pop();
+                                    result += parts.join('.')+'[$index].' + lastBit;
+                                } else {
+                                    result += side.slice(1);
+                                }
+                            } else {
+                                result = "'"+side+"'";
+                            }
+                        }
+                        return result;
+                    }
+
+                    var conditionText=['eq','ne', 'gt', 'gte', 'lt', 'lte']
+                        , conditionSymbols = ['===','!==','>','>=','<','<=']
+                        , conditionPos = conditionText.indexOf(showWhen.comp);
+
+                    if (conditionPos === -1) throw new Error("Invalid comparison in showWhen");
+                    return evaluateSide(showWhen.lhs)+conditionSymbols[conditionPos]+evaluateSide(showWhen.rhs);
+                };
+
                 var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
                     var nameString;
                     if (!modelString) {
@@ -223,7 +252,6 @@ formsAngular
                     info.id = info.id || 'f_' + info.name.replace(/\./g, '_');
                     info.label = (info.label !== undefined) ? (info.label === null ? '' : info.label) : $filter('titleCase')(info.name.split('.').slice(-1)[0]);
 
-//                    var parentString = (parentId ? ' ui-toggle="showHide' + parentId + '"' : '')
                     var template = '', closeTag = '';
                     if (isHorizontalStyle(options.formstyle)) {
                         template += '<div' + addAll("Group", 'control-group', options);
@@ -233,7 +261,6 @@ formsAngular
                         closeTag = '</span>';
                     }
 
-//                  template += (parentId ? ' ui-toggle="showHide' + parentId + '"' : '') + ' id="cg_' + info.id.replace('.', '-' + attrs.index + '-') + '">';
                     var includeIndex = false;
                     if (options.index) {
                         try {
@@ -242,6 +269,9 @@ formsAngular
                         } catch(err) {
                             // Nothing to do
                         }
+                    }
+                    if (info.showWhen) {
+                        template+='ng-show="'+ generateNgShow(info.showWhen, options.model)+'"';
                     }
                     if (includeIndex) {
                         template += ' id="cg_' + info.id.replace('_', '-' + attrs.index + '-') + '">';

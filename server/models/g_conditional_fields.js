@@ -6,8 +6,8 @@ var GSchema = new Schema({
     forename:  {type: String, list:true, index:true},
     sex: {type: String, enum:['F','M']},
     accepted: {type:Boolean, form:{help:'When someone is accepted additional fields appear'}},
-    startDate:{type:Date, form:{showIf: {lhs: '$accepted', comp: 'eq', rhs: true}}},
-    startingPosition:{type:String, form:{showIf: {lhs: '$accepted', comp: 'eq', rhs: true}}},
+    startDate:{type:Date, form:{showWhen: {lhs: '$accepted', comp: 'eq', rhs: true}}},
+    startingPosition:{type:String, form:{showWhen: {lhs: '$accepted', comp: 'eq', rhs: true}}},
     bribeAmount: Number
 });
 
