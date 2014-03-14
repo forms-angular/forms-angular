@@ -1049,7 +1049,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 } else if (schema[i].select2) {
                     var lookup = $scope.getData(anObject, fieldname, null);
                     if (schema[i].select2.fngAjax) {
-                        if (lookup) {
+                        if (lookup && lookup.id) {
                             $scope.setData(anObject, fieldname, null, lookup.id);
                         }
                     } else {
