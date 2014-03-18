@@ -554,18 +554,23 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
     };
 
+    $scope.processServerData = function(recordFromServer) {
+        master = convertToAngularModel($scope.formSchema, recordFromServer, 0);
+        $scope.phase = 'ready';
+        $scope.cancel();
+    };
+
     $scope.readRecord = function () {
         $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
             if (data.success === false) {
                 $location.path("/404");
             }
             allowLocationChange = false;
+            $scope.phase = 'reading';
             if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
                 $scope.dataEventFunctions.onAfterRead(data);
             }
-            master = convertToAngularModel($scope.formSchema, data, 0);
-            $scope.phase = 'ready';
-            $scope.cancel();
+            $scope.processServerData(data);
         }).error(function () {
                 $location.path("/404");
             });
@@ -592,7 +597,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (angular.isArray(data)) {
                 $scope.recordList = $scope.recordList.concat(data);
             } else {
-                showError(data, "Invalid query");
+                $scope.showError(data, "Invalid query");
             }
         }).error(function () {
                 $location.path("/404");
@@ -618,7 +623,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
                     $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
                         if (err) {
-                            showError(err);
+                            $scope.showError(err);
                         } else {
                             $scope.readRecord();
                         }
@@ -657,9 +662,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     //listener for any child scopes to display messages
-    // pass like this scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+    // pass like this:
+    //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+    // or
+    //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
     $scope.$on('showErrorMessage', function (event, args) {
-        showError(args.body, args.title);
+        $scope.showError(args.body, args.title);
     });
 
     var handleError = function (data, status) {
@@ -684,13 +692,13 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             } else {
                 errorMessage = data.message || "Error!  Sorry - No further details available.";
             }
-            showError(errorMessage);
+            $scope.showError(errorMessage);
         } else {
-            showError(status + ' ' + JSON.stringify(data));
+            $scope.showError(status + ' ' + JSON.stringify(data));
         }
     };
 
-    var showError = function (errString, alertTitle) {
+    $scope.showError = function (errString, alertTitle) {
         $scope.alertTitle = alertTitle ? alertTitle : "Error!";
         $scope.errorMessage = errString;
     };
@@ -712,12 +720,13 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     //                    reset?
                 }
             } else {
-                showError(data);
+                $scope.showError(data);
             }
         }).error(handleError);
     };
 
     $scope.updateDocument = function (dataToSave, options) {
+        $scope.phase = 'updating';
         $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
             if (data.success !== false) {
                 if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
@@ -729,11 +738,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     }
                     $window.location = options.redirect;
                 } else {
-                    master = angular.copy($scope.record);
+                    $scope.processServerData(data);
                     $scope.setPristine();
                 }
             } else {
-                showError(data);
+                $scope.showError(data);
             }
         }).error(handleError);
 
@@ -748,7 +757,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (typeof $scope.dataEventFunctions.onBeforeUpdate === "function") {
                 $scope.dataEventFunctions.onBeforeUpdate(dataToSave, master, function (err) {
                     if (err) {
-                        showError(err);
+                        $scope.showError(err);
                     } else {
                         $scope.updateDocument(dataToSave, options);
                     }
@@ -760,7 +769,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (typeof $scope.dataEventFunctions.onBeforeCreate === "function") {
                 $scope.dataEventFunctions.onBeforeCreate(dataToSave, function (err) {
                     if (err) {
-                        showError(err);
+                        $scope.showError(err);
                     } else {
                         $scope.createNew(dataToSave, options);
                     }
@@ -838,7 +847,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                         if (typeof $scope.dataEventFunctions.onBeforeDelete === "function") {
                             $scope.dataEventFunctions.onBeforeDelete(master, function (err) {
                                 if (err) {
-                                    showError(err);
+                                    $scope.showError(err);
                                 } else {
                                     $scope.deleteRecord($scope.modelName, $scope.id);
                                 }
