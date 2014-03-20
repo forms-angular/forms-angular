@@ -841,6 +841,7 @@ DataForm.prototype.cleanseRequest = function (req) {
     var req_data = req.body,
         resource = req.resource;
 
+    delete req_data.__v;   // Don't mess with Mongoose internal field (https://github.com/LearnBoost/mongoose/issues/1933)
     if (typeof resource.options['hide'] == 'undefined')
         return req_data;
 
