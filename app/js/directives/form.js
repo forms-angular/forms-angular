@@ -96,57 +96,75 @@ formsAngular
                         common += 'title="' + fieldInfo.popup + '" ';
                     }
                     common += addAll("Field", null, options);
-                    if (fieldInfo.type === 'select') {
-                        common += (fieldInfo.readonly ? 'disabled ' : '');
-                        if (fieldInfo.select2) {
-                            common += 'class="fng-select2' + (fieldInfo.size ? ' input-' + fieldInfo.size : '') + '"';
-                            if (fieldInfo.select2.fngAjax) {
-                                value = '<div class="input-append">';
-                                value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
-                                value += '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
-                                value += '</div>';
-                            } else if (fieldInfo.select2) {
-                                value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + (fieldInfo.readonly ? 'disabled ' : '') + common + '>';
+                    switch (fieldInfo.type) {
+                        case 'select' :
+                            common += (fieldInfo.readonly ? 'disabled ' : '');
+                            if (fieldInfo.select2) {
+                                common += 'class="fng-select2' + (fieldInfo.size ? ' input-' + fieldInfo.size : '') + '"';
+                                if (fieldInfo.select2.fngAjax) {
+                                    value = '<div class="input-append">';
+                                    value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
+                                    value += '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
+                                    value += '</div>';
+                                } else if (fieldInfo.select2) {
+                                    value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + (fieldInfo.readonly ? 'disabled ' : '') + common + '>';
+                                }
+                            } else {
+                                value = '<select ' + common + (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + '>';
+                                if (!isRequired) {
+                                    value += '<option></option>';
+                                }
+                                if (angular.isArray(fieldInfo.options)) {
+                                    angular.forEach(fieldInfo.options,function(optValue){
+                                        value += '<option>'+optValue+'</option>';
+                                    })
+                                } else {
+                                    value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
+                                }
+                                value += '</select>';
                             }
-                        } else {
-                            value = '<select ' + common + (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + '>';
-                            if (!isRequired) {
-                                value += '<option></option>';
-                            }
+                            break;
+                        case 'link' :
+                            value = '<a ng-href="/#/' + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
+                            break;
+                        case 'radio' :
+                            value = '';
+                            var separateLines = (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
+
                             if (angular.isArray(fieldInfo.options)) {
                                 angular.forEach(fieldInfo.options,function(optValue){
-                                    value += '<option>'+optValue+'</option>';
+                                    value += '<input ' + common + 'type="radio"';
+                                    value += ' value="'+optValue+'">' + optValue;
+                                    if (separateLines) value += '<br />';
                                 })
                             } else {
-                                value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
+                                var tagType = separateLines ? 'div' : 'span';
+                                value += '<' + tagType + ' ng-repeat="option in ' + fieldInfo.options + '"><input ' + common + ' type="radio" value="{{option}}"> {{option}} </' + tagType + '> ';
                             }
-                            value += '</select>';
-                        }
-                    } else if (fieldInfo.type === 'link') {
-                        value = '<a ng-href="/#/' + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
-                    } else {
-                        common += (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
-                        if (fieldInfo.type == 'textarea') {
-                            if (fieldInfo.rows) {
-                                if (fieldInfo.rows == 'auto') {
-                                    common += 'msd-elastic="\n" class="ng-animate" ';
-                                } else {
-                                    common += 'rows = "' + fieldInfo.rows + '" ';
+                            break;
+                        default:
+                            common += (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
+                            if (fieldInfo.type == 'textarea') {
+                                if (fieldInfo.rows) {
+                                    if (fieldInfo.rows == 'auto') {
+                                        common += 'msd-elastic="\n" class="ng-animate" ';
+                                    } else {
+                                        common += 'rows = "' + fieldInfo.rows + '" ';
+                                    }
                                 }
-                            }
-                            value = '<textarea ' + common + ' />';
-                        } else {
-                            value = '<input ' + common + 'type="' + fieldInfo.type + '"';
-                            if (options.formstyle === 'inline') {
-                                if (!fieldInfo.size) {
-                                    value += ' class="input-small"';
+                                value = '<textarea ' + common + ' />';
+                            } else {
+                                value = '<input ' + common + 'type="' + fieldInfo.type + '"';
+                                if (options.formstyle === 'inline') {
+                                    if (!fieldInfo.size) {
+                                        value += ' class="input-small"';
+                                    }
                                 }
+                                value += ' />';
                             }
-                            value += ' />';
                         }
-                    }
                     if (fieldInfo.helpInline) {
-                        value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
+                    	value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
                     }
                     if (fieldInfo.help) {
                         value += '<span class="help-block">' + fieldInfo.help + '</span>';

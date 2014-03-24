@@ -86,7 +86,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }
             if (mongooseType.instance == 'String') {
                 if (mongooseOptions.enum) {
-                    formInstructions.type = 'select';
+                    formInstructions.type = formInstructions.type || 'select';
                     // Hacky way to get required styling working on select controls
                     if (mongooseOptions.required) {
 

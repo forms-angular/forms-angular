@@ -44,6 +44,7 @@
             <a href="http://www.html5rocks.com/en/tutorials/forms/html5forms/">standard
             HTML5 types</a> there are some 'special' types:<ul>
                 <li><strong>textarea</strong> a textarea control</li>
+                <li><strong>radio</strong> a radio button control</li>
                 <li><strong>select</strong> a select control</li>
             </ul></li>
         <li><strong>id</strong> specifies the id of the input field (which defaults to f_<em>name</em>)</li>
@@ -63,7 +64,7 @@
         </li>
         <li><strong>rows</strong> (in conjunction with a textarea type) allows the depth of the control to be
             specified.  The <strong>auto</strong> option creates a textarea that automatically expands</li>
-        <li><strong>options</strong> (in conjunction with a select type) allows the options for the select to
+        <li><strong>options</strong> (in conjunction with a select or radio type) allows the options for the select / radio button group to
         be specified.  You can either do this by passing the option values in an array and passing it directly,
         or by putting them in an array on the scope and passing the name of the array (which allows run-time
         modification</li>
@@ -75,6 +76,7 @@
         {name:'surname',label:'Family Name',required:true},
         {name:'forename',id:'fnameinput'},
         {name:'dateOfBirth',type:'date'},
+        {name:'sex',type:'radio',options:['male','female']},
         {name:'hairColour',type:'select',options:['brown','black','blonde','grey']}]"&gt;
     &lt;form-input schema="example2" /&gt;
 &lt;div&gt;</pre>
@@ -84,6 +86,7 @@
         {name:'surname',label:'Family Name',required:true},
         {name:'forename',id:'fnameinput'},
         {name:'dateOfBirth',type:'date'},
+        {name:'sex',type:'radio',options:['male','female']},
         {name:'hairColour',type:'select',options:['brown','black','blonde','grey']}]">
         <!--Add a noautofocus & forceform here and modify the model-->
         <form>
@@ -114,11 +117,10 @@
     surname: {type:String, required:true, index:true},
     forename: {type:String, index:true},
 });</pre>
-    <p>Each schema element (or field) has a type and optionally a number of other properties. Many of these
-        properties
-        are used by forms-angular to generate appropriate behaviour on the front end. The appropriate input
-        types are
-        used, and client side validation keeps round trips down (we cannot say "to a minimum" as work remains to
+    <p>Each schema element (or field) has a type and optionally a number of other properties. Many of these properties
+        are used by forms-angular to generate appropriate behaviour on the front end. The appropriate input types are
+        used (for instance an <strong>enum</strong>string> attribute will generate a select control (you can specify radio button - see below)
+        and client side validation keeps round trips down (we cannot say "to a minimum" as work remains to
         be done in this area).</p>
 
     <p>You can get an idea of what forms-angular does with a vanilla Mongoose JS schema by looking at <a
@@ -171,7 +173,8 @@
     <ul>
         <li><strong>type</strong> the input type to be generated - which must be compatible with the Mongoose type.
             Common examples are <em>email</em>, <em>url</em>.  Note that if the field type is String and the name (or label) contains the string 'password'
-            then type="password" will be used <em>unless</em> type="text"</li>.
+            then type="password" will be used <em>unless</em> type="text".  If the Mongoose schema has an <em>enum</em>
+            array you can specify a radio button group (instead of a select) by using a type of <em>radio</em></li>.
         <li><strong>hidden</strong> inhibits this schema key from appearing on the generated form.</li>
         <li><strong>label</strong> overrides the default input label. label:null suppresses the label
             altogether.
@@ -219,6 +222,7 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         <li><strong>noRemove</strong> inhibits a Remove button being generated for array elements.</li>
         <li><strong>add</strong> allows arbitrary attributes to be added to the input tag. Useful for adding
             classes.</li>
+        <li><strong>inlineRadio</strong> should be set to true to present all radio button options in a single line</li>
         <li><strong>directive</strong> allows you to specify custom behaviour.  Gets passed attributes from form-input (with
         <em>schema</em> replaced with the current element - so <em>add</em> can be used to pass data into directives).</li>
         <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a

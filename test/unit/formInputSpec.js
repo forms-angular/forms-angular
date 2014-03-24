@@ -453,6 +453,58 @@ describe('formInput', function () {
 
     });
 
+    describe('generates radio buttons for enumerated lists stored in scope', function () {
+
+        beforeEach(inject(function ($rootScope, $compile) {
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
+            scope = $rootScope;
+            scope.f_eyeColourOptions = ["Blue", "Brown", "Green", "Hazel"];
+            scope.schema = [
+                {name: "name", id: "1", label: "Name", type: "text"},
+                {"name": "eyeColour", "id": "f_eyeColour", "label": "Eye Colour", "type": "radio", "options": "f_eyeColourOptions"}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have radio buttons', function () {
+            var input = elm.find('input');
+            expect(input.length).toBe(5);
+            var input = elm.find('input:last');
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input.attr('id')).toBe('f_eyeColour');
+            expect(input.attr('value')).toBe("Hazel");
+        });
+
+    });
+
+    describe('generates radio buttons for passed enumerated lists', function () {
+
+        beforeEach(inject(function ($rootScope, $compile) {
+            elm = angular.element('<div><form-input schema="schema"></form-input></div>');
+            scope = $rootScope;
+            scope.schema = [
+                {name: "name", id: "1", label: "Name", type: "text"},
+                {"name": "eyeColour", "id": "f_eyeColour", "label": "Eye Colour", "type": "radio", "options": ["Blue", "Brown", "Green", "Hazel"]}
+            ];
+            $compile(elm)(scope);
+            scope.$digest();
+        }));
+
+        it('should have radio buttons', function () {
+            var input = elm.find('input');
+            expect(input.length).toBe(5);
+            var input = elm.find('input:last');
+            expect(input).toHaveClass('ng-pristine');
+            expect(input).toHaveClass('ng-valid');
+            expect(input.attr('id')).toBe('f_eyeColour');
+            expect(input.attr('value')).toBe("Hazel");
+        });
+
+    });
+
+
     describe('displays error messages', function () {
 
         beforeEach(
