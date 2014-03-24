@@ -152,6 +152,7 @@ formsAngular
                                         common += 'rows = "' + fieldInfo.rows + '" ';
                                     }
                                 }
+                                if (fieldInfo.editor === 'ckEditor') common += 'ckeditor = "" ';
                                 value = '<textarea ' + common + ' />';
                             } else {
                                 value = '<input ' + common + 'type="' + fieldInfo.type + '"';

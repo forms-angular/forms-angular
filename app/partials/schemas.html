@@ -222,7 +222,8 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         <li><strong>noRemove</strong> inhibits a Remove button being generated for array elements.</li>
         <li><strong>add</strong> allows arbitrary attributes to be added to the input tag. Useful for adding
             classes.</li>
-        <li><strong>inlineRadio</strong> should be set to true to present all radio button options in a single line</li>
+        <li><strong>inlineRadio</strong> (only valid when type is radio) should be set to true to present all radio button options in a single line</li>
+        <li><strong>editor</strong> (only valid when type is textarea) should be set to <em>ckEditor</em> to use <a href="http://ckeditor.com">CKEditor</a></li>
         <li><strong>directive</strong> allows you to specify custom behaviour.  Gets passed attributes from form-input (with
         <em>schema</em> replaced with the current element - so <em>add</em> can be used to pass data into directives).</li>
         <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a
