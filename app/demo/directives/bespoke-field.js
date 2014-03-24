@@ -1,4 +1,4 @@
-myDemoApp.directive('emailField', function ($compile) {
+myDemoApp.directive('emailField', function ($compile, $filter) {
         return {
             restrict: 'E',
             replace: true,
@@ -8,6 +8,9 @@ myDemoApp.directive('emailField', function ($compile) {
                     scope.$watch(attrs.formInput, function () {
                         var info = scope[attrs.schema];
                         var template = '<div class="control-group" id="cg_' + info.id + '">';
+                        if (!info.label) {
+                            info.label = $filter('titleCase')(info.name);
+                        }
                         if (info.label !== '') {
                             template += '<label class="control-label" for="' + info.id + '">' + info.label + '</label>';
                         }
