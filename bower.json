@@ -26,6 +26,8 @@
     "angular-sanitize": "1.2.3",
     "angular-ui-select2": "0.0.4",
     "bootstrap": "2.3.2",
+    "ckeditor":"4",
+    "ng-ckeditor": "*",
     "html5shiv-dist": "3.6.2",
     "jquery": "1.10.2",
     "jquery-ui": "1.10.3",
