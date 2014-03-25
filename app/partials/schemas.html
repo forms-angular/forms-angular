@@ -102,10 +102,11 @@
 
     <p>Mongoose is a popular package that simplifies using MongoDB with Node JS. Mongoose requires that
         a schema is created for each 'model'. As you will have seen in the <a href="/#/get-started">Get
-            Started</a> section, <strong>forms-angular</strong> can convert Mongoose schemas into the schemas
-        that
+        Started</a> section, <strong>forms-angular</strong> (specifically the BaseCtrl controller)
+        can convert Mongoose schemas into the schemas that
         the form-input directive uses, which saves a lot of coding by hand and makes it very easy to
-        keep your front and back ends in sync.</p>
+        keep your front and back ends in sync.  If you use BaseCtrl, then you should set the <strong>schema</strong>
+        attribute of the form-input tag to "baseSchema()".</p>
 
     <p>As many models as you want can be registered with forms-angular by calling the <code>addResource</code>
         method of the forms-angular object as <a href="/#/get-started#server-code">shown</a> in the
