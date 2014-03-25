@@ -492,6 +492,7 @@ formsAngular
                                 }
                                 elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate"'+ customAttrs+'>';
                             }
+                            if (theRecord === scope.topLevelFormName) throw new Error("Model and Name must be distinct - they are both " + theRecord);
                             elementHtml += processInstructions(newValue, true, attrs);
                             if (tabsSetup === 'forced') {
                                 elementHtml += '</tabset>';
