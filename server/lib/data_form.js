@@ -673,7 +673,7 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
     });
 };
 
-DataForm.prototype.saveAndRespond = function (req, res) {
+DataForm.prototype.saveAndRespond = function (req, res, hidden_fields) {
 
     function internalSave(doc) {
         doc.save(function (err, doc2) {
@@ -689,6 +689,12 @@ DataForm.prototype.saveAndRespond = function (req, res) {
                 }
                 res.send(400, err2);
             } else {
+                doc2 = doc2.toObject();
+                for (var hidden_field in hidden_fields) {
+                    if (doc2.hasOwnProperty(hidden_field)) {
+                        delete doc2[hidden_field];
+                    }
+                }
                 res.send(doc2);
             }
         });
@@ -941,7 +947,7 @@ DataForm.prototype.entityPut = function () {
             hidden_fields._id = false;
             req.resource.model.findById(req.doc._id, hidden_fields, {lean: true}, function (err, data) {
                 that.replaceHiddenFields(req.doc, data);
-                that.saveAndRespond(req, res);
+                that.saveAndRespond(req, res, hidden_fields);
             })
         } else {
             that.saveAndRespond(req, res);
