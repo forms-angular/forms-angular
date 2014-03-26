@@ -1,5 +1,7 @@
 formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
 
+    var currentRequest = '';
+
     $scope.handleKey = function(event) {
         if (event.keyCode === 27 && $scope.searchTarget.length > 0) {
             $scope.searchTarget = '';
@@ -54,19 +56,24 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function 
 
     $scope.$watch('searchTarget', function(newValue) {
         if (newValue && newValue.length > 0) {
+            currentRequest = newValue;
             $http.get('api/search?q=' + newValue).success(function (data) {
-                if ($scope.searchTarget.length > 0) {
-                    $scope.results = data.results;
-                    $scope.moreCount = data.moreCount;
-                    if (data.results.length > 0) {
-                        $scope.errorClass = '';
-                        $scope.setFocus(0);
-                    } else {
+                // Check that we haven't fired off a subsequent request, in which
+                // case we are no longer interested in these results
+                if (currentRequest === newValue) {
+                    if ($scope.searchTarget.length > 0) {
+                        $scope.results = data.results;
+                        $scope.moreCount = data.moreCount;
+                        if (data.results.length > 0) {
+                            $scope.errorClass = '';
+                            $scope.setFocus(0);
+                        } else {
 
+                        }
+                        $scope.errorClass = $scope.results.length === 0 ? "error" : "";
+                    } else {
+                        clearSearchResults();
                     }
-                    $scope.errorClass = $scope.results.length === 0 ? "error" : "";
-                } else {
-                    clearSearchResults();
                 }
             }).error(function (data, status) {
                 console.log("Error in searchbox.js : " + data + ' (status=' + status + ')');
