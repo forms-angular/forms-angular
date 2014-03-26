@@ -24,7 +24,7 @@
     "angular-mocks": "1.2",
     "angular-ui-bootstrap-bower": "0.8.0",
     "angular-sanitize": "1.2",
-    "angular-ui-select2": "0.0.5",
+    "angular-ui-select2": "0.0.4",
     "ckeditor":"4",
     "bootstrap": "2.3.2",
     "html5shiv-dist": "3.6.2",
