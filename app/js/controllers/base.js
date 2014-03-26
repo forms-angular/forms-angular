@@ -809,7 +809,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                             '    <button class="btn btn-warning dlg-no" ng-click="no()">No</button>' +
                             '    <button class="btn dlg-cancel" ng-click="cancel()">Cancel</button>' +
                             '</div>',
-                controller: 'SaveChangesModalCtrl'
+                controller: 'SaveChangesModalCtrl',
+                backdrop: 'static'
             });
 
             modalInstance.result.then(
@@ -838,7 +839,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                     '    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>' +
                     '    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>' +
                     '</div>',
-                controller: 'SaveChangesModalCtrl'
+                controller: 'SaveChangesModalCtrl',
+                backdrop: 'static'
             });
 
             modalInstance.result.then(
