@@ -24,6 +24,7 @@ to
 method is now to use the form type (password is it is a password, text if not).
 * We have followed ui-bootstrap's renaming of tabs / panes to tabsets / tabs, so any use of "pane" in your form objects
 needs to be changed to tab.
+* Support for allowing crawling meant that !(shriek) had to be replaced with |(pipe) in report drill down urls replacement
 * Some default id formats changed in subdocuments
 
 ## 0.0.x to 0.1.0

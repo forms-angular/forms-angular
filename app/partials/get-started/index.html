@@ -64,7 +64,7 @@
                 </form>
                 <div class="search-results" ng-show="results.length >= 1">
                     <div ng-repeat="result in results">
-                        <a class="search-result" ng-href="#/{{result.resource}}/{{result.id}}/edit">
+                        <a class="search-result" ng-href="#!/{{result.resource}}/{{result.id}}/edit">
                             {{result.resourceText}} {{result.text}}
                         </a>
                     </div>

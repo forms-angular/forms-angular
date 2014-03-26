@@ -19,7 +19,7 @@
     <div class="friends">
         <div class="friend" ng-repeat="friend in record.friendList" ng-mouseover="frdShowDetails(friend)"
              ng-mouseleave="frdHideDetails(friend)">
-            <a ng-href="/#/a_unadorned_mongoose/{{friend.friend}}/edit">{{friend.type}} {{friend.relationship}}</a>
+            <a ng-href="/#!/a_unadorned_mongoose/{{friend.friend}}/edit">{{friend.type}} {{friend.relationship}}</a>
             <button type="button" class="close" ng-click="frdRemoveFriend(friend)">&times;</button>
         </div>
     </div>

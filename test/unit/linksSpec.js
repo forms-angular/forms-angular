@@ -65,7 +65,7 @@ describe('Links', function () {
                 //
                 it('should have a link', function () {
                     var anchor = elm.find('a');
-                    expect(anchor.attr('href')).toBe('/#/Person/123456789/edit');
+                    expect(anchor.attr('href')).toBe('/#!/Person/123456789/edit');
                     expect(anchor.text()).toBe('My link text');
                 });
 
@@ -135,7 +135,7 @@ describe('Links', function () {
                 //
                 it('should have a link', function () {
                     var anchor = elm.find('a');
-                    expect(anchor.attr('href')).toBe('/#/Person/myschema/123456789/edit');
+                    expect(anchor.attr('href')).toBe('/#!/Person/myschema/123456789/edit');
                     expect(anchor.text()).toBe('My link text');
                 });
 

@@ -18,6 +18,7 @@ app.configure(function(){
         uploadDir: __dirname + '/../app/tmp',
         keepExtensions: true
     }));
+    app.use(require('prerender-node').set('prerenderToken', process.env['PRERENDER']));
     app.use(express.methodOverride());
     app.use(app.router);
     app.use(express.static(__dirname + '/../app'));

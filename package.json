@@ -14,7 +14,8 @@
     "mongoose": "~3.8",
     "underscore": "~1.6",
     "node.extend": "~1.0",
-    "async": "~0.2"
+    "async": "~0.2",
+    "prerender-node": "^0.1.18"
   },
   "scripts": {
     "start": "node ./server/server.js",

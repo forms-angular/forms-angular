@@ -32,7 +32,7 @@
     </div>
     <pre ng-show="record">Record content: {{record}}</pre>
 
-    <p>There is more information about the forms-input directive on the <a href="/#/forms">forms page</a>.</p>
+    <p>There is more information about the forms-input directive on the <a href="/#!/forms">forms page</a>.</p>
 </section>
 <section id="formschema" name="Form Schemas" affix-scroll>
     <h3>Form Schemas</h3>
@@ -101,7 +101,7 @@
     <h3>Mongoose Schemas</h3>
 
     <p>Mongoose is a popular package that simplifies using MongoDB with Node JS. Mongoose requires that
-        a schema is created for each 'model'. As you will have seen in the <a href="/#/get-started">Get
+        a schema is created for each 'model'. As you will have seen in the <a href="/#!/get-started">Get
         Started</a> section, <strong>forms-angular</strong> (specifically the BaseCtrl controller)
         can convert Mongoose schemas into the schemas that
         the form-input directive uses, which saves a lot of coding by hand and makes it very easy to
@@ -109,7 +109,7 @@
         attribute of the form-input tag to "baseSchema()".</p>
 
     <p>As many models as you want can be registered with forms-angular by calling the <code>addResource</code>
-        method of the forms-angular object as <a href="/#/get-started#server-code">shown</a> in the
+        method of the forms-angular object as <a href="/#!/get-started#server-code">shown</a> in the
         Get Started section. If you have more than a few models it is a good idea to put them in their own
         directory and loop through it.</p>
 
@@ -125,7 +125,7 @@
         be done in this area).</p>
 
     <p>You can get an idea of what forms-angular does with a vanilla Mongoose JS schema by looking at <a
-            href="/code/a_unadorned_mongoose.js">this schema</a> and <a href="/#/a_unadorned_mongoose/new">the
+            href="/code/a_unadorned_mongoose.js">this schema</a> and <a href="/#!/a_unadorned_mongoose/new">the
         form generated from it</a>.</p>
 
     <p>For comprehensive information about Mongoose schemas visit the <a
@@ -205,7 +205,7 @@
             <strong>"auto"</strong> makes the textarea expand to fit the content, rather than create a
             scrollbar.
         <li><strong>tab</strong> used to divide a large form up into a tabset with multiple tabs
-            (see <a href="/#/i_tabbed_forms/new">example</a>).
+            (see <a href="/#!/i_tabbed_forms/new">example</a>).
         </li>
         <li><strong>showWhen</strong> allows conditional display of fields based on values elsewhere.  For example having
             prompted whether someone is a smoker you may want a field asking how many they smoke a day:
@@ -228,7 +228,7 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         <li><strong>directive</strong> allows you to specify custom behaviour.  Gets passed attributes from form-input (with
         <em>schema</em> replaced with the current element - so <em>add</em> can be used to pass data into directives).</li>
         <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a
-                href='/#/forms#form-styles'>form style section</a> for options.
+                href='/#!/forms#form-styles'>form style section</a> for options.
         </li>
         <li><strong>link</strong> sets up hyperlinks for reference fields as follows:
             <ul>
@@ -241,7 +241,7 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         </li>
     </ul>
 
-    <p><a href="/code/b_using_options.js">This example schema</a> and <a href="/#/b_using_options/new">this
+    <p><a href="/code/b_using_options.js">This example schema</a> and <a href="/#!/b_using_options/new">this
         form</a> shows many of these options in use.</p>
 
 </section>
@@ -299,11 +299,11 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         The custom form schemas are invoked as follows:
     </p>
     <ul>
-        <li><strong>/#/:model/:formschema</strong> (<a href="/#/b_using_options/justnameandpostcode/">example
+        <li><strong>/#/:model/:formschema</strong> (<a href="/#!/b_using_options/justnameandpostcode/">example
             here</a>)
         </li>
         <li><strong>/#/:model/:formschema/new</strong> (<a
-                href="/#/b_using_options/justnameandpostcode/new">example
+                href="/#!/b_using_options/justnameandpostcode/new">example
             here</a>)
         </li>
         <li><strong>/#/:model/:formschema/:id/edit</strong></li>

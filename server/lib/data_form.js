@@ -469,7 +469,7 @@ DataForm.prototype.report = function () {
             }
             reportSchema = {pipeline: [
                 {$project: fields}
-            ], drilldown: "/#/" + req.params.resourceName + "/!_id!/edit"};
+            ], drilldown: "/#!/" + req.params.resourceName + "/|_id|/edit"};
         }
 
         // Replace parameters in pipeline
