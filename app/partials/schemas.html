@@ -227,6 +227,8 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         <li><strong>editor</strong> (only valid when type is textarea) should be set to <em>ckEditor</em> to use <a href="http://ckeditor.com">CKEditor</a></li>
         <li><strong>directive</strong> allows you to specify custom behaviour.  Gets passed attributes from form-input (with
         <em>schema</em> replaced with the current element - so <em>add</em> can be used to pass data into directives).</li>
+        <li><strong>customSubDoc</strong> (only valid on a sub document) allows you to specify custom HTML (which may include directives) for the sub doc</li>
+        <li><strong>customFooter</strong> (only valid on a sub document) allows you to specify custom HTML (which may include directives) for the footer of a group of sub docs</li>
         <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a
                 href='/#!/forms#form-styles'>form style section</a> for options.
         </li>
