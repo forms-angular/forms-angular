@@ -12,5 +12,19 @@
             date: "23 Mar 2013",
             interviewHash: "you think I would tell you?"
         }
+    },
+    {
+        _id: ObjectId("519aaaaab3201fff69b175e0"),
+        surname: "Zodiac",
+        forename:  "Alison",
+        weight: 115,
+        hairColour: 'Black',
+        accepted: true,
+        passwordHash: "top secret",
+        interview: {
+            score:67,
+            date: "28 Mar 2013",
+            interviewHash: "you think I would tell you?"
+        }
     }
 ]

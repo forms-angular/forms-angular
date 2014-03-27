@@ -41,7 +41,7 @@ describe('Read Data API', function () {
     });
 
     it('should filter out records that do not match the find func', function () {
-        assert.equal(bData.length, 1);
+        assert.equal(bData.length, 2);
     });
 
     it('should not send secure fields of a modified schema', function () {
@@ -150,18 +150,52 @@ describe('Update Data API', function () {
 
 describe('Search API', function() {
 
-    it('should support searchImportance option', function(done) {
-        exec('curl 0.0.0.0:3001/api/search?q=Smi',
+    it('should find a single match', function(done) {
+        exec('curl 0.0.0.0:3001/api/search?q=IsA',
             function (error, stdout) {
                 if (error) {
                     throw new Error('curl failed')
                 }
                 var aData = JSON.parse(stdout);
-                assert(aData.results.length,10);
-                assert(JSON.stringify(aData.results).indexOf('Exams'),-1);
+                assert.equal(aData.results.length,1);
                 done();
             });
+    });
 
+    it('should find two matches', function(done) {
+        exec('curl 0.0.0.0:3001/api/search?q=Test',
+            function (error, stdout) {
+                if (error) {
+                    throw new Error('curl failed')
+                }
+                var aData = JSON.parse(stdout);
+                assert.equal(aData.results.length,2);
+                done();
+            });
+    });
+
+    it('should not find records that do not meet find function', function (done) {
+        exec('curl 0.0.0.0:3001/api/search?q=Not',
+            function (error, stdout) {
+                if (error) {
+                    throw new Error('curl failed')
+                }
+                var aData = JSON.parse(stdout);
+                assert.equal(aData.results.length,0);
+                done();
+            });
+    });
+
+    it('should not find records indexed on a no-search field', function (done) {
+        exec('curl 0.0.0.0:3001/api/search?q=ReportingIndex',
+            function (error, stdout) {
+                if (error) {
+                    throw new Error('curl failed')
+                }
+                var aData = JSON.parse(stdout);
+                assert.equal(aData.results.length,0);
+                done();
+            });
     });
 
     it('should support searchOrder option', function(done) {
@@ -171,10 +205,10 @@ describe('Search API', function() {
                     throw new Error('curl failed')
                 }
                 var aData = JSON.parse(stdout);
-                assert(aData.results.length,10);
-                assert(aData.results[0].text, 'Smith00 John00');
-                assert(aData.results[9].text, 'Smith10 John10');
-                assert(JSON.stringify(aData.results).indexOf('John07'),-1);
+                assert.equal(aData.results.length,10);
+                assert.equal(aData.results[0].text, 'Smith00 John00');
+                assert.equal(aData.results[9].text, 'Smith10 John10');
+                assert.equal(JSON.stringify(aData.results).indexOf('John07'),-1);
                 done();
             });
     });
@@ -207,7 +241,22 @@ describe('Search API', function() {
                 assert.equal(aData.results[1].text, 'Smith00 John00');  // normal weighting
                 done();
             });
-    })
+    });
+
+
+    it('should support searchResultFormat option', function() {
+        exec('curl 0.0.0.0:3001/api/search?q=Br',
+            function (error, stdout) {
+                if (error) {
+                    throw new Error('curl failed')
+                }
+                var aData = JSON.parse(stdout);
+                assert.equal(aData.results.length,2);
+                assert.equal(aData.results[0].resourceText,'Exams');
+                assert.equal(aData.results[0].resource,'f_nested_schema');
+                assert.equal(aData.results[0].text, 'Brown, John');
+            });
+    });
 
 });
 
@@ -295,7 +344,7 @@ describe('Secure fields', function () {
                 throw new Error('curl c_subdoc_example failed')
             }
             var data = JSON.parse(stdout);
-            assert.equal(data.length, 1);
+            assert.equal(data.length, 2);
             assert.equal(data[0].surname, 'Anderson');
             assert.equal(data[0].passwordHash, undefined);
             assert.notEqual(data[0].interview.score, undefined);

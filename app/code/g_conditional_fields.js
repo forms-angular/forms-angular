@@ -6,8 +6,8 @@ var GSchema = new Schema({
     forename:  {type: String, list:true, index:true},
     sex: {type: String, enum:['F','M']},
     accepted: {type:Boolean, form:{help:'When someone is accepted additional fields appear'}},
-    startDate:{type:Date, form:{showIf: {lhs: '$accepted', comp: 'eq', rhs: true}}},
-    startingPosition:{type:String, form:{showIf: {lhs: '$accepted', comp: 'eq', rhs: true}}},
+    startDate:{type:Date, form:{showWhen: {lhs: '$accepted', comp: 'eq', rhs: true}}},
+    startingPosition:{type:String, form:{showWhen: {lhs: '$accepted', comp: 'eq', rhs: true}}},
     bribeAmount: Number
 });
 
@@ -36,9 +36,22 @@ GSchema.statics.report = function(report) {
             break;
         case 'totals' :
             reportSchema = {
-                "pipeline":[{"$project":{"surname":1,"forename":1,"bribeAmount":1, "_id":0}}],
-                "title":"A report with totals",
+                "pipeline":[{"$project":{"surname":1,"forename":1,"bribeAmount":1, "_id":1}}],
+                "title":"A report with totals and drilldown",
+                drilldown: "/#/g_conditional_fields/!_id!/edit",
                 "columnDefs":[{"field":'surname',"displayName":'Surname',"width":"200", totalsRow:'Total'},{"field":'forename',"displayName":'Forename',"width":200},{"field":"bribeAmount","displayName":"Bribe","align":"right", "width":"200", totalsRow:'$SUM', "cellFilter":"currency"}]
+            };
+            break;
+        case 'functiondemo' :
+            reportSchema = {
+                "pipeline":[{"$group":{"_id":"$sex","count":{"$sum":1},"functionResult":{"$sum":1}}}],
+                "title":"Numbers of Applicants By Sex",
+                "columnDefs":[{"field":'_id',"displayName":'Sex',"width":"200"},{"field":'count',"displayName":'No of Applicants',"align":"right", "width":"200"}, {"field":'functionResult',"displayName":'Applicants + 10',"align":"right", "width":"200"}],
+                "columnTranslations": [{"field":'_id',"translations":[{"value":'M', "display":'Male'},{"value":'F',"display":'Female'}]}, {field:'functionResult',
+                fn: function(row,cb) {
+                    row.functionResult = row.functionResult + 10;
+                    cb();
+                }}]
             };
             break;
         case 'selectbynumber' :

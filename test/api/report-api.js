@@ -34,6 +34,16 @@ describe('Report API', function () {
         });
     });
 
+    it('supports functions in column translate', function(done) {
+        exec('curl 0.0.0.0:3001/api/report/g_conditional_fields/functiondemo', function (error, stdout) {
+            var data = JSON.parse(stdout).report;
+            assert.equal(data.length, 2);
+            assert.deepEqual(data[0],{_id:'Female',count:11, functionResult:21});
+            assert.deepEqual(data[1],{_id:'Male',count:6, functionResult:16});
+            done();
+        });
+    });
+
     it('looks up schema and does a table lookup', function(done) {
         exec('curl 0.0.0.0:3001/api/report/e_referencing_another_collection/class-sizes', function (error, stdout) {
             var data = JSON.parse(stdout).report;
@@ -81,10 +91,10 @@ describe('Report API', function () {
         exec('curl 0.0.0.0:3001/api/report/b_using_options/allVisible', function (error, stdout) {
             var data = JSON.parse(stdout).report;
             assert.equal(data.length, 1);
-            assert.deepEqual(data[0],{_id:true,count:1});
+            assert.deepEqual(data[0],{_id:true,count:2});
             done();
         });
-    })
+    });
 
     it('prevents access to secure fields', function(done) {
         exec('curl 0.0.0.0:3001/api/report/b_using_options?r=%5B%7B%22$project%22:%7B%22passwordHash%22:1%7D%7D%5D', function (error, stdout) {

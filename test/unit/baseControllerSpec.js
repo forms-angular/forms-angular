@@ -70,17 +70,18 @@ describe('"BaseCtrl"', function () {
             expect(scope.formSchema.length).toBe(1);
         });
 
-        describe('generate defaults', function () {
-
-            it('sets up id', function () {
-                expect(scope.formSchema[0].id).toBe('f_name');
-            });
-
-            it('generates a label', function () {
-                expect(scope.formSchema[0].label).toBe('Name');
-            });
-
-        });
+//        describe('generate defaults', function () {
+        // Does this in form now, so you can have simplified formSchema
+//
+//            it('sets up id', function () {
+//                expect(scope.formSchema[0].id).toBe('f_name');
+//            });
+//
+//            it('generates a label', function () {
+//                expect(scope.formSchema[0].label).toBe('Name');
+//            });
+//
+//        });
     });
 
     describe('handles references', function () {
@@ -130,37 +131,38 @@ describe('"BaseCtrl"', function () {
 
     });
 
-    describe('handles null labels', function () {
-
-        var scope, ctrl;
-
-        beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
-            $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
-                {"name": {"instance": "String"}, "noLabel": {"instance": "String", "options": {"form": {"label": null}}}}
-            );
-            scope = $rootScope.$new();
-            $location.$$path = '/collection/new';
-            ctrl = $controller("BaseCtrl", {$scope: scope});
-            $httpBackend.flush();
-        }));
-
-        it('creates a schema element', function () {
-            expect(scope.formSchema.length).toBe(2);
-        });
-
-        describe('generate defaults', function () {
-
-            it('sets up id', function () {
-                expect(scope.formSchema[1].id).toBe('f_noLabel');
-            });
-
-            it('generates an empty label', function () {
-                expect(scope.formSchema[1].label).toBe('');
-            });
-
-        });
-    });
+// Now handled by the form
+//    describe('handles null labels', function () {
+//
+//        var scope, ctrl;
+//
+//        beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
+//            $httpBackend = _$httpBackend_;
+//            $httpBackend.whenGET('api/schema/collection').respond(
+//                {"name": {"instance": "String"}, "noLabel": {"instance": "String", "options": {"form": {"label": null}}}}
+//            );
+//            scope = $rootScope.$new();
+//            $location.$$path = '/collection/new';
+//            ctrl = $controller("BaseCtrl", {$scope: scope});
+//            $httpBackend.flush();
+//        }));
+//
+//        it('creates a schema element', function () {
+//            expect(scope.formSchema.length).toBe(2);
+//        });
+//
+//        describe('generate defaults', function () {
+//
+//            it('sets up id', function () {
+//                expect(scope.formSchema[1].id).toBe('f_noLabel');
+//            });
+//
+//            it('generates an empty label', function () {
+//                expect(scope.formSchema[1].label).toBe('');
+//            });
+//
+//        });
+//    });
 
     describe('handles required fields', function () {
 
@@ -269,10 +271,7 @@ describe('"BaseCtrl"', function () {
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
-
-
-                {"password": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"password": false}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
-
+                {"password": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"type": "text"}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
             );
             scope = $rootScope.$new();
             $location.$$path = '/collection/new';
@@ -295,10 +294,7 @@ describe('"BaseCtrl"', function () {
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
             $httpBackend.whenGET('api/schema/collection').respond(
-
-
-                {"password": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"password": true}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
-
+                {"forename": {"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true,"index":true,"form":{"type":"password"}},"_index":true,"$conditionalHandlers":{}}}
             );
             scope = $rootScope.$new();
             $location.$$path = '/collection/new';
@@ -323,7 +319,7 @@ describe('"BaseCtrl"', function () {
             $httpBackend.whenGET('api/schema/collection').respond(
 
 
-                {"secret": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"password": true}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
+                {"secret": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"type": "password"}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
 
             );
             scope = $rootScope.$new();
@@ -340,32 +336,6 @@ describe('"BaseCtrl"', function () {
 
     });
 
-    describe('handles simple conditional display fields', function () {
-
-        var scope, ctrl;
-
-        beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location) {
-            $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
-                {"name": {"instance": "String"},
-                    "hide_me": {"instance": "String", "options": {"form": {"showIf": {"lhs": 0, "comp": "eq", "rhs": 1}}}},
-                    "show_me": {"instance": "String", "options": {"form": {"showIf": {"lhs": 1, "comp": "eq", "rhs": 1}}}}
-                }
-
-            );
-            scope = $rootScope.$new();
-            $location.$$path = '/collection/new';
-            ctrl = $controller("BaseCtrl", {$scope: scope});
-            $httpBackend.flush();
-        }));
-
-        it('can hide fields', function () {
-            expect(scope.formSchema.length).toBe(2);
-            expect(scope.formSchema[0].label).toBe('Name');
-            expect(scope.formSchema[1].label).toBe('Show Me');
-        });
-    });
-
     describe('converts models', function () {
         var scope, ctrl;
 
@@ -378,8 +348,9 @@ describe('"BaseCtrl"', function () {
                     "lookupField": {"path": "lookupField", "instance": "ObjectID", "options": {"ref": "Person"}, "_index": null},
                     "arrayOfString": {"caster": {"instance": "String"}, "path": "arrayOfString", "options": {"type": [null]}, "_index": null},
                     "arrayOfLookup": {"caster": {"path": null, "instance": "ObjectID", "options": {}, "_index": null}, "path": "arrayOfLookup", "options": {"type": [null], "ref": "referral_format", "form": {"label": "Referral Format"}}, "_index": null},
-                    "arrayOfEnum": {"caster": {"path": "arrayOfEnum", "instance": "String"}, "path": "arrayOfEnum", "options": {"type": [null], "enum": ["Football", "Hockey", "Cricket"]}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}},
-                    "arrayOfEnumIn.SubDoc": {"caster": {"path": "arrayOfEnumIn.SubDoc", "instance": "String"}, "path": "arrayOfEnumIn.SubDoc", "options": {"type": [null], "enum": ["Ash", "Birch", "Chestnut"]}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}
+                    "arrayOfEnum": {"caster": {"path": "arrayOfEnum", "instance": "String"}, "path": "arrayOfEnum", "options": {"type": [null], "enum": ["Football", "Hockey", "Cricket"]}, "_index": null, "$conditionalHandlers": {}},
+                    "arrayOfEnumIn.SubDoc": {"caster": {"path": "arrayOfEnumIn.SubDoc", "instance": "String"}, "path": "arrayOfEnumIn.SubDoc", "options": {"type": [null], "enum": ["Ash", "Birch", "Chestnut"]}, "_index": null, "$conditionalHandlers": {}},
+                    "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}
                 });
             $httpBackend.whenGET('api/schema/referral_format').respond(
                 {"description": {"enumValues": [], "regExp": null, "path": "description", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"list": true}, "_index": null},
@@ -747,30 +718,14 @@ describe('"BaseCtrl"', function () {
 
     describe('deletion confirmation modal', function () {
 
-        var $scope, ctrl, $dialog, fakeDialog, provider, resolveCallback;
-
-        //this fake object replaces the actual dialog object, as the functions are not visible to the test runner.
-        fakeDialog = {
-            isOpen: false,
-            open: function () {
-                fakeDialog.isOpen = true;
-                return {
-                    then: resolveCallback
-                };
-            },
-            close: function () {
-            }
-        };
-        //default version of mock function so that delete http request is not called.
-        //Same as clicking no on the dialog.
-        resolveCallback = function (callback) { };
+        var $scope, ctrl, provider, resolveCallback, deferred;
 
         beforeEach(function () {
-            module(function ($dialogProvider) {
-                provider = $dialogProvider;
+            module(function ($modalProvider) {
+                provider = $modalProvider;
             });
-            inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location, _$dialog_) {
-                $dialog = _$dialog_;
+            inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location, _$modal_, $q) {
+                $modal = _$modal_;
                 $httpBackend = _$httpBackend_;
                 $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
                 $httpBackend.whenGET('api/collection/125').respond({"name": "Alan"});
@@ -778,9 +733,13 @@ describe('"BaseCtrl"', function () {
                 $scope = $rootScope.$new();
                 ctrl = $controller("BaseCtrl", {
                     $scope: $scope,
-                    $dialog: $dialog
+                    $modal: $modal
                 });
-                spyOn($dialog, 'messageBox').andReturn(fakeDialog);
+
+                deferred = $q.defer();
+                var fakeModal = {result: deferred.promise};
+                spyOn($modal, 'open').andReturn(fakeModal);
+
                 $scope.record._id = 1;
             });
         });
@@ -790,67 +749,33 @@ describe('"BaseCtrl"', function () {
             expect(provider).toBeDefined();
         });
 
-        it('dialog service should be injected', function () {
+        it('modal service should be injected', function () {
             $httpBackend.flush();
-            expect($dialog).toBeDefined();
+            expect($modal).toBeDefined();
         });
 
-        it('dialog messageBox should be defined', function () {
+        it('modal messageBox should be defined', function () {
+
             $scope.delete();
             $httpBackend.flush();
-            expect($dialog.messageBox).toHaveBeenCalled();
+            expect($modal.open).toHaveBeenCalled();
         });
 
-
-        it('should call dialog open when $scope.delete() is called', function () {
+        it('should not delete when No is clicked', function () {
             $scope.delete();
+            deferred.resolve(false);    // Same as clicking on Yes
             $httpBackend.flush();
-            expect(fakeDialog.isOpen).toEqual(true);
-        });
-
-        it('should close the dialog when No is clicked', function () {
-            resolveCallback = function (callback) {
-                callback('no');
-            };
-            fakeDialog.close = function () {
-                fakeDialog.isOpen = false;
-            };
-            $scope.delete();
-            $httpBackend.flush();
-            expect(fakeDialog.isOpen).toEqual(false);
         });
 
         it('send a delete request when yes is clicked', function () {
             $httpBackend.when('DELETE', 'api/collection/125').respond(200, 'SUCCESS');
             $httpBackend.expectDELETE('api/collection/125');
-            resolveCallback = function (callback) {
-                callback('yes');
-            };
             $scope.delete();
+            deferred.resolve(true);    // Same as clicking on Yes
             $httpBackend.flush();
         });
 
     });
-
-    describe('Save button enables when appropriate', function () {
-
-        it('changes to array', function () {
-            inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
-                $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/collection').respond({"specialSubjects":{"caster":{"enumValues":[],"regExp":null,"path":"specialSubjects","instance":"String","validators":[],"setters":[],"getters":[],"options":{},"_index":null},"path":"specialSubjects","validators":[],"setters":[],"getters":[],"options":{"type":[null]},"_index":null,"$conditionalHandlers":{}}});
-                $httpBackend.whenGET('api/collection/3').respond({"surname":"Accepted","forename":"John","accepted":true,"_id":"3","specialSubjects":["English"]});
-                $location.$$path = '/collection/3/edit';
-                scope = $rootScope.$new();
-                ctrl = $controller("BaseCtrl", {$scope: scope});
-                $httpBackend.flush();
-                expect(scope.isSaveDisabled()).toEqual(true);
-                scope.record.specialSubjects = [];
-                expect(scope.isSaveDisabled()).toEqual(false);
-            });
-        });
-
-    });
-
 
 });
 

@@ -61,7 +61,7 @@ function ngGridCsvExportPlugin (opts) {
 
         var csvData = '';
         angular.forEach(self.scope.columns, function (col) {
-            if (col.visible) {
+            if (col.visible && (col.width === undefined || col.width > 0)) {
                 csvData += '"' + csvStringify(col.displayName) + '",';
             }
         });

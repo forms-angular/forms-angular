@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /#!/a_unadorned_mongoose/
+Disallow: /#!/b_using_options/
+Disallow: /#!/c_subdoc_example/
+Disallow: /#!/d_array_example/
+Disallow: /#!/e_referencing_another_collection/
+Disallow: /#!/f_nested_schema/
+Disallow: /#!/g_conditional_fields/
+Disallow: /#!/h_deep_nesting/
+Disallow: /#!/i_tabbed_forms/
+Disallow: /#!/j_directive_with_form/
+Disallow: /#!/z_custom_form/

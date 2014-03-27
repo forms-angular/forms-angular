@@ -3,30 +3,28 @@
 describe('Base edit form', function() {
 
     it('should display a form', function () {
-        browser().navigateTo('/#/b_using_options/new');
+        browser().navigateTo('/#!/b_using_options/new');
         expect( element('div#cg_f_surname').text() ).
             toMatch( /Surname/ );
     });
 
-    it('should display an error message if field level validation fails', function() {
-        browser().navigateTo('/#/b_using_options/new');
+    it('should display an error message if server validation fails', function() {
+        browser().navigateTo('/#!/b_using_options/new');
         input('record.surname').enter('Smith');
-        element('#saveButton').click();
-        expect( element('.alert-error').text()).toMatch(/Accepted/);
         input('record.accepted').check();
         input('record.freeText').enter('this is a rude word');
         element('#saveButton').click();
-        expect( element('.alert-error').text()).toMatch(/Error!/)
-        expect( element('.alert-error').text()).toMatch(/Wash your mouth!/)
-        expect( element('.alert-error').text()).not().toMatch(/eye/)
+        expect( element('.alert-error').text()).toMatch(/Error!/);
+        expect( element('.alert-error').text()).toMatch(/Wash your mouth!/);
+        expect( element('.alert-error').text()).not().toMatch(/eye/);
     });
 
     describe('should display deletion confirmation modal', function() {
 
         beforeEach(function () {
 
-            browser().navigateTo('/#/a_unadorned_mongoose/666a6075b320153869b17599/edit');
-        })
+            browser().navigateTo('/#!/a_unadorned_mongoose/666a6075b320153869b17599/edit');
+        });
 
         it('should display deletion confirmation modal', function() {
             
@@ -39,7 +37,7 @@ describe('Base edit form', function() {
     describe('Allows user to navigate away',function() {
 
         it('does not put up dialog if no changes',function() {
-            browser().navigateTo('/#/a_unadorned_mongoose/666a6075b320153869b17599/edit');
+            browser().navigateTo('/#!/a_unadorned_mongoose/666a6075b320153869b17599/edit');
             element('#newButton').click();
             expect(browser().location().url()).toMatch("/a_unadorned_mongoose/new");
         });
@@ -49,7 +47,7 @@ describe('Base edit form', function() {
     describe('prompts user to save changes',function() {
 
         beforeEach(function() {
-            browser().navigateTo('/#/b_using_options/519a6075b320153869b155e0/edit');
+            browser().navigateTo('/#!/b_using_options/519a6075b320153869b155e0/edit');
             input('record.freeText').enter('This is a rude thing');
             element('#newButton').click();
         });
@@ -76,9 +74,41 @@ describe('Base edit form', function() {
             expect( element('.modal').count() ).toEqual(1);
             element('.modal-footer button.dlg-yes').click();
             expect(browser().location().url()).toMatch("/b_using_options/new");
-            browser().navigateTo('/#/b_using_options/519a6075b320153869b155e0/edit');
+            browser().navigateTo('/#!/b_using_options/519a6075b320153869b155e0/edit');
             expect(element('#f_freeText').val()).toMatch(/polite thing/);
         });
+    });
+
+    describe('form button changes',function() {
+
+        it('enables cancel button after a change', function() {
+            browser().navigateTo('/#!/b_using_options/new');
+            input('record.surname').enter('Smith');
+            expect( element('#f_surname').val() ).toMatch( /Smith/ );
+            element('#cancelButton').click();
+            expect( element('#f_surname').val() ).not().toMatch( /Smith/ );
+        });
+
+        it('enables cancel button after deleting an array element', function() {
+            browser().navigateTo('/#!/d_array_example/51a6182aea4ea77715000005/edit');
+            expect(repeater('.fng-array').count()).toEqual(1);
+            element('#remove_f_specialSubjects_0').click();
+            expect(repeater('.fng-array').count()).toEqual(0);
+            element('#saveButton').click();
+            browser().navigateTo('/#!/d_array_example/51a6182aea4ea77715000005/edit');
+            expect(repeater('.fng-array').count()).toEqual(0);
+        });
+
+    });
+
+    describe('tab sets', function() {
+
+        it('shows multiple tabs when appropriate',function() {
+            browser().navigateTo('/#!/i_tabbed_forms/new');
+            element('a:contains("first")').click();
+            element('a:contains("second")').click();
+        })
+
     })
 
 });

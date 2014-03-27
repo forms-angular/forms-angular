@@ -1,0 +1,26 @@
+<div>
+    <div ng-form="newFriendForm" ng-show="frdShowAdd">
+        <h3>Add Friend</h3>
+        <form-input name="newFriendForm" id="newFriendForm" schema="bespoke_friendList.schema" model="newFriend" />
+        <div class="form-actions">
+            <button ng-click="frdSaveFriend()" ng-disabled="frdIsFriendSaveDisabled()" class="btn btn-primary">Save friend</button>
+            <button ng-click="frdShowAdd=false" class="btn">Cancel</button>
+        </div>
+        <hr>
+    </div>
+    <div style="min-height:3.5em;">
+        <div class="pull-right" ng-hide="frdShowAdd">
+            <button ng-click="frdShowAddForm()"><i class="icon-plus"></i>Add another friend</button>
+        </div>
+        <div class="friends-head">
+            <div>{{frdPopupInstructions}}{{frdPopupName}}<br/>{{frdPopupPhone}}</div>
+        </div>
+    </div>
+    <div class="friends">
+        <div class="friend" ng-repeat="friend in record.friendList" ng-mouseover="frdShowDetails(friend)"
+             ng-mouseleave="frdHideDetails(friend)">
+            <a ng-href="/#!/a_unadorned_mongoose/{{friend.friend}}/edit">{{friend.type}} {{friend.relationship}}</a>
+            <button type="button" class="close" ng-click="frdRemoveFriend(friend)">&times;</button>
+        </div>
+    </div>
+</div>

@@ -6,13 +6,16 @@ var ExamsSchema = new Schema({
     examDate: Date,
     score: Number,
     result: {type: String, enum:['distinction','merit','pass','fail']},
-    grader: { type: Schema.Types.ObjectId, ref: 'b_using_options', form:{select2:{fngAjax:true}}}
+    grader: { type: Schema.Types.ObjectId, ref: 'b_using_options', form:{select2:{fngAjax:true}}},
+    retakeDate: {type: Date, form:{showWhen:{lhs:'$exams.result', comp:'eq', rhs:'fail'}}}
 }, {_id: false});
 
 var FSchema = new Schema({
     surname: {type: String, index:true, list:{}},
     forename:  {type: String, index:true, list:true},
-//    exams: [ExamsSchema]    // defaults to horizontal form
+    aTest: { type: Schema.Types.ObjectId, ref: 'b_using_options'},
+
+//    exams: [ExamsSchema]    // defaults to horizontal compact form
     // or
     exams: {type:[ExamsSchema], form:{formStyle:"inline"}}
 });

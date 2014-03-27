@@ -1,6 +1,9 @@
 'use strict';
+angular.module('HashBangURLs', []).config(['$locationProvider', function($location) {
+    $location.hashPrefix('!');
+}]);
 
-var myDemoApp = angular.module('myDemoApp', ['formsAngular']);
+var myDemoApp = angular.module('myDemoApp', ['formsAngular','HashBangURLs']);
 
 myDemoApp.config(['$routeProvider', function ($routeProvider) {
 

@@ -6,10 +6,15 @@ build.xml
 
 .project
 .settings
+.bower-cache
+.bower-registry
+.bower-tmp
+
 node_modules
 app/e2etest
 .idea/*
 bin/*
+test_out/*
 
 lib-cov
 *.seed
@@ -27,12 +32,12 @@ results
 app/bower_components
 js-build
 test.js
-test_out/*
 
 npm-debug.log
+
 node_modules/*
 
-js-build/*
+js-build/forms-angular.js
 
 .vagrant
 Vagrantfile

@@ -22,7 +22,7 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         afterSelectionChange: function (rowItem) {
             var url = $scope.reportSchema.drilldown;
             if (url) {
-                url = url.replace(/!.+?!/g,function(match){
+                url = url.replace(/\|.+?\|/g,function(match){
                     var param = match.slice(1,-1),
                         isParamTest = /\((.+)\)/.exec(param);
                     return isParamTest ? $scope.reportSchema.params[isParamTest[1]].value : rowItem.entity[param];
@@ -201,6 +201,10 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
                                         $scope[param + '_Opts'] = thisPart.enum;
                                         $scope.paramSchema[newLen-1].options = param + '_Opts';
                                     }
+                                }
+                                var dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(thisPart.value);
+                                if (dateTest) {
+                                    thisPart.value = (moment(dateTest[1]).format('YYYY-MM-DDTHH:mm:ss.SSS'))+'Z';
                                 }
                                 $scope.record[param] = thisPart.value;
                             }

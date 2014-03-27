@@ -4,6 +4,7 @@
         Unlock the data with just a few lines of configuration
     </div>
 </div>
+
 <div class="container-fluid" ng-controller="DemoCtrl">
     <div class="row-fluid">
         <div class="span3">
@@ -12,12 +13,12 @@
 
     <div class="span9 affix-section">
     <p>Simple reports can be produced by navigating to URLs of the format /#/analyse/modelname - see example <a
-            href="/#/analyse/b_using_options">here</a>.</p>
+            href="/#!/analyse/b_using_options">here</a>.</p>
 
     <p>More useful reports can be run by passing an <a href="http://docs.mongodb.org/manual/core/aggregation-pipeline/">aggregation
         pipeline</a>
         to the server using the format <strong>/#/analyse/model?r=[pipeline]</strong> - for example
-        <a href="/#/analyse/g_conditional_fields?r=%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D">/#/analyse/g_conditional_fields?r=[{"$group":{"_id":"$sex","count":{"$sum":1}}}]</a>
+        <a href="/#!/analyse/g_conditional_fields?r=%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D">/#/analyse/g_conditional_fields?r=[{"$group":{"_id":"$sex","count":{"$sum":1}}}]</a>
         produces a breakdown of the men and women in a collection.</p>
 
     <section id="options" name="Options" affix-scroll>
@@ -51,16 +52,19 @@
             The objects are made up as follows:
             <ul>
                 <li><strong>field</strong> (mandatory) the name of the results column to translate</li>
+                <li><strong>fn</strong> a function(row,callback) which modifies a row of the results set and then calls the callback.
+                    There is an example in <a href="/code/g_conditional_fields.js">this file</a> (search for "functiondemo")</li>
+                <li><strong>translations</strong> an array of value&rarr;display mappings, such as <strong>[{value:'M',
+                    display:'Male'},{value:'F', display:'Female'}]</strong></li>
                 <li><strong>ref</strong> the name of a Mongoose model to use to look up the current value against
                     (returning a concatenation of the fields with a truthy <strong>list</strong> key)
                 </li>
-                <li><strong>translations</strong> an array of value&rarr;display mappings, such as <strong>[{value:'M',
-                    display:'Male'},{value:'F', display:'Female'}]</strong></li>
             </ul>
+            If there is more than one of <strong>fn</strong>, <strong>translations</strong> and <strong>ref</strong> they are performed in that order.
         </li>
         <li><strong>drilldown</strong> a url that clicking on the row will navigate to. A !fieldname! will be replaced
             with the value of the fieldname in the current row. For example a report
-            listing one row per item might have a drilldown of <em>/#/model/!_id!/edit</em></li>
+            listing one row per item might have a drilldown of <em>/#/model/!_id!/edit</em> as seen in <a href="/#!/analyse/g_conditional_fields/totals">this</a> report.</li>
         <li><strong>params</strong> contains an array of parameters that can be used in the pipeline, normally in a
             $match such as {$match:{sex:("sex")}}. Parameters can have the following properties:
             <ul>
@@ -105,7 +109,7 @@
         </pre>
 
     <p>Using these options the report above can be <a
-            href="/#/analyse/g_conditional_fields?r=%7B%22pipeline%22:%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D,%22title%22:%22Breakdown%20By%20Sex%22,%22columnDefs%22:%5B%7B%22field%22:%22_id%22,%22displayName%22:%22Sex%22%7D,%7B%22field%22:%22count%22,%22displayName%22:%22No%20of%20Applicants%22%7D%5D%7D">tidied
+            href="/#!/analyse/g_conditional_fields?r=%7B%22pipeline%22:%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D,%22title%22:%22Breakdown%20By%20Sex%22,%22columnDefs%22:%5B%7B%22field%22:%22_id%22,%22displayName%22:%22Sex%22%7D,%7B%22field%22:%22count%22,%22displayName%22:%22No%20of%20Applicants%22%7D%5D%7D">tidied
         up</a>.</p>
 
     <section id="schemas" name="Schemas" affix-scroll>
@@ -114,7 +118,9 @@
     <p>If you looked at the link to that last report you would have realised that using the URL to specify a report
         format
         quickly becomes unmanageable. A neater alternative is to put the options into an object which is served up via a
-        static in the model file - see <a href="/code/g_conditional_fields.js">here</a> for some examples.</p>
+        static in the model file - see <a href="/code/g_conditional_fields.js">here</a> for
+        <a href="/#!/analyse/g_conditional_fields/breakdownbysex">some</a>
+        <a href="/#!/analyse/g_conditional_fields/totalforonesex">examples</a>.</p>
 </section>
 </div>
 </div>

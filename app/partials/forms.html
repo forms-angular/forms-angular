@@ -4,6 +4,7 @@
         Finding, editing and reporting on data
     </div>
 </div>
+
 <div class="container-fluid" ng-controller="DemoCtrl">
 <div class="row-fluid">
 <div class="span3">
@@ -16,7 +17,7 @@
 small amendments - to meet a vast number of requirements.  They all use RESTful routes
 and handle querying and updating the server</p>
 
-    <p>For each model the following routes are supported:</p>
+    <p>For each model the following routes are supported (assuming hashbang urls with no <a href="https://developers.google.com/webmasters/ajax-crawling/">AJAX crawling</a>:</p>
 
     <ul>
         <li><strong>/#/:model</strong> which lists the documents in the collection, with links to the form for editing
@@ -26,12 +27,13 @@ and handle querying and updating the server</p>
             the collection
         </li>
         <li><strong>/#/:model/:id/edit</strong> which enables the user to edit a document</li>
+        <li><strong>/#/:model/:id</strong> which enables the user to edit a document</li>
     </ul>
 
     <section id="input-form" name="Input Form" affix-scroll>
         <h3>Input Form</h3>
         <p>The <strong>form-input</strong> directive expands the schema into nice looking
-        data capture form, but that is only a small part of the story.  The <a href="/#/get-started#base-edit-html">basic edit form</a>
+        data capture form, but that is only a small part of the story.  The <a href="/#!/get-started#base-edit-html">basic edit form</a>
         also gives you:</p>
             <ul>
                 <li>Header section showing the key fields from the record.</li>
@@ -39,7 +41,7 @@ and handle querying and updating the server</p>
                     the back-end stuff for you.</p>
                     <p>The form button customisation is currently limited to over-riding the default enabled state of the buttons by
                     defining
-                    functions in a controller for the model (or model and form). See <a href="/demo/d-array-example.js">here</a> for an
+                    functions in a controller for the model (or model and form). See <a href="/demo/controllers/d-array-example.js">here</a> for an
                     example.</p></li>
                 <li>Error message section, which displays error messages when (for example) some server-side validation fails when updating something.</li>
             </ul>
@@ -48,21 +50,21 @@ and handle querying and updating the server</p>
         <h3>Listing Form</h3>
 
             <p>The listing routes (of the format <strong>/#/:model</strong>) are used to build a page
-                containing a list of documents in the collection, showing the <a href="/#/schemas#list-fields">list fields</a>.  You can
-                specify a sort order by adding a <strong>listOrder</strong> value to the model as shown in <a href="/code/g_conditional_fields.js">this</a> model.
-                Alternatively you can specify a sort order at run-time using the o parameter as in <a href="/#/f_nested_schema?o=%7B%22forename%22:1%7D">this</a> example.
+                containing a list of documents in the collection, showing the <a href="/#!/schemas#list-fields">list fields</a>.  You can
+                specify a sort order by adding a <strong>listOrder</strong> value to the model as shown in <a href="/#!/code/g_conditional_fields.js">this</a> model.
+                Alternatively you can specify a sort order at run-time using the o parameter as in <a href="/#!/f_nested_schema?o=%7B%22forename%22:1%7D">this</a> example.
             </p>
 
             <p>Listing routes support filters, such as</p>
 
-            <a href="/#/b_using_options?f=%7B%22surname%22:%22Smith%22%7D">
+            <a href="/#!/b_using_options?f=%7B%22surname%22:%22Smith%22%7D">
                 <pre>/#/b_using_options?f={"surname":"Smith"}</pre>
             </a>
 
             <p>and calls to the aggregation framework, provided they project to an array of docs that contains an _id property
                 which is used
                 to select from the model. For example the (rather unpalatable)</p>
-            <a href="/#/f_nested_schema?a=%5B%7B%22%24unwind%22%3A%22%24exams%22%7D%2C%7B%22%24sort%22%3A%7B%22exams.score%22%3A1%7D%7D%2C%7B%22%24group%22%3A%7B%22_id%22%3A%7B%22id%22%3A%22%24_id%22%7D%2C%22bestSubject%22%3A%7B%22%24last%22%3A%22%24exams.subject%22%7D%7D%7D%2C%7B%22%24match%22%3A%7B%22bestSubject%22%3A%22English%22%7D%7D%2C%7B%22%24project%22%3A%7B%22_id%22%3A%22%24_id.id%22%7D%7D%5D">
+            <a href="/#!/f_nested_schema?a=%5B%7B%22%24unwind%22%3A%22%24exams%22%7D%2C%7B%22%24sort%22%3A%7B%22exams.score%22%3A1%7D%7D%2C%7B%22%24group%22%3A%7B%22_id%22%3A%7B%22id%22%3A%22%24_id%22%7D%2C%22bestSubject%22%3A%7B%22%24last%22%3A%22%24exams.subject%22%7D%7D%7D%2C%7B%22%24match%22%3A%7B%22bestSubject%22%3A%22English%22%7D%7D%2C%7B%22%24project%22%3A%7B%22_id%22%3A%22%24_id.id%22%7D%7D%5D">
                 <pre>/#/f_nested_schema?a=[{"$unwind":"$exams"},{"$sort":{"exams.score":1}},{"$group":{"_id":{"id":"$_id"},"bestSubject":{"$last":"$exams.subject"}}},{"$match":{"bestSubject":"English"}},{"$project":{"_id":"$_id.id"}}]</pre>
             </a>
 
@@ -105,8 +107,7 @@ and handle querying and updating the server</p>
                         <li><strong>text</strong> the display text for the item</li>
                     </ul>
                     Both the resource and resourceText can be localised by a line of code like
-                    <pre><code>DataFormHandler.getResource('person').options.localisationData = [{from: 'person/customer', to: 'person/client', context: 'resource'},{from:'Customer', to:'Client', context: 'resourceText'}];
-                    </code></pre>.
+                    <pre><code>DataFormHandler.getResource('person').options.localisationData = [{from: 'person/customer', to: 'person/client', context: 'resource'},{from:'Customer', to:'Client', context: 'resourceText'}];</code></pre>
                 </li>
             </ul>
 
@@ -124,32 +125,44 @@ and handle querying and updating the server</p>
         </section>
     </section>
 
-    <section id="form-styles" name="Form Styles" affix-scroll>
-        <h3>Form Styles</h3>
+    <section id="form-input-directive" name="form-input Directive" affix-scroll>
+        <h3>The form-input Directive</h3>
 
-        <p>The <strong>formstyle</strong> attribute can take the values <strong>vertical</strong>, <strong>horizontal</strong>,
-            <strong>inline</strong> and <strong>horizontalCompact</strong>.
-            The first three generate the markup for a Twitter Bootstrap 2 style and the last slightly modified style. <strong>vertical</strong>
-            generates markup that works with the default form style, and the others needs classes adding as follows:</p>
-        <table class="table table-striped">
-            <tr>
-                <th>formstyle</th>
-                <th>Associated Bootstrap class(es)</th>
-            </tr>
-            <tr>
-                <td>horizontal</td>
-                <td>form-horizontal</td>
-            </tr>
-            <tr>
-                <td>horizontalCompact</td>
-                <td>form-horizontal compact</td>
-            </tr>
-            <tr>
-                <td>inline</td>
-                <td>form-inline</td>
-            </tr>
-        </table>
-        <p>Sub forms that are created by the directive will have these classes added in the appropriate place.</p>
+        <p>The form-input directive, which is the core component of forms-angular, takes one mandatory attribute - schema -
+            which is documented at the top of the <a href="/#!/schema.html">page</a> and some optional attributes.</p>
+
+        <p>The optional attributes that can be passed for form-input are:</p>
+        <ul>
+            <li><strong>formstyle</strong> this attribute can take the values <strong>vertical</strong>, <strong>horizontal</strong>,
+            <strong>inline</strong> and <strong>horizontalCompact</strong>.  The first three generate the markup for a Twitter Bootstrap 2 style and the last slightly modified style. <strong>vertical</strong>
+            generates markup that works with the default form style, and the others needs classes adding as follows:
+                <table class="table table-striped">
+                    <tr>
+                        <th>formstyle</th>
+                        <th>Associated Bootstrap class(es)</th>
+                    </tr>
+                    <tr>
+                        <td>horizontal</td>
+                        <td>form-horizontal</td>
+                    </tr>
+                    <tr>
+                        <td>horizontalCompact (or just compact)</td>
+                        <td>form-horizontal compact</td>
+                    </tr>
+                    <tr>
+                        <td>inline</td>
+                        <td>form-inline</td>
+                    </tr>
+                </table>
+                <p>Forms and sub forms that are created by the directive will have these classes added in the appropriate place.</p></li>
+            <li><strong>model</strong> the object in the scope to be bound to the model controller.  Specifying
+            the model inhibits the generation of the <strong>form</strong> tag unless the <strong>forceform</strong> attribute is set to true</li>
+            <li><strong>name</strong> the name to be given to the form</li>
+            <li><strong>forceform</strong> can be set to true to force the generation of the <strong>form</strong>
+            attribute under circumstances where it would generally not be generated (generally if a model attribute is used)</li>
+            <li><strong>noautofocus</strong> can be set to true if you don't want the first field to receive focus</li>
+<!--TODO complete this list            -->
+        </ul>
     </section>
 
     <section id="client-side-customisation" name="Client Side Customization" affix-scroll>
@@ -157,7 +170,7 @@ and handle querying and updating the server</p>
 
         <p>Additional functionality can be added by using "model controllers" which have the name of
         a model followed by <strong>Ctrl</strong> (or the name of the model followed by the name of
-        the custom form followed by Ctrl. There is an sample model controller <a href="/demo/b-using-options.js">here</a>
+        the custom form followed by Ctrl. There is an sample model controller <a href="/demo/controllers/b-using-options.js">here</a>
         which is used in the examples in this section. The NavCtrl controller handles the model controllers, so don't remove
         it.</p>
 
@@ -167,18 +180,30 @@ and handle querying and updating the server</p>
 
         <h5>Menu</h5>
 
-        <p>The menu can be added to where required by the models (see an example <a href="/#/b_using_options">here</a>)
+        <p>The menu can be added to where required by the models (see an example <a href="/#!/b_using_options">here</a>)
             The options can be configured to appear when records are being listed, edited or created. The top level text is
             taken from the model controller's <strong>dropDownDisplay</strong> variable, if present. If not present it will
-            fall back to the modelNameDisplay (see above) and it that is not present the model name.</p>
+            fall back to the modelNameDisplay (see above) and if that is not present the model name.</p>
+
+        <p>Sometimes menu options only apply to a subset of records in a collection.  In this case they can be hidden by
+            specifying an <strong>isHidden($index)</strong> function.  For example to hide the option when a field has a
+            certain value:</p>
+
+        <pre><code>$scope.contextMenu = [{
+            text: 'Do something',
+            fn : function() {// some code},
+            isHidden: function() {return $scope.record._id ? $scope.record.field === 'value' : true; },
+            ...
+            }];</code></pre>
 
         <h5 id="postprocessing">Post form-input generation processing</h5>
 
         <p>The form-input directive broadcasts a <strong>formInputDone</strong> message when it has
             processed a control. This can be acted on by the model controller. In our <a
-                    href="/#/b_using_options">example</a> we
+                    href="/#!/b_using_options/new">example</a> we
             add a change handler to a select2 control which changes background color of a control group
-            when the eye colour is changed.</p>
+            when the eye colour is changed.  Try it, and then see how it is done at the bottom of
+            <a href="/demo/controllers/b-using-options.js">this</a> controller.</p>
 
         <h5>Client side data events</h5>
 
@@ -194,7 +219,7 @@ and handle querying and updating the server</p>
             <li>onAfterDelete function(old)</li>
         </ul>
         <p>In all onBefore... cases passing an error back will stop the event completing. There is a trivial example of
-            how a data event hook might be used in <a href="/demo/d-array-example.js">this</a> controller, which shows
+            how a data event hook might be used in <a href="/demo/controllers/d-array-example.js">this</a> controller, which shows
             how such event handlers are set up.</p>
 
         <p>You can also call onRecordChange function(data, old) which is useful for updating calculated fields etc.</p>

@@ -14,7 +14,7 @@
     <script type="text/javascript" src="bower_components/angular-route/angular-route.js"></script>
     <script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script type="text/javascript" src="bower_components/underscore/underscore.js"></script>
-    <script type="text/javascript" src="bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script> <!-- is now in fngTabs.js  -->
+    <script type="text/javascript" src="bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
     <script type="text/javascript" src="bower_components/angular-ui-date/src/date.js"></script>
     <script type="text/javascript" src="bower_components/angular-ui-select2/src/select2.js"></script>
     <script type="text/javascript" src="bower_components/ngInfiniteScroll/ng-infinite-scroll.js"></script>
@@ -22,12 +22,13 @@
     <script type="text/javascript" src="bower_components/bootstrap/js/bootstrap-transition.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/js/bootstrap-collapse.js"></script>
     <link rel="stylesheet" href="bower_components/ng-grid/ng-grid.css">
-    <script type="text/javascript" src="bower_components/ng-grid/build/ng-grid.js"></script>
+    <script type="text/javascript" src="bower_components/ng-grid/ng-grid-2.0.7.debug.js"></script>
     <link rel="stylesheet" href="bower_components/select2/select2.css">
     <script type="text/javascript" src="bower_components/angular-elastic/elastic.js"></script>
     <script type="text/javascript" src="bower_components/select2/select2.js"></script>
+    <script type="text/javascript" src="bower_components/ckeditor/ckeditor.js"></script>
     <!--[if lt IE 9]>
-    <script src="components/html5shiv-dist/html5shiv.js"></script>
+    <script src="bower_components/html5shiv-dist/html5shiv.js"></script>
     <![endif]-->
 
     <!-- forms-angular stuff -->
@@ -39,29 +40,29 @@
     <script src="js/controllers/base.js"></script>
     <script src="js/controllers/analysis.js"></script>
     <script src="js/controllers/model.js"></script>
-    <script src="js/controllers/searchbox.js"></script>
     <script src="js/controllers/nav.js"></script>
     <script src="js/directives/form.js"></script>
     <script src="js/directives/form-buttons.js"></script>
-    <script src="js/directives/hide-on-empty.js"></script>
-    <script src="js/directives/subdoc-repeat.js"></script>
-    <script src="js/directives/ngGridTotalCell.js"></script>
-    <script src="js/gridPlugins/ng-grid-csv-export.js"></script>
-    <script src="js/gridPlugins/ng-grid-pdf-export.js"></script>
-    <script src="js/filters/titlecase.js"></script>
+    <script src="js/directives/search.js"></script>
+    <script src="js/directives/ckeditor.js"></script>
 
-    <!--stuff that we have had to mess with-->
-    <script src="js/directives/fngTabs.js"></script>
+    <script src="js/directives/ngGridTotalCell.js"></script>
+    <script src="js/plugins/ng-grid/ng-grid-csv-export.js"></script>
+    <script src="js/plugins/ng-grid/ng-grid-pdf-export.js"></script>
+    <script src="js/plugins/jsPDF/jspdf-plugin.cell.js"></script>
+    <script src="js/filters/titlecase.js"></script>
 
     <!--Demo application stuff-->
     <script src="demo/demo.js"></script>
     <script src="demo/directives/bespoke-field.js"></script>
     <script src="demo/directives/affix.js"></script>
+    <script src="demo/directives/friends.js"></script>
     <script src="demo/controllers/demo.js"></script>
     <script src="demo/controllers/b-using-options.js"></script>
     <script src="demo/controllers/in-the-wild.js"></script>
     <script src="demo/controllers/b-using-options-justnameandpostcode.js"></script>
     <script src="demo/controllers/d-array-example.js"></script>
+    <script src="demo/controllers/h_deep_nesting.js"></script>
 
     <script type="text/javascript">
         if (window.location.hostname != '0.0.0.0') {
@@ -80,7 +81,7 @@
         }
     </script>
 </head>
-<body ng-app="myDemoApp" ng-controller="NavCtrl">
+<body ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
 <div class="visible-desktop">
     <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032"></a>
 </div>
@@ -94,36 +95,24 @@
                 <span class="icon-bar"></span>
             </button>
             <div class="pull-left">
-                <a class="brandpluslogo" href="/#/index"><img src="/img/Home_icon_black.png" width="45" alt="Click on logo to go to home page"></a>
+                <a class="brandpluslogo" href="/#!/index"><img src="/img/Home_icon_black.png" width="45" alt="Click on logo to go to home page"></a>
             </div>
             <div class="visible-desktop pull-right span2"></div>   <!-- Leave some space for github flash -->
-            <div ng-controller="SearchCtrl" class="global-search">
-                <form class="navbar-search pull-right">
-                    <div id="search-cg" class="control-group" ng-class="errorClass">
-                        <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
-                    </div>
-                </form>
-                <div class="results-container" ng-show="results.length >= 1">
-                    <div class="search-results">
-                        <div ng-repeat="result in results"><a class="search-result" ng-href="#/{{result.resource}}/{{result.id}}/edit">{{result.resourceText}}
-                            {{result.text}}</a></div>
-                        <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
-                    </div>
-                </div>
-            </div>
+            <global-search class="global-search"></global-search>
+            <div class="pull-right" style="padding-top: 14px;"><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe></div>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li><a href="/#/get-started">Get Started</a></li>
-                    <li><a href="/#/schemas">Schemas</a></li>
-                    <li><a href="/#/forms">Forms</a></li>
-                    <li><a href="/#/reporting">Reporting</a></li>
+                    <li><a href="/#!/get-started">Get Started</a></li>
+                    <li><a href="/#!/schemas">Schemas</a></li>
+                    <li><a href="/#!/forms">Forms</a></li>
+                    <li><a href="/#!/reporting">Reporting</a></li>
                     <li class="dropdown"><a class="dropdown-toggle">More</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-option" href="/#/examples">Examples</a></li>
-                            <li><a class="dropdown-option" href="/#/api-docs">API Documentation</a></li>
+                            <li><a class="dropdown-option" href="/#!/examples">Examples</a></li>
+                            <li><a class="dropdown-option" href="/#!/api-docs">API Documentation</a></li>
                             <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
                             <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
-                            <li><a class="dropdown-option" href="/#/in-the-wild">Who Uses It?</a></li>
+                            <li><a class="dropdown-option" href="/#!/in-the-wild">Who Uses It?</a></li>
                         </ul>
                     </li>
 
@@ -133,7 +122,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li ng-repeat="choice in items">
-                                <a class="dropdown-option" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                                <a class="dropdown-option" ng-hide="isHidden($index)" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
                             </li>
                         </ul>
                     </li>

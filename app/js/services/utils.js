@@ -1,32 +1,28 @@
 formsAngular.service('utils', function() {
 
-
     this.getAddAllGroupOptions = function(scope, attrs, classes) {
         return getAddAllOptions(scope, attrs, "Group", classes);
-    }
+    };
 
     this.getAddAllFieldOptions = function(scope, attrs, classes) {
         return getAddAllOptions(scope, attrs, "Field", classes);
-    }
+    };
 
     this.getAddAllLabelOptions = function(scope, attrs, classes) {
         return getAddAllOptions(scope, attrs, "Label", classes);
-    }
+    };
 
     function getAddAllOptions(scope, attrs, type, classes) {
 
-        
+        var addAllOptions = [],
+            classList = [],
+            tmp, i, options;
 
-        var addAllOptions = []
-        , classList = []
-        , tmp
-        , options;
-
-       type = "addAll" + type;
+        type = "addAll" + type;
 
         if (typeof(classes) === 'string') {
             tmp = classes.split(' ');
-            for (var i = 0; i < tmp.length; i++) {
+            for (i = 0; i < tmp.length; i++) {
                 classList.push(tmp[i]);
             }
         }
@@ -54,9 +50,9 @@ formsAngular.service('utils', function() {
 
             } else if (typeof(attrs[type]) === "string") {
 
-                var tmp = attrs[type].split(' ');
+                tmp = attrs[type].split(' ');
 
-                for (var i = 0; i < tmp.length; i++) {
+                for (i = 0; i < tmp.length; i++) {
                     if (tmp[i].indexOf('class=') === 0) {
                         classList.push(tmp[i].substring(6, tmp[i].length));
                     } else {
@@ -83,4 +79,5 @@ formsAngular.service('utils', function() {
         return classes + options;
 
     }
+
 });

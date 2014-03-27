@@ -201,7 +201,15 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
     var that = this,
         results = [],
         moreCount = 0,
+        searchCriteria;
+
+    if (req.route.path === '/api/search') {
+        // Called from search box - treat words as separate strings
         searchCriteria = {$regex: '^(' + searchFor.split(' ').join('|') +')', $options: 'i'};
+    } else {
+        // called from somewhere else (probably select2 ajax) preserve spaces
+        searchCriteria = {$regex: '^' + searchFor, $options: 'i'};
+    }
 
     this.searchFunc(
         searches
@@ -371,6 +379,9 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
                 if (paths[element].options.secure) {
                     hiddenFields.push(element);
                 }
+                if (paths[element].options.match) {
+                    outPath[element].options.match = paths[element].options.match.source;
+                }
                 if (paths[element].options.list) {
                     listFields.push({field: element, params: paths[element].options.list})
                 }
@@ -430,18 +441,17 @@ DataForm.prototype.report = function () {
 
         var reportSchema
             , self = this
-            , url_parts = url.parse(req.url, true)
-            , runPipeline;
+            , urlParts = url.parse(req.url, true);
 
         if (req.params.reportName) {
-            reportSchema = req.resource.model.schema.statics['report'](req.params.reportName)
-        } else if (url_parts.query.r) {
-            switch (url_parts.query.r[0]) {
+            reportSchema = req.resource.model.schema.statics['report'](req.params.reportName, req)
+        } else if (urlParts.query.r) {
+            switch (urlParts.query.r[0]) {
                 case '[':
-                    reportSchema = {pipeline: JSON.parse(url_parts.query.r)};
+                    reportSchema = {pipeline: JSON.parse(urlParts.query.r)};
                     break;
                 case '{':
-                    reportSchema = JSON.parse(url_parts.query.r);
+                    reportSchema = JSON.parse(urlParts.query.r);
                     break;
                 default:
                     return self.renderError(new Error("Invalid 'r' parameter"), null, req, res, next);
@@ -459,7 +469,7 @@ DataForm.prototype.report = function () {
             }
             reportSchema = {pipeline: [
                 {$project: fields}
-            ], drilldown: "/#/" + req.params.resourceName + "/!_id!/edit"};
+            ], drilldown: "/#!/" + req.params.resourceName + "/|_id|/edit"};
         }
 
         // Replace parameters in pipeline
@@ -467,22 +477,38 @@ DataForm.prototype.report = function () {
         extend(schemaCopy, reportSchema);
         schemaCopy.params = schemaCopy.params || [];
 
-        self.doFindFunc(req, req.resource, function (err, queryObj) {
-
+        self.reportInternal(req, req.resource, schemaCopy, urlParts, function(err, result){
             if (err) {
-                return self.renderError(new Error("There was a problem with the findFunc for model " + req.resource.modelName), null, req, res, next);
+                self.renderError(err, null, req, res, next);
             } else {
-                // Bit crap here switching back and forth to string
-                runPipeline = JSON.stringify(schemaCopy.pipeline);
-                for (var param in url_parts.query) {
-                    if (url_parts.query.hasOwnProperty(param)) {
-                        if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
-                            schemaCopy.params[param].value = url_parts.query[param];
-                        }
+                res.send(result);
+            }
+        });
+    }, this);
+};
+
+DataForm.prototype.reportInternal = function(req, resource, schema, options, callback) {
+    var runPipeline
+    self = this;
+
+    self.doFindFunc(req, resource, function(err, queryObj) {
+        if (err) {
+            return "There was a problem with the findFunc for model";
+        } else {
+            // Bit crap here switching back and forth to string
+            runPipeline = JSON.stringify(schema.pipeline);
+            for (var param in options.query) {
+                if (options.query.hasOwnProperty(param)) {
+                    if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
+                        schema.params[param].value = options.query[param];
                     }
                 }
+            }
+
+            // Replace parameters with the value
+            if (runPipeline) {
                 runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function (match) {
-                    param = schemaCopy.params[match.slice(2, -2)];
+                    param = schema.params[match.slice(2, -2)];
                     if (param.type === 'number') {
                         return param.value;
                     } else if (_.isObject(param.value)) {
@@ -493,117 +519,161 @@ DataForm.prototype.report = function () {
                         return '"' + param.value + '"';
                     }
                 });
+            };
 
-                // Don't send the 'secure' fields
-                for (var hiddenField in self.generateHiddenFields(req.resource, false)) {
-                    if (runPipeline.indexOf(hiddenField) !== -1) {
-                        return self.renderError(new Error("You cannot access " + hiddenField), null, req, res, next);
-                    }
+            // Don't send the 'secure' fields
+            for (var hiddenField in self.generateHiddenFields(resource, false)) {
+                if (runPipeline.indexOf(hiddenField) !== -1) {
+                    callback("You cannot access " + hiddenField);
                 }
-
-                runPipeline = JSON.parse(runPipeline);
-
-                // Replace variables that cannot be serialised / deserialised.  Bit of a hack, but needs must...
-                // Anything formatted 1800-01-01T00:00:00.000Z or 1800-01-01T00:00:00.000+0000 is converted to a Date
-                // Only handles the cases I need for now
-                // TODO: handle arrays etc
-                var hackVariables = function (obj) {
-                    for (var prop in obj) {
-                        if (obj.hasOwnProperty(prop)) {
-                            if (typeof obj[prop] === 'string') {
-                                var dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(obj[prop]);
-                                if (dateTest) {
-                                    obj[prop] = new Date(dateTest[1]+'Z')
-                                }
-                            } else if (_.isObject(obj[prop])) {
-                                hackVariables(obj[prop]);
-                            }
-                        }
-                    }
-                };
-
-                for (var pipelineSection = 0; pipelineSection < runPipeline.length; pipelineSection++) {
-                    if (runPipeline[pipelineSection]['$match']) {
-                        hackVariables(runPipeline[pipelineSection]['$match']);
-                    }
-                }
-
-                // Add the findFunc query to the pipeline
-                if (queryObj) {
-                    runPipeline.unshift({$match: queryObj});
-                }
-
-                var toDo = {runAggregation: function (cb) {
-                    req.resource.model.aggregate(runPipeline, cb)
-                }
-                };
-
-                // if we need to do any column translations add the function to the tasks list
-                if (reportSchema.columnTranslations) {
-                    toDo.apply_translations = ['runAggregation', function (cb, results) {
-                        reportSchema.columnTranslations.forEach(function (columnTranslation) {
-                            results.runAggregation.forEach(function (resultRow) {
-                                var thisTranslation = _.find(columnTranslation.translations, function (option) {
-                                    return resultRow[columnTranslation.field].toString() === option.value.toString()
-                                });
-                                resultRow[columnTranslation.field] = thisTranslation.display;
-                            })
-                        });
-                        cb(null, null);
-                    }];
-
-                    // if any of the column translations are refs, set up the tasks to look up the values and populate the translations
-                    for (var i = 0; i < reportSchema.columnTranslations.length; i++) {
-                        var thisColumnTranslation = reportSchema.columnTranslations[i]
-                            , translateName = thisColumnTranslation.field;
-                        if (translateName) {
-                            if (thisColumnTranslation.ref) {
-                                var lookup = self.getResource(thisColumnTranslation.ref);
-                                if (lookup) {
-                                    if (toDo[translateName]) {
-                                        return self.renderError(new Error("Cannot have two columnTranslations for field " + translateName), null, req, res, next);
-                                    } else {
-                                        thisColumnTranslation.translations = thisColumnTranslation.translations || [];
-                                        toDo[translateName] = function (cb) {
-                                            lookup.model.find({}, {}, {lean: true}, function (err, findResults) {
-                                                if (err) {
-                                                    cb(err);
-                                                } else {
-                                                    for (var j = 0; j < findResults.length; j++) {
-                                                        thisColumnTranslation.translations[j] = {value: findResults[j]._id, display: self.getListFields(lookup, findResults[j])};
-                                                    }
-                                                    cb(null, null);
-                                                }
-                                            })
-                                        };
-                                        toDo.apply_translations.unshift(translateName);  // Make sure we populate lookup before doing translation
-                                    }
-                                } else {
-                                    return self.renderError(new Error("Invalid ref property of " + thisColumnTranslation.ref + " in columnTranslations " + translateName), null, req, res, next);
-                                }
-                            } else if (!thisColumnTranslation.translations) {
-                                return self.renderError(new Error("A column translation needs a ref or a translations property - " + translateName + " has neither"), null, req, res, next);
-                            }
-                        } else {
-                            return self.renderError(new Error("A column translation needs a field property"), null, req, res, next);
-                        }
-                    }
-                }
-
-                async.auto(toDo, function (err, results) {
-                    if (err) {
-                        return self.renderError(err, null, req, res, next);
-                    } else {
-                        // TODO: Could loop through schemaCopy.params and just send back the values
-                        res.send({success: true, schema: reportSchema, report: results.runAggregation, paramsUsed: schemaCopy.params});
-                    }
-                });
             }
-        });
-    }, this);
+
+            runPipeline = JSON.parse(runPipeline);
+
+            // Replace variables that cannot be serialised / deserialised.  Bit of a hack, but needs must...
+            // Anything formatted 1800-01-01T00:00:00.000Z or 1800-01-01T00:00:00.000+0000 is converted to a Date
+            // Only handles the cases I need for now
+            // TODO: handle arrays etc
+            var hackVariables = function (obj) {
+                for (var prop in obj) {
+                    if (obj.hasOwnProperty(prop)) {
+                        if (typeof obj[prop] === 'string') {
+                            var dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(obj[prop]);
+                            if (dateTest) {
+                                obj[prop] = new Date(dateTest[1]+'Z');
+                            } else {
+                                var objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
+                                if (objectIdTest) {
+                                    obj[prop] = new mongoose.Types.ObjectId(objectIdTest[1]);
+                                }
+                            }
+                        } else if (_.isObject(obj[prop])) {
+                            hackVariables(obj[prop]);
+                        }
+                    }
+                }
+            };
+
+            for (var pipelineSection = 0; pipelineSection < runPipeline.length; pipelineSection++) {
+                if (runPipeline[pipelineSection]['$match']) {
+                    hackVariables(runPipeline[pipelineSection]['$match']);
+                }
+            }
+
+            // Add the findFunc query to the pipeline
+            if (queryObj) {
+                runPipeline.unshift({$match: queryObj});
+            }
+
+            var toDo = {runAggregation: function (cb) {
+                resource.model.aggregate(runPipeline, cb)
+            }
+            };
+
+            var translations = [];  // array of form {ref:'lookupname',translations:[{value:xx, display:'  '}]}
+            // if we need to do any column translations add the function to the tasks list
+            if (schema.columnTranslations) {
+                toDo.apply_translations = ['runAggregation', function (cb, results) {
+
+                    function doATranslate(column, theTranslation) {
+                        results.runAggregation.forEach(function (resultRow) {
+                            var thisTranslation = _.find(theTranslation.translations, function (option) {
+                                return resultRow[column.field].toString() === option.value.toString()
+                            });
+                            resultRow[column.field] = thisTranslation.display;
+                        })
+                    }
+
+                    schema.columnTranslations.forEach(function (columnTranslation) {
+                        if (columnTranslation.translations) {
+                            doATranslate(columnTranslation, columnTranslation);
+                        }
+                        if (columnTranslation.ref) {
+                            var theTranslation = _.find(translations, function(translation){
+                                return (translation.ref === columnTranslation.ref)
+                            });
+                            if (theTranslation) {
+                                doATranslate(columnTranslation, theTranslation);
+                            } else {
+                                cb("Invalid ref property of "+columnTranslation.ref+" in columnTranslations "+columnTranslations.field)
+                            }
+                        }
+                    });
+                    cb(null, null);
+                }];
+
+                var callFuncs = false;
+                for (var i = 0; i < schema.columnTranslations.length; i++) {
+                    var thisColumnTranslation = schema.columnTranslations[i];
+
+                    if (thisColumnTranslation.field) {
+                        // if any of the column translations are adhoc funcs, set up the tasks to perform them
+                        if (thisColumnTranslation.fn) callFuncs = true;
+
+                        // if this column translation is a "ref", set up the tasks to look up the values and populate the translations
+                        if (thisColumnTranslation.ref) {
+                            var lookup = self.getResource(thisColumnTranslation.ref);
+                            if (lookup) {
+                                if (!toDo[thisColumnTranslation.ref]) {
+                                    toDo[thisColumnTranslation.ref] = function (cb) {
+                                        var translateObject = {ref:lookup.resource_name, translations: [] };
+                                        translations.push(translateObject);
+                                        lookup.model.find({}, {}, {lean: true}, function (err, findResults) {
+                                            if (err) {
+                                                cb(err);
+                                            } else {
+                                                for (var j = 0; j < findResults.length; j++) {
+                                                    translateObject.translations[j] = {value: findResults[j]._id, display: self.getListFields(lookup, findResults[j])};
+                                                }
+                                                cb(null, null);
+                                            }
+                                        })
+                                    };
+                                    toDo.apply_translations.unshift(thisColumnTranslation.ref);  // Make sure we populate lookup before doing translation
+                                }
+                            } else {
+                                return callback("Invalid ref property of " + thisColumnTranslation.ref + " in columnTranslations " + thisColumnTranslation.field);
+                            }
+                        }
+                        if (!thisColumnTranslation.translations && !thisColumnTranslation.ref && !thisColumnTranslation.fn) {
+                            return callback("A column translation needs a ref, fn or a translations property - " + translateName + " has neither");
+                        }
+                    } else {
+                        return callback("A column translation needs a field property");
+                    }
+                }
+                if (callFuncs) {
+                    toDo['callFunctions'] = ['runAggregation', function(cb,results) {
+                        async.each(results.runAggregation, function(row, cb) {
+                            for (var i = 0; i < schema.columnTranslations.length; i++) {
+                                var thisColumnTranslation = schema.columnTranslations[i]
+                                    , translateName = thisColumnTranslation.field;
+
+                                if (thisColumnTranslation.fn) {
+                                    thisColumnTranslation.fn(row, cb);
+                                }
+                            }
+                        }, function(err) {
+                            cb(null)
+                        });
+                    }];
+                    toDo.apply_translations.unshift('callFunctions');  // Make sure we do function before translating its result
+                }
+            }
+
+            async.auto(toDo, function (err, results) {
+                if (err) {
+                    callback(err);
+                } else {
+                    // TODO: Could loop through schema.params and just send back the values
+                    callback(null,{success: true, schema: schema, report: results.runAggregation, paramsUsed: schema.params});
+                }
+            });
+        }
+    });
 };
 
-DataForm.prototype.saveAndRespond = function (req, res) {
+DataForm.prototype.saveAndRespond = function (req, res, hidden_fields) {
 
     function internalSave(doc) {
         doc.save(function (err, doc2) {
@@ -619,6 +689,12 @@ DataForm.prototype.saveAndRespond = function (req, res) {
                 }
                 res.send(400, err2);
             } else {
+                doc2 = doc2.toObject();
+                for (var hidden_field in hidden_fields) {
+                    if (doc2.hasOwnProperty(hidden_field)) {
+                        delete doc2[hidden_field];
+                    }
+                }
                 res.send(doc2);
             }
         });
@@ -771,6 +847,7 @@ DataForm.prototype.cleanseRequest = function (req) {
     var req_data = req.body,
         resource = req.resource;
 
+    delete req_data.__v;   // Don't mess with Mongoose internal field (https://github.com/LearnBoost/mongoose/issues/1933)
     if (typeof resource.options['hide'] == 'undefined')
         return req_data;
 
@@ -870,7 +947,7 @@ DataForm.prototype.entityPut = function () {
             hidden_fields._id = false;
             req.resource.model.findById(req.doc._id, hidden_fields, {lean: true}, function (err, data) {
                 that.replaceHiddenFields(req.doc, data);
-                that.saveAndRespond(req, res);
+                that.saveAndRespond(req, res, hidden_fields);
             })
         } else {
             that.saveAndRespond(req, res);

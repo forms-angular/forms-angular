@@ -167,6 +167,11 @@ body {
   }
 }
 
+button.form-btn {
+  width: 8em;
+  height: 2em;
+}
+
 form {
   &.form-horizontal.compact {
     .control-group {
@@ -180,10 +185,6 @@ form {
     hr {
       margin: 8px 0;
     }
-  }
-  button.form-btn {
-    width: 8em;
-    height: 2em;
   }
 
   .schema-head, .sub-doc, .schema-foot {
@@ -206,7 +207,8 @@ form {
      padding: 4px 180px;
   }
   .sub-doc {
-    padding: 5px 0;
+    padding: 0 5px 0 0;
+    width: 97%;   // which will get rid of scroll bar under most circumstances
     margin-bottom: 3px;
   }
   .sub-doc-btns {
@@ -265,6 +267,13 @@ form {
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
     border-radius: 15px;
+    .search-result {
+      color: @linkColor;
+    }
+    .search-result.focus {
+      background-color: @linkColorHover;
+      color: white;
+    }
 }
 
 @media (max-width: @navbarCollapseWidth) {
@@ -273,3 +282,7 @@ form {
     padding-right : 1em;
   }
 }
+
+
+
+
