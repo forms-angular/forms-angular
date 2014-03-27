@@ -9377,8 +9377,8 @@ form .form-inline > .sub-doc {
   font-family: 'FontAwesome';
   font-style: normal;
   font-weight: normal;
-  src: url('../../bower_components/components-font-awesome/font/fontawesome-webfont.eot?v=3.2.1');
-  src: url('../../bower_components/components-font-awesome/font/fontawesome-webfont.eot?#iefix&v=3.2.1') format('embedded-opentype'), url('../../bower_components/components-font-awesome/font/fontawesome-webfont.woff?v=3.2.1') format('woff'), url('../../bower_components/components-font-awesome/font/fontawesome-webfont.ttf?v=3.2.1') format('truetype'), url('../../bower_components/components-font-awesome/font/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1') format('svg');
+  src: url('/styles/components-font-awesome/font/fontawesome-webfont.eot?v=3.2.1');
+  src: url('/styles/components-font-awesome/font/fontawesome-webfont.eot?#iefix&v=3.2.1') format('embedded-opentype'), url('/styles/components-font-awesome/font/fontawesome-webfont.woff?v=3.2.1') format('woff'), url('/styles/components-font-awesome/font/fontawesome-webfont.ttf?v=3.2.1') format('truetype'), url('/styles/components-font-awesome/font/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1') format('svg');
 }
 
 /* FONT AWESOME CORE
