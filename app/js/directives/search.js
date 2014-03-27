@@ -57,7 +57,7 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function 
     $scope.$watch('searchTarget', function(newValue) {
         if (newValue && newValue.length > 0) {
             currentRequest = newValue;
-            $http.get('api/search?q=' + newValue).success(function (data) {
+            $http.get('/api/search?q=' + newValue).success(function (data) {
                 // Check that we haven't fired off a subsequent request, in which
                 // case we are no longer interested in these results
                 if (currentRequest === newValue) {
