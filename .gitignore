@@ -9,6 +9,7 @@ build.xml
 .bower-cache
 .bower-registry
 .bower-tmp
+.tmp
 
 node_modules
 app/e2etest

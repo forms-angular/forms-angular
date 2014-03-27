@@ -21,6 +21,7 @@ app.configure(function(){
     app.use(require('prerender-node').set('prerenderToken', process.env['PRERENDER']));
     app.use(express.methodOverride());
     app.use(app.router);
+    if (app.get('env')==='production') app.use(express.static(__dirname + '/../dist'));
     app.use(express.static(__dirname + '/../app'));
 
     // Copy the schemas to somewhere they can be served

@@ -1,4 +1,4 @@
-myDemoApp.directive('emailField', function ($compile, $filter) {
+myDemoApp.directive('emailField', ['$compile','$filter', function ($compile, $filter) {
         return {
             restrict: 'E',
             replace: true,
@@ -27,5 +27,5 @@ myDemoApp.directive('emailField', function ($compile, $filter) {
                 };
             }
         };
-    });
+    }]);
 
