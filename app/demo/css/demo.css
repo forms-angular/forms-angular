@@ -9355,6 +9355,15 @@ form .form-inline > .sub-doc {
           box-shadow: 10px 10px 10px #888;
 }
 
+.search-results .search-result {
+  color: #2fa4e7;
+}
+
+.search-results .search-result.focus {
+  color: white;
+  background-color: #157ab5;
+}
+
 @media (max-width: 979px) {
   .global-search {
     padding-right: 1em;

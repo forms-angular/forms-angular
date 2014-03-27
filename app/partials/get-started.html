@@ -20,8 +20,8 @@
 application, which will consist of an input form for a simple model, a listing showing data
 already on file, search, menus and a simple report with several features including outputting to PDF.</p>
 <p>If you want a sneak preview of what the input form will look like when you have finished take a look at
-one of the <a href="">examples</a> - there is a simple input form <a href="/#/a_unadorned_mongoose/new">here</a>
-and a more feature-filled one <a href="/#/b_using_options/new">here</a>.</p>
+one of the <a href="">examples</a> - there is a simple input form <a href="/#!/a_unadorned_mongoose/new">here</a>
+and a more feature-filled one <a href="/#!/b_using_options/new">here</a>.</p>
 <!--TODO: Get rid of the "override the name" on the second example-->
 <section id="prepare" name="Prepare" affix-scroll>
 <h3>Prepare</h3>
@@ -68,7 +68,7 @@ cd ..</code></pre>
 </section>
 <section id="server-code" name="Server Code" affix-scroll>
 <h3>Modify generated server code</h3>
-Add the following to app.js (see the <a href="/#/schemas">Schemas page</a> for details about setting up schemas):
+Add the following to app.js (see the <a href="/#!/schemas">Schemas page</a> for details about setting up schemas):
 <pre><code>var mongoose = require(&apos;mongoose&apos;);
 var formsAngular = require(&apos;forms-angular&apos;);
 
@@ -108,7 +108,7 @@ DataFormHandler.addResource(&apos;applicant&apos;, Applicant);   // Create and a
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-route/angular-route.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-sanitize/angular-sanitize.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/underscore/underscore.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js&quot;&gt;&lt;/script&gt; &lt;!-- is now in fngTabs.js  --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-ui-date/src/date.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-ui-select2/src/select2.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ngInfiniteScroll/ng-infinite-scroll.js&quot;&gt;&lt;/script&gt;
@@ -116,10 +116,12 @@ DataFormHandler.addResource(&apos;applicant&apos;, Applicant);   // Create and a
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/bootstrap/js/bootstrap-transition.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/bootstrap/js/bootstrap-collapse.js&quot;&gt;&lt;/script&gt;
     &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/ng-grid/ng-grid.css&quot;&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ng-grid/build/ng-grid.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ng-grid/ng-grid-2.0.7.debug.js&quot;&gt;&lt;/script&gt;
     &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/select2/select2.css&quot;&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/angular-elastic/elastic.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/select2/select2.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ckeditor/ckeditor.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ng-ckeditor/ng-ckeditor.js&quot;&gt;&lt;/script&gt;
     &lt;!--[if lt IE 9]&gt;
     &lt;script src=&quot;bower_components/html5shiv-dist/html5shiv.js&quot;&gt;&lt;/script&gt;
     &lt;![endif]--&gt;
@@ -159,7 +161,7 @@ DataFormHandler.addResource(&apos;applicant&apos;, Applicant);   // Create and a
                 &lt;/form&gt;
                 &lt;div class=&quot;search-results&quot; ng-show=&quot;results.length &gt;= 1&quot;&gt;
                     &lt;div ng-repeat=&quot;result in results&quot;&gt;
-                        &lt;a class=&quot;search-result&quot; ng-href=&quot;#/{{result.resource}}/{{result.id}}/edit&quot;&gt;
+                        &lt;a class=&quot;search-result&quot; ng-href=&quot;#!/{{result.resource}}/{{result.id}}/edit&quot;&gt;
                             {{result.resourceText}} {{result.text}}
                         &lt;/a&gt;
                     &lt;/div&gt;
@@ -211,7 +213,7 @@ myApp.config([&apos;$routeProvider&apos;, function($routeProvider) {
     &lt;!--This is the header section--&gt;
     &lt;div class=&quot;page-header edit-header row-fluid&quot;&gt;
         &lt;!--The left hand side contains important fields from the data--&gt;
-        &lt;div class=&quot;header-lhs span9&quot;&gt;
+        &lt;div class=&quot;header-lhs span8&quot;&gt;
             &lt;h4&gt;{{modelNameDisplay}} :
                 &lt;span ng-repeat=&quot;field in listSchema&quot;&gt;{{getListData(record, field.name)}} &lt;/span&gt;
             &lt;/h4&gt;
@@ -223,14 +225,14 @@ myApp.config([&apos;$routeProvider&apos;, function($routeProvider) {
     &lt;/div&gt;
     &lt;div class=&quot;container-fluid page-body edit-body&quot;&gt;
         &lt;!--This section only appears when there is an error message to display--&gt;
-        &lt;div ng-show=&quot;errorMessage&quot; class=&quot;row-fluid&quot;&gt;
+        &lt;div id=&quot;display-error&quot; ng-show=&quot;errorMessage&quot; class=&quot;row-fluid&quot;&gt;
             &lt;div class=&quot;span6 offset3 alert alert-error&quot;&gt;
                 &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;&amp;times;&lt;/button&gt;
                 &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
                 &lt;div ng-bind-html=&quot;errorMessage&quot;&gt;&lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
-        &lt;form-input name=&quot;baseForm&quot; schema=&quot;baseSchema()&quot; formStyle=&quot;horizontalCompact&quot;&gt;&lt;/form-input&gt;
+        &lt;form-input name=&quot;baseForm&quot; schema=&quot;baseSchema()&quot; formStyle=&quot;compact&quot;&gt;&lt;/form-input&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 </code></pre>
@@ -247,8 +249,16 @@ myApp.config([&apos;$routeProvider&apos;, function($routeProvider) {
         &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;container-fluid page-body list-body&quot;&gt;
+        &lt;div ng-show=&quot;errorMessage&quot; class=&quot;row-fluid&quot;&gt;
+            &lt;div class=&quot;span6 offset3 alert alert-error&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;&amp;times;&lt;/button&gt;
+                &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
+                &lt;div ng-bind-html=&quot;errorMessage&quot;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
         &lt;div class=&quot;row-fluid&quot; infinite-scroll=&quot;scrollTheList()&quot;&gt;
-            &lt;a ng-repeat=&quot;record in recordList&quot; ng-href=&quot;/#/{{modelName}}/{{formPlusSlash}}{{getId(record)}}/edit&quot;&gt;
+            &lt;a ng-repeat=&quot;record in recordList&quot; ng-href=&quot;/#!/{{modelName}}/{{formPlusSlash}}{{getId(record)}}/edit&quot;&gt;
                 &lt;div class=&quot;list-item&quot;&gt;
                     &lt;div class=&quot;span{{12/listSchema.length}}&quot; ng-repeat=&quot;field in listSchema&quot;&gt;{{getListData(record, field.name)}} &lt;/div&gt;
                 &lt;/div&gt;
