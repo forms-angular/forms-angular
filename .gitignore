@@ -13,6 +13,7 @@ build.xml
 
 node_modules
 app/e2etest
+app/styles
 .idea/*
 bin/*
 test_out/*
