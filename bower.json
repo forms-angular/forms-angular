@@ -38,6 +38,6 @@
     "angular-elastic": "~2",
     "select2-bootstrap-css": "~1.2",
     "jspdf": "*",
-    "ng-ckeditor": "git://github.com/mchapman/ng-ckeditor#selective-update"
+    "ng-ckeditor": "*"
   }
 }
