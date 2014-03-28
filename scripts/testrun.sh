@@ -1,7 +1,12 @@
 #!/bin/bash
 
-karma start config/karma.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
-karma start config/karma.midway.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
+KARMA_EXE=/usr/bin/karma
+
+if [ ! -x $KARMA_EXE ]; then
+	KARMA_EXE=`./node_modules/.bin/karma`
+fi
+$KARMA_EXE start config/karma.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
+$KARMA_EXE start config/karma.midway.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
 
 A=`lsof -Pnl +M -i4 | grep '3001'`
 
@@ -18,7 +23,7 @@ case ${A:0:4} in
 esac
 
 mocha --recursive test/api/*.js
-karma start config/karma-e2e.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
+${KARMA_EXE} start config/karma-e2e.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
 
 case $B in
 	0 )
