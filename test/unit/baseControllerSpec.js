@@ -16,7 +16,7 @@ describe('"BaseCtrl"', function () {
         it('should request a schema', function () {
             inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
                 $location.$$path = '/collection/new';
                 scope = $rootScope.$new();
                 ctrl = $controller("BaseCtrl", {$scope: scope});
@@ -28,7 +28,7 @@ describe('"BaseCtrl"', function () {
         it('should handle an invalid model', function () {
             inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.when('GET', 'api/schema/collection').respond(function () {
+                $httpBackend.when('GET', '/api/schema/collection').respond(function () {
                     return [404, 'Some error', {}]
                 });
                 $location.$$path = '/collection/new';
@@ -43,7 +43,7 @@ describe('"BaseCtrl"', function () {
             inject(function (_$httpBackend_, $rootScope, $controller, _$location_) {
                 $httpBackend = _$httpBackend_;
                 _$location_.path('/someModel/new');
-                $httpBackend.when('GET', 'api/schema/someModel').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                $httpBackend.when('GET', '/api/schema/someModel').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
                 scope = $rootScope.$new();
                 ctrl = $controller("BaseCtrl", {$scope: scope, $location: _$location_});
                 $httpBackend.flush();
@@ -57,7 +57,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {"name": {"instance": "String"}, "hide_me": {"instance": "String", "options": {"form": {"hidden": true}}}}
             );
             $location.$$path = '/collection/new';
@@ -89,21 +89,21 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {"textField": {"path": "textField", "instance": "String", "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null},
                     "lookupField": {"path": "lookupField", "instance": "ObjectID", "options": {"ref": "Person", "form": {"hidden": true}}, "_index": null},
                     "arrayOfString": {"caster": {"instance": "String"}, "path": "arrayOfString", "options": {"type": [null]}, "_index": null},
                     "arrayOfLookup": {"caster": {"path": null, "instance": "ObjectID", "options": {}, "_index": null}, "path": "arrayOfLookup", "options": {"type": [null], "ref": "referral_format", "form": {"label": "Referral Format"}}, "_index": null}}
             );
-            $httpBackend.whenGET('api/schema/referral_format').respond(
+            $httpBackend.whenGET('/api/schema/referral_format').respond(
                 {"description": {"enumValues": [], "regExp": null, "path": "description", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"list": true}, "_index": null},
                     "module": {"enumValues": [], "regExp": null, "path": "module", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"hidden": true}}, "_index": null},
                     "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null}}
             );
-            $httpBackend.whenGET('api/collection/3').respond({
+            $httpBackend.whenGET('/api/collection/3').respond({
                 "textField": "This is some text", "lookupField": "123456789", "arrayOfString": ["string", "rope", "cord"], "arrayOfLookup": ["1", "2", "4"]
             });
-            $httpBackend.whenGET('api/referral_format').respond(
+            $httpBackend.whenGET('/api/referral_format').respond(
                 [
                     {"description": "Social services", "module": "anything", "_id": "1"},
                     {"description": "Continuing Health Care", "module": "anything", "_id": "2"},
@@ -138,7 +138,7 @@ describe('"BaseCtrl"', function () {
 //
 //        beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
 //            $httpBackend = _$httpBackend_;
-//            $httpBackend.whenGET('api/schema/collection').respond(
+//            $httpBackend.whenGET('/api/schema/collection').respond(
 //                {"name": {"instance": "String"}, "noLabel": {"instance": "String", "options": {"form": {"label": null}}}}
 //            );
 //            scope = $rootScope.$new();
@@ -170,7 +170,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {"surname": {"enumValues": [], "regExp": null, "path": "surname", "instance": "String", "validators": [
                     [null, "required"]
                 ], "setters": [], "getters": [], "options": {"required": true}, "_index": null, "isRequired": true},
@@ -197,7 +197,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {"surname": {"enumValues": [], "regExp": null, "path": "surname", "instance": "String", "setters": [], "getters": [], "options": {"readonly": true}, "_index": null},
                     "town": {"instance": "String"}}
             );
@@ -221,7 +221,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
 
 
                 {"password": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
@@ -247,7 +247,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {"sysUserData.password": {"enumValues": [], "regExp": null, "path": "sysUserData.password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "New Password", "hidden": false}, "default": ""}, "_index": null, "defaultValue": "", "$conditionalHandlers": {}}}
             );
             scope = $rootScope.$new();
@@ -270,7 +270,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {"password": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"type": "text"}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
             );
             scope = $rootScope.$new();
@@ -293,7 +293,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {"forename": {"enumValues":[],"regExp":null,"path":"forename","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true,"index":true,"form":{"type":"password"}},"_index":true,"$conditionalHandlers":{}}}
             );
             scope = $rootScope.$new();
@@ -316,7 +316,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
 
 
                 {"secret": {"enumValues": [], "regExp": null, "path": "password", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"type": "password"}}, "_index": null, "$conditionalHandlers": {}}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}}
@@ -341,7 +341,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {
                     "textField": {"path": "textField", "instance": "String", "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null},
                     "hiddenField": {"path": "lookupField", "instance": "ObjectID", "options": {"ref": "NotCalled", "form": {"hidden": true}}, "_index": null},
@@ -352,24 +352,24 @@ describe('"BaseCtrl"', function () {
                     "arrayOfEnumIn.SubDoc": {"caster": {"path": "arrayOfEnumIn.SubDoc", "instance": "String"}, "path": "arrayOfEnumIn.SubDoc", "options": {"type": [null], "enum": ["Ash", "Birch", "Chestnut"]}, "_index": null, "$conditionalHandlers": {}},
                     "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null, "$conditionalHandlers": {}}
                 });
-            $httpBackend.whenGET('api/schema/referral_format').respond(
+            $httpBackend.whenGET('/api/schema/referral_format').respond(
                 {"description": {"enumValues": [], "regExp": null, "path": "description", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"list": true}, "_index": null},
                     "module": {"enumValues": [], "regExp": null, "path": "module", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"hidden": true}}, "_index": null},
                     "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null}}
             );
-            $httpBackend.whenGET('api/schema/Person').respond(
+            $httpBackend.whenGET('/api/schema/Person').respond(
                 {"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"list": true}, "_index": null},
                     "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null}}
             );
-            $httpBackend.whenGET('api/Person').respond([
+            $httpBackend.whenGET('/api/Person').respond([
                 {"name": "John Smith", _id: 123456789},
                 {"name": "Alan Jones", _id: 123389}
             ]);
-            $httpBackend.whenGET('api/collection/3').respond({
+            $httpBackend.whenGET('/api/collection/3').respond({
                 "textField": "This is some text", "lookupField": 123456789, "hiddenField": "12312", "arrayOfString": ["string", "rope", "cord"], "arrayOfLookup": ["1", "2", "4"], "arrayOfEnum": ["Football", "Cricket"],
                 "arrayOfEnumIn": {"SubDoc": ["Birch", "Chestnut"]}
             });
-            $httpBackend.whenGET('api/referral_format').respond(
+            $httpBackend.whenGET('/api/referral_format').respond(
                 [
                     {"description": "Social services", "module": "anything", "_id": "1"},
                     {"description": "Continuing Health Care", "module": "anything", "_id": "2"},
@@ -425,7 +425,7 @@ describe('"BaseCtrl"', function () {
 
             it('converts object array to string array', function () {
                 scope.record.arrayOfString[2].x = 'ribbon';
-                $httpBackend.when('POST', 'api/collection/3',
+                $httpBackend.when('POST', '/api/collection/3',
                     {"textField": "This is some text", "lookupField": 123456789, "hiddenField": "12312", "arrayOfString": ["string", "rope", "ribbon"], "arrayOfLookup": ["1", "2", "4"], "arrayOfEnum": ["Football", "Cricket"],"arrayOfEnumIn": {"SubDoc": ["Birch", "Chestnut"]}}
                 ).respond(200, 'SUCCESS');
                 scope.save();
@@ -434,7 +434,7 @@ describe('"BaseCtrl"', function () {
 
             it('converts object array to enum array', function () {
                 scope.record.arrayOfEnum[1].x = 'Hockey';
-                $httpBackend.when('POST', 'api/collection/3',
+                $httpBackend.when('POST', '/api/collection/3',
                     {"textField": "This is some text", "lookupField": 123456789, "hiddenField": "12312", "arrayOfString": ["string", "rope", "cord"], "arrayOfLookup": ["1", "2", "4"], "arrayOfEnum": ["Football", "Hockey"], "arrayOfEnumIn": {"SubDoc": ["Birch", "Chestnut"]}}
                 ).respond(200, 'SUCCESS');
                 scope.save();
@@ -443,7 +443,7 @@ describe('"BaseCtrl"', function () {
 
             it('converts object array in subdoc to enum array', function () {
                 scope.record.arrayOfEnumIn.SubDoc[1].x = 'Ash';
-                $httpBackend.when('POST', 'api/collection/3',
+                $httpBackend.when('POST', '/api/collection/3',
                     {"textField": "This is some text", "lookupField": 123456789, "hiddenField": "12312", "arrayOfString": ["string", "rope", "cord"], "arrayOfLookup": ["1", "2", "4"], "arrayOfEnum": ["Football", "Cricket"], "arrayOfEnumIn": {"SubDoc": ["Birch", "Ash"]}}
                 ).respond(200, 'SUCCESS');
                 scope.save();
@@ -460,7 +460,7 @@ describe('"BaseCtrl"', function () {
         beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location) {
             $httpBackend = _$httpBackend_;
 
-            $httpBackend.whenGET('api/schema/collection').respond({
+            $httpBackend.whenGET('/api/schema/collection').respond({
                 "surname": {"enumValues": [], "regExp": null, "path": "surname", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"list": {}}, "_index": null},
                 "forename": {"enumValues": [], "regExp": null, "path": "forename", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"list": true}, "_index": null},
                 "address.street": {"enumValues": [], "regExp": null, "path": "address.street", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {}, "_index": null},
@@ -486,13 +486,13 @@ describe('"BaseCtrl"', function () {
                     {"ref": "assistants"}
                 ]}, "_index": null},
                 "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null}});
-            $httpBackend.whenGET('api/schema/teachers').respond({"surname": {"enumValues": [], "regExp": null, "path": "surname", "instance": "String", "validators": [
+            $httpBackend.whenGET('/api/schema/teachers').respond({"surname": {"enumValues": [], "regExp": null, "path": "surname", "instance": "String", "validators": [
                 [null, "required"]
             ], "setters": [], "getters": [], "options": {"required": true, "list": {}}, "_index": null, "isRequired": true}, "forename": {"enumValues": [], "regExp": null, "path": "forename", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"list": true}, "_index": null}, "address.line1": {"enumValues": [], "regExp": null, "path": "address.line1", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Address"}}, "_index": null}, "address.line2": {"enumValues": [], "regExp": null, "path": "address.line2", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": null}}, "_index": null}, "address.line3": {"enumValues": [], "regExp": null, "path": "address.line3", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": null}}, "_index": null}, "address.town": {"enumValues": [], "regExp": null, "path": "address.town", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Town"}}, "_index": null}, "address.postcode": {"enumValues": [], "regExp": null, "path": "address.postcode", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Postcode", "help": "Enter your postcode or zip code"}}, "_index": null}, "weight": {"path": "weight", "instance": "Number", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Weight (lbs)"}}, "_index": null}, "dateOfBirth": {"path": "dateOfBirth", "instance": "Date", "validators": [], "setters": [], "getters": [], "options": {}, "_index": null}, "accepted": {"path": "accepted", "instance": "boolean", "validators": [], "setters": [], "getters": [], "options": {"form": {"helpInline": "Did we take them?"}}, "_index": null}, "interviewScore": {"path": "interviewScore", "instance": "Number", "validators": [], "setters": [], "getters": [], "options": {"form": {"hidden": true}, "list": {}}, "_index": null}, "freeText": {"enumValues": [], "regExp": null, "path": "freeText", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"type": "textarea", "rows": 5}}, "_index": null}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null}});
-            $httpBackend.whenGET('api/schema/assistants').respond({"surname": {"enumValues": [], "regExp": null, "path": "surname", "instance": "String", "validators": [
+            $httpBackend.whenGET('/api/schema/assistants').respond({"surname": {"enumValues": [], "regExp": null, "path": "surname", "instance": "String", "validators": [
                 [null, "required"]
             ], "setters": [], "getters": [], "options": {"required": true, "list": {}}, "_index": null, "isRequired": true}, "forename": {"enumValues": [], "regExp": null, "path": "forename", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"list": true}, "_index": null}, "address.line1": {"enumValues": [], "regExp": null, "path": "address.line1", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Address"}}, "_index": null}, "address.line2": {"enumValues": [], "regExp": null, "path": "address.line2", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": null}}, "_index": null}, "address.line3": {"enumValues": [], "regExp": null, "path": "address.line3", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": null}}, "_index": null}, "address.town": {"enumValues": [], "regExp": null, "path": "address.town", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Town"}}, "_index": null}, "address.postcode": {"enumValues": [], "regExp": null, "path": "address.postcode", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Postcode", "help": "Enter your postcode or zip code"}}, "_index": null}, "weight": {"path": "weight", "instance": "Number", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Weight (lbs)"}}, "_index": null}, "dateOfBirth": {"path": "dateOfBirth", "instance": "Date", "validators": [], "setters": [], "getters": [], "options": {}, "_index": null}, "accepted": {"path": "accepted", "instance": "boolean", "validators": [], "setters": [], "getters": [], "options": {"form": {"helpInline": "Did we take them?"}}, "_index": null}, "interviewScore": {"path": "interviewScore", "instance": "Number", "validators": [], "setters": [], "getters": [], "options": {"form": {"hidden": true}, "list": {}}, "_index": null}, "freeText": {"enumValues": [], "regExp": null, "path": "freeText", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"type": "textarea", "rows": 5}}, "_index": null}, "_id": {"path": "_id", "instance": "ObjectID", "validators": [], "setters": [null], "getters": [], "options": {"auto": true}, "_index": null}});
-            $httpBackend.whenGET('api/collection/3').respond({"surname": "Thompson", "forename": "Chris", "address": {"street": "4 High Street", "town": "Bolton"},
+            $httpBackend.whenGET('/api/collection/3').respond({"surname": "Thompson", "forename": "Chris", "address": {"street": "4 High Street", "town": "Bolton"},
                 "studies": {
                     "courses": [
                         {"subject": "French", "grade": "A", "teachers": [
@@ -505,11 +505,11 @@ describe('"BaseCtrl"', function () {
                         {"subject": "French", "examDate": "2013-02-12T00:00:00.000Z", "score": 56, "result": "pass", "grader": "Smithy"},
                         {"subject": "English", "examDate": "2013-02-04T00:00:00.000Z", "score": 56, "result": "pass", "grader": "Smithy"}
                     ]}});
-            $httpBackend.whenGET('api/teachers').respond([
+            $httpBackend.whenGET('/api/teachers').respond([
                 {"_id": "Smithy", "forename": "John", "surname": "Smith" },
                 { "surname": "Jenkins", "forename": "Nicky", "_id": "Jenks"}
             ]);
-            $httpBackend.whenGET('api/assistants').respond([
+            $httpBackend.whenGET('/api/assistants').respond([
                 {"_id": "ASmithy", "forename": "John", "surname": "AsstSmith" },
                 { "surname": "AsstJenkins", "forename": "Nicky", "_id": "AJenks"}
             ]);
@@ -534,7 +534,7 @@ describe('"BaseCtrl"', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/person').respond({
+            $httpBackend.whenGET('/api/schema/person').respond({
                 givenName: {
                     enumValues: [ ],
                     regExp: null,
@@ -617,7 +617,7 @@ describe('"BaseCtrl"', function () {
                     _index: null
                 }
             });
-            $httpBackend.whenGET('api/schema/organisation').respond({
+            $httpBackend.whenGET('/api/schema/organisation').respond({
                 name: {
                     enumValues: [ ],
                     regExp: null,
@@ -648,7 +648,7 @@ describe('"BaseCtrl"', function () {
                     },
                     _index: null
                 }});
-            $httpBackend.whenGET('api/organisation').respond([
+            $httpBackend.whenGET('/api/organisation').respond([
                 {
                     _id: "5",
                     name: "Tesco"
@@ -673,7 +673,7 @@ describe('"BaseCtrl"', function () {
             scope.record = {"familyName": "Chapman", "givenName": "Mark", "appData": {"accessToOrgs": [
                 {"x": "Tesco"}
             ]}};
-            $httpBackend.when('POST', 'api/person', {"familyName": "Chapman", "givenName": "Mark", "appData": {"accessToOrgs": ["5"]}}).respond(200, 'SUCCESS');
+            $httpBackend.when('POST', '/api/person', {"familyName": "Chapman", "givenName": "Mark", "appData": {"accessToOrgs": ["5"]}}).respond(200, 'SUCCESS');
             scope.save();
             $httpBackend.flush();
         });
@@ -685,12 +685,12 @@ describe('"BaseCtrl"', function () {
         it('generates an error message', function () {
             inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
                 $location.$$path = '/collection/new';
                 scope = $rootScope.$new();
                 ctrl = $controller("BaseCtrl", {$scope: scope});
                 scope.record = {"familyName": "Chapman", "givenName": "Mark"};
-                $httpBackend.when('POST', 'api/collection', {"familyName": "Chapman", "givenName": "Mark"}).respond(400, {message: "There is some kind of error", status: "err"});
+                $httpBackend.when('POST', '/api/collection', {"familyName": "Chapman", "givenName": "Mark"}).respond(400, {message: "There is some kind of error", status: "err"});
                 scope.save();
                 $httpBackend.flush();
                 expect(scope.alertTitle).toEqual('Error!');
@@ -705,7 +705,7 @@ describe('"BaseCtrl"', function () {
         it('extracts custom directives from schemas', function () {
             inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/collection').respond({"email": {"enumValues": [], "regExp": null, "path": "email", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"directive": "email-field"}}, "_index": null, "$conditionalHandlers": {}}});
+                $httpBackend.whenGET('/api/schema/collection').respond({"email": {"enumValues": [], "regExp": null, "path": "email", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"directive": "email-field"}}, "_index": null, "$conditionalHandlers": {}}});
                 $location.$$path = '/collection/new';
                 scope = $rootScope.$new();
                 ctrl = $controller("BaseCtrl", {$scope: scope});
@@ -727,8 +727,8 @@ describe('"BaseCtrl"', function () {
             inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location, _$modal_, $q) {
                 $modal = _$modal_;
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                $httpBackend.whenGET('api/collection/125').respond({"name": "Alan"});
+                $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                $httpBackend.whenGET('/api/collection/125').respond({"name": "Alan"});
                 $location.$$path = '/collection/125/edit';
                 $scope = $rootScope.$new();
                 ctrl = $controller("BaseCtrl", {
@@ -768,8 +768,8 @@ describe('"BaseCtrl"', function () {
         });
 
         it('send a delete request when yes is clicked', function () {
-            $httpBackend.when('DELETE', 'api/collection/125').respond(200, 'SUCCESS');
-            $httpBackend.expectDELETE('api/collection/125');
+            $httpBackend.when('DELETE', '/api/collection/125').respond(200, 'SUCCESS');
+            $httpBackend.expectDELETE('/api/collection/125');
             $scope.delete();
             deferred.resolve(true);    // Same as clicking on Yes
             $httpBackend.flush();

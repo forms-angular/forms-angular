@@ -7,7 +7,7 @@ myDemoApp.controller('FriendCtrl',['$scope', '$routeParams', '$location', '$http
     };
 
     $scope.frdShowDetails = function (friend) {
-        $http.get('api/a_unadorned_mongoose/' + friend.friend).success(function (data) {
+        $http.get('/api/a_unadorned_mongoose/' + friend.friend).success(function (data) {
             if (data && data.success != false) {
                 $scope.frdPopupName = data.forename + ' ' + data.surname;
                 $scope.frdPopupPhone = data.phone;
