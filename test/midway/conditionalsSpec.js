@@ -17,7 +17,7 @@ describe('Condition display', function() {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond({
+            $httpBackend.whenGET('/api/schema/collection').respond({
                     "name": {"instance": "String"},
                     "hide_me": {"instance": "String", "options": {"form": {"showIf": {"lhs": 0, "comp": "eq", "rhs": 1}}}},
                     "show_me": {"instance": "String", "options": {"form": {"showIf": {"lhs": 1, "comp": "eq", "rhs": 1}}}}
@@ -41,7 +41,7 @@ describe('Condition display', function() {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location, $compile) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond({
+            $httpBackend.whenGET('/api/schema/collection').respond({
                     "name": {"instance": "String"},
                     "change_me": {"instance": "String", "options": {"form": {"showIf": {"lhs": "$name", "comp": "ne", "rhs": "hide"}}}}
                 });

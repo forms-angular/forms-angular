@@ -31,7 +31,7 @@ describe('formButton', function() {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location, $compile) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond({
+            $httpBackend.whenGET('/api/schema/collection').respond({
                 "name": {"instance": "String"},
                 "surname": {"instance": "String" }
             });
