@@ -18,7 +18,7 @@ app.configure(function(){
         uploadDir: __dirname + '/../app/tmp',
         keepExtensions: true
     }));
-    app.use(require('prerender-node').set('prerenderToken', process.env['PRERENDER']));
+    app.get('*',handleCrawlers);
     app.use(express.methodOverride());
     app.use(app.router);
     if (app.get('env')==='production') app.use(express.static(__dirname + '/../dist'));
@@ -71,6 +71,20 @@ var ensureAuthenticated = function (req, res, next) {
     if (true) { return next(); }
     res.status(401).send('No Authentication Provided');
 };
+
+function handleCrawlers(req,res,next) {
+    if (req.url.slice(0,22) === '/?_escaped_fragment_=/') {
+        fs.readFile(__dirname + '/seo/' + req.url.slice(22), 'utf8', function (err,data) {
+            if (err) {
+                res.send(403,'Not crawlable');
+            } else {
+                res.send(200, data);
+            }
+        });
+    } else {
+        next();
+    }
+}
 
 //// Bootstrap models
 var DataFormHandler = new (require(__dirname + '/lib/data_form.js'))(app, {urlPrefix : '/api/'});
