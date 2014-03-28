@@ -9,7 +9,7 @@ describe('select2', function () {
 
         beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[[null,"required"]],"setters":[],"getters":[],"options":{"required":true},"_index":null,"isRequired":true},
                  "eyeColour":{"enumValues":["Blue","Brown","Green","Hazel"],"regExp":null,"path":"eyeColour","instance":"String","validators":[[null,"enum"]],"setters":[],"getters":[],"options":{"enum":["Blue","Brown","Green","Hazel"],"required":false,"form":{"placeHolder":"Select eye colour","select2":{}}},"_index":null,"isRequired":false,"$conditionalHandlers":{}}}
             );
@@ -35,11 +35,11 @@ describe('select2', function () {
 
         beforeEach(inject(function(_$httpBackend_, $rootScope, $location, $controller) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(
+            $httpBackend.whenGET('/api/schema/collection').respond(
                 {"surname":{"enumValues":[],"regExp":null,"path":"surname","instance":"String","validators":[[null,"required"]],"setters":[],"getters":[],"options":{"required":true},"_index":null,"isRequired":true},
                     "eyeColour":{"enumValues":["Blue","Brown","Green","Hazel"],"regExp":null,"path":"eyeColour","instance":"String","validators":[[null,"enum"]],"setters":[],"getters":[],"options":{"enum":["Blue","Brown","Green","Hazel"],"required":false,"form":{"placeHolder":"Select eye colour","select2":{}}},"_index":null,"isRequired":false,"$conditionalHandlers":{}}}
             );
-            $httpBackend.whenGET('api/collection/3').respond(
+            $httpBackend.whenGET('/api/collection/3').respond(
                 {"surname":"Smith","eyeColour":"Green"}
             );
             scope = $rootScope.$new();

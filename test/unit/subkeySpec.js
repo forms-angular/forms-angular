@@ -37,8 +37,8 @@ describe('Subkeys', function () {
 
             beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
-                $httpBackend.whenGET('api/f_nested_schema/51c583d5b5c51226db418f16').respond({
+                $httpBackend.whenGET('/api/schema/f_nested_schema/English').respond(subkeySchema);
+                $httpBackend.whenGET('/api/f_nested_schema/51c583d5b5c51226db418f16').respond({
                     "_id": "51c583d5b5c51226db418f16",
                     "surname": "Smith",
                     "forename": "Anne",
@@ -91,8 +91,8 @@ describe('Subkeys', function () {
 
             beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
-                $httpBackend.whenGET('api/f_nested_schema/51c583d5b5c51226db418f16').respond({
+                $httpBackend.whenGET('/api/schema/f_nested_schema/English').respond(subkeySchema);
+                $httpBackend.whenGET('/api/f_nested_schema/51c583d5b5c51226db418f16').respond({
                     "_id": "51c583d5b5c51226db418f16",
                     "surname": "Smith",
                     "forename": "Anne",
@@ -140,8 +140,8 @@ describe('Subkeys', function () {
 
             beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
-                $httpBackend.whenGET('api/f_nested_schema/51c583d5b5c51226db418f16').respond({
+                $httpBackend.whenGET('/api/schema/f_nested_schema/English').respond(subkeySchema);
+                $httpBackend.whenGET('/api/f_nested_schema/51c583d5b5c51226db418f16').respond({
                     "_id": "51c583d5b5c51226db418f16",
                     "surname": "Smith",
                     "forename": "Anne",
@@ -183,8 +183,8 @@ describe('Subkeys', function () {
 
             beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
-                $httpBackend.whenGET('api/f_nested_schema/51c583d5b5c51226db418f16').respond({
+                $httpBackend.whenGET('/api/schema/f_nested_schema/English').respond(subkeySchema);
+                $httpBackend.whenGET('/api/f_nested_schema/51c583d5b5c51226db418f16').respond({
                     "_id": "51c583d5b5c51226db418f16",
                     "surname": "Smith",
                     "forename": "Anne"
@@ -212,7 +212,7 @@ describe('Subkeys', function () {
 
             beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
+                $httpBackend.whenGET('/api/schema/f_nested_schema/English').respond(subkeySchema);
                 $location.$$path = '/f_nested_schema/English/new';
                 elm = angular.element(
                     '<form name="myForm" class="form-horizontal compact">' +
@@ -274,8 +274,8 @@ describe('Subkeys', function () {
 
             beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
                 $httpBackend = _$httpBackend_;
-                $httpBackend.whenGET('api/schema/f_nested_schema/English').respond(subkeySchema);
-                $httpBackend.whenGET('api/f_nested_schema/51c583d5b5c51226db418f16').respond({
+                $httpBackend.whenGET('/api/schema/f_nested_schema/English').respond(subkeySchema);
+                $httpBackend.whenGET('/api/f_nested_schema/51c583d5b5c51226db418f16').respond({
                     "_id": "51c583d5b5c51226db418f16",
                     "surname": "Smith",
                     "forename": "Anne",
