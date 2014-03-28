@@ -49,6 +49,7 @@
     "grunt-contrib-htmlmin": "~0.2",
     "grunt-contrib-imagemin": "~0.5",
     "grunt-contrib-livereload": "0.1.2",
+    "grunt-ngmin": "*",
     "grunt-rev": "~0.1.0",
     "grunt-usemin": "^2.1.0",
     "grunt-regarde": "~0.1.1",
