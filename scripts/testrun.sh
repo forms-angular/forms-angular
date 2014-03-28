@@ -3,7 +3,7 @@
 KARMA_EXE=/usr/bin/karma
 
 if [ ! -x $KARMA_EXE ]; then
-	KARMA_EXE=./node_modules/.bin/karma
+	KARMA_EXE=../node_modules/.bin/karma
 fi
 $KARMA_EXE start config/karma.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
 $KARMA_EXE start config/karma.midway.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
