@@ -10,6 +10,7 @@ build.xml
 .bower-registry
 .bower-tmp
 .tmp
+app/styles
 
 node_modules
 app/e2etest
