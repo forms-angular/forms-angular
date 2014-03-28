@@ -18,7 +18,7 @@ describe('Data Events', function () {
             it('should request make a call before creating document', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
                     $location.$$path = '/collection/new';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope});
@@ -29,7 +29,7 @@ describe('Data Events', function () {
                     };
 
                     scope.record = {name: "John"};
-                    $httpBackend.when('POST', 'api/collection', {"name": "Alan"}).respond(200, 'SUCCESS');  // check for changed name
+                    $httpBackend.when('POST', '/api/collection', {"name": "Alan"}).respond(200, 'SUCCESS');  // check for changed name
                     scope.save();
                     $httpBackend.flush();
                 });
@@ -38,7 +38,7 @@ describe('Data Events', function () {
             it('should not create document if onBefore returns an error', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
                     $location.$$path = '/collection/new';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope});
@@ -61,8 +61,8 @@ describe('Data Events', function () {
             it('should call function', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                    $httpBackend.whenGET('api/collection/125').respond({"name": "Alan"});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/collection/125').respond({"name": "Alan"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope});
@@ -83,7 +83,7 @@ describe('Data Events', function () {
             it('should not return document if onBefore returns an error', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope});
@@ -107,8 +107,8 @@ describe('Data Events', function () {
             it('should make a call before updating document', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                    $httpBackend.whenGET('api/collection/125').respond({"name": "Alan", "_id": "125"});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/collection/125').respond({"name": "Alan", "_id": "125"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope});
@@ -121,7 +121,7 @@ describe('Data Events', function () {
                     };
 
                     $httpBackend.flush();
-                    $httpBackend.when('POST', 'api/collection/125', {"name": "Berty", "_id": "125"}).respond(200, 'SUCCESS');
+                    $httpBackend.when('POST', '/api/collection/125', {"name": "Berty", "_id": "125"}).respond(200, 'SUCCESS');
                     scope.record.name = "John";
                     scope.save();
                     $httpBackend.flush();
@@ -131,8 +131,8 @@ describe('Data Events', function () {
             it('should not update document if onBefore returns an error', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                    $httpBackend.whenGET('api/collection/125').respond({"name": "Alan", "_id": "125"});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/collection/125').respond({"name": "Alan", "_id": "125"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope});
@@ -155,8 +155,8 @@ describe('Data Events', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location, $data, _$modal_, $q) {
                     $httpBackend = _$httpBackend_;
                     var $modal = _$modal_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                    $httpBackend.whenGET('api/collection/125').respond({"name": "Alan", "_id": "125"});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/collection/125').respond({"name": "Alan", "_id": "125"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope, $modal: $modal});
@@ -170,9 +170,9 @@ describe('Data Events', function () {
                     deferred.resolve(true);    // Same as clicking on Yes
                     spyOn($modal, 'open').andReturn(fakeModal);
 
-                    $httpBackend.when('DELETE', 'api/collection/125').respond(200, 'SUCCESS');
+                    $httpBackend.when('DELETE', '/api/collection/125').respond(200, 'SUCCESS');
 
-                    $httpBackend.expectDELETE('api/collection/125');
+                    $httpBackend.expectDELETE('/api/collection/125');
                     scope.record._id = 125;
                     scope.record.name = "John";
                     scope.delete();
@@ -186,8 +186,8 @@ describe('Data Events', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location, $data, _$modal_, $q) {
                     $httpBackend = _$httpBackend_;
                     $modal = _$modal_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                    $httpBackend.whenGET('api/collection/125').respond({"name": "Alan", "_id": "125"});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/collection/125').respond({"name": "Alan", "_id": "125"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope, $modal: $modal});
@@ -220,8 +220,8 @@ describe('Data Events', function () {
             it('should request make a call after creating document', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                    $httpBackend.when('POST', 'api/collection', {"name": "John"}).respond(200, {name: "Philip"});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.when('POST', '/api/collection', {"name": "John"}).respond(200, {name: "Philip"});
                     $location.$$path = '/collection/new';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope});
@@ -243,8 +243,8 @@ describe('Data Events', function () {
             it('should request make a call after reading document', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                    $httpBackend.whenGET('api/collection/125').respond({"name": "Alan"});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/collection/125').respond({"name": "Alan"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope});
@@ -263,8 +263,8 @@ describe('Data Events', function () {
             it('should request make a call after updating document', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                    $httpBackend.whenGET('api/collection/125').respond({"name": "Alan", "_id": "125"});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/collection/125').respond({"name": "Alan", "_id": "125"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope});
@@ -275,7 +275,7 @@ describe('Data Events', function () {
                     };
 
                     $httpBackend.flush();
-                    $httpBackend.when('POST', 'api/collection/125', {"name": "John", "_id": "125"}).respond(200, {"name": "Philip", "_id": "125"});
+                    $httpBackend.when('POST', '/api/collection/125', {"name": "John", "_id": "125"}).respond(200, {"name": "Philip", "_id": "125"});
                     scope.record.name = "John";
                     scope.save();
                     $httpBackend.flush();
@@ -289,8 +289,8 @@ describe('Data Events', function () {
                 inject(function (_$httpBackend_, $rootScope, $controller, $location, $data, _$modal_, $q) {
                     $httpBackend = _$httpBackend_;
                     var $modal = _$modal_;
-                    $httpBackend.whenGET('api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
-                    $httpBackend.whenGET('api/collection/125').respond({"name": "Alan", "_id": "125"});
+                    $httpBackend.whenGET('/api/schema/collection').respond({"name": {"enumValues": [], "regExp": null, "path": "name", "instance": "String", "validators": [], "setters": [], "getters": [], "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null}});
+                    $httpBackend.whenGET('/api/collection/125').respond({"name": "Alan", "_id": "125"});
                     $location.$$path = '/collection/125/edit';
                     var scope = $rootScope.$new();
                     $controller("BaseCtrl", {$scope: scope, $modal: $modal});
@@ -305,9 +305,9 @@ describe('Data Events', function () {
                     deferred.resolve(true);    // Same as clicking on Yes
                     spyOn($modal, 'open').andReturn(fakeModal);
 
-                    $httpBackend.when('DELETE', 'api/collection/125').respond(200, 'SUCCESS');
+                    $httpBackend.when('DELETE', '/api/collection/125').respond(200, 'SUCCESS');
 
-                    $httpBackend.expectDELETE('api/collection/125');
+                    $httpBackend.expectDELETE('/api/collection/125');
                     scope.record._id = 125;
                     scope.record.name = "John";
                     scope.delete();

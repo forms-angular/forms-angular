@@ -22,11 +22,11 @@ describe('Links', function () {
 
                 beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({
+                    $httpBackend.whenGET('/api/schema/collection').respond({
                         "textField": {"path": "textField", "instance": "String", "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null},
                         "lookupField": {"path": "lookupField", "instance": "ObjectID", "options": {"ref": "Person", form: {link: {linkOnly: true, text: "My link text"}}}, "_index": null}
                     });
-                    $httpBackend.whenGET('api/collection/3').respond({
+                    $httpBackend.whenGET('/api/collection/3').respond({
                         "textField": "This is some text", "lookupField": 123456789
                     });
                     $location.$$path = '/collection/3/edit';
@@ -91,11 +91,11 @@ describe('Links', function () {
 
                 beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
                     $httpBackend = _$httpBackend_;
-                    $httpBackend.whenGET('api/schema/collection').respond({
+                    $httpBackend.whenGET('/api/schema/collection').respond({
                         "textField": {"path": "textField", "instance": "String", "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null},
                         "lookupField": {"path": "lookupField", "instance": "ObjectID", "options": {"ref": "Person", form: {link: {linkOnly: true, form:'myschema', text: "My link text"}}}, "_index": null}
                     });
-                    $httpBackend.whenGET('api/collection/3').respond({
+                    $httpBackend.whenGET('/api/collection/3').respond({
                         "textField": "This is some text", "lookupField": 123456789
                     });
                     $location.$$path = '/collection/3/edit';
