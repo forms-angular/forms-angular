@@ -149,7 +149,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                                 initSelection: function (element, callback) {
                                     var theId = element.val();
                                     if (theId && theId !== '') {
-                                        $http.get('api/' + mongooseOptions.ref + '/' + theId + '/list').success(function (data) {
+                                        $http.get('/api/' + mongooseOptions.ref + '/' + theId + '/list').success(function (data) {
                                             if (data.success === false) {
                                                 $location.path("/404");
                                             }
@@ -561,7 +561,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.readRecord = function () {
-        $http.get('api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
+        $http.get('/api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
             if (data.success === false) {
                 $location.path("/404");
             }
@@ -593,7 +593,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     }
 
     $scope.scrollTheList = function () {
-        $http.get('api/' + $scope.modelName + generateListQuery()).success(function (data) {
+        $http.get('/api/' + $scope.modelName + generateListQuery()).success(function (data) {
             if (angular.isArray(data)) {
                 $scope.recordList = $scope.recordList.concat(data);
             } else {
@@ -604,7 +604,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             });
     };
 
-    $http.get('api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''), {cache: true}).success(function (data) {
+    $http.get('/api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''), {cache: true}).success(function (data) {
 
         handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
 
@@ -708,7 +708,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.createNew = function (dataToSave, options) {
-        $http.post('api/' + $scope.modelName, dataToSave).success(function (data) {
+        $http.post('/api/' + $scope.modelName, dataToSave).success(function (data) {
             if (data.success !== false) {
                 if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
                     $scope.dataEventFunctions.onAfterCreate(data);
@@ -727,7 +727,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.updateDocument = function (dataToSave, options) {
         $scope.phase = 'updating';
-        $http.post('api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
+        $http.post('/api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
             if (data.success !== false) {
                 if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
                     $scope.dataEventFunctions.onAfterUpdate(data, master)
@@ -786,7 +786,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.deleteRecord = function (model, id) {
-        $http.delete('api/' + model + '/' + id).success(function () {
+        $http.delete('/api/' + model + '/' + id).success(function () {
             if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
                 $scope.dataEventFunctions.onAfterDelete(master);
             }
@@ -1136,10 +1136,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     var setUpSelectOptions = function (lookupCollection, schemaElement) {
         var optionsList = $scope[schemaElement.options] = [];
         var idList = $scope[schemaElement.ids] = [];
-        $http.get('api/schema/' + lookupCollection, {cache: true}).success(function (data) {
+        $http.get('/api/schema/' + lookupCollection, {cache: true}).success(function (data) {
             var listInstructions = [];
             handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
-            $http.get('api/' + lookupCollection, {cache: true}).success(function (data) {
+            $http.get('/api/' + lookupCollection, {cache: true}).success(function (data) {
                 if (data) {
                     for (var i = 0; i < data.length; i++) {
                         var option = '';

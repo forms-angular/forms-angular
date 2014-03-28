@@ -15,19 +15,19 @@ describe('Select.', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond({
+            $httpBackend.whenGET('/api/schema/collection').respond({
                     "textField": {"path": "textField", "instance": "String", "options": {"form": {"label": "Organisation Name"}, "list": true}, "_index": null},
                     "lookupField": {"path": "lookupField", "instance": "ObjectID", "options": {"ref": "person", "_index": null}},
                     "eyeColour":{"enumValues":["Blue","Brown","Green","Hazel"],"regExp":null,"path":"eyeColour","instance":"String","validators":[[null,"Path `{PATH}` is required.","required"],[null,"`{VALUE}` is not a valid enum value for path `{PATH}`.","enum"]],"setters":[],"getters":[],"options":{"required":true,"enum":["Blue","Brown","Green","Hazel"]},"_index":null,"isRequired":true,"$conditionalHandlers":{}}
             });
-            $httpBackend.whenGET('api/collection/3').respond({"textField": "This is some text", "lookupField": "3", "eyeColour": "Brown"});
-            $httpBackend.whenGET('api/schema/person').respond({
+            $httpBackend.whenGET('/api/collection/3').respond({"textField": "This is some text", "lookupField": "3", "eyeColour": "Brown"});
+            $httpBackend.whenGET('/api/schema/person').respond({
                 "_id":{"path":"_id","instance":"ObjectID","validators":[],"setters":[null],"getters":[],"options":{"auto":true},"_index":null,"$conditionalHandlers":{}},
                 "givenName":{"enumValues":[],"regExp":null,"path":"givenName","instance":"String","validators":[],"setters":[],"getters":[],"options":{"list":true,"index":true,"form":{"label":"Forename","pane":"Personal"}},"_index":true,"$conditionalHandlers":{}},
                 "familyName":{"enumValues":[],"regExp":null,"path":"familyName","instance":"String","validators":[[null,"Path `{PATH}` is required.","required"]],"setters":[],"getters":[],"options":{"required":true,"index":true,"list":true,"form":{"label":"Surname","pane":"Personal"}},"_index":true,"isRequired":true,"$conditionalHandlers":{}},
                 "title":{"enumValues":[],"regExp":null,"path":"title","instance":"String","validators":[],"setters":[],"getters":[],"options":{"form":{"pane":"Personal"}},"_index":null,"$conditionalHandlers":{}},
                 "sex":{"enumValues":["F","M"],"regExp":null,"path":"sex","instance":"String","validators":[[null,"`{VALUE}` is not a valid enum value for path `{PATH}`.","enum"]],"setters":[],"getters":[],"options":{"enum":["F","M"],"form":{"pane":"Personal"}},"_index":null,"$conditionalHandlers":{}}});
-            $httpBackend.whenGET('api/person').respond([
+            $httpBackend.whenGET('/api/person').respond([
                 {"_id":"1", "givenName":"John", "familyName":"Smith", "title":"Mr" },
                 {"_id":"2", "givenName":"Anne", "familyName":"Brown", "title":"Mrs" },
                 {"_id":"3", "givenName":"Jenny", "familyName":"Rogers", "title":"Ms" }

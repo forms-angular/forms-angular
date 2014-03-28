@@ -31,7 +31,7 @@ describe('search', function () {
     describe('results list', function() {
 
         it('displays one result when there is one', function() {
-            $httpBackend.whenGET('api/search?q=hello').respond({results:[{id:'1',resource:'resource',resourceText:'Resource',text:'Hello 1'}]});
+            $httpBackend.whenGET('/api/search?q=hello').respond({results:[{id:'1',resource:'resource',resourceText:'Resource',text:'Hello 1'}]});
             scope.searchTarget = 'hello';
             scope.$digest();
             $httpBackend.flush();
@@ -40,7 +40,7 @@ describe('search', function () {
         });
 
         it('displays two results when there are two', function() {
-            $httpBackend.whenGET('api/search?q=hello').respond({results:[{id:'1',resource:'resource',resourceText:'Resource',text:'Hello 1'},{id:'2',resource:'resource',resourceText:'Resource',text:'Hello 2'}]});
+            $httpBackend.whenGET('/api/search?q=hello').respond({results:[{id:'1',resource:'resource',resourceText:'Resource',text:'Hello 1'},{id:'2',resource:'resource',resourceText:'Resource',text:'Hello 2'}]});
             scope.searchTarget = 'hello';
             scope.$digest();
             $httpBackend.flush();
@@ -51,7 +51,7 @@ describe('search', function () {
         });
 
         it('should have an error class in the search box when the string is not found', function () {
-            $httpBackend.whenGET('api/search?q=hello').respond({results:[]});
+            $httpBackend.whenGET('/api/search?q=hello').respond({results:[]});
             scope.searchTarget = 'hello';
             scope.$digest();
             $httpBackend.flush();
@@ -65,7 +65,7 @@ describe('search', function () {
         });
 
         it('formats results', function () {
-            $httpBackend.whenGET('api/search?q=hello').respond({"results":[{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}],"moreCount":0});
+            $httpBackend.whenGET('/api/search?q=hello').respond({"results":[{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}],"moreCount":0});
             scope.searchTarget = 'hello';
             scope.$digest();
             $httpBackend.flush();
@@ -78,7 +78,7 @@ describe('search', function () {
         });
 
         it('should focus on the first result returned', function() {
-            $httpBackend.whenGET('api/search?q=hello').respond({"results":[{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}],"moreCount":0});
+            $httpBackend.whenGET('/api/search?q=hello').respond({"results":[{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}],"moreCount":0});
             scope.searchTarget = 'hello';
             scope.$digest();
             $httpBackend.flush();
@@ -142,7 +142,7 @@ describe('search', function () {
         });
 
         it('should clear the target and the reults when Esc is pressed',function() {
-            $httpBackend.whenGET('api/search?q=hello').respond({"results":[{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}],"moreCount":0});
+            $httpBackend.whenGET('/api/search?q=hello').respond({"results":[{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f15","text":"Brown, John","searchImportance":99},{"resource":"f_nested_schema","resourceText":"Exams","id":"51c583d5b5c51226db418f17","text":"Brown, Jenny","searchImportance":99}],"moreCount":0});
             scope.searchTarget = 'hello';
             scope.$digest();
             scope.handleKey({keyCode: 27});

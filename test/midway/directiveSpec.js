@@ -25,8 +25,8 @@ describe('directive with form', function () {
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location, $compile) {
             $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('api/schema/collection').respond(schema);
-            $httpBackend.whenGET('api/collection/123').respond(oneFriend);
+            $httpBackend.whenGET('/api/schema/collection').respond(schema);
+            $httpBackend.whenGET('/api/collection/123').respond(oneFriend);
             elm = angular.element('<div><div form-buttons></div><form-input schema="formSchema"></form-input></div>');
             scope = $rootScope.$new();
             $location.$$path = '/collection/123/edit';
@@ -64,13 +64,13 @@ describe('directive with form', function () {
         });
 
         it('shows the friend name', function() {
-            $httpBackend.whenGET('api/a_unadorned_mongoose/666a6075b320153869b17599').respond({"_id":"666a6075b320153869b17599","surname":"TestPerson2","forename":"Andrew","weight":142,"eyeColour":"Brown","accepted":true});
-            var friend = scope.record.friendList[0];
-            scope.frdShowDetails(friend);
-            $httpBackend.flush();
-            var elem = angular.element(elm.find('.friends-head')[0]);
-            expect(elem.text()).toMatch(/Andrew/);
-            expect(elem.text()).toMatch(/TestPerson2/);
+          $httpBackend.whenGET('/api/a_unadorned_mongoose/666a6075b320153869b17599').respond({"_id":"666a6075b320153869b17599","surname":"TestPerson2","forename":"Andrew","weight":142,"eyeColour":"Brown","accepted":true});
+          var friend = scope.record.friendList[0];
+          scope.frdShowDetails(friend);
+          $httpBackend.flush();
+          var elem = angular.element(elm.find('.friends-head')[0]);
+          expect(elem.text()).toMatch(/Andrew/);
+          expect(elem.text()).toMatch(/TestPerson2/);
         });
 
         it('disables save friend button until a change is made', function() {
