@@ -35,5 +35,5 @@ myDemoApp.config(['$routeProvider', function ($routeProvider) {
 );
 
 formsAngular.config(['urlServiceProvider',function(urlService) {
-    urlService.setOptions('!');
+    urlService.setOptions({hashPrefix:'!'});
 }]);
