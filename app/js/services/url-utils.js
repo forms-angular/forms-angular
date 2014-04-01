@@ -7,10 +7,10 @@ formsAngular.provider('urlService', ['$locationProvider',function ($locationProv
     };
 
     return {
-        setOptions : function(hashPrefix, html5Mode) {
-            if (hashPrefix) {
-                $locationProvider.hashPrefix(hashPrefix);
-                config.hashPrefix = hashPrefix;
+        setOptions : function(options) {
+            angular.extend(config, options);
+            if (config.hashPrefix) {
+                $locationProvider.hashPrefix(config.hashPrefix);
             }
         },
         $get : function() {
