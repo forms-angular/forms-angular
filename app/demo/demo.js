@@ -1,9 +1,6 @@
 'use strict';
-angular.module('HashBangURLs', []).config(['$locationProvider', function($location) {
-    $location.hashPrefix('!');
-}]);
 
-var myDemoApp = angular.module('myDemoApp', ['formsAngular','HashBangURLs']);
+var myDemoApp = angular.module('myDemoApp', ['formsAngular']);
 
 myDemoApp.config(['$routeProvider', function ($routeProvider) {
 
@@ -36,3 +33,7 @@ myDemoApp.config(['$routeProvider', function ($routeProvider) {
             otherwise({redirectTo: '/index'});
     }]
 );
+
+formsAngular.config(['urlServiceProvider',function(urlService) {
+    urlService.setOptions('!');
+}]);
