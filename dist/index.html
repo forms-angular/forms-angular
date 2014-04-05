@@ -3,46 +3,47 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
     <title>forms-angular</title>
 
     <style>[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
         display: none !important;
     }</style>
 
-    <link rel="stylesheet" href="styles/68b473f6.main.css"/>
+    <link rel="stylesheet" href="styles/3fda1bb8.main.css"/>
 </head>
 <body ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
 <div class="visible-desktop">
-    <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032"></a>
+    <a href="https://github.com/mchapman/forms-angular"><img src="/img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032"></a>
 </div>
 
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
-        <div class="container-fluid">
+        <div class="container-fluid" ng-cloak="">
             <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
             <div class="pull-left">
-                <a class="brandpluslogo" href="/#!/index"><img src="/img/Home_icon_black.png" width="45" alt="Click on logo to go to home page"></a>
+                <a class="brandpluslogo" ng-href="{{buildUrl('index')}}"><img src="/img/Home_icon_black.png" width="45" alt="Click on logo to go to home page"></a>
             </div>
             <div class="visible-desktop pull-right span2"></div>   <!-- Leave some space for github flash -->
             <global-search class="global-search"></global-search>
             <div class="pull-right" style="padding-top: 14px"><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe></div>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li><a href="/#!/get-started">Get Started</a></li>
-                    <li><a href="/#!/schemas">Schemas</a></li>
-                    <li><a href="/#!/forms">Forms</a></li>
-                    <li><a href="/#!/reporting">Reporting</a></li>
+                    <li><a ng-href="{{buildUrl('get-started')}}">Get Started</a></li>
+                    <li><a ng-href="{{buildUrl('schemas')}}">Schemas</a></li>
+                    <li><a ng-href="{{buildUrl('forms')}}">Forms</a></li>
+                    <li><a ng-href="{{buildUrl('reporting')}}">Reporting</a></li>
                     <li class="dropdown"><a class="dropdown-toggle">More</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-option" href="/#!/examples">Examples</a></li>
-                            <li><a class="dropdown-option" href="/#!/api-docs">API Documentation</a></li>
+                            <li><a class="dropdown-option" ng-href="{{buildUrl('examples')}}">Examples</a></li>
+                            <li><a class="dropdown-option" ng-href="{{buildUrl('api-docs')}}">API Documentation</a></li>
                             <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
                             <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
-                            <li><a class="dropdown-option" href="/#!/in-the-wild">Who Uses It?</a></li>
+                            <li><a class="dropdown-option" ng-href="{{buildUrl('in-the-wild')}}">Who Uses It?</a></li>
                         </ul>
                     </li>
 
@@ -75,20 +76,23 @@
 
 <!-- what forms-angular depends on -->
 <!-- *** Section must be copied to partials/get-started/index.html if it is changed *** -->
-<script src="scripts/49be984e.plugins.js"></script>
+<script src="scripts/eb6578b1.plugins.js"></script>
 <!--[if lt IE 9]>
 <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
 <![endif]-->
-<script>
-    var CKEDITOR_BASEPATH = '//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/';
-</script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/ckeditor.min.js"></script>
+
+<script type="text/javascript" src="/bower_components/ckeditor/ckeditor.js"></script>
+<!--<script>-->
+    <!--var CKEDITOR_BASEPATH = '//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/';-->
+<!--</script>-->
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/ckeditor.min.js"></script>-->
+
 <!-- forms-angular stuff -->
 <!--This section needs to stay in sync with the concat section of the Gruntfile-->
-<script src="scripts/e3c4f6f5.lib.js"></script>
+<script src="scripts/41353c50.lib.js"></script>
 
 <!--Demo application stuff-->
-<script src="scripts/26b12b28.app.js"></script>
+<script src="scripts/48411c5e.app.js"></script>
 
 <script type="text/javascript">
     if (window.location.hostname != '0.0.0.0') {

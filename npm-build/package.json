@@ -1,5 +1,5 @@
 {
-  "name": "forms-angular",
+  "name": "forms-angular-test",
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
