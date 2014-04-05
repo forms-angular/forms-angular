@@ -1,21 +1,17 @@
 var myApp = angular.module('myApp', ['formsAngular']);
 
-myApp.config(['$routeProvider', function($routeProvider) {
-    $routeProvider.
-        when('/index', {templateUrl: 'partials/index.html'} ).
-        when('/analyse/:model/:reportSchemaName', {templateUrl: 'partials/base-analysis.html'}).
-        when('/analyse/:model', {templateUrl: 'partials/base-analysis.html'}).
-        when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html'}).
-        when('/:model/new', {templateUrl: 'partials/base-edit.html'}).
-        when('/:model', {templateUrl: 'partials/base-list.html'}).
-        when('/:model/:form/:id/edit', {templateUrl: 'partials/base-edit.html'}).  // non default form (different fields etc)
-        when('/:model/:form/new', {templateUrl: 'partials/base-edit.html'}).       // non default form (different fields etc)
-        when('/:model/:form', {templateUrl: 'partials/base-list.html'}).           // list page with links to non default form
+myApp.config(['formRoutesProvider', function (formRoutes) {
+    formRoutes.setRoutes([
+        {route:'/index', options:{templateUrl: 'partials/index.html'}},
 // The next block shows how to use custom forms for a given model rather than the generic form provided
-//        when('/custom_form_model/new', {templateUrl: 'partials/custom-new.html'}).
-//        when('/custom_form_model/:id/edit', {templateUrl: 'partials/custom-edit.html'}).
-//        when('/custom_form_model/:form/new', {templateUrl: 'partials/custom-new.html'}).
-//        when('/custom_form_model/:form/:id/edit', {templateUrl: 'partials/custom-edit.html'}).
-
-        otherwise({redirectTo: '/index'});
+        {route:'/z_custom_form/new', options:{templateUrl: 'partials/custom-new.html'}},            // example view override
+        {route:'/z_custom_form/:id/edit', options:{templateUrl: 'partials/custom-edit.html'}},      // example view override
+        {route:'/z_custom_form/:form/new', options:{templateUrl: 'partials/custom-new.html'}},      // example view override with specified form content
+        {route:'/z_custom_form/:form/:id/edit', options:{templateUrl: 'partials/custom-edit.html'}} // example view override with specified form content
+    ], '/index');
 }]);
+
+//To use one of the $locationProvider options use the call below:
+//formsAngular.config(['urlServiceProvider',function(urlService) {
+//    urlService.setOptions({html5Mode: false, hashPrefix: '!'});
+//}]);

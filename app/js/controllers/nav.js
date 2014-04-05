@@ -1,6 +1,6 @@
 'use strict';
 
-formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', function ($scope, $data, $location, $filter, $locationParse, $controller) {
+formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService', function ($scope, $data, $location, $filter, $locationParse, $controller, urlService) {
 
     $scope.items = [];
 
@@ -117,5 +117,9 @@ formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '
     $scope.isHidden = function (index) {
         return $scope.items[index].isHidden ? $scope.items[index].isHidden() : false;
     };
+
+    $scope.buildUrl = function(path) {
+        return urlService.buildUrl(path);
+    }
 
 }]);
