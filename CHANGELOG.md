@@ -1,5 +1,43 @@
 # forms-angular
 
+## 0.2 to 0.3
+### Summary
+* Improvements to routing:
+ * Module specific routes are now specified with a call to the setRoutes(appRoutes, defaultRoute) method of an injected
+   formRoutesProvider - see the breaking changes section for an example and details.
+ * Support for HTML5Mode and hashPrefix
+
+### BREAKING CHANGES
+* Routing has changed - replace
+```
+myModule.config(['$routeProvider', function ($routeProvider) {
+    $routeProvider.
+        when('/index', {templateUrl: 'partials/landing-page.html'}).
+        when('/someRoute', {templateUrl: 'partials/someTemplate.html'}).
+        ... etc ...
+        when('/analyse/:model/:reportSchemaName', {templateUrl: 'partials/base-analysis.html'}).
+        when('/analyse/:model', {templateUrl: 'partials/base-analysis.html'}).
+        when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html'}).
+        when('/:model/new', {templateUrl: 'partials/base-edit.html'}).
+        when('/:model', {templateUrl: 'partials/base-list.html'}).
+        when('/:model/:form/:id/edit', {templateUrl: 'partials/base-edit.html'}).  // non default form (different fields etc)
+        when('/:model/:form/new', {templateUrl: 'partials/base-edit.html'}).       // non default form (different fields etc)
+        when('/:model/:form', {templateUrl: 'partials/base-list.html'}).           // list page with links to non default form
+        otherwise({redirectTo: '/index'});
+}]);
+```
+with
+```
+myModule.config(['formRoutesProvider', function (formRoutes) {
+	formRoutes.setRoutes([
+        {route:'/index', options:{templateUrl: 'partials/landing-page.html'}},
+        {route:'/someRoute', options:{templateUrl: 'partials/someTemplate.html'}}
+        ], '/index');
+}]);
+```
+where the first parameter is an array of objects containing a route and a set of options (which are passed straight to
+[$routeProvider](http://docs.angularjs.org/api/ngRoute/provider/$routeProvider) and the second parameter is the default route.
+
 ## 0.1 to 0.2
 ### Summary
 * Support for radio button groups, CKEditor
