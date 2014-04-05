@@ -15,20 +15,37 @@
 <div class="span9 affix-section">
 <p>Forms angular comes with a small number of forms that can be used - sometimes with
 small amendments - to meet a vast number of requirements.  They all use RESTful routes
-and handle querying and updating the server</p>
+and handle querying and updating the server.</p>
 
-    <p>For each model the following routes are supported (assuming hashbang urls with no <a href="https://developers.google.com/webmasters/ajax-crawling/">AJAX crawling</a>:</p>
+<section id="routes" name="Routes" affix-scroll><h3>Routes</h3>
+    <p>For each model the following routes are supported:</p>
 
     <ul>
-        <li><strong>/#/:model</strong> which lists the documents in the collection, with links to the form for editing
-            them
-        </li>
-        <li><strong>/#/:model/new</strong> which enables the user to create a new document using the default form for
-            the collection
-        </li>
+        <li><strong>/#/:model</strong> which lists the documents in the collection, with links to the form for editing them</li>
+        <li><strong>/#/:model/new</strong> which enables the user to create a new document using the default form for the collection</li>
         <li><strong>/#/:model/:id/edit</strong> which enables the user to edit a document</li>
-        <li><strong>/#/:model/:id</strong> which enables the user to edit a document</li>
+        <li><strong>/#/analyse/:model</strong> which lists the documents in the collection in a grid</li>
     </ul>
+
+    <p>These routes are set up by making a call such as:<pre><code>myDemoApp.config(['formRoutesProvider', function (formRoutes) {
+    formRoutes.setRoutes([
+        {route:'/index', options:{templateUrl: 'partials/landing-page.html'}},
+        {route:'/get-started', options:{templateUrl: 'partials/get-started.html'}}
+    ], '/index');
+}]);
+</code></pre>which (in the first parameter) declares two routes explicitly - the standard model routes are created automatically.  The
+second parameter specifies the 'otherwise' route.</p>
+
+<p>If you prefer HTML5Mode (which gives routes without the /#) or if you want to use <a href="https://developers.google.com/webmasters/ajax-crawling/">AJAX crawling</a>
+    then you can configure forms-angular like this:<pre><code>formsAngular.config(['urlServiceProvider',function(urlService) {
+    urlService.setOptions({html5Mode: true, hashPrefix: '!'});
+}]);</code></pre></p>
+<p>if you are using HTML5Mode ensure that your index.html file has<pre><code>&lt;base href="/"&gt;</code></pre>
+    in the header.</p>
+<p>Whatever options are used, forms-angular will create the correct routes using <pre><code>urlService.buildUrl(path)</code></pre>
+which will add in hashes and prefixes to the path as required.  This service can be used in your application so that
+you can easily switch between modes without having to manually change all the internal links.</p>
+</section>
 
     <section id="input-form" name="Input Form" affix-scroll>
         <h3>Input Form</h3>
