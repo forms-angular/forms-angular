@@ -12,7 +12,7 @@
 </div>
 
 <div class="span9 affix-section">
-<section id="introduction" name="Introduction" affix-scroll="">
+<section id="introduction" name="Introduction" affix-scroll>
     <h3>Introduction</h3>
 
     <p>The most visible part of forms-angular is the <strong>form-input</strong> directive which
@@ -27,14 +27,14 @@
         telling it to use the schema just created to create a form with the appropriate input fields.</p>
 
     <div class="well well-small" ng-init="name=[{name:'surname'},{name:'forename'}]">
-        <form-input schema="name" noautofocus="true">
+        <form-input schema="name" noautofocus="true" />
         <!--Add a noautofocus here otherwise the resulting form stops the page scrolling to the internal links-->
     </div>
     <pre ng-show="record">Record content: {{record}}</pre>
 
     <p>There is more information about the forms-input directive on the <a href="/#!/forms">forms page</a>.</p>
 </section>
-<section id="formschema" name="Form Schemas" affix-scroll="">
+<section id="formschema" name="Form Schemas" affix-scroll>
     <h3>Form Schemas</h3>
 
     <p>The form-input directive can get a good deal richer than the simple example above.  The following
@@ -54,8 +54,8 @@
         <li><strong>showWhen</strong> either:<ol><li>an object of the form {lhs:variable, comp:comparison, rhs:variable} where:<ul>
             <li><strong>variable</strong> can be a string, number or field in the model preceded by <strong>$</strong></li>
             <li><strong>comparison</strong> is one of 'eq', 'ne', 'gt', 'gte', 'lt', 'lte'</li></ul><p>or</p>
-            </li><li>an angular expression</li></ol>
-        </li></ul>
+            <li>an angular expression</li></ol>
+        </ul></li>
         <li><strong>help</strong> is for specifying help text</li>
         <li><strong>helpInline</strong> is for specifying help text which is displayed inline</li>
         <li><strong>add</strong> allows anything else to be added to the input html.  For example
@@ -68,7 +68,7 @@
         be specified.  You can either do this by passing the option values in an array and passing it directly,
         or by putting them in an array on the scope and passing the name of the array (which allows run-time
         modification</li>
-    
+    </ul>
 
     <h5>Example</h5>
     <pre>
@@ -90,14 +90,14 @@
         {name:'hairColour',type:'select',options:['brown','black','blonde','grey']}]">
         <!--Add a noautofocus & forceform here and modify the model-->
         <form>
-            <form-input schema="example2" model="exampledata" forceform="true" noautofocus="true">
+            <form-input schema="example2" model="exampledata" forceForm="true" noautofocus="true"/>
         </form>
     </div>
     <pre ng-show="exampledata">Record content: {{exampledata}}</pre>
 
 </section>
 
-<section id="mongoose" name="Mongoose Schemas" affix-scroll="">
+<section id="mongoose" name="Mongoose Schemas" affix-scroll>
     <h3>Mongoose Schemas</h3>
 
     <p>Mongoose is a popular package that simplifies using MongoDB with Node JS. Mongoose requires that
@@ -124,12 +124,14 @@
         and client side validation keeps round trips down (we cannot say "to a minimum" as work remains to
         be done in this area).</p>
 
-    <p>You can get an idea of what forms-angular does with a vanilla Mongoose JS schema by looking at <a href="/code/a_unadorned_mongoose.js">this schema</a> and <a href="/#!/a_unadorned_mongoose/new">the
+    <p>You can get an idea of what forms-angular does with a vanilla Mongoose JS schema by looking at <a
+            href="/code/a_unadorned_mongoose.js">this schema</a> and <a href="/#!/a_unadorned_mongoose/new">the
         form generated from it</a>.</p>
 
-    <p>For comprehensive information about Mongoose schemas visit the <a href="http://mongoosejs.com/docs/guide.html">Mongoose JS website</a>.</p>
+    <p>For comprehensive information about Mongoose schemas visit the <a
+            href="http://mongoosejs.com/docs/guide.html">Mongoose JS website</a>.</p>
 </section>
-<section id="list-fields" name="List Fields" affix-scroll="">
+<section id="list-fields" name="List Fields" affix-scroll>
     <h3>List Fields</h3>
 
     <p>In a couple of places forms-angular uses the concept of 'list fields' - fields that generally allow
@@ -162,7 +164,7 @@
     </ol>
 </section>
 
-<section id="form-object" name="The form Object" affix-scroll="">
+<section id="form-object" name="The form Object" affix-scroll>
     <h3>The <em>form</em> Object</h3>
 
     <p>The mark-up of generated forms can be influenced by use of the <strong>form</strong> object in the
@@ -202,7 +204,7 @@
             to
             <strong>"auto"</strong> makes the textarea expand to fit the content, rather than create a
             scrollbar.
-        </li><li><strong>tab</strong> used to divide a large form up into a tabset with multiple tabs
+        <li><strong>tab</strong> used to divide a large form up into a tabset with multiple tabs
             (see <a href="/#!/i_tabbed_forms/new">example</a>).
         </li>
         <li><strong>showWhen</strong> allows conditional display of fields based on values elsewhere.  For example having
@@ -227,7 +229,8 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         <em>schema</em> replaced with the current element - so <em>add</em> can be used to pass data into directives).</li>
         <li><strong>customSubDoc</strong> (only valid on a sub document) allows you to specify custom HTML (which may include directives) for the sub doc</li>
         <li><strong>customFooter</strong> (only valid on a sub document) allows you to specify custom HTML (which may include directives) for the footer of a group of sub docs</li>
-        <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a href="/#!/forms#form-styles">form style section</a> for options.
+        <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a
+                href='/#!/forms#form-styles'>form style section</a> for options.
         </li>
         <li><strong>link</strong> sets up hyperlinks for reference fields as follows:
             <ul>
@@ -245,7 +248,7 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
 
 </section>
 
-<section id="containers" name="Containers" affix-scroll="">
+<section id="containers" name="Containers" affix-scroll>
     <h3>Containers</h3>
 
     <p>Sometimes it is hard within a Mongoose schema to detail exactly how you want the associated form
@@ -290,7 +293,7 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
     {before: <em>markup before container contents</em>, after:<em>markup after container contents</em>}.</p>
 </section>
 
-<section id="custom" name="Custom Schemas" affix-scroll="">
+<section id="custom" name="Custom Schemas" affix-scroll>
     <h3>Custom Schemas</h3>
 
     <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the
@@ -301,7 +304,8 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         <li><strong>/#/:model/:formschema</strong> (<a href="/#!/b_using_options/justnameandpostcode/">example
             here</a>)
         </li>
-        <li><strong>/#/:model/:formschema/new</strong> (<a href="/#!/b_using_options/justnameandpostcode/new">example
+        <li><strong>/#/:model/:formschema/new</strong> (<a
+                href="/#!/b_using_options/justnameandpostcode/new">example
             here</a>)
         </li>
         <li><strong>/#/:model/:formschema/:id/edit</strong></li>
