@@ -38,7 +38,7 @@ GSchema.statics.report = function(report) {
             reportSchema = {
                 "pipeline":[{"$project":{"surname":1,"forename":1,"bribeAmount":1, "_id":1}}],
                 "title":"A report with totals and drilldown",
-                drilldown: "/#/g_conditional_fields/!_id!/edit",
+                drilldown: "/#!/g_conditional_fields/|_id|/edit",
                 "columnDefs":[{"field":'surname',"displayName":'Surname',"width":"200", totalsRow:'Total'},{"field":'forename',"displayName":'Forename',"width":200},{"field":"bribeAmount","displayName":"Bribe","align":"right", "width":"200", totalsRow:'$SUM', "cellFilter":"currency"}]
             };
             break;
