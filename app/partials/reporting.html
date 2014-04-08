@@ -62,9 +62,9 @@
             </ul>
             If there is more than one of <strong>fn</strong>, <strong>translations</strong> and <strong>ref</strong> they are performed in that order.
         </li>
-        <li><strong>drilldown</strong> a url that clicking on the row will navigate to. A !fieldname! will be replaced
+        <li><strong>drilldown</strong> a url that clicking on the row will navigate to. A |fieldname| will be replaced
             with the value of the fieldname in the current row. For example a report
-            listing one row per item might have a drilldown of <em>/#/model/!_id!/edit</em> as seen in <a href="/#!/analyse/g_conditional_fields/totals">this</a> report.</li>
+            listing one row per item might have a drilldown of <em>/#/model/|_id|/edit</em> as seen in <a href="/#!/analyse/g_conditional_fields/totals">this</a> report.</li>
         <li><strong>params</strong> contains an array of parameters that can be used in the pipeline, normally in a
             $match such as {$match:{sex:("sex")}}. Parameters can have the following properties:
             <ul>
