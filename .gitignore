@@ -11,6 +11,7 @@ build.xml
 .bower-tmp
 .tmp
 app/styles
+dist/styles/components-font-awesome/*
 
 node_modules
 app/e2etest
