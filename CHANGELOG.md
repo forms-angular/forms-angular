@@ -37,7 +37,7 @@ myModule.config(['formRoutesProvider', function (formRoutes) {
 ```
 where the first parameter is an array of objects containing a route and a set of options (which are passed straight to
 [$routeProvider](http://docs.angularjs.org/api/ngRoute/provider/$routeProvider) and the second parameter is the default route.
-* In analysis drilldowns, ! have been replaced with |
+
 ## 0.1 to 0.2
 ### Summary
 * Support for radio button groups, CKEditor
