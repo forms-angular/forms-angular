@@ -290,7 +290,11 @@ formsAngular
                         }
                     }
                     if (info.showWhen) {
-                        template+='ng-show="'+ generateNgShow(info.showWhen, options.model)+'"';
+                        if (typeof info.showWhen === "string") {
+                            template += 'ng-show="' + info.showWhen + '"';
+                        } else {
+                            template += 'ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
+                        }
                     }
                     if (includeIndex) {
                         template += ' id="cg_' + info.id.replace('_', '-' + attrs.index + '-') + '">';

@@ -24,7 +24,7 @@
         _id : ObjectId("51c583d5b9991226db418f03"),
         surname: "Smith03",
         sex: 'M',
-        bribeAmount: 123,
+        bribeAmount: 12345,
         forename:  "John03"
     },
     {
