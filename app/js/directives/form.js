@@ -1,5 +1,5 @@
 formsAngular
-    .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', function ($compile, $rootScope, utils, $filter) {
+    .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', 'urlService', function ($compile, $rootScope, utils, $filter, urlService) {
         return {
             restrict: 'EA',
             link: function (scope, element, attrs) {
@@ -125,7 +125,7 @@ formsAngular
                             }
                             break;
                         case 'link' :
-                            value = '<a ng-href="/#!/' + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
+                            value = '<a ng-href="/' + urlService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
                             break;
                         case 'radio' :
                             value = '';
