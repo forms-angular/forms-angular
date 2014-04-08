@@ -1,5 +1,5 @@
 {
-  "name": "forms-angular",
+  "name": "forms-angular-test",
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
@@ -11,8 +11,7 @@
   "dependencies": {
     "underscore": "~1.6",
     "node.extend": "~1.0",
-    "async": "~0.2",
-    "prerender-node": "^0.1.18"
+    "async": "~0.2"
   },
   "main": "lib/data_form.js",
   "repository": {
