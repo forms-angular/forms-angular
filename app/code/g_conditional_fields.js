@@ -8,7 +8,8 @@ var GSchema = new Schema({
     accepted: {type:Boolean, form:{help:'When someone is accepted additional fields appear'}},
     startDate:{type:Date, form:{showWhen: {lhs: '$accepted', comp: 'eq', rhs: true}}},
     startingPosition:{type:String, form:{showWhen: {lhs: '$accepted', comp: 'eq', rhs: true}}},
-    bribeAmount: Number
+    bribeAmount: {type: Number, form:{help:"Try a number between 10 and 200 to see an angular expression used in a conditional"}},
+    loggedInBribeBook: {type: Boolean, form:{showWhen:"record.bribeAmount >= 10 && record.bribeAmount <= 200"}}
 });
 
 var G;
