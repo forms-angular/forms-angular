@@ -720,8 +720,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (options.redirect) {
                     $window.location = options.redirect
                 } else {
+                  if($state && $state.params && $state.params.model) {
+                    $state.go("model::edit", {id: data._id, model: $scope.modelName });
+                  } else {
                     $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
                     //                    reset?
+                  }
                 }
             } else {
                 $scope.showError(data);
@@ -785,16 +789,24 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.new = function () {
+      if($state && $state.params && $state.params.model) {
+        $state.go("model::new", {model: $scope.modelName});
+      } else {
         $location.search("");
         $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
+      }
     };
 
     $scope.deleteRecord = function (model, id) {
         $http.delete('/api/' + model + '/' + id).success(function () {
-            if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
-                $scope.dataEventFunctions.onAfterDelete(master);
-            }
+          if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
+              $scope.dataEventFunctions.onAfterDelete(master);
+          }
+          if($state && $state.params && $state.params.model) {
+            $state.go("model::list", { model: model });
+          } else {
             $location.path('/' + $scope.modelName);
+          }
         });
     };
 
