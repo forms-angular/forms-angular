@@ -25,7 +25,7 @@
     "angular-ui-bootstrap-bower": "0.8.0",
     "angular-sanitize": "1.2",
     "angular-ui-select2": "0.0.4",
-    "bootstrap": "2.3.2",
+    "bootstrap": ">=3.1.0",
     "html5shiv-dist": "3.6.2",
     "jquery": "1.10",
     "jquery-ui": "1",
