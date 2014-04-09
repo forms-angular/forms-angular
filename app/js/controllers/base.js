@@ -1,5 +1,5 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window',
-        function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window', '$state', '$stateParse',
+    function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, $state, $stateParse) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -20,7 +20,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.page_size = 20;
     $scope.pages_loaded = 0;
 
-    angular.extend($scope, $locationParse($location.$$path));
+    if($state && $state.params && $state.params.model) {
+      angular.extend($scope, $stateParse($state));
+    } else {
+      angular.extend($scope, $locationParse($location.$$path));
+    }
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
