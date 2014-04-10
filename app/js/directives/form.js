@@ -257,7 +257,7 @@ formsAngular
                     if ((options.formstyle !== 'inline' && fieldInfo.label !== '') || addButtonMarkup) {
                         labelHTML = '<label';
                         if (isHorizontalStyle(options.formstyle)) {
-                            labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'col-md-1 control-label', options);
+                            labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'control-label', options);
                         }
                         labelHTML += addAll('Label', 'control-label', options);
                         labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
@@ -357,10 +357,7 @@ formsAngular
                     else {
                         // Handle arrays here
                         var controlClass = [];
-                        if (isHorizontalStyle(options.formstyle)) {
-                          controlClass.push('controls');
-                          controlClass.push('col-md-4');
-                        }
+                        if (isHorizontalStyle(options.formstyle)) {controlClass.push('controls'); }
                         if (info.array) {
                             controlClass.push('fng-array');
                             if (options.formstyle === 'inline') throw "Cannot use arrays in an inline form";
