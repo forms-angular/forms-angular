@@ -104,7 +104,7 @@ formsAngular
                                 if (fieldInfo.select2.fngAjax) {
                                     value = '<div class="input-append">';
                                     value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
-                                    value += '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
+                                    value += '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="glyphicon glyphicon-search"></i></button>';
                                     value += '</div>';
                                 } else if (fieldInfo.select2) {
                                     value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + (fieldInfo.readonly ? 'disabled ' : '') + common + '>';
@@ -143,7 +143,7 @@ formsAngular
                             }
                             break;
                         default:
-                            common += (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
+                            common += (fieldInfo.size ? 'class="form-control input-' + fieldInfo.size + '" ' : 'class="input-md form-control"') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                             if (fieldInfo.type == 'textarea') {
                                 if (fieldInfo.rows) {
                                     if (fieldInfo.rows == 'auto') {
@@ -158,7 +158,7 @@ formsAngular
                                 value = '<input ' + common + 'type="' + fieldInfo.type + '"';
                                 if (options.formstyle === 'inline') {
                                     if (!fieldInfo.size) {
-                                        value += ' class="input-small"';
+                                      value += ' class="input-small form-control"';
                                     }
                                 }
                                 value += ' />';
@@ -273,7 +273,7 @@ formsAngular
 
                     var template = '', closeTag = '';
                     if (isHorizontalStyle(options.formstyle)) {
-                        template += '<div' + addAll("Group", 'control-group', options);
+                        template += '<div' + addAll("Group", 'control-group form-group', options);
                         closeTag = '</div>';
                     } else {
                         template += '<span ';
@@ -336,7 +336,7 @@ formsAngular
                                     }
                                     if (!info.noRemove) {
                                         template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                                                    '          <i class="icon-minus"></i> Remove' +
+                                                    '          <i class="glyphicon glyphicon-minus"></i> Remove' +
                                                     '      </button>';
                                     }
                                     template +=     '  </div> ';
@@ -350,7 +350,7 @@ formsAngular
                                     }
                                     if (!info.noAdd) {
                                         template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                                                    '        <i class="icon-plus"></i> Add' +
+                                                    '        <i class="glyphicon glyphicon-plus""></i> Add' +
                                                     '    </button>'
                                     }
                                     template +=     '</div>';
@@ -365,10 +365,10 @@ formsAngular
                         if (info.array) {
                             controlClass.push('fng-array');
                             if (options.formstyle === 'inline') throw "Cannot use arrays in an inline form";
-                            template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="icon-plus-sign"></i>', options) +
+                            template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="glyphicon glyphicon-plus"-sign"></i>', options) +
                                 '<div class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
                                 generateInput(info, "arrayItem.x", true, info.id + '_{{$index}}', options) +
-                                '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
+                                '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="glyphicon glyphicon-minus-sign"></i>' +
                                 '</div>';
                         } else {
                             // Single fields here
