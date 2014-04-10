@@ -143,7 +143,7 @@ formsAngular
                             }
                             break;
                         default:
-                            common += (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
+                            common += (fieldInfo.size ? 'class="form-control input-' + fieldInfo.size + '" ' : 'class="input-md form-control"') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                             if (fieldInfo.type == 'textarea') {
                                 if (fieldInfo.rows) {
                                     if (fieldInfo.rows == 'auto') {
@@ -158,7 +158,7 @@ formsAngular
                                 value = '<input ' + common + 'type="' + fieldInfo.type + '"';
                                 if (options.formstyle === 'inline') {
                                     if (!fieldInfo.size) {
-                                        value += ' class="input-small"';
+                                      value += ' class="input-small form-control"';
                                     }
                                 }
                                 value += ' />';
@@ -257,7 +257,7 @@ formsAngular
                     if ((options.formstyle !== 'inline' && fieldInfo.label !== '') || addButtonMarkup) {
                         labelHTML = '<label';
                         if (isHorizontalStyle(options.formstyle)) {
-                            labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'control-label', options);
+                            labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'col-md-1 control-label', options);
                         }
                         labelHTML += addAll('Label', 'control-label', options);
                         labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
@@ -273,7 +273,7 @@ formsAngular
 
                     var template = '', closeTag = '';
                     if (isHorizontalStyle(options.formstyle)) {
-                        template += '<div' + addAll("Group", 'control-group', options);
+                        template += '<div' + addAll("Group", 'control-group form-group', options);
                         closeTag = '</div>';
                     } else {
                         template += '<span ';
@@ -357,7 +357,10 @@ formsAngular
                     else {
                         // Handle arrays here
                         var controlClass = [];
-                        if (isHorizontalStyle(options.formstyle)) {controlClass.push('controls'); }
+                        if (isHorizontalStyle(options.formstyle)) {
+                          controlClass.push('controls');
+                          controlClass.push('col-md-4');
+                        }
                         if (info.array) {
                             controlClass.push('fng-array');
                             if (options.formstyle === 'inline') throw "Cannot use arrays in an inline form";
