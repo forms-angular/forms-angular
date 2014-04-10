@@ -10,8 +10,8 @@
             <tr ng-repeat="model in models | orderBy:'resource_name'">
                 <td>{{model.resource_name | titleCase}}</td>
                 <td><a href="/code/{{model.resource_name}}.js">View schema</a></td>
-                <td><a href="/#!/{{model.resource_name}}/new">New</a></td>
-                <td><a href="/#!/{{model.resource_name}}">List</a></td>
+                <td><a ui-sref='model::new({model: model.resource_name})' href="/#!/{{model.resource_name}}/new">New</a></td>
+                <td><a ui-sref='model::list({model: model.resource_name})' href="/#!/{{model.resource_name}}">List</a></td>
             </tr>
         </table>
     </div>

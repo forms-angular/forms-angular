@@ -37,17 +37,17 @@
             <div class="pull-right" style="padding-top: 14px;"><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe></div>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li><a href="/#!/get-started">Get Started</a></li>
-                    <li><a href="/#!/schemas">Schemas</a></li>
-                    <li><a href="/#!/forms">Forms</a></li>
-                    <li><a href="/#!/reporting">Reporting</a></li>
+                    <li><a ui-sref="getStarted" href="/#!/get-started">Get Started</a></li>
+                    <li><a ui-sref="schemas" href="/#!/schemas">Schemas</a></li>
+                    <li><a ui-sref="forms" href="/#!/forms">Forms</a></li>
+                    <li><a ui-sref="reporting" href="/#!/reporting">Reporting</a></li>
                     <li class="dropdown"><a class="dropdown-toggle">More</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-option" href="/#!/examples">Examples</a></li>
-                            <li><a class="dropdown-option" href="/#!/api-docs">API Documentation</a></li>
+                            <li><a class="dropdown-option" ui-sref="examples" href="/#!/examples">Examples</a></li>
+                            <li><a class="dropdown-option" ui-sref="apiDocs" href="/#!/api-docs">API Documentation</a></li>
                             <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
                             <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
-                            <li><a class="dropdown-option" href="/#!/in-the-wild">Who Uses It?</a></li>
+                            <li><a class="dropdown-option" ui-sref="inTheWild" href="/#!/in-the-wild">Who Uses It?</a></li>
                         </ul>
                     </li>
 
@@ -66,6 +66,7 @@
         </div>
     </div>
 </div>
+<div ui-view></div>
 <div ng-view></div>
 <footer class="footer">
     <div class="container-fluid">
@@ -99,6 +100,7 @@
 <script type="text/javascript" src="bower_components/select2/select2.js"></script>
 <script type="text/javascript" src="bower_components/ng-ckeditor/ng-ckeditor.src.js"></script>
 <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+
 <!-- endbuild -->
 <!--[if lt IE 9]>
 <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
@@ -112,6 +114,7 @@
 <!-- build:js scripts/lib.js -->
 <script src="js/forms-angular.js"></script>
 <script src="js/services/location-parse.js"></script>
+<script src="js/services/state-parse.js"></script>
 <script src="js/services/data.js"></script>
 <script src="js/services/utils.js"></script>
 <script src="js/controllers/base.js"></script>
@@ -130,11 +133,10 @@
 
 <!--Demo application stuff-->
 <!-- build:js scripts/app.js -->
-<script src="demo/demo.js"></script>
+<script src="demo/demo_states.js"></script>
 <script src="demo/directives/bespoke-field.js"></script>
 <script src="demo/directives/affix.js"></script>
 <script src="demo/directives/friends.js"></script>
-<script src="demo/controllers/demo.js"></script>
 <script src="demo/controllers/b-using-options.js"></script>
 <script src="demo/controllers/in-the-wild.js"></script>
 <script src="demo/controllers/b-using-options-justnameandpostcode.js"></script>
