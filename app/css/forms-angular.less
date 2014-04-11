@@ -1,248 +1,233 @@
-
 // Core variables and mixins
-@import "../bower_components/bootstrap/less/variables"; // Modify this for custom colors, font-sizes, etc
-@import "../bower_components/bootstrap/less/mixins";
+@import "../bower_components/bootstrap/less/variables.less";
+@import "../bower_components/bootstrap/less/mixins.less";
 
-  // CSS Reset
-@import "../bower_components/bootstrap/less/reset";
+// Reset
+@import "../bower_components/bootstrap/less/normalize.less";
+@import "../bower_components/bootstrap/less/print.less";
 
-  // Grid system and page structure
-@import "../bower_components/bootstrap/less/scaffolding";
-@import "../bower_components/bootstrap/less/grid";
-@import "../bower_components/bootstrap/less/layouts";
+// Core CSS
+@import "../bower_components/bootstrap/less/scaffolding.less";
+@import "../bower_components/bootstrap/less/type.less";
+@import "../bower_components/bootstrap/less/code.less";
+@import "../bower_components/bootstrap/less/grid.less";
+@import "../bower_components/bootstrap/less/tables.less";
+@import "../bower_components/bootstrap/less/forms.less";
+@import "../bower_components/bootstrap/less/buttons.less";
 
-  // Base CSS
-@import "../bower_components/bootstrap/less/type";
-@import "../bower_components/bootstrap/less/code";
-@import "../bower_components/bootstrap/less/forms";
-@import "../bower_components/bootstrap/less/tables";
+// Components
+@import "../bower_components/bootstrap/less/component-animations.less";
+@import "../bower_components/bootstrap/less/glyphicons.less";
+@import "../bower_components/bootstrap/less/dropdowns.less";
+@import "../bower_components/bootstrap/less/button-groups.less";
+@import "../bower_components/bootstrap/less/input-groups.less";
+@import "../bower_components/bootstrap/less/navs.less";
+@import "../bower_components/bootstrap/less/navbar.less";
+@import "../bower_components/bootstrap/less/breadcrumbs.less";
+@import "../bower_components/bootstrap/less/pagination.less";
+@import "../bower_components/bootstrap/less/pager.less";
+@import "../bower_components/bootstrap/less/labels.less";
+@import "../bower_components/bootstrap/less/badges.less";
+@import "../bower_components/bootstrap/less/jumbotron.less";
+@import "../bower_components/bootstrap/less/thumbnails.less";
+@import "../bower_components/bootstrap/less/alerts.less";
+@import "../bower_components/bootstrap/less/progress-bars.less";
+@import "../bower_components/bootstrap/less/media.less";
+@import "../bower_components/bootstrap/less/list-group.less";
+@import "../bower_components/bootstrap/less/panels.less";
+@import "../bower_components/bootstrap/less/wells.less";
+@import "../bower_components/bootstrap/less/close.less";
 
-  // Components: common
-@import "../bower_components/bootstrap/less/sprites";
-@import "../bower_components/bootstrap/less/dropdowns";
-@import "../bower_components/bootstrap/less/wells";
-@import "../bower_components/bootstrap/less/component-animations";
-@import "../bower_components/bootstrap/less/close";
+// Components w/ JavaScript
+@import "../bower_components/bootstrap/less/modals.less";
+@import "../bower_components/bootstrap/less/tooltip.less";
+@import "../bower_components/bootstrap/less/popovers.less";
+@import "../bower_components/bootstrap/less/carousel.less";
 
-  // Components: Buttons & Alerts
-@import "../bower_components/bootstrap/less/buttons";
-@import "../bower_components/bootstrap/less/button-groups";
-@import "../bower_components/bootstrap/less/alerts"; // Note: alerts share common CSS with buttons and thus have styles in buttons.less
+// Utility classes
+@import "../bower_components/bootstrap/less/utilities.less";
+@import "../bower_components/bootstrap/less/responsive-utilities.less";
 
-  // Components: Nav
-@import "../bower_components/bootstrap/less/navs";
-@import "../bower_components/bootstrap/less/navbar";
-@import "../bower_components/bootstrap/less/breadcrumbs";
-@import "../bower_components/bootstrap/less/pagination";
-@import "../bower_components/bootstrap/less/pager";
+@import "../bower_components/select2-bootstrap-css/lib/select2-bootstrap.less";
 
-  // Components: Popovers
-@import "../bower_components/bootstrap/less/modals";
-@import "../bower_components/bootstrap/less/tooltip";
-@import "../bower_components/bootstrap/less/popovers";
-
-  // Components: Misc
-@import "../bower_components/bootstrap/less/thumbnails";
-@import "../bower_components/bootstrap/less/media";
-@import "../bower_components/bootstrap/less/labels-badges";
-@import "../bower_components/bootstrap/less/progress-bars";
-@import "../bower_components/bootstrap/less/accordion";
-@import "../bower_components/bootstrap/less/carousel";
-@import "../bower_components/bootstrap/less/hero-unit";
-
-  // Utility classes
-@import "../bower_components/bootstrap/less/utilities"; // Has to be last to override when necessary
-
-@icon-font-path: "../fonts/glyphicons/";
-
-@import "../bower_components/bootstrap/less/responsive";
-
-@import "../bower_components/select2-bootstrap-css/lib/select2-bootstrap";
-
-// If they use forms-angular.css from bower then they will need these paths
-@iconSpritePath:          "../bower_components/bootstrap/img/glyphicons-halflings.png";
-@iconWhiteSpritePath:     "../bower_components/bootstrap/img/glyphicons-halflings-white.png";
-
-// Default styling for the forms-angular classes
-body {
-  position: relative;
-  padding-top: 40px;
-}
-
-.list-item {
-  .well;
-  .well-small;
-}
-
-.list-header, .edit-header {
-  .fixed-header;
-}
-
-.list-body {
-  padding-top: 100px;
-}
-
-.edit-header {
-  padding-top: 10px;
-}
-
-.edit-body {
-  padding-top: 100px;
-}
-
-.page-header {
-  padding-left: 20px;
-  font-family: @headingsFontFamily;
-  font-weight: @headingsFontWeight;
-  color: @headingsColor;
-  font-size: @fontSizeLarge;
-  border-bottom: 2px solid @headingsColor;
-  min-height: @navbarHeight;
-}
-
-.header-rhs {
-  width: 185px;
-  padding-right: 60px;
-  min-height: 40px;
-}
-
-.list-header .header-rhs {
-  margin: 15px 0;
-}
-
-// "Mixins"
-.fixed-header {
-  position: fixed;
-  width: 100%;
-  background-color: @bodyBackground;
-  margin-top: 11px;
-  z-index: 1;
-}
-
-@media (max-width: @navbarCollapseWidth) {
-
-  // UNFIX THE TOPBAR
-  // ----------------
-//  // Remove any padding from the page body
-  .page-body {
-    padding-top: 0;
-  }
-  // Unfix the navbars
-  .page-header {
-    position: static;
-  }
-}
-
-.header-rhs {
-  width: inherited !important;
-  padding-right: 20px !important;
-  padding-bottom: 5px;
-  display: block;
-}
-
-
-// Modifications to ngGrid style
-
-.gridStyle {
-    border: 1px solid #d4d4d4;
-    margin: auto;
-    height: 400px;
-  .ngTopPanel {
-    background-color: #ffffff;
-  }
-  .ngHeaderCell {
-    background-color: #e4e4e4;
-  }
-  .fng-right {
-    text-align: right;
-  }
-  .fng-left {
-    text-align: left;
-  }
-  .fng-centre, .fng-center {
-    text-align: center;
-  }
-  .ngTotalCell {
-      font-weight: bold;
-  }
-}
-
-button.form-btn {
-  width: 8em;
-  height: 2em;
-}
-
-form {
-  &.form-horizontal.compact {
-    .control-group {
-      margin-bottom: 2px;
-    }
-    input + .help-block, select + .help-block, textarea + .help-block, .uneditable-input + .help-block,
-    .input-prepend + .help-block, .input-append + .help-block {
-      margin-top: 0;
-      margin-bottom: 2px;
-    }
-    hr {
-      margin: 8px 0;
-    }
-  }
-
-  .schema-head, .sub-doc, .schema-foot {
-    min-height: 20px;
-    margin-bottom: 20px;
-    background-color: @wellBackground;
-    border: 1px solid darken(@wellBackground, 7%);
-    .border-radius(@baseBorderRadius);
-    .box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
-    blockquote {
-      border-color: #ddd;
-      border-color: rgba(0,0,0,.15);
-    }
-  }
-
-  .schema-head {
-     margin-top: 0;
-     margin-bottom: 5px;
-     border: 1px solid #ddd;
-     padding: 4px 180px;
-  }
-  .sub-doc {
-    padding: 0 5px 0 0;
-    width: 97%;   // which will get rid of scroll bar under most circumstances
-    margin-bottom: 3px;
-  }
-  .sub-doc-btns {
-    margin-left: 15px;
-  }
-  .schema-foot {
-      padding: 5px 180px;
-      margin: 5px 0;
-  }
-
-  input[type="checkbox"].ng-invalid-required:after {
-    content:"*";
-    font-weight: bold;
-    color: red;
-/* padding-left is too small at 12 if inline help is not used*/
-    padding-left: 12px
-  }
-  input.ng-invalid-required, select.fng-invalid-required {
-    background-color: rgba(255, 0, 0, 0.10);
-  }
-  option {
-    background-color: white;
-  }
-  .fng-select2 {
-    width: 220px;
-  }
-  .form-inline > .sub-doc {
-    padding: 0 5px;
-    border: none;
-    background-color: @bodyBackground;
-    box-shadow: none;
-  }
-}
-
+//.list-item {
+//  .well;
+//  .well-sm;
+//}
+//
+//.list-header, .edit-header {
+//  .fixed-header;
+//}
+//
+//.list-body {
+//  padding-top: 100px;
+//}
+//
+//.edit-header {
+//  padding-top: 10px;
+//}
+//
+//.edit-body {
+//  padding-top: 100px;
+//}
+//
+//.page-header {
+//  padding-left: 20px;
+//  font-family: @headings-font-family;
+//  font-weight: @headings-font-weight;
+//  color: @headings-color;
+//  font-size: @font-size-large;
+//  border-bottom: 2px solid @headings-color;
+//  min-height: @navbar-height;
+//}
+//
+//.header-rhs {
+//  width: 185px;
+//  padding-right: 60px;
+//  min-height: 40px;
+//}
+//
+//.list-header .header-rhs {
+//  margin: 15px 0;
+//}
+//
+//// "Mixins"
+//.fixed-header {
+//  position: fixed;
+//  width: 100%;
+//  background-color: @body-bg;
+//  margin-top: 11px;
+//  z-index: 1;
+//}
+//
+//@media (max-width: @grid-float-breakpoint) {
+//
+//  // UNFIX THE TOPBAR
+//  // ----------------
+////  // Remove any padding from the page body
+//  .page-body {
+//    padding-top: 0;
+//  }
+//  // Unfix the navbars
+//  .page-header {
+//    position: static;
+//  }
+//
+//  .global-search {
+//    padding-right : 1em;
+//  }
+//}
+//
+//.header-rhs {
+//  width: inherited !important;
+//  padding-right: 20px !important;
+//  padding-bottom: 5px;
+//  display: block;
+//}
+//
+//
+//// Modifications to ngGrid style
+//
+//.gridStyle {
+//    border: 1px solid #d4d4d4;
+//    margin: auto;
+//    height: 400px;
+//  .ngTopPanel {
+//    background-color: #ffffff;
+//  }
+//  .ngHeaderCell {
+//    background-color: #e4e4e4;
+//  }
+//  .fng-right {
+//    text-align: right;
+//  }
+//  .fng-left {
+//    text-align: left;
+//  }
+//  .fng-centre, .fng-center {
+//    text-align: center;
+//  }
+//  .ngTotalCell {
+//      font-weight: bold;
+//  }
+//}
+//
+//button.form-btn {
+//  width: 8em;
+//  height: 2em;
+//}
+//
+//form {
+//  &.form-horizontal.compact {
+//    .control-group {
+//      margin-bottom: 2px;
+//    }
+//    input + .help-block, select + .help-block, textarea + .help-block, .uneditable-input + .help-block,
+//    .input-prepend + .help-block, .input-append + .help-block {
+//      margin-top: 0;
+//      margin-bottom: 2px;
+//    }
+//    hr {
+//      margin: 8px 0;
+//    }
+//  }
+//
+//  .schema-head, .sub-doc, .schema-foot {
+//    min-height: 20px;
+//    margin-bottom: 20px;
+//    background-color: @well-bg;
+//    border: 1px solid darken(@well-bg, 7%);
+//    border-radius : @border-radius-base;
+//    .box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
+//    blockquote {
+//      border-color: #ddd;
+//      border-color: rgba(0,0,0,.15);
+//    }
+//  }
+//
+//  .schema-head {
+//     margin-top: 0;
+//     margin-bottom: 5px;
+//     border: 1px solid #ddd;
+//     padding: 4px 180px;
+//  }
+//  .sub-doc {
+//    padding: 0 5px 0 0;
+//    width: 97%;   // which will get rid of scroll bar under most circumstances
+//    margin-bottom: 3px;
+//  }
+//  .sub-doc-btns {
+//    margin-left: 15px;
+//  }
+//  .schema-foot {
+//      padding: 5px 180px;
+//      margin: 5px 0;
+//  }
+//
+//  input[type="checkbox"].ng-invalid-required:after {
+//    content:"*";
+//    font-weight: bold;
+//    color: red;
+///* padding-left is too small at 12 if inline help is not used*/
+//    padding-left: 12px
+//  }
+//  input.ng-invalid-required, select.fng-invalid-required {
+//    background-color: rgba(255, 0, 0, 0.10);
+//  }
+//  option {
+//    background-color: white;
+//  }
+//  .fng-select2 {
+//    width: 220px;
+//  }
+//  .form-inline > .sub-doc {
+//    padding: 0 5px;
+//    border: none;
+//    background-color: @body-bg;
+//    box-shadow: none;
+//  }
+//}
+//
 .global-search {
     position : relative;
     float: right;
@@ -268,20 +253,14 @@ form {
     -moz-border-radius: 15px;
     border-radius: 15px;
     .search-result {
-      color: @linkColor;
+      color: @link-color;
     }
     .search-result.focus {
-      background-color: @linkColorHover;
+      background-color: @link-hover-color;
       color: white;
     }
 }
 
-@media (max-width: @navbarCollapseWidth) {
-
-  .global-search {
-    padding-right : 1em;
-  }
-}
 
 
 
