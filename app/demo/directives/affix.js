@@ -4,9 +4,7 @@ myDemoApp
         return {
             restrict: 'E',
             replace: true,
-            template: '<ul class="hidden-phone nav nav-tabs nav-stacked docs-sidenav" ui-scrollfix="-80">' +
-                '<li id="{{affix.id}}Opt" ng-repeat="affix in affixes" ng-click="scrollToSection(affix.id)"><a href=""><i class="icon-chevron-right pull-right"></i>{{affix.name}}</a></li>' +
-                '</ul>',
+            templateUrl: '/template/affix.html',
             compile: function() {
                 var body = $('body');
                 var affixes = [];

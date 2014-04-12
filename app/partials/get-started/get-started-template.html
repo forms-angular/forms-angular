@@ -1,91 +1,97 @@
 <include file="warning-banner.html" substitution="false" />
-<div class="row-fluid">
+<div class="row">
     <div class="page-header">
         <h1>Getting Started</h1>
-        Creating your first application using forms-angular in just a few minutes
-    </div>
+        Creating your first application using forms-angular in just a few minutes</div>
 </div>
-<div class="container-fluid" ng-controller="DemoCtrl">
-<div class="row-fluid">
-<div class="span3">
-    <affix></affix>
-</div>
+<div class="container" ng-controller="DemoCtrl">
+    <div class="row">
+        <div class="col-md-3">
+            <affix></affix>
+        </div>
+        <div class="col-md-9 affix-section">
+            <p>These instructions will take you through the process of creating your
+                first forms-angular application, which will consist of an input form for
+                a simple model, a listing showing data already on file, search, menus and
+                a simple report with several features including outputting to PDF.</p>
+            <p>If you want a sneak preview of what the input form will look like when
+                you have finished take a look at one of the <a href="">examples</a> - there
+                is a simple input form <a href="/#!/a_unadorned_mongoose/new">here</a>
+                and
+                a more feature-filled one <a href="/#!/b_using_options/new">here</a>.</p>
+            <!--TODO:
+            Get rid of the "override the name" on the second example-->
+            <section id="prepare" name="Prepare" affix-scroll="affix-scroll">
 
-<div class="span9 affix-section">
-<p>These instructions will take you through the process of creating your first forms-angular
-application, which will consist of an input form for a simple model, a listing showing data
-already on file, search, menus and a simple report with several features including outputting to PDF.</p>
-<p>If you want a sneak preview of what the input form will look like when you have finished take a look at
-one of the <a href="">examples</a> - there is a simple input form <a href="/#!/a_unadorned_mongoose/new">here</a>
-and a more feature-filled one <a href="/#!/b_using_options/new">here</a>.</p>
-<!--TODO: Get rid of the "override the name" on the second example-->
-<section id="prepare" name="Prepare" affix-scroll>
-<h3>Prepare</h3>
-<p>(if you need to - you may already have these applications / packages installed)</p>
-<p>Please note: the "just a few minutes" in the title starts from <em>after</em> these are installed!</p>
+                <h3>Prepare</h3>
+                <p>(if you need to - you may already have these applications / packages installed)</p>
+                <p>Please note: the "just a few minutes" in the title starts from <em>after</em> these
+                    are installed!</p>
+                <ul>
+                    <li>Install <a href="http://nodejs.org">Node JS</a> (installation depends on
+                        operating system)</li>
+                    <li>Install <a href="http://expressjs.com">Express JS</a> - <code>npm install -g express</code>
+                    </li>
+                    <li>Install <a href="http://www.mongodb.org">MongoDB</a> (installation depends
+                        on operating system)</li>
+                    <li>Install <a href="http://bower.io">Bower</a> - <code>npm install -g bower</code>
+                    </li>
+                    <li>Install <a href="http://git-scm.com/downloads">Git</a> (installation depends
+                        on operating system)</li>
+                </ul>
+                <p>You have the option at this point (if you are <em>really</em> lazy and you
+                    aren't worried about stuff happening in scripts you have never seen) you
+                    can do <code>wget https://raw.github.com/mchapman/forms-angular/master/app/partials/get-started/get-started.sh &amp;&amp; bash get-started.sh</code>.
+                    If you want to understand a bit more about how the example app works you
+                    are better off working through the instructions below.</p>
+                <p>Several other packages / components are installed by npm / bower, and
+                    some of them need to be understood before you can make best use of forms-angular
+                    (though you can do simple forms without). <strong>forms-angular</strong> is
+                    based on what has become known as the <a href="http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and">
+                    MEAN stack</a> - made up of Mongo, Express and Node (all installed
+                    above) and <a href="http://angularjs.org/">Angular JS</a>. All of these
+                    come with extensive documentation on their websites.</p>In addition to
+                the MEAN stack, some grasp of <a href="http://mongoosejs.com/">Mongoose</a> is
+                a good idea for all but the simplest of forms, and knowledge of <a href="http://getbootstrap.com/2.3.2/">Twitter Bootstrap</a> is
+                recommended.</section>
+            <section id="create" name="Create" affix-scroll="affix-scroll">
 
-<ul>
-    <li>Install <a href="http://nodejs.org">Node JS</a> (installation depends on operating system)</li>
-    <li>Install <a href="http://expressjs.com">Express JS</a> - <code>npm install -g express</code></li>
-    <li>Install <a href="http://www.mongodb.org">MongoDB</a> (installation depends on operating system)</li>
-    <li>Install <a href="http://bower.io">Bower</a> - <code>npm install -g bower</code></li>
-    <li>Install <a href="http://git-scm.com/downloads">Git</a> (installation depends on operating system)</li>
-</ul>
+                <h3>Create</h3>
+                In the shell do:
+                <pre><code><include file="get-started-create.sh" /></code></pre>
+            </section>
+            <section id="server-code" name="Server Code" affix-scroll="affix-scroll">
 
-<p>You have the option at this point (if you are <em>really</em> lazy and you aren't worried about
-    stuff happening in scripts you have never seen) you can do
-    <code>wget https://raw.github.com/mchapman/forms-angular/master/app/partials/get-started/get-started.sh && bash get-started.sh</code>.
-    If you want to understand a bit more about how the example app works you are better off working through
-    the instructions below.</p>
-
-<p>Several other packages / components are installed by npm / bower, and some of them need to be
-    understood before you can make best use of forms-angular (though you can do simple forms
-    without).  <strong>forms-angular</strong> is based on what has become known as the
-    <a href="http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and">
-        MEAN stack</a> - made up of Mongo, Express and Node (all installed above) and <a href="http://angularjs.org/">Angular JS</a>.
-    All of these come with extensive documentation on their websites.</p>
-
-In addition to the MEAN stack, some grasp of <a href="http://mongoosejs.com/">Mongoose</a> is a good
-idea for all but the simplest of forms, and knowledge of <a href="http://getbootstrap.com/2.3.2/">Twitter Bootstrap</a> is recommended.
-</section>
-<section id="create" name="Create" affix-scroll>
-<h3>Create</h3>
-
-In the shell do:
-<pre><code><include file="get-started-create.sh" /></code></pre>
-</section>
-<section id="server-code" name="Server Code" affix-scroll>
-<h3>Modify generated server code</h3>
-Add the following to app.js (see the <a href="/#!/schemas">Schemas page</a> for details about setting up schemas):
-<pre><code><include file="adds-app.js" /></code></pre>
-
-<p>and comment out any lines that start with <code>app.get(</code>:</p><pre><code>// app.get('/', routes.index);
+                <h3>Modify generated server code</h3>
+                Add the following to app.js (see the <a href="/#!/schemas">Schemas page</a> for
+                details about setting up schemas):
+                <pre><code><include file="adds-app.js" /></code></pre>
+                <p>and comment out any lines that start with <code>app.get(</code>:</p>
+                <pre><code>// app.get('/', routes.index);
 // app.get('/users', user.list);</code></pre>
-
-</section>
-<section id="front-end" name="Front End" affix-scroll>
-<h3>Create your front end</h3>
-
-<p>Create the following files:</p>
-<p id="index-html"><strong>public/index.html</strong></p>
-<pre><code ng-non-bindable><include file="index.html" /></code></pre>
-<p><strong>public/myapp.js</strong></p>
-<pre><code><include file="myapp.js" /></code></pre>
-<p><strong>public/partials/index.html</strong></p>
-<pre><code ng-non-bindable><include file="partials-index.html" /></code></pre>
-<p id="base-edit-html"><strong>public/partials/base-edit.html</strong></p>
-<pre><code ng-non-bindable><include file="../base-edit.html" /></code></pre>
-<p><strong>public/partials/base-list.html</strong></p>
-<pre><code ng-non-bindable><include file="../base-list.html" /></code></pre>
-<p><strong>public/partials/base-analysis.html</strong></p>
-<pre><code ng-non-bindable><include file="../base-analysis.html" /></code></pre>
-
-</section>
-<section id="run" name="Run" affix-scroll>
-<h3>Run</h3>
-<p><code>node app.js</code></p>
-<p>Visit <a href="http://0.0.0.0:3000"><code>http://0.0.0.0:3000</code></a> in your browser.</p>
-</section>
-</div>
-</div>
+            </section>
+            <section id="front-end" name="Front End" affix-scroll="affix-scroll">
+                <h3>Create your front end</h3>
+                <p>Create the following files:</p>
+                <p id="index-html"><strong>public/index.html</strong></p>
+                <pre><code ng-non-bindable="ng-non-bindable"><include file="index.html" /></code></pre>
+                <p><strong>public/myapp.js</strong></p>
+                <pre><code><include file="myapp.js" /></code></pre>
+                <p><strong>public/partials/index.html</strong></p>
+                <pre><code ng-non-bindable="ng-non-bindable"><include file="partials-index.html" /></code></pre>
+                <p id="base-edit-html"><strong>public/partials/base-edit.html</strong></p>
+                <pre><code ng-non-bindable="ng-non-bindable"><include file="../base-edit.html" /></code></pre>
+                <p><strong>public/partials/base-list.html</strong></p>
+                <pre><code ng-non-bindable="ng-non-bindable"><include file="../base-list.html" /></code></pre>
+                <p><strong>public/partials/base-analysis.html</strong></p>
+                <pre><code ng-non-bindable="ng-non-bindable"><include file="../base-analysis.html" /></code></pre>
+            </section>
+            <section id="run" name="Run" affix-scroll="affix-scroll">
+                <h3>Run</h3>
+                <p><code>node app.js</code></p>
+                <p>Visit <a href="http://0.0.0.0:3000"><code>http://0.0.0.0:3000</code></a> in
+                    your browser.</p>
+            </section>
+        </div>
+    </div>
 </div>
