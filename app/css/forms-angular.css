@@ -6290,7 +6290,7 @@ button.form-btn {
   width: 8em;
   height: 2em;
 }
-form.form-horizontal.compact .control-group {
+form.form-horizontal.compact .form-group {
   margin-bottom: 2px;
 }
 form.form-horizontal.compact input + .help-block,
