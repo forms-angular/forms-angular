@@ -6,22 +6,29 @@ formsAngular
 //                generate markup for bootstrap forms
 //
 //                Horizontal (default)
-//                <div class="control-group">
-//                    <label class="control-label" for="inputEmail">Email</label>
-//                    <div class="controls">
-//                        <input type="text" id="inputEmail" placeholder="Email">
+//                <div class="form-group">
+//                    <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+//                    <div class="col-sm-10">
+//                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
 //                    </div>
-//                </div>
+//                 </div>
 //
 //                Vertical
-//                <label>Label name</label>
-//                <input type="text" placeholder="Type something…">
-//                <span class="help-block">Example block-level help text here.</span>
+//                <div class="form-group">
+//                    <label for="exampleInputEmail1">Email address</label>
+//                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+//                </div>
 //
 //                Inline
-//                <input type="text" class="input-small" placeholder="Email">
+//                <div class="form-group">
+//                    <label class="sr-only" for="exampleInputEmail2">Email address</label>
+//                    <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Enter email">
+//                </div>
 
-                var subkeys = []
+                var sizeMapping = [2,4,5,7,9,10,12]
+                    , sizeDescriptions = ['mini', 'small', 'medium', 'large', 'xlarge', 'xxlarge', 'block-level']
+                    , defaultSizeOffset = 2// medium, which was the default for Twitter Bootstrap 2
+                    , subkeys = []
                     , tabsSetup = false;
 
                 var isHorizontalStyle = function (formStyle) {
@@ -88,7 +95,8 @@ formsAngular
                     var value
                         , requiredStr = (isRequired || fieldInfo.required) ? ' required' : ''
                         , readonlyStr = fieldInfo.readonly ? ' readonly' : ''
-                        , placeHolder = fieldInfo.placeHolder;
+                        , placeHolder = fieldInfo.placeHolder
+                        , sizeClass = 'col-xs-' + sizeMapping[ fieldInfo.size ? sizeDescriptions.indexOf(fieldInfo.size) : defaultSizeOffset];
 
                     if (options.formstyle === 'inline') placeHolder = placeHolder || fieldInfo.label;
                     var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' name="'+ nameString +'" ') + (placeHolder ? ('placeholder="' + placeHolder + '" ') : "");
@@ -143,7 +151,9 @@ formsAngular
                             }
                             break;
                         default:
-                            common += (fieldInfo.size ? 'class="form-control input-' + fieldInfo.size + '" ' : 'class="input-md form-control"') + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
+                            var classes = 'form-control';
+                            if (['horizontal','vertical','inline'].indexOf(options.formstyle) === -1) classes += ' input-sm';
+                                common += 'class="' + classes + '"' + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                             if (fieldInfo.type == 'textarea') {
                                 if (fieldInfo.rows) {
                                     if (fieldInfo.rows == 'auto') {
@@ -164,6 +174,9 @@ formsAngular
                                 value += ' />';
                             }
                         }
+                    if (isHorizontalStyle(options.formstyle)) {
+                        value = '<div class="' + sizeClass + '">' + value + '</div>'
+                    }
                     if (fieldInfo.helpInline) {
                     	value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
                     }
@@ -215,11 +228,11 @@ formsAngular
                                 result.after = '</div>';
                                 break;
                             case 'well-large' :
-                                result.before = '<div class="well well-large">';
+                                result.before = '<div class="well well-lg">';
                                 result.after = '</div>';
                                 break;
                             case 'well-small' :
-                                result.before = '<div class="well well-small">';
+                                result.before = '<div class="well well-sm">';
                                 result.after = '</div>';
                                 break;
                             case 'fieldset' :
@@ -257,7 +270,7 @@ formsAngular
                     if ((options.formstyle !== 'inline' && fieldInfo.label !== '') || addButtonMarkup) {
                         labelHTML = '<label';
                         if (isHorizontalStyle(options.formstyle)) {
-                            labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'control-label', options);
+                            labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'col-sm-2', options);
                         }
                         labelHTML += addAll('Label', 'control-label', options);
                         labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
@@ -271,14 +284,14 @@ formsAngular
                     info.id = info.id || 'f_' + info.name.replace(/\./g, '_');
                     info.label = (info.label !== undefined) ? (info.label === null ? '' : info.label) : $filter('titleCase')(info.name.split('.').slice(-1)[0]);
 
-                    var template = '', closeTag = '';
-                    if (isHorizontalStyle(options.formstyle)) {
-                        template += '<div' + addAll("Group", 'control-group form-group', options);
-                        closeTag = '</div>';
-                    } else {
-                        template += '<span ';
-                        closeTag = '</span>';
+                    var template = '', closeTag = '', classes = 'form-group';
+                    if (options.formstyle === 'vertical' && info.size !== 'block-level') {
+                        template += '<div class="row">';
+                        classes += ' col-xs-' + sizeMapping[info.size?sizeDescriptions.indexOf(info.size):defaultSizeOffset];
+                        closeTag += '</div>';
                     }
+                    template += '<div' + addAll("Group", classes, options);
+                    closeTag += '</div>';
 
                     var includeIndex = false;
                     if (options.index) {
@@ -361,7 +374,7 @@ formsAngular
                     else {
                         // Handle arrays here
                         var controlClass = [];
-                        if (isHorizontalStyle(options.formstyle)) {controlClass.push('controls'); }
+                        if (isHorizontalStyle(options.formstyle)) {controlClass.push('col-sm-10'); }
                         if (info.array) {
                             controlClass.push('fng-array');
                             if (options.formstyle === 'inline') throw "Cannot use arrays in an inline form";

@@ -149,26 +149,51 @@ you can easily switch between modes without having to manually change all the in
     <p>The optional attributes that can be passed for form-input are:</p>
     <ul>
         <li><strong>formstyle</strong> this attribute can take the values <strong>vertical</strong>, <strong>horizontal</strong>,
-            <strong>inline</strong> and <strong>horizontalCompact</strong>.  The first three generate the markup for a Twitter Bootstrap 2 style and the last slightly modified style. <strong>vertical</strong>
+            <strong>inline</strong> and <strong>horizontalCompact</strong>.  The first three generate the markup for a Twitter Bootstrap style and the last slightly modified style. <strong>vertical</strong>
             generates markup that works with the default form style, and the others needs classes adding as follows:
-            <table class="table table-striped">
-                <tbody><tr>
-                    <th>formstyle</th>
-                    <th>Associated Bootstrap class(es)</th>
-                </tr>
-                <tr>
-                    <td>horizontal</td>
-                    <td>form-horizontal</td>
-                </tr>
-                <tr>
-                    <td>horizontalCompact (or just compact)</td>
-                    <td>form-horizontal compact</td>
-                </tr>
-                <tr>
-                    <td>inline</td>
-                    <td>form-inline</td>
-                </tr>
-                </tbody></table>
+            <table class="table" ng-init="name=[{name:'surname'},{name:'forename'}]">
+                <thead>
+                    <tr>
+                        <th>formstyle</th>
+                        <th>Associated Bootstrap class</th>
+                        <th>forms-angular class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>horizontalCompact / compact (default)</td>
+                        <td>form-horizontal</td>
+                        <td>compact</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><form-input schema="name" noautofocus="true" /></td>
+                    </tr>
+                    <tr>
+                        <td>vertical</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><form-input formstyle="vertical" schema="name" noautofocus="true" /></td>
+                    </tr>
+                    <tr>
+                        <td>horizontal</td>
+                        <td>form-horizontal</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><form-input formstyle="horizontal" schema="name" noautofocus="true" /></td>
+                    </tr>
+                    <tr>
+                        <td>inline</td>
+                        <td>form-inline</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><form-input formstyle="inline" schema="name" noautofocus="true" /></td>
+                    </tr>
+                </tbody>
+            </table>
             <p>Forms and sub forms that are created by the directive will have these classes added in the appropriate place.</p></li>
         <li><strong>model</strong> the object in the scope to be bound to the model controller.  Specifying
             the model inhibits the generation of the <strong>form</strong> tag unless the <strong>forceform</strong> attribute is set to true</li>
