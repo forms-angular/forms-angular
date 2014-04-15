@@ -59,6 +59,7 @@ body {
 .list-item {
   .well;
   .well-sm;
+  min-height: 40px;
 }
 
 .list-header, .edit-header {
@@ -88,7 +89,7 @@ body {
 }
 
 .header-rhs {
-  width: 185px;
+  width: 226px;
   padding-right: 60px;
   min-height: 40px;
 }
@@ -208,6 +209,11 @@ form {
   .schema-foot {
       padding: 5px 180px;
       margin: 5px 0;
+  }
+
+//  .radio input[type="radio"], .radio-inline input[type="radio"], .checkbox-inline input[type="checkbox"]
+  .checkbox input[type="checkbox"] {
+    margin-left: -5px;
   }
 
   input[type="checkbox"].ng-invalid-required:after {

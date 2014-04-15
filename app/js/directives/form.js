@@ -25,7 +25,7 @@ formsAngular
 //                    <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Enter email">
 //                </div>
 
-                var sizeMapping = [2,4,5,7,9,10,12]
+                var sizeMapping = [1,2,4,6,8,10,12]
                     , sizeDescriptions = ['mini', 'small', 'medium', 'large', 'xlarge', 'xxlarge', 'block-level']
                     , defaultSizeOffset = 2// medium, which was the default for Twitter Bootstrap 2
                     , subkeys = []
@@ -95,6 +95,7 @@ formsAngular
                     var value
                         , requiredStr = (isRequired || fieldInfo.required) ? ' required' : ''
                         , readonlyStr = fieldInfo.readonly ? ' readonly' : ''
+                        , classes
                         , placeHolder = fieldInfo.placeHolder
                         , sizeClass = 'col-xs-' + sizeMapping[ fieldInfo.size ? sizeDescriptions.indexOf(fieldInfo.size) : defaultSizeOffset];
 
@@ -118,7 +119,9 @@ formsAngular
                                     value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + (fieldInfo.readonly ? 'disabled ' : '') + common + '>';
                                 }
                             } else {
-                                value = '<select ' + common + (fieldInfo.size ? 'class="input-' + fieldInfo.size + '" ' : '') + '>';
+                                classes = 'form-control';
+                                if (['horizontal','vertical','inline'].indexOf(options.formstyle) === -1) classes += ' input-sm';
+                                value = '<select ' + common + 'class="' + classes + '">';
                                 if (!isRequired) {
                                     value += '<option></option>';
                                 }
@@ -150,8 +153,11 @@ formsAngular
                                 value += '<' + tagType + ' ng-repeat="option in ' + fieldInfo.options + '"><input ' + common + ' type="radio" value="{{option}}"> {{option}} </' + tagType + '> ';
                             }
                             break;
+                        case 'checkbox' :
+                            value = '<div class="checkbox"><input ' + common + 'type="checkbox"></div>';
+                            break;
                         default:
-                            var classes = 'form-control';
+                            classes = 'form-control';
                             if (['horizontal','vertical','inline'].indexOf(options.formstyle) === -1) classes += ' input-sm';
                                 common += 'class="' + classes + '"' + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                             if (fieldInfo.type == 'textarea') {
@@ -174,10 +180,10 @@ formsAngular
                                 value += ' />';
                             }
                         }
-                    if (isHorizontalStyle(options.formstyle)) {
+                    if (isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
                         value = '<div class="' + sizeClass + '">' + value + '</div>'
                     }
-                    if (fieldInfo.helpInline) {
+                    if (fieldInfo.helpInline && fieldInfo.type !== 'checkbox') {
                     	value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
                     }
                     if (fieldInfo.help) {
