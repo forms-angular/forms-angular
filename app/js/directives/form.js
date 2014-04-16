@@ -168,7 +168,10 @@ formsAngular
                                         common += 'rows = "' + fieldInfo.rows + '" ';
                                     }
                                 }
-                                if (fieldInfo.editor === 'ckEditor') common += 'ckeditor = "" ';
+                                if (fieldInfo.editor === 'ckEditor') {
+                                    common += 'ckeditor = "" ';
+                                    sizeClass = 'col-xs-12';
+                                }
                                 value = '<textarea ' + common + ' />';
                             } else {
                                 value = '<input ' + common + 'type="' + fieldInfo.type + '"';
@@ -187,7 +190,7 @@ formsAngular
                     	value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
                     }
                     if (fieldInfo.help) {
-                        value += '<span class="help-block">' + fieldInfo.help + '</span>';
+                        value += '<span class="help-block '+ sizeClass+'">' + fieldInfo.help + '</span>';
                     }
                     return value;
                 };
@@ -273,7 +276,7 @@ formsAngular
 
                 var generateLabel = function (fieldInfo, addButtonMarkup, options) {
                     var labelHTML = '';
-                    if ((options.formstyle !== 'inline' && fieldInfo.label !== '') || addButtonMarkup) {
+                    if ((options.formstyle !== 'inline') || addButtonMarkup) {
                         labelHTML = '<label';
                         if (isHorizontalStyle(options.formstyle)) {
                             labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'col-sm-2', options);
