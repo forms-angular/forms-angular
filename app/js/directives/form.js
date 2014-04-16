@@ -109,7 +109,9 @@ formsAngular
                         case 'select' :
                             common += (fieldInfo.readonly ? 'disabled ' : '');
                             if (fieldInfo.select2) {
-                                common += 'class="fng-select2' + (fieldInfo.size ? ' input-' + fieldInfo.size : '') + '"';
+                                classes = 'form-control fng-select2';
+                                if (['horizontal','vertical','inline'].indexOf(options.formstyle) === -1) classes += ' input-sm';
+                                common += 'class="' + classes + '"';
                                 if (fieldInfo.select2.fngAjax) {
                                     value = '<div class="input-append">';
                                     value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
@@ -159,7 +161,7 @@ formsAngular
                         default:
                             classes = 'form-control';
                             if (['horizontal','vertical','inline'].indexOf(options.formstyle) === -1) classes += ' input-sm';
-                                common += 'class="' + classes + '"' + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
+                            common += 'class="' + classes + '"' + (fieldInfo.add ? fieldInfo.add : '') + 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
                             if (fieldInfo.type == 'textarea') {
                                 if (fieldInfo.rows) {
                                     if (fieldInfo.rows == 'auto') {
@@ -174,13 +176,7 @@ formsAngular
                                 }
                                 value = '<textarea ' + common + ' />';
                             } else {
-                                value = '<input ' + common + 'type="' + fieldInfo.type + '"';
-                                if (options.formstyle === 'inline') {
-                                    if (!fieldInfo.size) {
-                                      value += ' class="input-small form-control"';
-                                    }
-                                }
-                                value += ' />';
+                                value = '<input ' + common + 'type="' + fieldInfo.type + '" />';
                             }
                         }
                     if (isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
