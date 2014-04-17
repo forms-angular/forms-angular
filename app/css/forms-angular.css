@@ -6239,6 +6239,9 @@ body {
 .list-header .header-rhs {
   margin: 15px 0;
 }
+.invisible {
+  color: #ffffff;
+}
 .fixed-header {
   position: fixed;
   width: 100%;

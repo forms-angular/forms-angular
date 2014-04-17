@@ -902,6 +902,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return text;
     };
 
+    $scope.invisibleLabel = function(index) {
+        return index > 0 ? 'invisible' : '';
+    };
+
     $scope.setFormDirty = function (event) {
         if (event) {
             var form = angular.element(event.target).inheritedData('$formController');
