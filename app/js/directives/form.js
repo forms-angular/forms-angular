@@ -270,7 +270,7 @@ formsAngular
                     return result;
                 };
 
-                var generateLabel = function (fieldInfo, addButtonMarkup, options) {
+                var generateLabel = function (fieldInfo, addButtonMarkup, options, isArrayLabel) {
                     var labelHTML = '';
                     if ((options.formstyle !== 'inline') || addButtonMarkup) {
                         labelHTML = '<label';
@@ -278,6 +278,7 @@ formsAngular
                             labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'col-sm-2', options);
                         }
                         labelHTML += addAll('Label', 'control-label', options);
+                        if (isArrayLabel) {labelHTML += ' ng-class="invisibleLabel($index)"'}
                         labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
                     }
                     return labelHTML;
@@ -383,8 +384,9 @@ formsAngular
                         if (info.array) {
                             controlClass.push('fng-array');
                             if (options.formstyle === 'inline') throw "Cannot use arrays in an inline form";
-                            template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="glyphicon glyphicon-plus"-sign"></i>', options) +
-                                '<div class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
+                            template += '<div ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
+                                generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="glyphicon glyphicon-plus"-sign"></i>', options, true) +
+                                '<div class="' + controlClass.join(' ') + '" id="' + info.id + 'List" >' +
                                 generateInput(info, "arrayItem.x", true, info.id + '_{{$index}}', options) +
                                 '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="glyphicon glyphicon-minus-sign"></i>' +
                                 '</div>';
