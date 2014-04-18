@@ -6,7 +6,7 @@ var ESchema = new Schema({
     forename:  {type: String, list:true},
     weight: {type : Number, form:{label:"Weight (lbs)"}},
     mentor: { type: Schema.Types.ObjectId, ref: 'c_subdoc_example'},
-    teacher: { type: Schema.Types.ObjectId, ref: 'b_using_options', form:{select2:true}},
+    teacher: { type: Schema.Types.ObjectId, ref: 'b_using_options', form:{select2:{fngAjax:true}}},
     dateOfBirth: Date,
     assistants: [{ type: Schema.Types.ObjectId, ref: 'a_unadorned_mongoose'}],
     team: [{ type: Schema.Types.ObjectId, ref: 'd_array_example', form:{select2:true}}],

@@ -109,13 +109,12 @@ formsAngular
                         case 'select' :
                             common += (fieldInfo.readonly ? 'disabled ' : '');
                             if (fieldInfo.select2) {
-                                classes = 'form-control fng-select2';
-                                if (['horizontal','vertical','inline'].indexOf(options.formstyle) === -1) classes += ' input-sm';
-                                common += 'class="' + classes + '"';
+                                var compactClass = (['horizontal','vertical','inline'].indexOf(options.formstyle) === -1) ? ' input-sm' : '';
+                                common += 'class="form-control fng-select2' + compactClass + '"';
                                 if (fieldInfo.select2.fngAjax) {
-                                    value = '<div class="input-append">';
+                                    value = '<div class="input-group">';
                                     value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
-                                    value += '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="glyphicon glyphicon-search"></i></button>';
+                                    value += '<span class="input-group-addon' + compactClass + '" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="glyphicon glyphicon-search"></i></span>';
                                     value += '</div>';
                                 } else if (fieldInfo.select2) {
                                     value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + (fieldInfo.readonly ? 'disabled ' : '') + common + '>';
@@ -270,7 +269,7 @@ formsAngular
                     return result;
                 };
 
-                var generateLabel = function (fieldInfo, addButtonMarkup, options, isArrayLabel) {
+                var generateLabel = function (fieldInfo, addButtonMarkup, options) {
                     var labelHTML = '';
                     if ((options.formstyle !== 'inline') || addButtonMarkup) {
                         labelHTML = '<label';
@@ -278,7 +277,6 @@ formsAngular
                             labelHTML += ' for="' + fieldInfo.id + '"' + addAll('Label', 'col-sm-2', options);
                         }
                         labelHTML += addAll('Label', 'control-label', options);
-                        if (isArrayLabel) {labelHTML += ' ng-class="invisibleLabel($index)"'}
                         labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
                     }
                     return labelHTML;
@@ -343,8 +341,8 @@ formsAngular
                             } else {
                                 template +=         '<div class="schema-head">' + info.label +
                                                     '</div>' +
-                                                    '<div ng-form class="row-fluid ' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
-                                                    '   <div class="row-fluid sub-doc">' +
+                                                    '<div ng-form class="row ' + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
+                                                    '   <div class="row sub-doc">' +
                                                     '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model}) +
                                                     '      </div>';
 
@@ -354,7 +352,7 @@ formsAngular
                                         template += info.customSubDoc;
                                     }
                                     if (!info.noRemove) {
-                                        template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
+                                        template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
                                                     '          <i class="glyphicon glyphicon-minus"></i> Remove' +
                                                     '      </button>';
                                     }
@@ -368,8 +366,8 @@ formsAngular
                                         template += info.customFooter;
                                     }
                                     if (!info.noAdd) {
-                                        template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                                                    '        <i class="glyphicon glyphicon-plus""></i> Add' +
+                                        template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                                                    '        <i class="glyphicon glyphicon-plus"></i> Add' +
                                                     '    </button>'
                                     }
                                     template +=     '</div>';
@@ -384,9 +382,14 @@ formsAngular
                         if (info.array) {
                             controlClass.push('fng-array');
                             if (options.formstyle === 'inline') throw "Cannot use arrays in an inline form";
-                            template += '<div ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
-                                generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="glyphicon glyphicon-plus"-sign"></i>', options, true) +
-                                '<div class="' + controlClass.join(' ') + '" id="' + info.id + 'List" >' +
+//                            template += '<div ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
+//                                generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="glyphicon glyphicon-plus"-sign"></i>', options, true) +
+//                                '<div class="' + controlClass.join(' ') + '" id="' + info.id + 'List" >' +
+//                                generateInput(info, "arrayItem.x", true, info.id + '_{{$index}}', options) +
+//                                '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="glyphicon glyphicon-minus-sign"></i>' +
+//                                '</div>';
+                            template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="glyphicon glyphicon-plus-sign"></i>', options) +
+                                '<div ng-class="skipCols($index)" class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
                                 generateInput(info, "arrayItem.x", true, info.id + '_{{$index}}', options) +
                                 '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="glyphicon glyphicon-minus-sign"></i>' +
                                 '</div>';

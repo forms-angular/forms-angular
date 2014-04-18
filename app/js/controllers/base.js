@@ -902,8 +902,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return text;
     };
 
-    $scope.invisibleLabel = function(index) {
-        return index > 0 ? 'invisible' : '';
+    $scope.skipCols = function(index) {
+        return index > 0 ? 'col-md-offset-2' : '';
     };
 
     $scope.setFormDirty = function (event) {
