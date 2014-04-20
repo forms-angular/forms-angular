@@ -10,15 +10,15 @@
         display: none !important;
     }</style>
 
-    <link rel="stylesheet" href="styles/d53ff14c.main.css"/>
+    <link rel="stylesheet" href="styles/3d2156a8.main.css"/>
 </head>
-<body ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
+<body class="container-fluid" ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
 <div class="visible-lg">
     <a href="https://github.com/mchapman/forms-angular"><img src="/img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032"></a>
 </div>
 
-<div class="navbar navbar-default navbar-static-top">
-    <div class="container" ng-cloak="ng-cloak">
+<div class="navbar navbar-default navbar-fixed-top">
+    <div ng-cloak="ng-cloak">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="glyphicon glyphicon-bar"></span>
             <span class="glyphicon glyphicon-bar"></span>
@@ -29,7 +29,7 @@
         </div>
         <div class="visible-lg pull-right col-md-2"></div>      <!-- Leave some space for github flash -->
         <global-search class="global-search"></global-search>
-        <div class="pull-right" style="padding-top: 14px"><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe></div>
+        <!--<div class="pull-right" style="padding-top: 14px;"><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe></div>-->
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a ng-href="{{buildUrl('get-started')}}">Get Started</a></li>
@@ -61,18 +61,16 @@
 </div>
 <div ng-view=""></div>
 <footer class="footer">
-    <div class="container">
-        <p>Code licensed under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
-        <ul class="footer-links">
-            <li><a href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
-            <li class="muted">·</li>
-            <li><a href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
-        </ul>
-    </div>
+    <p>Code licensed under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+    <ul class="footer-links">
+        <li><a href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
+        <li class="muted">·</li>
+        <li><a href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
+    </ul>
 </footer>
 <!-- what forms-angular depends on -->
 <!-- *** Section must be copied to partials/get-started/index.html if it is changed *** -->
-<script src="scripts/1a804cda.plugins.js"></script>
+<script src="scripts/7e8af688.plugins.js"></script>
 <!--[if lt IE 9]>
 <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
 <![endif]-->
@@ -85,10 +83,10 @@
 
 <!-- forms-angular stuff -->
 <!--This section needs to stay in sync with the concat section of the Gruntfile-->
-<script src="scripts/2c784ae0.lib.js"></script>
+<script src="scripts/b97bcd90.lib.js"></script>
 
 <!--Demo application stuff-->
-<script src="scripts/542aba12.app.js"></script>
+<script src="scripts/6ebdc2ca.app.js"></script>
 
 <script type="text/javascript">
     if (window.location.hostname != '0.0.0.0') {
