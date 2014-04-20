@@ -3872,6 +3872,16 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     top: 0;
   }
 }
+.navbar-form .row {
+  margin-left: 5px;
+  margin-right: 0;
+}
+.navbar-form .form-group .input-group {
+  display: table-cell;
+}
+.navbar-form .form-group .input-group .input-group-addon {
+  display: none;
+}
 @media (max-width: 767px) {
   .navbar-form .form-group {
     margin-bottom: 5px;
@@ -6291,6 +6301,10 @@ button.form-btn {
   width: 8em;
   height: 2em;
 }
+form.form-horizontal .form-group {
+  margin-left: 0;
+  margin-right: 0;
+}
 form.form-horizontal.compact .form-group {
   margin-bottom: 2px;
 }
@@ -6396,4 +6410,17 @@ form .form-inline > .sub-doc {
 .search-results .search-result.focus {
   background-color: #2a6496;
   color: white;
+}
+.form-inline .row {
+  margin-left: 5px;
+  margin-right: 0;
+}
+.form-inline .form-group .input-group {
+  display: table-cell;
+}
+.form-inline .form-group .input-group .input-group-addon {
+  display: none;
+}
+form .tab-content {
+  margin-top: 5px;
 }

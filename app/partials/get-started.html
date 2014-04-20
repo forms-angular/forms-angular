@@ -8,7 +8,7 @@
         <h1>Getting Started</h1>
         Creating your first application using forms-angular in just a few minutes</div>
 </div>
-<div class="container" ng-controller="DemoCtrl">
+<div ng-controller="DemoCtrl">
     <div class="row">
         <div class="col-md-3">
             <affix></affix>
@@ -214,63 +214,58 @@ myApp.config([&apos;formRoutesProvider&apos;, function (formRoutes) {
                 <p id="base-edit-html"><strong>public/partials/base-edit.html</strong></p>
                 <pre><code ng-non-bindable="ng-non-bindable">&lt;div ng-controller=&quot;BaseCtrl&quot;&gt;
     &lt;!--This is the header section--&gt;
-    &lt;div class=&quot;page-header edit-header row-fluid&quot;&gt;
+    &lt;div class=&quot;page-header edit-header row&quot;&gt;
         &lt;!--The left hand side contains important fields from the data--&gt;
-        &lt;div class=&quot;header-lhs span8&quot;&gt;
+        &lt;div class=&quot;header-lhs col-sm-8&quot;&gt;
             &lt;h4&gt;{{modelNameDisplay}} :
                 &lt;span ng-repeat=&quot;field in listSchema&quot;&gt;{{getListData(record, field.name)}} &lt;/span&gt;
             &lt;/h4&gt;
         &lt;/div&gt;
         &lt;!--The right hand side contains buttons to Save, Cancel, Delete and create New--&gt;
-        &lt;div class=&quot;header-rhs span2&quot;&gt;
-            &lt;div form-buttons&gt;&lt;/div&gt;
+        &lt;div class=&quot;header-rhs col-sm-2&quot;&gt;
+            &lt;div form-buttons=&quot;&quot;&gt;&lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;container-fluid page-body edit-body&quot;&gt;
         &lt;!--This section only appears when there is an error message to display--&gt;
-        &lt;div id=&quot;display-error&quot; ng-show=&quot;errorMessage&quot; class=&quot;row-fluid&quot;&gt;
-            &lt;div class=&quot;span6 offset3 alert alert-error&quot;&gt;
-                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;&amp;times;&lt;/button&gt;
+        &lt;div id=&quot;display-error&quot; ng-show=&quot;errorMessage&quot; class=&quot;row&quot;&gt;
+            &lt;div class=&quot;alert alert-error col-lg-offset-3 col-sm-6 alert-warning alert-dismissable&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;×&lt;/button&gt;
                 &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
                 &lt;div ng-bind-html=&quot;errorMessage&quot;&gt;&lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
-        &lt;form-input name=&quot;baseForm&quot; schema=&quot;baseSchema()&quot; formStyle=&quot;compact&quot;&gt;&lt;/form-input&gt;
+        &lt;form-input name=&quot;baseForm&quot; schema=&quot;baseSchema()&quot; formstyle=&quot;compact&quot;&gt;&lt;/form-input&gt;
     &lt;/div&gt;
-&lt;/div&gt;
-</code></pre>
+&lt;/div&gt;</code></pre>
                 <p><strong>public/partials/base-list.html</strong></p>
                 <pre><code ng-non-bindable="ng-non-bindable">&lt;div ng-controller=&quot;BaseCtrl&quot;&gt;
-    &lt;div class=&quot;container-fluid page-header list-header&quot;&gt;
-        &lt;div class=&quot;row-fluid&quot;&gt;
-            &lt;div class=&quot;header-lhs span9&quot;&gt;
-                &lt;h1&gt;{{modelNameDisplay}}&lt;/h1&gt;
-            &lt;/div&gt;
-            &lt;div class=&quot;header-rhs span2&quot;&gt;
-                &lt;button class=&quot;btn pull-right&quot; ng-click=&quot;new()&quot;&gt;&lt;i class=&quot;icon-plus&quot;&gt;&lt;/i&gt; New&lt;/button&gt;
-            &lt;/div&gt;
+    &lt;div class=&quot;row page-header list-header&quot;&gt;
+        &lt;div class=&quot;header-lhs col-sm-8&quot;&gt;
+            &lt;h1&gt;{{modelNameDisplay}}&lt;/h1&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;header-rhs col-sm-2&quot;&gt;
+            &lt;button class=&quot;btn btn-default&quot; ng-click=&quot;new()&quot;&gt;&lt;i class=&quot;icon-plus&quot;&gt;&lt;/i&gt; New&lt;/button&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;container-fluid page-body list-body&quot;&gt;
-        &lt;div ng-show=&quot;errorMessage&quot; class=&quot;row-fluid&quot;&gt;
-            &lt;div class=&quot;span6 offset3 alert alert-error&quot;&gt;
-                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;&amp;times;&lt;/button&gt;
+    &lt;div class=&quot;page-body list-body&quot;&gt;
+        &lt;div ng-show=&quot;errorMessage&quot; class=&quot;row&quot;&gt;
+            &lt;div class=&quot;alert alert-error col-lg-offset-3 col-sm-6 col-md-6 alert-warning alert-dismissable&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;×&lt;/button&gt;
                 &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
                 &lt;div ng-bind-html=&quot;errorMessage&quot;&gt;&lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
 
-        &lt;div class=&quot;row-fluid&quot; infinite-scroll=&quot;scrollTheList()&quot;&gt;
+        &lt;div class=&quot;row&quot; infinite-scroll=&quot;scrollTheList()&quot;&gt;
             &lt;a ng-repeat=&quot;record in recordList&quot; ng-href=&quot;{{generateEditUrl(record)}}&quot;&gt;
                 &lt;div class=&quot;list-item&quot;&gt;
-                    &lt;div class=&quot;span{{12/listSchema.length}}&quot; ng-repeat=&quot;field in listSchema&quot;&gt;{{getListData(record, field.name)}} &lt;/div&gt;
+                    &lt;div class=&quot;col-sm-{{12/listSchema.length}}&quot; ng-repeat=&quot;field in listSchema&quot;&gt;{{getListData(record, field.name)}} &lt;/div&gt;
                 &lt;/div&gt;
             &lt;/a&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-&lt;/div&gt;
-
-</code></pre>
+&lt;/div&gt;</code></pre>
                 <p><strong>public/partials/base-analysis.html</strong></p>
                 <pre><code ng-non-bindable="ng-non-bindable">&lt;div ng-controller=&quot;AnalysisCtrl&quot;&gt;
     &lt;div class=&quot;container-fluid page-header report-header&quot;&gt;

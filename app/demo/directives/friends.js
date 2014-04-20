@@ -42,10 +42,6 @@ myDemoApp.controller('FriendCtrl',['$scope', '$routeParams', '$location', '$http
         $scope.frdShowAdd=false;
     };
 
-    $scope.frdIsFriendSaveDisabled = function() {
-        return $scope.newFriendForm.$invalid || $scope.newFriendForm.$pristine;
-    };
-
     $scope.frdHideDetails();
 
 }]).directive('friends', function () {

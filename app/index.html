@@ -17,13 +17,13 @@
     <link rel="stylesheet" href="/demo/css/demo.css">
     <!-- endbuild -->
 </head>
-<body ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
+<body class="container-fluid" ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
 <div class="visible-lg">
     <a href="https://github.com/mchapman/forms-angular"><img src="/img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032"></a>
 </div>
 
 <div class="navbar navbar-default navbar-fixed-top">
-    <div class="container" ng-cloak="ng-cloak">
+    <div ng-cloak="ng-cloak">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="glyphicon glyphicon-bar"></span>
             <span class="glyphicon glyphicon-bar"></span>
@@ -64,16 +64,14 @@
         </div>
     </div>
 </div>
-<div class="container" ng-view></div>
+<div ng-view></div>
 <footer class="footer">
-    <div class="container">
-        <p>Code licensed under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
-        <ul class="footer-links">
-            <li><a href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
-            <li class="muted">·</li>
-            <li><a href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
-        </ul>
-    </div>
+    <p>Code licensed under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+    <ul class="footer-links">
+        <li><a href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
+        <li class="muted">·</li>
+        <li><a href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
+    </ul>
 </footer>
 <!-- what forms-angular depends on -->
 <!-- *** Section must be copied to partials/get-started/index.html if it is changed *** -->
