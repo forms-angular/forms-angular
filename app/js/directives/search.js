@@ -88,10 +88,10 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function 
     });
 
 }])
-.directive('globalSearch', [function () {
+.directive('globalSearch', ['cssFrameworkService', function (cssFrameworkService) {
         return {
             restrict: 'AE',
-            templateUrl: 'template/search.html',
+            templateUrl: 'template/search-' + cssFrameworkService.framework()+'.html',
             controller: 'SearchCtrl'
             }
         }

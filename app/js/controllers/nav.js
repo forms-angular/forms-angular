@@ -1,6 +1,6 @@
 'use strict';
 
-formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService', function ($scope, $data, $location, $filter, $locationParse, $controller, urlService) {
+formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService', 'cssFrameworkService', function ($scope, $data, $location, $filter, $locationParse, $controller, urlService, cssFrameworkService) {
 
     $scope.items = [];
 
@@ -14,6 +14,16 @@ formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '
                 event.preventDefault();
             }
         }
+    };
+
+    $scope.css = function(fn, arg) {
+        var result;
+        if (typeof cssFrameworkService[fn] === "function") {
+            result = cssFrameworkService[fn](arg);
+        } else {
+            result = 'error text-error'
+        }
+        return result;
     };
 
     function loadControllerAndMenu(controllerName, level) {
