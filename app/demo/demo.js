@@ -21,6 +21,7 @@ myDemoApp.config(['formRoutesProvider', function (formRoutes) {
         ], '/index');
 }]);
 
-formsAngular.config(['urlServiceProvider',function(urlService) {
+formsAngular.config(['urlServiceProvider','cssFrameworkServiceProvider',function(urlService, cssFrameworkService) {
     urlService.setOptions({html5Mode: false, hashPrefix: '!'});
+    cssFrameworkService.setOptions({framework:'bs2'});
 }]);
