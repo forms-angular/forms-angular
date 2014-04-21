@@ -18,24 +18,25 @@
     <!-- endbuild -->
 </head>
 <body class="container-fluid" ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
-<div class="visible-lg">
+<div class="visible-lg visible-desktop">
     <a href="https://github.com/mchapman/forms-angular"><img src="/img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032"></a>
 </div>
 
 <div class="navbar navbar-default navbar-fixed-top">
-    <div ng-cloak="ng-cloak">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="glyphicon glyphicon-bar"></span>
-            <span class="glyphicon glyphicon-bar"></span>
-            <span class="glyphicon glyphicon-bar"></span>
+    <div class="navbar-inner">
+        <div class="container-fluid" ng-cloak>
+        <button type="button" class="navbar-toggle btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="glyphicon glyphicon-bar icon-bar"></span>
+            <span class="glyphicon glyphicon-bar icon-bar"></span>
+            <span class="glyphicon glyphicon-bar icon-bar"></span>
         </button>
         <div class="pull-left">
-            <a class="navbar-brandpluslogo" ng-href="{{buildUrl('index')}}"><img src="/img/Home_icon_black.png" width="45" alt="Click on logo to go to home page" class="img-responsive" /></a>
+            <a class="navbar-brandpluslogo brandpluslogo" ng-href="{{buildUrl('index')}}"><img src="/img/Home_icon_black.png" width="45" alt="Click on logo to go to home page" class="img-responsive" /></a>
         </div>
-        <div class="visible-lg pull-right col-md-2"></div>      <!-- Leave some space for github flash -->
+        <div class="visible-lg visible-desktop pull-right col-md-2 span2"></div>      <!-- Leave some space for github flash -->
         <global-search class="global-search"></global-search>
         <!--<div class="pull-right" style="padding-top: 14px;"><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe></div>-->
-        <div class="navbar-collapse collapse">
+        <div class="navbar-collapse collapse nav-collapse">
             <ul class="nav navbar-nav">
                 <li><a ng-href="{{buildUrl('get-started')}}">Get Started</a></li>
                 <li><a ng-href="{{buildUrl('schemas')}}">Schemas</a></li>
@@ -63,6 +64,7 @@
             </ul>
         </div>
     </div>
+        </div>
 </div>
 <div ng-view></div>
 <footer class="footer">
@@ -114,6 +116,7 @@
 <script src="/js/services/url-utils.js"></script>
 <script src="/js/services/form-routes.js"></script>
 <script src="/js/services/utils.js"></script>
+<script src="/js/services/css-framework.js"></script>
 <script src="/js/controllers/base.js"></script>
 <script src="/js/controllers/analysis.js"></script>
 <script src="/js/controllers/model.js"></script>
