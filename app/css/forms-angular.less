@@ -1,57 +1,6 @@
 
 // Core variables and mixins
-@import "../bower_components/bootstrap/less/variables"; // Modify this for custom colors, font-sizes, etc
-@import "../bower_components/bootstrap/less/mixins";
-
-  // CSS Reset
-@import "../bower_components/bootstrap/less/reset";
-
-  // Grid system and page structure
-@import "../bower_components/bootstrap/less/scaffolding";
-@import "../bower_components/bootstrap/less/grid";
-@import "../bower_components/bootstrap/less/layouts";
-
-  // Base CSS
-@import "../bower_components/bootstrap/less/type";
-@import "../bower_components/bootstrap/less/code";
-@import "../bower_components/bootstrap/less/forms";
-@import "../bower_components/bootstrap/less/tables";
-
-  // Components: common
-@import "../bower_components/bootstrap/less/sprites";
-@import "../bower_components/bootstrap/less/dropdowns";
-@import "../bower_components/bootstrap/less/wells";
-@import "../bower_components/bootstrap/less/component-animations";
-@import "../bower_components/bootstrap/less/close";
-
-  // Components: Buttons & Alerts
-@import "../bower_components/bootstrap/less/buttons";
-@import "../bower_components/bootstrap/less/button-groups";
-@import "../bower_components/bootstrap/less/alerts"; // Note: alerts share common CSS with buttons and thus have styles in buttons.less
-
-  // Components: Nav
-@import "../bower_components/bootstrap/less/navs";
-@import "../bower_components/bootstrap/less/navbar";
-@import "../bower_components/bootstrap/less/breadcrumbs";
-@import "../bower_components/bootstrap/less/pagination";
-@import "../bower_components/bootstrap/less/pager";
-
-  // Components: Popovers
-@import "../bower_components/bootstrap/less/modals";
-@import "../bower_components/bootstrap/less/tooltip";
-@import "../bower_components/bootstrap/less/popovers";
-
-  // Components: Misc
-@import "../bower_components/bootstrap/less/thumbnails";
-@import "../bower_components/bootstrap/less/media";
-@import "../bower_components/bootstrap/less/labels-badges";
-@import "../bower_components/bootstrap/less/progress-bars";
-@import "../bower_components/bootstrap/less/accordion";
-@import "../bower_components/bootstrap/less/carousel";
-@import "../bower_components/bootstrap/less/hero-unit";
-
-  // Utility classes
-@import "../bower_components/bootstrap/less/utilities"; // Has to be last to override when necessary
+@import "../bower_components/bootstrap/less/bootstrap.less";
 
 @icon-font-path: "../fonts/glyphicons/";
 
@@ -131,6 +80,10 @@ body {
   .page-header {
     position: static;
   }
+
+  .global-search {
+    padding-right : 1em;
+  }
 }
 
 .header-rhs {
@@ -139,7 +92,6 @@ body {
   padding-bottom: 5px;
   display: block;
 }
-
 
 // Modifications to ngGrid style
 
