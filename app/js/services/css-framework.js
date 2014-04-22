@@ -3,7 +3,7 @@
 formsAngular.provider('cssFrameworkService', [function () {
     // Supported options for framework are:
     //      bs2 = Twitter Bootstrap 2.3.2
-    //      bs3 = Bootstrap 3.1.1
+    //      bs3 = Bootstrap 3.1.1  (default)
     var config = {
         framework: 'bs3'
     };
@@ -11,7 +11,6 @@ formsAngular.provider('cssFrameworkService', [function () {
     return {
         setOptions : function(options) {
             angular.extend(config, options);
-            console.log("cssFrameworkservice loading",config);
         },
         $get : function() {
             return {
@@ -22,7 +21,7 @@ formsAngular.provider('cssFrameworkService', [function () {
                     var result;
                     switch (config.framework) {
                         case 'bs2' :
-                            result = 'span-' + cols;
+                            result = 'span' + cols;
                             break;
                         case 'bs3' :
                             result = 'col-xs-' + cols;
@@ -34,7 +33,7 @@ formsAngular.provider('cssFrameworkService', [function () {
                     var result;
                     switch (config.framework) {
                         case 'bs2' :
-                            result = 'offset-' + cols;
+                            result = 'offset' + cols;
                             break;
                         case 'bs3' :
                             result = 'col-lg-offset-' + cols;

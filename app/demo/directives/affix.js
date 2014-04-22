@@ -1,10 +1,10 @@
 
 myDemoApp
-    .directive('affix', ['$compile', '$location', function($compile, $location) {
+    .directive('affix', ['$compile', 'cssFrameworkService', function($compile, cssFrameworkService) {
         return {
             restrict: 'E',
             replace: true,
-            templateUrl: '/template/affix.html',
+            templateUrl: '/demo/template/affix-' + cssFrameworkService.framework() + '.html',
             compile: function() {
                 var body = $('body');
                 var affixes = [];
