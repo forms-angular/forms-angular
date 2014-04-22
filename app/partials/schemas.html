@@ -1,4 +1,4 @@
-<div class="row">
+<div ng-class="css('rowFluid')">
     <div class="page-header">
         <h1>Schemas</h1>
         Controlling what your inputs look like
@@ -6,13 +6,13 @@
 </div>
 
 <div class="container-fluid schema-page" ng-controller="DemoCtrl">
-<div class="row">
-<div class="col-sm-3">
+<div ng-class="css('rowFluid')">
+<div class="col-sm-3 span3">
     <affix></affix>
 </div>
 
-<div class="affix-section col-sm-9">
-<section id="introduction" name="Introduction" affix-scroll="">
+<div class="affix-section col-sm-9 span9">
+<section id="introduction" name="Introduction" affix-scroll>
     <h3>Introduction</h3>
 
     <p>The most visible part of forms-angular is the <strong>form-input</strong> directive which
@@ -25,14 +25,14 @@
         wouldn't normally it like this, but it illustrates things well) then invokes the form-input directive,
         telling it to use the schema just created to create a form with the appropriate input fields.</p>
 
-    <div class="well well-sm" ng-init="name=[{name:'surname'},{name:'forename'}]">
+    <div class="well well-sm well-small" ng-init="name=[{name:'surname'},{name:'forename'}]">
         <form-input schema="name" noautofocus="true" /> <!--Add a noautofocus here otherwise the resulting form stops the page scrolling to the internal links-->
     </div>
     <pre ng-show="record">Record content: {{record}}</pre>
 
     <p>There is more information about the forms-input directive on the <a href="/#!/forms">forms page</a>.</p>
 </section>
-<section id="formschema" name="Form Schemas" affix-scroll="">
+<section id="formschema" name="Form Schemas" affix-scroll>
     <h3>Form Schemas</h3>
 
     <p>The form-input directive can get a good deal richer than the simple example above.  The following
@@ -79,7 +79,7 @@
 &lt;div&gt;</pre>
     <p>which looks like:</p>
     <div ng-init="colours=['brown','black','blonde','grey']"></div>
-    <div class="well well-sm" ng-init="example2=[
+    <div class="well well-sm well-small" ng-init="example2=[
         {name:'surname',label:'Family Name',required:true},
         {name:'forename',id:'fnameinput'},
         {name:'dateOfBirth',type:'date'},
@@ -94,7 +94,7 @@
 
 </section>
 
-<section id="mongoose" name="Mongoose Schemas" affix-scroll="">
+<section id="mongoose" name="Mongoose Schemas" affix-scroll>
     <h3>Mongoose Schemas</h3>
 
     <p>Mongoose is a popular package that simplifies using MongoDB with Node JS. Mongoose requires that
@@ -126,7 +126,7 @@
 
     <p>For comprehensive information about Mongoose schemas visit the <a href="http://mongoosejs.com/docs/guide.html">Mongoose JS website</a>.</p>
 </section>
-<section id="list-fields" name="List Fields" affix-scroll="">
+<section id="list-fields" name="List Fields" affix-scroll>
     <h3>List Fields</h3>
 
     <p>In a couple of places forms-angular uses the concept of 'list fields' - fields that generally allow
@@ -159,7 +159,7 @@
     </ol>
 </section>
 
-<section id="form-object" name="The form Object" affix-scroll="">
+<section id="form-object" name="The form Object" affix-scroll>
     <h3>The <em>form</em> Object</h3>
 
     <p>The mark-up of generated forms can be influenced by use of the <strong>form</strong> object in the
@@ -241,7 +241,7 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
 
 </section>
 
-<section id="containers" name="Containers" affix-scroll="">
+<section id="containers" name="Containers" affix-scroll>
     <h3>Containers</h3>
 
     <p>Sometimes it is hard within a Mongoose schema to detail exactly how you want the associated form
@@ -284,7 +284,7 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         {before: <em>markup before container contents</em>, after:<em>markup after container contents</em>}.</p>
 </section>
 
-<section id="custom" name="Custom Schemas" affix-scroll="">
+<section id="custom" name="Custom Schemas" affix-scroll>
     <h3>Custom Schemas</h3>
 
     <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the

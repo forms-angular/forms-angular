@@ -1,15 +1,16 @@
 <include file="warning-banner.html" substitution="false" />
-<div class="row">
+<div ng-class="css('rowFluid')">
     <div class="page-header">
         <h1>Getting Started</h1>
-        Creating your first application using forms-angular in just a few minutes</div>
+        Creating your first application using forms-angular in just a few minutes
+    </div>
 </div>
 <div ng-controller="DemoCtrl">
-    <div class="row">
-        <div class="col-md-3">
+    <div ng-class="css('rowFluid')">
+        <div class="col-md-3 span3">
             <affix></affix>
         </div>
-        <div class="col-md-9 affix-section">
+        <div class="col-md-9 span9 affix-section">
             <p>These instructions will take you through the process of creating your
                 first forms-angular application, which will consist of an input form for
                 a simple model, a listing showing data already on file, search, menus and
@@ -21,7 +22,7 @@
                 a more feature-filled one <a href="/#!/b_using_options/new">here</a>.</p>
             <!--TODO:
             Get rid of the "override the name" on the second example-->
-            <section id="prepare" name="Prepare" affix-scroll="affix-scroll">
+            <section id="prepare" name="Prepare" affix-scroll>
 
                 <h3>Prepare</h3>
                 <p>(if you need to - you may already have these applications / packages installed)</p>
@@ -54,13 +55,13 @@
                 the MEAN stack, some grasp of <a href="http://mongoosejs.com/">Mongoose</a> is
                 a good idea for all but the simplest of forms, and knowledge of <a href="http://getbootstrap.com/2.3.2/">Twitter Bootstrap</a> is
                 recommended.</section>
-            <section id="create" name="Create" affix-scroll="affix-scroll">
+            <section id="create" name="Create" affix-scroll>
 
                 <h3>Create</h3>
                 In the shell do:
                 <pre><code><include file="get-started-create.sh" /></code></pre>
             </section>
-            <section id="server-code" name="Server Code" affix-scroll="affix-scroll">
+            <section id="server-code" name="Server Code" affix-scroll>
 
                 <h3>Modify generated server code</h3>
                 Add the following to app.js (see the <a href="/#!/schemas">Schemas page</a> for
@@ -70,7 +71,7 @@
                 <pre><code>// app.get('/', routes.index);
 // app.get('/users', user.list);</code></pre>
             </section>
-            <section id="front-end" name="Front End" affix-scroll="affix-scroll">
+            <section id="front-end" name="Front End" affix-scroll>
                 <h3>Create your front end</h3>
                 <p>Create the following files:</p>
                 <p id="index-html"><strong>public/index.html</strong></p>
@@ -86,7 +87,7 @@
                 <p><strong>public/partials/base-analysis.html</strong></p>
                 <pre><code ng-non-bindable="ng-non-bindable"><include file="../base-analysis.html" /></code></pre>
             </section>
-            <section id="run" name="Run" affix-scroll="affix-scroll">
+            <section id="run" name="Run" affix-scroll>
                 <h3>Run</h3>
                 <p><code>node app.js</code></p>
                 <p>Visit <a href="http://0.0.0.0:3000"><code>http://0.0.0.0:3000</code></a> in

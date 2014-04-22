@@ -1,7 +1,7 @@
 formsAngular
-    .directive('formButtons', [function () {
+    .directive('formButtons', ['cssFrameworkService', function (cssFrameworkService) {
         return {
             restrict: 'A',
-            templateUrl : 'template/form-button.html'
+            templateUrl : 'template/form-button-' + cssFrameworkService.framework()+'.html'
         }
     }]);
