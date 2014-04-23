@@ -2,7 +2,11 @@ describe('search', function () {
 
     var scope, $httpBackend, $location;
 
-    beforeEach(angular.mock.module('formsAngular'));
+    beforeEach(function() {
+            angular.mock.module('formsAngular');
+            angular.mock.module('template/search-bs2.html');
+        }
+    );
 
     beforeEach(inject(function (_$httpBackend_, $rootScope, $compile, _$location_) {
         $httpBackend = _$httpBackend_;
