@@ -2,10 +2,10 @@
 
 formsAngular.provider('cssFrameworkService', [function () {
     // Supported options for framework are:
-    //      bs2 = Twitter Bootstrap 2.3.2
-    //      bs3 = Bootstrap 3.1.1  (default)
+    //      bs2 = Twitter Bootstrap 2.3.2 (default)
+    //      bs3 = Bootstrap 3.1.1
     var config = {
-        framework: 'bs3'
+        framework: 'bs2'
     };
 
     return {
