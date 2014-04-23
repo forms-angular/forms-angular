@@ -23,6 +23,7 @@ module.exports = function(config) {
             'app/js/forms-angular.js',
             'app/js/**/*.js',
             'app/demo/demo.js',
+            'app/template/*.html',
             'app/demo/directives/bespoke-field.js',
             'test/unit/**/*.js'
         ],
@@ -44,8 +45,16 @@ module.exports = function(config) {
             'karma-jasmine',
             'karma-chrome-launcher',
             'karma-phantomjs-launcher',
+            'karma-ng-html2js-preprocessor',
             'karma-firefox-launcher',
             'karma-junit-reporter'
-        ]
+        ],
+        ngHtml2JsPreprocessor: {
+            // strip this from the file path
+            stripPrefix: 'app/'
+        },
+        preprocessors: {
+            'app/template/*.html': 'ng-html2js'
+        }
     });
 };
