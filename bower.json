@@ -1,4 +1,9 @@
 {
+  "comments" : [
+    "Some libraries are different depending on framework",
+    "These are managed by scripts/framework.sh",
+    "This "
+  ],
   "name": "forms-angular",
   "version": "0.2.4",
   "homepage": "https://github.com/mchapman/forms-angular",
