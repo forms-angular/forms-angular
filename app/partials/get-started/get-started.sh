@@ -17,8 +17,10 @@ pwd
 if [ $2 = "bower" ]; then
 	echo Updating Packages
 	wget https://raw.github.com/mchapman/forms-angular/$branch/bower.json
+	cd public
 	bower install
 	bower update
+	cd ..
 fi
 
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/adds-app.js
