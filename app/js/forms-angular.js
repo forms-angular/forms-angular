@@ -10,6 +10,7 @@ var formsAngular = angular.module('formsAngular', [
     , 'infinite-scroll'
     , 'monospaced.elastic'
     , 'ngCkeditor'
+    , 'uploadModule'
 ]);
 
 // Ideally would want a config call in here which adds the routes, below, but couldn't get it to work

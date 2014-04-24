@@ -9,7 +9,8 @@ var express = require('express')
   , fs = require('fs')
   , mongoose = require('mongoose')
   , exec = require('child_process').exec
-  , https = require('https');
+  , https = require('https')
+  , grid = require('gridfs-uploader');
 
 var env = process.env.NODE_ENV || 'development';
 var app = module.exports = express();
@@ -56,6 +57,11 @@ if ('production' == env) {
 } else {
   app.use(errorHandler({ dumpExceptions: true, showStack: true }));
   mongoose.connect('mongodb://localhost/forms-ng_dev');
+  var g = new grid(mongoose.mongo);
+  g.db = mongoose.connection.db;
+/*  g.putUniqueFile(__dirname + '/../bower.json', 'bower.json', null, function (err, result) {
+    console.log(result);
+  });*/
 }
 
 var ensureAuthenticated = function (req, res, next) {

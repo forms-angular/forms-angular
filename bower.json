@@ -27,8 +27,8 @@
     "angular-ui-select2": "0.0.4",
     "bootstrap": ">=3.1.0",
     "html5shiv-dist": "3.6.2",
-    "jquery": "1.10",
-    "jquery-ui": "1",
+    "jquery": ">=2.0.0",
+    "jquery-ui": ">=1.0.0",
     "select2": "3.4.3",
     "underscore": "1.6",
     "angular-ui-date": "git://github.com/mchapman/ui-date#patch-1",
@@ -37,6 +37,7 @@
     "angular-elastic": "~2",
     "select2-bootstrap-css": "~1.2",
     "jspdf": "*",
-    "ng-ckeditor": "*"
+    "ng-ckeditor": "*",
+    "angular-jqfile-upload": "*"
   }
 }

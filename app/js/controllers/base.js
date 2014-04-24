@@ -753,6 +753,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
         //Convert the lookup values into ids
         var dataToSave = convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0);
+      console.log(dataToSave);
         if ($scope.id) {
             if (typeof $scope.dataEventFunctions.onBeforeUpdate === "function") {
                 $scope.dataEventFunctions.onBeforeUpdate(dataToSave, master, function (err) {
@@ -1031,7 +1032,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
 // Reverse the process of convertToAngularModel
     var convertToMongoModel = function (schema, anObject, prefixLength) {
-
         for (var i = 0; i < schema.length; i++) {
             var fieldname = schema[i].name.slice(prefixLength);
             var thisField = $scope.getListData(anObject, fieldname);

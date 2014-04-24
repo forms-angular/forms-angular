@@ -57,6 +57,16 @@ formsAngular
                     return evaluateSide(showWhen.lhs)+conditionSymbols[conditionPos]+evaluateSide(showWhen.rhs);
                 };
 
+
+              /**
+               * Generate input fields needed html
+               * @param fieldInfo
+               * @param modelString
+               * @param isRequired
+               * @param idString
+               * @param options
+               * @returns {*}
+               */
                 var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
                     var nameString;
                     if (!modelString) {
@@ -124,6 +134,9 @@ formsAngular
                                 value += '</select>';
                             }
                             break;
+                        case 'fileuploader':
+                          value = '<ng-upload-form url="//jquery-file-upload.appspot.com/" auto-upload="true" size-limit="500000"></ng-upload-form>';
+                          break;
                         case 'link' :
                             value = '<a ng-href="/#!/' + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
                             break;
