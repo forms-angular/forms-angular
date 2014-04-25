@@ -38,10 +38,10 @@
     "underscore": "1.6",
     "angular-ui-date": "git://github.com/mchapman/ui-date#patch-1",
     "ngInfiniteScroll": "~1.0.0",
-    "ng-grid": "~2.0.7",
+    "ng-grid": "2.0.9",
     "angular-elastic": "~2",
     "select2-bootstrap-css": "~1.2",
-    "jspdf": "*",
+    "jspdf": "0.9.0",
     "ng-ckeditor": "*",
     "ckeditor": "*"
   },
