@@ -1,7 +1,16 @@
 #!/bin/bash
 
+framework="bs2"
 if [ $1 ]; then
-	branch="$1"
+	case $1 in
+		bs3 )
+			framework="bs3"
+			;;
+	esac
+fi
+
+if [ $2 ]; then
+	branch="$2"
 else
 	branch="0.2"
 fi
@@ -14,7 +23,9 @@ pwd
 cd myapp
 pwd
 
-if [ $2 = "bower" ]; then
+# We use this next option when we want to use the bower.json from git rather than the
+# live forms-angular bower download
+if [ $3 = "bower" ]; then
 	echo Updating Packages
 	cd public
 	wget https://raw.github.com/mchapman/forms-angular/$branch/bower.json
@@ -28,6 +39,14 @@ cat app.js adds-app.js > tempapp.js
 mv tempapp.js app.js
 sed -i s_^app.get_//app.get_ app.js
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/index.html -O public/index.html
+if [ $framework = "bs3" ]; then
+	#  use the correct css
+	sed -i s_forms-angular-bs2.css_forms-angular-bs3.css_ public/index.html
+	#  set the bs3 option
+	sed -i s_//uncomment to use Bootstrap 3--__ public/myapp.js
+fi
+
+
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/myapp.js -O public/myapp.js
 mkdir public/partials
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/partials-index.html -O public/partials/index.html
