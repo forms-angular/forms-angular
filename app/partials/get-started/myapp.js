@@ -15,3 +15,7 @@ myApp.config(['formRoutesProvider', function (formRoutes) {
 //formsAngular.config(['urlServiceProvider',function(urlService) {
 //    urlService.setOptions({html5Mode: false, hashPrefix: '!'});
 //}]);
+
+//uncomment to use Bootstrap 3-- formsAngular.config(['cssFrameworkServiceProvider',function(cssFrameworkService) {
+//uncomment to use Bootstrap 3--    cssFrameworkService.setOptions({framework:'bs3'});
+//uncomment to use Bootstrap 3--}]);
