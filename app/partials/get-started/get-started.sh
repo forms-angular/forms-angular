@@ -18,8 +18,8 @@ if [ $2 = "bower" ]; then
 	echo Updating Packages
 	cd public
 	wget https://raw.github.com/mchapman/forms-angular/$branch/bower.json
-	bower install
-	bower update
+	bower install --allow-root
+	bower update --allow-root
 	cd ..
 fi
 
