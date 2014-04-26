@@ -214,14 +214,14 @@ formsAngular
                                 }
                                 if (fieldInfo.editor === 'ckEditor') {
                                     common += 'ckeditor = "" ';
-                                    if (cssFrameworkService.framework === 'bs3') sizeClassBS3 = 'col-xs-12';
+                                    if (cssFrameworkService.framework() === 'bs3') sizeClassBS3 = 'col-xs-12';
                                 }
                                 value = '<textarea ' + common + ' />';
                             } else {
                                 value = generateDefault(common, options, fieldInfo);
                             }
                         }
-                    if (cssFrameworkService.framework === 'bs3' && isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
+                    if (cssFrameworkService.framework() === 'bs3' && isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
                         value = '<div class="' + sizeClassBS3 + '">' + value + '</div>'
                     }
                     if (fieldInfo.helpInline && fieldInfo.type !== 'checkbox') {
@@ -318,7 +318,7 @@ formsAngular
                         labelHTML = '<label';
                         if (isHorizontalStyle(options.formstyle)) {
                             labelHTML += ' for="' + fieldInfo.id + '"';
-                            if (cssFrameworkService.framework === 'bs3') labelHTML += addAll('Label', 'col-sm-2', options);
+                            if (cssFrameworkService.framework() === 'bs3') labelHTML += addAll('Label', 'col-sm-2', options);
                         }
                         labelHTML += addAll('Label', 'control-label', options);
                         labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
@@ -334,7 +334,7 @@ formsAngular
 
                     var template = '', closeTag = '';
                     var classes = '';
-                    if (cssFrameworkService.framework === 'bs3') {
+                    if (cssFrameworkService.framework() === 'bs3') {
                         classes = 'form-group';
                         if (options.formstyle === 'vertical' && info.size !== 'block-level') {
                             template += '<div class="row">';
