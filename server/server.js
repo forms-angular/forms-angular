@@ -10,6 +10,8 @@ var express = require('express')
     , chalk = require('chalk')
     , glob = require('glob')
     , Q = require('q')
+    , bodyParser = require('body-parser')
+    , methodOverride = require('method-override')
 ;
 
 // environment configurations
@@ -135,45 +137,6 @@ function useHtml5Mode () {
     });
 }
 
-
-// Configuration
-var env = process.env.NODE_ENV || 'development';
-var config = cfg[env];
-var app = module.exports = express();
-
-app.configure(function(){
-    console.log('Initializing...');
-    app.use(express.bodyParser({
-        uploadDir: path.join(__dirname, config.uploadDir),
-        keepExtensions: true
-    }));
-    app.get('*',handleCrawlers);
-    app.use(express.methodOverride());
-    app.use(app.router);
-    addStatics(app);
-    copySchemas();
-    app.use(express.errorHandler(config.errorConfig));
-    mongoose.connect(config.db);
-});
-
-app.configure('test', function(){
-    var data_path = path.join(__dirname, '../test/e2edata');
-    var data_files = fs.readdirSync(data_path);
-    data_files.forEach(function (file) {
-        var fname = data_path+'/'+file;
-        if (fs.statSync(fname).isFile()) {
-            exec('mongoimport --db forms-ng_test --drop --collection '+ file.slice(0,1)+'s --jsonArray < ' + fname,
-                function (error, stdout, stderr) {
-                    if (error !== null) {
-                        console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
-                    }
-                });
-        }
-    });
-});
-
-var models = [];
-
 function slurpModelsFrom (pattern) {
     var deferred = Q.defer();
     glob(path.join(__dirname, pattern), function (err, files) {
@@ -197,11 +160,27 @@ function slurpModelsFrom (pattern) {
     return deferred.promise;
 };
 
+
+// Configuration
+var env = process.env.NODE_ENV || 'development';
+var config = cfg[env];
+var app = module.exports = express();
+
+console.log('Initializing...');
+app.use(bodyParser({
+    uploadDir: path.join(__dirname, config.uploadDir),
+    keepExtensions: true
+}));
+app.get('*',handleCrawlers);
+app.use(methodOverride());
+
+//app.use(app.router);
+var models = [];
+
 slurpModelsFrom('models/*.js')
     .then(function (success) {
         var DataFormHandler = new (require(path.join(__dirname, 'lib/data_form.js')))(app, config.dfhConfig);
         models.forEach(function (model) {
-        //mongoose.modelNames().forEach(function (modelName) {
             console.log(chalk.yellow('DataForm resource: %s'), model.name);
             DataFormHandler.addResource(model.name, model.model);
         });
@@ -210,9 +189,35 @@ slurpModelsFrom('models/*.js')
         // If you want to use HTML5Mode uncomment the section below and modify
         // app/demo.js so that the call to urlService.setOptions includes {html5Mode: true}
         // app.configure(useHtml5Mode);
+
+        addStatics(app);
+        copySchemas();
+        app.use(express.errorHandler(config.errorConfig));
+        mongoose.connect(config.db);
+
+        if (env == 'test') {
+            var data_path = path.join(__dirname, '../test/e2edata');
+            var data_files = fs.readdirSync(data_path);
+            data_files.forEach(function (file) {
+                var fname = data_path+'/'+file;
+                if (fs.statSync(fname).isFile()) {
+                    exec('mongoimport --db forms-ng_test --drop --collection '+ file.slice(0,1)+'s --jsonArray < ' + fname,
+                        function (error, stdout, stderr) {
+                            if (error !== null) {
+                                console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
+                            }
+                        });
+                }
+            });
+        }
+
         app.listen(config.port);
         console.log(chalk.cyan('Express server listening on port %d in %s mode'), config.port, env);
     });
+
+
+
+
 
 
 
