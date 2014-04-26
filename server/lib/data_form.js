@@ -7,6 +7,8 @@ var _ = require('underscore'),
     async = require('async'),
     url = require('url'),
     mongoose = require('mongoose'),
+    fs = require('fs'),
+    path = require('path'),
     debug = false;
 
 mongoose.set('debug', debug);
@@ -125,6 +127,19 @@ DataForm.prototype.addResource = function (resource_name, model, options) {
     } else {
         this.resources.push(resource);
     }
+};
+
+// add resources located at modelsPath
+DataForm.prototype.addResources = function (models_path) {
+    var that = this;
+    fs.readdir(models_path, function (err, files) {
+        files.forEach( function (file) {
+            var fname = path.join(models_path, file);
+            if (fs.statSync(fname).isFile()) {
+               that.addResource(file.slice(0,-3), require(fname));
+            }
+        });
+    });
 };
 
 DataForm.prototype.getResource = function (name) {

@@ -1,69 +1,89 @@
 /**
  * Module dependencies.
  */
-
 var express = require('express')
     , fs = require('fs')
     , mongoose = require('mongoose')
     , exec = require('child_process').exec
-    , https = require('https');
+    , https = require('https')
+    , path = require('path')
+    , chalk = require('chalk');
 
+// environment configurations
+// note that paths are relative to this file's __dirname
+var cfg = {
+    development: {
+        name: 'Development',
+        port: process.env.PORT || 3001,
+        db: 'mongodb://192.168.1.7/forms-ng_dev',
+        statics: [
+            '../app'
+        ],
+        uploadDir: '../app/tmp',
+        errorConfig: {
+            dumpExceptions: true,
+            showStack: true
+        },
+        dhfConfig: {
+            urlPrefix : '/api/'
+        }
+    },
+    test: {
+        name: 'Test',
+        db: 'mongodb://192.168.1.7/forms-ng_test',
+        port: process.env.PORT || 3002,
+        statics: [
+            '../app'
+        ],
+        uploadDir: '../app/tmp',
+        errorConfig: {
+            dumpExceptions: true,
+            showStack: true
+        },
+        dfhConfig: {
+            urlPrefix : '/api/',
+            authentication : ensureAuthenticated
+        }
+    },
+    production: {
+        name: 'Production',
+        db: 'mongodb://192.168.1.7/forms-ng_prod',
+        port: process.env.PORT || 8090,
+        statics: [
+            '../dist',
+            '../app'
+        ],
+        uploadDir: '../dist/tmp',
+        errorConfig: {
+        },
+        dfhConfig: {
+            urlPrefix : '/api/',
+            authentication : ensureAuthenticated
+        }
+    }
+};
 
-var app = module.exports = express();
+function addStatics (app) {
+    config.statics.forEach( function (entry) {
+        console.log(chalk.cyan('adding static path %s'), entry);
+        app.use(express.static(path.join(__dirname, entry)));
+    });
+}
 
-// Configuration
+// Copy the schemas to somewhere they can be served
+function copySchemas () {
+    var cmd = [
+        'cp',
+        path.join(__dirname, '../server/models/*'),
+        path.join(__dirname, '../app/code/')
+    ].join(' ');
 
-app.configure(function(){
-//    app.use(express.logger('dev'));
-    app.use(express.bodyParser({
-        uploadDir: __dirname + '/../app/tmp',
-        keepExtensions: true
-    }));
-    app.get('*',handleCrawlers);
-    app.use(express.methodOverride());
-    app.use(app.router);
-    if (app.get('env')==='production') app.use(express.static(__dirname + '/../dist'));
-    console.log(__dirname + '/../app');
-    app.use(express.static(__dirname + '/../app'));
-
-    // Copy the schemas to somewhere they can be served
-    exec('cp '+__dirname+'/../server/models/* '+__dirname+'/../app/code/',
-        function (error, stdout, stderr) {
-            if (error !== null) {
-                console.log('Error copying models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
-            }
-        });
-});
-
-app.configure('development', function(){
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-    mongoose.connect('mongodb://localhost/forms-ng_dev');
-});
-
-app.configure('test', function(){
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-    mongoose.connect('mongodb://localhost/forms-ng_test');
-
-    var data_path = __dirname + '/../test/e2edata';
-    var data_files = fs.readdirSync(data_path);
-    data_files.forEach(function(file){
-        var fname = data_path+'/'+file;
-        if (fs.statSync(fname).isFile()) {
-            exec('mongoimport --db forms-ng_test --drop --collection '+ file.slice(0,1)+'s --jsonArray < ' + fname,
-                function (error, stdout, stderr) {
-                    if (error !== null) {
-                        console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
-                    }
-                });
+    exec(cmd, function (error, stdout, stderr) {
+        if (error !== null) {
+            console.log('Error copying models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
         }
     });
-});
-
-app.configure('production', function(){
-    console.log('Production mode');
-    app.use(express.errorHandler());
-    mongoose.connect(process.env['DEMODB']);
-});
+}
 
 var ensureAuthenticated = function (req, res, next) {
     // Here you can do authentication using things like
@@ -88,49 +108,89 @@ function handleCrawlers(req,res,next) {
     }
 }
 
-//// Bootstrap models
-var DataFormHandler = new (require(__dirname + '/lib/data_form.js'))(app, {urlPrefix : '/api/'});
-// Or if you want to do some form of authentication...
-// var DataFormHandler = new (require(__dirname + '/lib/data_form.js'))(app, {urlPrefix : '/api/', authentication : ensureAuthenticated});
+function useHtml5Mode () {
+    // Serve the static files.  This kludge is to support dev and production mode - for a better way to do it see
+    // https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
+    app.get(/^\/(scripts|partials|bower_components|demo|img|js)\/(.+)$/,function(req,res,next) {
+        fs.realpath(__dirname + '/../app/' + req.params[0] + '/' + req.params[1], function (err, result) {
+            if (err) {
+                fs.realpath(__dirname + '/../dist/' + req.params[0] + '/' + req.params[1], function (err, result) {
+                    if (err) {
+                        throw err;
+                    } else {
+                        res.sendfile(result);
+                    }
+                });
+            } else {
+                res.sendfile(result);
+            }
+        });
+    });
+    app.all('/*', function(req, res, next) {
+        // Just send the index.html for other files to support HTML5Mode
+        res.sendfile('index.html', { root: __dirname + '/../app/' });
+    });
+}
 
-var models_path = __dirname + '/models';
-var models_files = fs.readdirSync(models_path);
-models_files.forEach(function(file){
-    var fname = models_path+'/'+file;
-    if (fs.statSync(fname).isFile()) {
-        DataFormHandler.addResource(file.slice(0,-3), require(fname));
-    }
+
+// Configuration
+var env = process.env.NODE_ENV || 'development';
+var config = cfg[env];
+var app = module.exports = express();
+
+app.configure(function(){
+    console.log('Initializing...');
+    app.use(express.bodyParser({
+        uploadDir: path.join(__dirname, config.uploadDir),
+        keepExtensions: true
+    }));
+    app.get('*',handleCrawlers);
+    app.use(express.methodOverride());
+    app.use(app.router);
+    addStatics(app);
+    copySchemas();
+    app.use(express.errorHandler(config.errorConfig));
+    mongoose.connect(config.db);
 });
+
+app.configure('test', function(){
+    var data_path = path.join(__dirname, '../test/e2edata');
+    var data_files = fs.readdirSync(data_path);
+    data_files.forEach(function(file){
+        var fname = data_path+'/'+file;
+        if (fs.statSync(fname).isFile()) {
+            exec('mongoimport --db forms-ng_test --drop --collection '+ file.slice(0,1)+'s --jsonArray < ' + fname,
+                function (error, stdout, stderr) {
+                    if (error !== null) {
+                        console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
+                    }
+                });
+        }
+    });
+});
+
+// Bootstrap models
+var DataFormHandler = new (require(path.join(__dirname, 'lib/data_form.js')))(app, config.dfhConfig);
+DataFormHandler.addResources(path.join(__dirname, 'models'));
 
 // If you want to use HTML5Mode uncomment the section below and modify
 // app/demo.js so that the call to urlService.setOptions includes {html5Mode: true}
+// app.configure(useHtml5Mode);
 
-//app.configure(function() {
-//    // Serve the static files.  This kludge is to support dev and production mode - for a better way to do it see
-//    // https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
-//    app.get(/^\/(scripts|partials|bower_components|demo|img|js)\/(.+)$/,function(req,res,next) {
-//        fs.realpath(__dirname + '/../app/' + req.params[0] + '/' + req.params[1], function (err, result) {
-//            if (err) {
-//                fs.realpath(__dirname + '/../dist/' + req.params[0] + '/' + req.params[1], function (err, result) {
-//                    if (err) {
-//                        throw err;
-//                    } else {
-//                        res.sendfile(result);
-//                    }
-//                });
-//            } else {
-//                res.sendfile(result);
-//            }
-//        });
-//    });
-//    app.all('/*', function(req, res, next) {
-//        // Just send the index.html for other files to support HTML5Mode
-//        res.sendfile('index.html', { root: __dirname + '/../app/' });
-//    });
-//});
+app.listen(config.port);
+console.log(chalk.cyan('Express server listening on port %d in %s mode'), config.port, env);
 
-var port;
 
-port = process.env.PORT || 3001 ;
-app.listen(port);
-console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+
+
+
+
+
+
+
+
+
+
+
+
+

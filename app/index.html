@@ -12,12 +12,14 @@
 
     <!-- build:css({.tmp,app}) styles/main.css -->
     <link rel="stylesheet" href="/bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="/bower_components/components-font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/bower_components/select2/select2.css">
     <link rel="stylesheet" href="/bower_components/ng-grid/ng-grid.css">
     <link rel="stylesheet" href="/demo/css/demo.css">
     <!-- endbuild -->
 </head>
 <body ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
+
 <div class="visible-desktop">
     <a href="https://github.com/mchapman/forms-angular"><img src="/img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032"></a>
 </div>
@@ -67,7 +69,13 @@
         </div>
     </div>
 </div>
+
+
 <div ng-view></div>
+
+
+
+
 <footer class="footer">
     <div class="container-fluid">
         <p>Code licensed under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
@@ -78,6 +86,7 @@
         </ul>
     </div>
 </footer>
+
 
 <!-- what forms-angular depends on -->
 <!-- *** Section must be copied to partials/get-started/index.html if it is changed *** -->
@@ -91,11 +100,11 @@
 <script type="text/javascript" src="/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
 <script type="text/javascript" src="/bower_components/angular-ui-date/src/date.js"></script>
 <script type="text/javascript" src="/bower_components/angular-ui-select2/src/select2.js"></script>
-<script type="text/javascript" src="/bower_components/ngInfiniteScroll/ng-infinite-scroll.js"></script>
-<script type="text/javascript" src="/bower_components/jspdf/dist/jspdf.source.js"></script>
+<script type="text/javascript" src="/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js"></script>
+<script type="text/javascript" src="/bower_components/jspdf/dist/jspdf.min.js"></script>
 <script type="text/javascript" src="/bower_components/bootstrap/js/bootstrap-transition.js"></script>
 <script type="text/javascript" src="/bower_components/bootstrap/js/bootstrap-collapse.js"></script>
-<script type="text/javascript" src="/bower_components/ng-grid/ng-grid-2.0.7.debug.js"></script>
+<script type="text/javascript" src="/bower_components/ng-grid/build/ng-grid.min.js"></script>
 <script type="text/javascript" src="/bower_components/angular-elastic/elastic.js"></script>
 <script type="text/javascript" src="/bower_components/select2/select2.js"></script>
 <script type="text/javascript" src="/bower_components/ng-ckeditor/ng-ckeditor.src.js"></script>
@@ -104,7 +113,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
 <![endif]-->
 
-<script type="text/javascript" src="/bower_components/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="/bower_components/ng-ckeditor/libs/ckeditor/ckeditor.js"></script>
 <!--<script>-->
     <!--var CKEDITOR_BASEPATH = '//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/';-->
 <!--</script>-->
