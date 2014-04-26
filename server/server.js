@@ -184,6 +184,8 @@ slurpModelsFrom('models/*.js')
             console.log(chalk.yellow('DataForm resource: %s'), model.name);
             DataFormHandler.addResource(model.name, model.model);
         });
+    }, function (error) {
+        console.log(error);
     })
     .then(function (success) {
         // If you want to use HTML5Mode uncomment the section below and modify
@@ -211,9 +213,12 @@ slurpModelsFrom('models/*.js')
             });
         }
 
-        app.listen(config.port);
-        console.log(chalk.cyan('Express server listening on port %d in %s mode'), config.port, env);
+    }, function (error) {
+        console.log(error);
     });
+
+app.listen(config.port);
+console.log(chalk.cyan('Express server listening on port %d in %s mode'), config.port, env);
 
 
 
