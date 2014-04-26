@@ -1,4 +1,4 @@
-<div class="row">
+<div ng-class="css('rowFluid')">
     <div class="page-header">
         <h1>Forms</h1>
         Finding, editing and reporting on data
@@ -6,18 +6,18 @@
 </div>
 
 <div class="container-fluid" ng-controller="DemoCtrl">
-<div class="row">
-<div class="col-sm-3">
+<div ng-class="css('rowFluid')">
+<div class="col-sm-3 span3">
     <affix></affix>
 </div>
 
 
-<div class="affix-section col-sm-9">
+<div class="affix-section span9 col-sm-9">
 <p>Forms angular comes with a small number of forms that can be used - sometimes with
     small amendments - to meet a vast number of requirements.  They all use RESTful routes
     and handle querying and updating the server.</p>
 
-<section id="routes" name="Routes" affix-scroll=""><h3>Routes</h3>
+<section id="routes" name="Routes" affix-scroll><h3>Routes</h3>
     <p>For each model the following routes are supported:</p>
 
     <ul>
@@ -94,7 +94,7 @@ you can easily switch between modes without having to manually change all the in
 <p>By default the list order is the MongoDB natural order. The default list order for a table can be set by
     specifying a <strong>listOrder</strong> option in the model definition (see <a href="/code/g_conditional_fields.js">g_conditional_fields</a> for an example).</p>
 </section>
-<section id="search" name="Search" affix-scroll="">
+<section id="search" name="Search" affix-scroll>
     <h3>Search</h3>
     <p>The smallest form is the search form, in the navbar at the top of this page. It is implemented as a directive - <strong>global-search</strong>.
         When you enter text into it the controller makes a call to the server which looks for matching data by searching the indexed
@@ -140,7 +140,7 @@ you can easily switch between modes without having to manually change all the in
 </section>
 
 
-<section id="form-input-directive" name="form-input Directive" affix-scroll="">
+<section id="form-input-directive" name="form-input Directive" affix-scroll>
     <h3>The form-input Directive</h3>
 
     <p>The form-input directive, which is the core component of forms-angular, takes one mandatory attribute - schema -
@@ -210,7 +210,7 @@ you can easily switch between modes without having to manually change all the in
     </ul>
 </section>
 
-<section id="client-side-customisation" name="Client Side Customization" affix-scroll="">
+<section id="client-side-customisation" name="Client Side Customization" affix-scroll>
     <h3>Client Side Customization</h3>
 
     <p>Additional functionality can be added by using "model controllers" which have the name of
@@ -274,7 +274,7 @@ you can easily switch between modes without having to manually change all the in
     <p>It is possible to apply additional attributes to all elements of a certain type by passing it once in the form-input declaration. The available types are Control Group, Field or Label.</p>
     <p>This can be achieved in two ways. Either as an attribute of the form-input element:</p>
     <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with parameters'"</span>&gt;</pre>
-    <p>or via the controller by making it an attribute of scope: </p><pre><span>$scope.addAllGroup="injected-attribute"</span></pre><p></p>
+    <p>or via the controller by making it an attribute of scope: <pre><span>$scope.addAllGroup="injected-attribute"</span></pre></p>
     <p>The three versions of this are:</p>
     <ul>
         <li>add-all-group="injected-attribute"</li>
@@ -291,7 +291,7 @@ you can easily switch between modes without having to manually change all the in
 
 </section>
 
-<section id="server-side-customisation" name="Server Side Customization" affix-scroll="">
+<section id="server-side-customisation" name="Server Side Customization" affix-scroll>
     <h3>Server Side Customization</h3>
 
     <h5>Server side data events</h5>
