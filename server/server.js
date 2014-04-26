@@ -7,7 +7,10 @@ var express = require('express')
     , exec = require('child_process').exec
     , https = require('https')
     , path = require('path')
-    , chalk = require('chalk');
+    , chalk = require('chalk')
+    , glob = require('glob')
+    , Q = require('q')
+;
 
 // environment configurations
 // note that paths are relative to this file's __dirname
@@ -156,7 +159,7 @@ app.configure(function(){
 app.configure('test', function(){
     var data_path = path.join(__dirname, '../test/e2edata');
     var data_files = fs.readdirSync(data_path);
-    data_files.forEach(function(file){
+    data_files.forEach(function (file) {
         var fname = data_path+'/'+file;
         if (fs.statSync(fname).isFile()) {
             exec('mongoimport --db forms-ng_test --drop --collection '+ file.slice(0,1)+'s --jsonArray < ' + fname,
@@ -169,16 +172,62 @@ app.configure('test', function(){
     });
 });
 
-// Bootstrap models
-var DataFormHandler = new (require(path.join(__dirname, 'lib/data_form.js')))(app, config.dfhConfig);
-DataFormHandler.addResources(path.join(__dirname, 'models'));
+function slurpModelsFrom (pattern) {
+    var deferred = Q.defer();
+    glob(path.join(__dirname, pattern), function (err, files) {
+        if (err) {
+            console.log(chalk.red('Globbing error at server startup: %s'), err);
+            return deferred.reject(err);
+        }
+        for (var i = 0; i < files.length; i++) {
+            console.log(chalk.cyan('Creating model from %s'), files[i]);
+            try {
+                require(files[i]);
+            } catch (e) {}
+        }
+        deferred.resolve(true);
+    });
+    return deferred.promise;
+};
 
-// If you want to use HTML5Mode uncomment the section below and modify
-// app/demo.js so that the call to urlService.setOptions includes {html5Mode: true}
-// app.configure(useHtml5Mode);
+slurpModelsFrom('models/*.js')
+    .then(function (success) {
+        var DataFormHandler = new (require(path.join(__dirname, 'lib/data_form.js')))(app, config.dfhConfig);
+        mongoose.modelNames().forEach(function (modelName) {
+            console.log(chalk.yellow('DataForm resource: %s'), modelName);
+            DataFormHandler.addResource(modelName, mongoose.model(modelName));
+        });
+    })
+    .then(function (success) {
+        // If you want to use HTML5Mode uncomment the section below and modify
+        // app/demo.js so that the call to urlService.setOptions includes {html5Mode: true}
+        // app.configure(useHtml5Mode);
+        app.listen(config.port);
+        console.log(chalk.cyan('Express server listening on port %d in %s mode'), config.port, env);
+    });
 
-app.listen(config.port);
-console.log(chalk.cyan('Express server listening on port %d in %s mode'), config.port, env);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

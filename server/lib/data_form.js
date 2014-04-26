@@ -9,6 +9,8 @@ var _ = require('underscore'),
     mongoose = require('mongoose'),
     fs = require('fs'),
     path = require('path'),
+    glob = require('glob'),
+    chalk = require('chalk'),
     debug = false;
 
 mongoose.set('debug', debug);
@@ -133,12 +135,37 @@ DataForm.prototype.addResource = function (resource_name, model, options) {
 DataForm.prototype.addResources = function (models_path) {
     var that = this;
     fs.readdir(models_path, function (err, files) {
+        if (files === undefined) {
+            console.log('No resources at path %s', models_path);
+            return;
+        }
         files.forEach( function (file) {
             var fname = path.join(models_path, file);
             if (fs.statSync(fname).isFile()) {
                that.addResource(file.slice(0,-3), require(fname));
             }
         });
+    });
+};
+
+// Add all models from files matching the glob_pattern, which should be a full path with
+// globbing wildcards, such as '/users/home/me/dev/MyAwesomeApp/models/**/*.js or similar.
+// Each model file must export a mongoose model.
+DataForm.prototype.addResourcesByGlobbing = function (glob_pattern) {
+    var that = this;
+
+    glob(glob_pattern, function (err, files) {
+        if (err) {
+            console.log(chalk.white.bgRed('Globbing error at server startup: %s'), err);
+            return;
+        }
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var m = require(file)({autoIndex: true});
+            console.log(file);
+            console.log(chalk.yellow('Mounting %s from %s'), m.name, file);
+            that.addResource(m.name, m.model);
+        }
     });
 };
 
