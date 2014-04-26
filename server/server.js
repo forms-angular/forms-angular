@@ -172,6 +172,8 @@ app.configure('test', function(){
     });
 });
 
+var models = [];
+
 function slurpModelsFrom (pattern) {
     var deferred = Q.defer();
     glob(path.join(__dirname, pattern), function (err, files) {
@@ -182,7 +184,12 @@ function slurpModelsFrom (pattern) {
         for (var i = 0; i < files.length; i++) {
             console.log(chalk.cyan('Creating model from %s'), files[i]);
             try {
-                require(files[i]);
+                var name = files[i].replace(/^.*[\\\/]/, '').slice(0,-3);
+                var model = require(files[i]);
+                models.push({
+                    name: name,
+                    model: model
+                });
             } catch (e) {}
         }
         deferred.resolve(true);
@@ -193,9 +200,10 @@ function slurpModelsFrom (pattern) {
 slurpModelsFrom('models/*.js')
     .then(function (success) {
         var DataFormHandler = new (require(path.join(__dirname, 'lib/data_form.js')))(app, config.dfhConfig);
-        mongoose.modelNames().forEach(function (modelName) {
-            console.log(chalk.yellow('DataForm resource: %s'), modelName);
-            DataFormHandler.addResource(modelName, mongoose.model(modelName));
+        models.forEach(function (model) {
+        //mongoose.modelNames().forEach(function (modelName) {
+            console.log(chalk.yellow('DataForm resource: %s'), model.name);
+            DataFormHandler.addResource(model.name, model.model);
         });
     })
     .then(function (success) {
