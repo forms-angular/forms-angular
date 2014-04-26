@@ -43,7 +43,7 @@ if [ $framework = "bs3" ]; then
 	#  use the correct css
 	sed -i s_forms-angular-bs2.css_forms-angular-bs3.css_ public/index.html
 	#  set the bs3 option
-	sed -i s_//uncomment to use Bootstrap 3--__ public/myapp.js
+	sed -i "s_//uncomment to use Bootstrap 3--__" public/myapp.js
 fi
 
 
