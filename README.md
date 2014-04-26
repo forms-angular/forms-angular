@@ -1,7 +1,14 @@
 # forms-angular
-## Probably the most opinionated framework in the world
 
-[![Build Status](https://travis-ci.org/mchapman/forms-angular.png?branch=master)](https://travis-ci.org/mchapman/forms-angular)
+Fork from https://github.com/mchapman/forms-angular for some exploratory development by Mark Chapman
+
+This repo includes:
+- an npm module for automatically mapping mongoose models to RESTful resources in express
+- a bower component that includes angular modules (directives, controllers, services, etc) for displaying forms based on the above mongoose models, along with CRUD logic
+- test harness
+- demo website
+
+[![Build Status](https://travis-ci.org/igblip/forms-angular.png?branch=master)](https://travis-ci.org/igblip/forms-angular)
 [![Dependency Status](https://david-dm.org/mchapman/forms-angular.png)](https://david-dm.org/mchapman/forms-angular.png)
 
 Documentation: http://www.forms-angular.org
