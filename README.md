@@ -9,7 +9,7 @@ This repo includes:
 - demo website
 
 [![Build Status](https://travis-ci.org/igblip/forms-angular.png?branch=master)](https://travis-ci.org/igblip/forms-angular)
-[![Dependency Status](https://david-dm.org/mchapman/forms-angular.png)](https://david-dm.org/mchapman/forms-angular.png)
+[![Dependency Status](https://david-dm.org/igblip/forms-angular.png)](https://david-dm.org/igblip/forms-angular.png)
 
 Documentation: http://www.forms-angular.org
 
