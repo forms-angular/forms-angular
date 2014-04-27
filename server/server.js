@@ -14,6 +14,7 @@ var express = require('express')
     , Q = require('q')
     , bodyParser = require('body-parser')
     , methodOverride = require('method-override')
+    , dataForm = require('./lib/data_form')
 ;
 
 // environment configurations
@@ -178,12 +179,11 @@ app.use(bodyParser({
 app.get('*',handleCrawlers);
 app.use(methodOverride());
 
-//app.use(app.router);
 var models = [];
 
 slurpModelsFrom('models/*.js')
     .then(function (success) {
-        var DataFormHandler = new (require(path.join(__dirname, 'lib/data_form.js')))(app, config.dfhConfig);
+        var DataFormHandler = new dataForm(app, config.dfhConfig);
         models.forEach(function (model) {
             console.log(chalk.yellow('DataForm resource: %s'), model.name);
             DataFormHandler.addResource(model.name, model.model);

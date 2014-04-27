@@ -1,8 +1,9 @@
-**/.DS_Store
 .DS_Store
+**/.DS_Store
 nbproject
 manifest.mf
 build.xml
+node_modules
 
 .project
 .settings
@@ -10,11 +11,20 @@ build.xml
 .bower-registry
 .bower-tmp
 .tmp
-app/styles
+
 dist
 
-node_modules
 app/e2etest
+app/bower_components
+app/code
+app/partials/get-started.html
+app/demo/css
+app/css
+
+npm-build/lib
+
+bower-build
+
 .idea/*
 bin/*
 test_out/*
@@ -32,13 +42,9 @@ lib-cov
 pids
 logs
 results
-app/bower_components
-bower-build
 test.js
 
 npm-debug.log
-
-node_modules/*
 
 .vagrant
 Vagrantfile
