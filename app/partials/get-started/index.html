@@ -13,9 +13,9 @@
     <script type="text/javascript" src="/bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script type="text/javascript" src="/bower_components/underscore/underscore.js"></script>
 
-    <!-- The next one is for bs2 -->
+    <!-- The next line is for bootstrap 2 -->
     <script type="text/javascript" src="/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
-    <!-- The next one is for bs3 -->
+    <!-- The next line is for bootstrap 3 -->
     <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 
     <script type="text/javascript" src="/bower_components/angular-ui-date/src/date.js"></script>
@@ -36,17 +36,22 @@
     <![endif]-->
 
     <!--forms-angular stuff-->
-    <!--<link rel="stylesheet" href="/bower_components/forms-angular/forms-angular-bs2.css">-->
-    <!--<script type="text/javascript" src="/bower_components/forms-angular/forms-angular.js"></script>-->
-    <link rel="stylesheet" href="https://rawgit.com/mchapman/forms-angular/bootstrap-3/app/css/forms-angular-bs2.css">
-    <script type="text/javascript" src="https://rawgit.com/mchapman/forms-angular/bootstrap-3/dist/scripts/ed9f2098.lib.js"></script>
-
+    <link rel="stylesheet" href="/bower_components/forms-angular/forms-angular-bs2.css">
+    <script type="text/javascript" src="/bower_components/forms-angular/forms-angular.js"></script>
+<!--strip  For testing a new branch - gets stripped out by expand-include -->
+<!--strip  <link rel="stylesheet" href="https://rawgit.com/mchapman/forms-angular/"branch"/app/css/forms-angular-bs2.css">-->
+<!--strip  <script type="text/javascript" src="https://rawgit.com/mchapman/forms-angular/"branch"/dist/scripts/"ed9f2098".lib.js"></script>-->
     <script src="/myapp.js"></script>
-
+    <style type="text/css" media="all">
+        .brandpluslogo {
+            font-size: x-large;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <!--The NavCtrl controller is responsible for parsing the URL and loading the menu for the model and form-->
-<body ng-app="myApp" ng-controller="NavCtrl">
+<body ng-app="myApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
 <div class="navbar navbar-default navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container-fluid" ng-cloak>

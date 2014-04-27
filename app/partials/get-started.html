@@ -63,14 +63,16 @@
 
                 <h3>Create</h3>
                 In the shell do:
-                <pre><code>mkdir myapp
+                <pre><code>#!/bin/sh
+
+mkdir myapp
 cd myapp
 express
 npm install
 npm install forms-angular --save
 npm install mongoose --save
 cd public
-bower install forms-angular
+bower install forms-angular --allow-root
 cd ..</code></pre>
             </section>
             <section id="server-code" name="Server Code" affix-scroll>
@@ -116,15 +118,20 @@ DataFormHandler.addResource(&apos;applicant&apos;, Applicant);   // Create and a
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/angular-route/angular-route.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/angular-sanitize/angular-sanitize.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/underscore/underscore.js&quot;&gt;&lt;/script&gt;
+
+    &lt;!-- The next line is for bootstrap 2 --&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- The next line is for bootstrap 3 --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/angular-bootstrap/ui-bootstrap-tpls.js&quot;&gt;&lt;/script&gt;
+
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/angular-ui-date/src/date.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/angular-ui-select2/src/select2.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ngInfiniteScroll/ng-infinite-scroll.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/jspdf/dist/jspdf.source.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/jspdf/dist/jspdf.debug.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/bootstrap/js/bootstrap-transition.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/bootstrap/js/bootstrap-collapse.js&quot;&gt;&lt;/script&gt;
     &lt;link rel=&quot;stylesheet&quot; href=&quot;/bower_components/ng-grid/ng-grid.css&quot;&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ng-grid/ng-grid-2.0.7.debug.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ng-grid/ng-grid-2.0.9.debug.js&quot;&gt;&lt;/script&gt;
     &lt;link rel=&quot;stylesheet&quot; href=&quot;/bower_components/select2/select2.css&quot;&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/angular-elastic/elastic.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/select2/select2.js&quot;&gt;&lt;/script&gt;
@@ -135,53 +142,46 @@ DataFormHandler.addResource(&apos;applicant&apos;, Applicant);   // Create and a
     &lt;![endif]--&gt;
 
     &lt;!--forms-angular stuff--&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/bower_components/forms-angular/forms-angular.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/bower_components/forms-angular/forms-angular-bs2.css&quot;&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/forms-angular/forms-angular.js&quot;&gt;&lt;/script&gt;
     &lt;script src=&quot;/myapp.js&quot;&gt;&lt;/script&gt;
 
 &lt;/head&gt;
 
 &lt;!--The NavCtrl controller is responsible for parsing the URL and loading the menu for the model and form--&gt;
-&lt;body ng-app=&quot;myApp&quot; ng-controller=&quot;NavCtrl&quot;&gt;
-&lt;div class=&quot;navbar row&quot;&gt;
+&lt;body ng-app=&quot;myApp&quot; ng-controller=&quot;NavCtrl&quot; ng-keyup=&quot;globalShortcuts($event)&quot;&gt;
+&lt;div class=&quot;navbar navbar-default navbar-fixed-top&quot;&gt;
     &lt;div class=&quot;navbar-inner&quot;&gt;
-        &lt;ul class=&quot;nav&quot;&gt;
-            &lt;li&gt;&lt;a href=&quot;get-started/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
-            &lt;!--if The NavCtrl has loaded any menu items we display them here--&gt;
-            &lt;li ng-show=&quot;items.length &gt; 0&quot; class=&quot;dropdown&quot; &gt;
-                &lt;a class=&quot;dropdown-toggle&quot;&gt;
-                    {{contextMenu}}
-                &lt;/a&gt;
-                &lt;ul class=&quot;dropdown-menu&quot;&gt;
-                    &lt;li ng-repeat=&quot;choice in items&quot;&gt;
-                        &lt;a class=&quot;dropdown-option&quot; href=&quot;{{choice.url}}&quot; ng-click=&quot;doClick($index)&quot;&gt;{{choice.text}}&lt;/a&gt;
+        &lt;div class=&quot;container-fluid&quot; ng-cloak&gt;
+            &lt;button type=&quot;button&quot; class=&quot;navbar-toggle btn btn-navbar&quot; data-toggle=&quot;collapse&quot; data-target=&quot;.navbar-collapse&quot;&gt;
+                &lt;span class=&quot;glyphicon glyphicon-bar icon-bar&quot;&gt;&lt;/span&gt;
+                &lt;span class=&quot;glyphicon glyphicon-bar icon-bar&quot;&gt;&lt;/span&gt;
+                &lt;span class=&quot;glyphicon glyphicon-bar icon-bar&quot;&gt;&lt;/span&gt;
+            &lt;/button&gt;
+            &lt;div class=&quot;pull-left&quot;&gt;
+                &lt;a class=&quot;navbar-brandpluslogo brandpluslogo&quot; ng-href=&quot;{{buildUrl(&apos;index&apos;)}}&quot;&gt;Demo&lt;/a&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;visible-lg visible-desktop pull-right col-md-2 span2&quot;&gt;&lt;/div&gt;      &lt;!-- Leave some space for github flash --&gt;
+            &lt;global-search class=&quot;global-search&quot;&gt;&lt;/global-search&gt;
+            &lt;div class=&quot;navbar-collapse collapse nav-collapse&quot;&gt;
+                &lt;ul class=&quot;nav navbar-nav&quot;&gt;
+                    &lt;li ng-show=&quot;items.length &gt; 0&quot; class=&quot;dropdown&quot;&gt;
+                        &lt;a class=&quot;dropdown-toggle&quot;&gt;
+                            {{contextMenu}}
+                        &lt;/a&gt;
+                        &lt;ul class=&quot;dropdown-menu&quot;&gt;
+                            &lt;li ng-repeat=&quot;choice in items&quot;&gt;
+                                &lt;a class=&quot;dropdown-option&quot; ng-hide=&quot;isHidden($index)&quot; ng-href=&quot;{{choice.url}}&quot; ng-click=&quot;doClick($index)&quot;&gt;{{choice.text}}&lt;/a&gt;
+                            &lt;/li&gt;
+                        &lt;/ul&gt;
                     &lt;/li&gt;
                 &lt;/ul&gt;
-            &lt;/li&gt;
-        &lt;/ul&gt;
-        &lt;div class=&quot;span9&quot;&gt;
-            &lt;!--The SearchCtrl handles AJAX searches of the database (which can be customised)--&gt;
-            &lt;div class=&quot;global-search&quot; ng-controller=&quot;SearchCtrl&quot;&gt;
-                &lt;form class=&quot;navbar-search pull-right&quot;&gt;
-                    &lt;div id=&quot;search-cg&quot; class=&quot;control-group&quot; ng-class=&quot;errorClass&quot;&gt;
-                        &lt;input type=&quot;text&quot; ng-model=&quot;searchTarget&quot; class=&quot;search-query&quot; placeholder=&quot;Search&quot;&gt;
-                    &lt;/div&gt;
-                &lt;/form&gt;
-                &lt;div class=&quot;search-results&quot; ng-show=&quot;results.length &gt;= 1&quot;&gt;
-                    &lt;div ng-repeat=&quot;result in results&quot;&gt;
-                        &lt;a class=&quot;search-result&quot; ng-href=&quot;#!/{{result.resource}}/{{result.id}}/edit&quot;&gt;
-                            {{result.resourceText}} {{result.text}}
-                        &lt;/a&gt;
-                    &lt;/div&gt;
-                    &lt;div ng-show=&quot;moreCount &gt; 0&quot;&gt;(plus more - continue typing to narrow down search...)&lt;/div&gt;
-                &lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-&lt;div class=&quot;container-fluid&quot;&gt;
-    &lt;div ng-view&gt;&lt;/div&gt;
-&lt;/div&gt;
+&lt;div ng-view&gt;&lt;/div&gt;
+
 &lt;/body&gt;
 
 &lt;/html&gt;</code></pre>
@@ -203,14 +203,18 @@ myApp.config([&apos;formRoutesProvider&apos;, function (formRoutes) {
 //formsAngular.config([&apos;urlServiceProvider&apos;,function(urlService) {
 //    urlService.setOptions({html5Mode: false, hashPrefix: &apos;!&apos;});
 //}]);
+
+//uncomment to use Bootstrap 3-- formsAngular.config([&apos;cssFrameworkServiceProvider&apos;,function(cssFrameworkService) {
+//uncomment to use Bootstrap 3--    cssFrameworkService.setOptions({framework:&apos;bs3&apos;});
+//uncomment to use Bootstrap 3--}]);
 </code></pre>
                 <p><strong>public/partials/index.html</strong></p>
                 <pre><code ng-non-bindable="ng-non-bindable">&lt;h1&gt;Applicants&lt;/h1&gt;
 &lt;ul&gt;
-    &lt;li&gt;Create a new applicant at &lt;code&gt;&lt;a href=&quot;http://0.0.0.0:3000/#/applicant/new&quot;&gt;http://0.0.0.0:3000/#/applicant/new&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
-    &lt;li&gt;List applicants at &lt;code&gt;&lt;a href=&quot;http://0.0.0.0:3000/#/applicant&quot;&gt;http://0.0.0.0:3000/#/applicant&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
-    &lt;li&gt;Edit existing applicants by clicking on the links in the &lt;a href=&quot;http://0.0.0.0:3000/#/applicant&quot;&gt;list&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;Show applicants in a &lt;a href=&quot;http://0.0.0.0:3000/#/analyse/applicant&quot;&gt;grid report&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;Create a new applicant at &lt;code&gt;&lt;a href=&quot;/#/applicant/new&quot;&gt;/#/applicant/new&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;List applicants at &lt;code&gt;&lt;a href=&quot;/#/applicant&quot;&gt;/#/applicant&lt;/a&gt;&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;Edit existing applicants by clicking on the links in the &lt;a href=&quot;/#/applicant&quot;&gt;list&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;Show applicants in a &lt;a href=&quot;/#/analyse/applicant&quot;&gt;grid report&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</code></pre>
                 <p id="base-edit-html"><strong>public/partials/base-edit.html</strong></p>
                 <pre><code ng-non-bindable="ng-non-bindable">&lt;div ng-controller=&quot;BaseCtrl&quot;&gt;
@@ -238,7 +242,6 @@ myApp.config([&apos;formRoutesProvider&apos;, function (formRoutes) {
         &lt;/div&gt;
         &lt;form-input name=&quot;baseForm&quot; schema=&quot;baseSchema()&quot; formstyle=&quot;compact&quot;&gt;&lt;/form-input&gt;
     &lt;/div&gt;
-    &lt;pre&gt;{{formSchema}}&lt;/pre&gt;
 &lt;/div&gt;</code></pre>
                 <p><strong>public/partials/base-list.html</strong></p>
                 <pre><code ng-non-bindable="ng-non-bindable">&lt;div ng-controller=&quot;BaseCtrl&quot;&gt;
