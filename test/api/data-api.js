@@ -13,7 +13,8 @@ describe('Read Data API', function () {
         exec('curl 0.0.0.0:3001/api/a_unadorned_mongoose',
             function (error, stdout) {
                 if (error) {
-                    throw new Error('curl a failed')
+                    console.log(error);
+                    throw new Error('curling model A failed')
                 }
                 aData = JSON.parse(stdout);
                 exec('curl 0.0.0.0:3001/api/b_using_options',

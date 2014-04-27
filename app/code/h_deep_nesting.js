@@ -35,7 +35,7 @@ var HSchema = new Schema({
 });
 
 var H;
-try {H = mongoose.model('H') } catch(e) {H = mongoose.model('H', HSchema)}
+try {H = mongoose.model('H'); } catch(e) {H = mongoose.model('H', HSchema);}
 
 module.exports = H;
 

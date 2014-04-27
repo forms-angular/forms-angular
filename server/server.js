@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Module dependencies.
  */
@@ -67,6 +69,11 @@ var cfg = {
         }
     }
 };
+
+var env = process.env.NODE_ENV || 'development';
+var config = cfg[env];
+var app = module.exports = express();
+
 
 function addStatics (app) {
     config.statics.forEach( function (entry) {
@@ -158,13 +165,10 @@ function slurpModelsFrom (pattern) {
         deferred.resolve(true);
     });
     return deferred.promise;
-};
+}
 
 
 // Configuration
-var env = process.env.NODE_ENV || 'development';
-var config = cfg[env];
-var app = module.exports = express();
 
 console.log('Initializing...');
 app.use(bodyParser({
@@ -197,7 +201,7 @@ slurpModelsFrom('models/*.js')
         app.use(express.errorHandler(config.errorConfig));
         mongoose.connect(config.db);
 
-        if (env == 'test') {
+        if (env === 'test') {
             var data_path = path.join(__dirname, '../test/e2edata');
             var data_files = fs.readdirSync(data_path);
             data_files.forEach(function (file) {

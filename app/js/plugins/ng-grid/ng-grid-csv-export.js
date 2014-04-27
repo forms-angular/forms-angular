@@ -1,3 +1,6 @@
+/* global jsPDF: false */
+'use strict';
+
 function ngGridCsvExportPlugin (opts) {
     var self = this;
     self.grid = null;
@@ -8,10 +11,10 @@ function ngGridCsvExportPlugin (opts) {
         function doDownloadButton() {
             var fp = angular.element('h1').parent();
             var csvDataLinkPrevious = angular.element('#csv-data-link');
-            if (csvDataLinkPrevious != null) {csvDataLinkPrevious.remove() ; }
-            var csvDataLinkHtml = "<button id=\"csv-data-link\" class=\"btn\"><a href=\"data:text/csv;charset=UTF-8,";
+            if (csvDataLinkPrevious !== null) {csvDataLinkPrevious.remove() ; }
+            var csvDataLinkHtml = '<button id="csv-data-link" class="btn"><a href="data:text/csv;charset=UTF-8,';
             csvDataLinkHtml += encodeURIComponent(self.prepareCSV());
-            csvDataLinkHtml += "\" download=\"Export.csv\">CSV Export</button>" ;
+            csvDataLinkHtml += '" download="Export.csv">CSV Export</button>' ;
             fp.append(csvDataLinkHtml);
         }
 

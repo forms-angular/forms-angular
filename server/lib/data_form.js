@@ -1,3 +1,5 @@
+'use strict';
+
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
 
@@ -22,10 +24,10 @@ function logTheAPICalls(req, res, next) {
 
 function processArgs(options, array) {
     if (options.authentication) {
-        array.splice(1, 0, options.authentication)
+        array.splice(1, 0, options.authentication);
     }
     if (debug) {
-        array.splice(1, 0, logTheAPICalls)
+        array.splice(1, 0, logTheAPICalls);
     }
     array[0] = options.urlPrefix + array[0];
     return array;
@@ -106,12 +108,12 @@ DataForm.prototype.addResource = function (resource_name, model, options) {
         options: options || {}
     };
 
-    if (typeof model === "function") {
+    if (typeof model === 'function') {
         resource.model = model;
     } else {
         resource.model = model.model;
         for (var prop in model) {
-            if (model.hasOwnProperty(prop) && prop !== "model") {
+            if (model.hasOwnProperty(prop) && prop !== 'model') {
                 resource.options[prop] = model[prop];
             }
         }
@@ -124,29 +126,13 @@ DataForm.prototype.addResource = function (resource_name, model, options) {
     }
     if (this.searchFunc === async.forEachSeries) {
         this.resources.splice(_.sortedIndex(this.resources, resource, function (obj) {
-            return obj.options.searchImportance || 99
+            return obj.options.searchImportance || 99;
         }), 0, resource);
     } else {
         this.resources.push(resource);
     }
 };
 
-// add resources located at modelsPath
-DataForm.prototype.addResources = function (models_path) {
-    var that = this;
-    fs.readdir(models_path, function (err, files) {
-        if (files === undefined) {
-            console.log('No resources at path %s', models_path);
-            return;
-        }
-        files.forEach( function (file) {
-            var fname = path.join(models_path, file);
-            if (fs.statSync(fname).isFile()) {
-               that.addResource(file.slice(0,-3), require(fname));
-            }
-        });
-    });
-};
 
 // Add all models from files matching the glob_pattern, which should be a full path with
 // globbing wildcards, such as '/users/home/me/dev/MyAwesomeApp/models/**/*.js or similar.
@@ -185,7 +171,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
     function translate(string, array, context) {
         if (array) {
             var translation = _.find(array, function (fromTo) {
-                return fromTo.from === string && (!fromTo.context || fromTo.context === context)
+                return fromTo.from === string && (!fromTo.context || fromTo.context === context);
             });
             if (translation) {
                 string = translation.to;
@@ -198,7 +184,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
     function calcResultValue(obj) {
 
         function padLeft(number, reqLength, str){
-            return Array(reqLength-String(number).length+1).join(str||'0')+number;
+            return (new Array(reqLength - String(number).length + 1)).join(str||'0') + number;
         }
 
         var sortString = '';
@@ -210,7 +196,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
     }
 
     if (filter) {
-        filter = JSON.parse(filter)
+        filter = JSON.parse(filter);
     }
 
     for (var i = 0; i < resourceCount; i++) {
@@ -218,24 +204,24 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
         if (resource.options.searchImportance !== false) {
             var schema = resource.model.schema;
             var indexedFields = [];
-            for (j = 0; j < schema._indexes.length; j++) {
+            for (var j = 0; j < schema._indexes.length; j++) {
                 var attributes = schema._indexes[j][0];
                 var field = Object.keys(attributes)[0];
-                if (indexedFields.indexOf(field) == -1) {
-                    indexedFields.push(field)
+                if (indexedFields.indexOf(field) === -1) {
+                    indexedFields.push(field);
                 }
             }
             for (var path in schema.paths) {
-                if (path != "_id" && schema.paths.hasOwnProperty(path)) {
+                if (path !== '_id' && schema.paths.hasOwnProperty(path)) {
                     if (schema.paths[path]._index && !schema.paths[path].options.noSearch) {
-                        if (indexedFields.indexOf(path) == -1) {
-                            indexedFields.push(path)
+                        if (indexedFields.indexOf(path) === -1) {
+                            indexedFields.push(path);
                         }
                     }
                 }
             }
-            for (m = 0; m < indexedFields.length; m++) {
-                searches.push({resource: resource, field: indexedFields[m] })
+            for (var m = 0; m < indexedFields.length; m++) {
+                searches.push({resource: resource, field: indexedFields[m] });
             }
         }
     }
@@ -264,7 +250,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                     var obj1 = {}, obj2 = {};
                     obj1[item.field] = filter[item.field];
                     obj2[item.field] = searchCriteria;
-                    searchDoc['$and'] = [obj1, obj2];
+                    searchDoc.$and = [obj1, obj2];
                 } else {
                     searchDoc[item.field] = searchCriteria;
                 }
@@ -297,7 +283,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                             // remove it from current position
                             results.splice(resultPos,1);
                             // and re-insert where appropriate
-                            results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject)
+                            results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
                         } else {
                             // Otherwise add them new...
                             // Use special listings format if defined
@@ -319,18 +305,18 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                                 resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, 'resource');
                                 resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
                             }
-                            results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject)
+                            results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
                         }
                     }
                 }
-                cb(err)
-            })
+                cb(err);
+            });
         }
         , function (err) {
             // Strip weighting from the results
             results = _.map(results, function (aResult) {
                 delete aResult.weighting;
-                return aResult
+                return aResult;
             });
             if (results.length > limit) {
                 moreCount += results.length - limit;
@@ -377,10 +363,10 @@ DataForm.prototype.models = function (req, res, next) {
 
 
 DataForm.prototype.renderError = function (err, redirectUrl, req, res) {
-    if (typeof err === "string") {
-        res.send(err)
+    if (typeof err === 'string') {
+        res.send(err);
     } else {
-        res.send(err.message)
+        res.send(err.message);
     }
 };
 
@@ -393,7 +379,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
         hiddenFields = [],
         listFields = [];
     for (var element in paths) {
-        if (paths.hasOwnProperty(element) && element != '__v') {
+        if (paths.hasOwnProperty(element) && element !== '__v') {
             // check for schemas
             if (paths[element].schema) {
                 var subSchemaInfo = this.preprocess(paths[element].schema.paths);
@@ -410,8 +396,8 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
                         var type = realType.options.type(),
                             typeType = typeof type;
 
-                        if (typeType === "string") {
-                            realType.instance = (Date.parse(type) !== NaN) ? "Date" : "String";
+                        if (typeType === 'string') {
+                            realType.instance = isNaN(Date.parse(type)) ? 'String' : 'Date';
                         } else {
                             realType.instance = typeType;
                         }
@@ -425,7 +411,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
                     outPath[element].options.match = paths[element].options.match.source;
                 }
                 if (paths[element].options.list) {
-                    listFields.push({field: element, params: paths[element].options.list})
+                    listFields.push({field: element, params: paths[element].options.list});
                 }
             }
         }
@@ -436,7 +422,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
         for (var fld in formSchema) {
             if (formSchema.hasOwnProperty(fld)) {
                 if (!vanilla[fld]) {
-                    throw new Error("No such field as " + fld + ".  Is it part of a sub-doc? If so you need the bit before the period.")
+                    throw new Error('No such field as ' + fld + '.  Is it part of a sub-doc? If so you need the bit before the period.');
                 }
                 outPath[fld] = vanilla[fld];
                 outPath[fld].options = outPath[fld].options || {};
@@ -468,7 +454,7 @@ DataForm.prototype.schema = function () {
         }
         var formSchema = null;
         if (req.params.formName) {
-            formSchema = req.resource.model.schema.statics['form'](req.params.formName)
+            formSchema = req.resource.model.schema.statics.form(req.params.formName);
         }
         var paths = this.preprocess(req.resource.model.schema.paths, formSchema).paths;
         res.send(JSON.stringify(paths));
@@ -486,7 +472,7 @@ DataForm.prototype.report = function () {
             , urlParts = url.parse(req.url, true);
 
         if (req.params.reportName) {
-            reportSchema = req.resource.model.schema.statics['report'](req.params.reportName, req)
+            reportSchema = req.resource.model.schema.statics.report(req.params.reportName, req);
         } else if (urlParts.query.r) {
             switch (urlParts.query.r[0]) {
                 case '[':
@@ -496,7 +482,7 @@ DataForm.prototype.report = function () {
                     reportSchema = JSON.parse(urlParts.query.r);
                     break;
                 default:
-                    return self.renderError(new Error("Invalid 'r' parameter"), null, req, res, next);
+                    return self.renderError(new Error('Invalid "r" parameter'), null, req, res, next);
             }
         } else {
             var fields = {};
@@ -511,7 +497,7 @@ DataForm.prototype.report = function () {
             }
             reportSchema = {pipeline: [
                 {$project: fields}
-            ], drilldown: "/#!/" + req.params.resourceName + "/|_id|/edit"};
+            ], drilldown: '/#!/' + req.params.resourceName + '/|_id|/edit'};
         }
 
         // Replace parameters in pipeline
@@ -530,12 +516,12 @@ DataForm.prototype.report = function () {
 };
 
 DataForm.prototype.reportInternal = function(req, resource, schema, options, callback) {
-    var runPipeline
-    self = this;
+    var runPipeline;
+    var self = this;
 
     self.doFindFunc(req, resource, function(err, queryObj) {
         if (err) {
-            return "There was a problem with the findFunc for model";
+            return 'There was a problem with the findFunc for model';
         } else {
             // Bit crap here switching back and forth to string
             runPipeline = JSON.stringify(schema.pipeline);
@@ -561,12 +547,12 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
                         return '"' + param.value + '"';
                     }
                 });
-            };
+            }
 
             // Don't send the 'secure' fields
             for (var hiddenField in self.generateHiddenFields(resource, false)) {
                 if (runPipeline.indexOf(hiddenField) !== -1) {
-                    callback("You cannot access " + hiddenField);
+                    callback('You cannot access ' + hiddenField);
                 }
             }
 
@@ -597,8 +583,8 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
             };
 
             for (var pipelineSection = 0; pipelineSection < runPipeline.length; pipelineSection++) {
-                if (runPipeline[pipelineSection]['$match']) {
-                    hackVariables(runPipeline[pipelineSection]['$match']);
+                if (runPipeline[pipelineSection].$match) {
+                    hackVariables(runPipeline[pipelineSection].$match);
                 }
             }
 
@@ -608,11 +594,12 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
             }
 
             var toDo = {runAggregation: function (cb) {
-                resource.model.aggregate(runPipeline, cb)
+                resource.model.aggregate(runPipeline, cb);
             }
             };
 
-            var translations = [];  // array of form {ref:'lookupname',translations:[{value:xx, display:'  '}]}
+            var translations = [];
+            // array of form {ref:'lookupname',translations:[{value:xx, display:'  '}]}
             // if we need to do any column translations add the function to the tasks list
             if (schema.columnTranslations) {
                 toDo.apply_translations = ['runAggregation', function (cb, results) {
@@ -620,10 +607,10 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
                     function doATranslate(column, theTranslation) {
                         results.runAggregation.forEach(function (resultRow) {
                             var thisTranslation = _.find(theTranslation.translations, function (option) {
-                                return resultRow[column.field].toString() === option.value.toString()
+                                return resultRow[column.field].toString() === option.value.toString();
                             });
                             resultRow[column.field] = thisTranslation.display;
-                        })
+                        });
                     }
 
                     schema.columnTranslations.forEach(function (columnTranslation) {
@@ -632,17 +619,23 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
                         }
                         if (columnTranslation.ref) {
                             var theTranslation = _.find(translations, function(translation){
-                                return (translation.ref === columnTranslation.ref)
+                                return (translation.ref === columnTranslation.ref);
                             });
                             if (theTranslation) {
                                 doATranslate(columnTranslation, theTranslation);
                             } else {
-                                cb("Invalid ref property of "+columnTranslation.ref+" in columnTranslations "+columnTranslations.field)
+                                cb('Invalid ref property of ' + columnTranslation.ref + ' in columnTranslations ' + columnTranslation.field);
                             }
                         }
                     });
                     cb(null, null);
                 }];
+
+
+
+
+
+
 
                 var callFuncs = false;
                 for (var i = 0; i < schema.columnTranslations.length; i++) {
@@ -650,14 +643,16 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
 
                     if (thisColumnTranslation.field) {
                         // if any of the column translations are adhoc funcs, set up the tasks to perform them
-                        if (thisColumnTranslation.fn) callFuncs = true;
+                        if (thisColumnTranslation.fn) {
+                            callFuncs = true;
+                        }
 
                         // if this column translation is a "ref", set up the tasks to look up the values and populate the translations
                         if (thisColumnTranslation.ref) {
                             var lookup = self.getResource(thisColumnTranslation.ref);
                             if (lookup) {
                                 if (!toDo[thisColumnTranslation.ref]) {
-                                    toDo[thisColumnTranslation.ref] = function (cb) {
+                                    toDo[thisColumnTranslation.ref] = function (lookup, cb) {
                                         var translateObject = {ref:lookup.resource_name, translations: [] };
                                         translations.push(translateObject);
                                         lookup.model.find({}, {}, {lean: true}, function (err, findResults) {
@@ -669,23 +664,23 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
                                                 }
                                                 cb(null, null);
                                             }
-                                        })
+                                        });
                                     };
                                     toDo.apply_translations.unshift(thisColumnTranslation.ref);  // Make sure we populate lookup before doing translation
                                 }
                             } else {
-                                return callback("Invalid ref property of " + thisColumnTranslation.ref + " in columnTranslations " + thisColumnTranslation.field);
+                                return callback('Invalid ref property of ' + thisColumnTranslation.ref + ' in columnTranslations ' + thisColumnTranslation.field);
                             }
                         }
                         if (!thisColumnTranslation.translations && !thisColumnTranslation.ref && !thisColumnTranslation.fn) {
-                            return callback("A column translation needs a ref, fn or a translations property - " + translateName + " has neither");
+                            return callback('A column translation needs a ref, fn or a translations property - ' + thisColumnTranslation.field + ' has neither');
                         }
                     } else {
-                        return callback("A column translation needs a field property");
+                        return callback('A column translation needs a field property');
                     }
                 }
                 if (callFuncs) {
-                    toDo['callFunctions'] = ['runAggregation', function(cb,results) {
+                    toDo.callFunctions = ['runAggregation', function(cb,results) {
                         async.each(results.runAggregation, function(row, cb) {
                             for (var i = 0; i < schema.columnTranslations.length; i++) {
                                 var thisColumnTranslation = schema.columnTranslations[i]
@@ -696,7 +691,7 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
                                 }
                             }
                         }, function(err) {
-                            cb(null)
+                            cb(null);
                         });
                     }];
                     toDo.apply_translations.unshift('callFunctions');  // Make sure we do function before translating its result
@@ -727,7 +722,7 @@ DataForm.prototype.saveAndRespond = function (req, res, hidden_fields) {
                     extend(err2, err);
                 }
                 if (debug) {
-                    console.log('Error saving record: ' + JSON.stringify(err2))
+                    console.log('Error saving record: ' + JSON.stringify(err2));
                 }
                 res.send(400, err2);
             } else {
@@ -743,14 +738,13 @@ DataForm.prototype.saveAndRespond = function (req, res, hidden_fields) {
     }
 
     var doc = req.doc;
-    if (typeof req.resource.options.onSave === "function") {
-
+    if (typeof req.resource.options.onSave === 'function') {
         req.resource.options.onSave(doc, req, function (err) {
             if (err) {
                 throw err;
             }
             internalSave(doc);
-        })
+        });
     } else {
         internalSave(doc);
     }
@@ -802,7 +796,7 @@ DataForm.prototype.collectionGet = function () {
 
 DataForm.prototype.doFindFunc = function (req, resource, cb) {
     if (resource.options.findFunc) {
-        resource.options.findFunc(req, cb)
+        resource.options.findFunc(req, cb);
     } else {
         cb(null);
     }
@@ -817,13 +811,13 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
         if (aggregationParam) {
             resource.model.aggregate(aggregationParam, function (err, aggregationResults) {
                 if (err) {
-                    throw err
+                    throw err;
                 } else {
                     cb(_.map(aggregationResults, function (obj) {
-                        return obj._id
+                        return obj._id;
                     }));
                 }
-            })
+            });
         } else {
             cb([]);
         }
@@ -831,25 +825,31 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
 
     doAggregation(function (idArray) {
         if (aggregationParam && idArray.length === 0) {
-            callback(null, [])
+            callback(null, []);
         } else {
             that.doFindFunc(req, resource, function (err, queryObj) {
                 if (err) {
-                    callback(err)
+                    callback(err);
                 } else {
                     var query = resource.model.find(queryObj);
                     if (idArray.length > 0) {
-                        query = query.where('_id').in(idArray)
+                        query = query.where('_id').in(idArray);
                     }
                     query = query.find(findParam).select(hidden_fields);
-                    if (limit) query = query.limit(limit);
-                    if (skip) query = query.skip(skip);
-                    if (sortOrder) query = query.sort(sortOrder);
+                    if (limit) {
+                        query = query.limit(limit);
+                    }
+                    if (skip) {
+                        query = query.skip(skip);
+                    }
+                    if (sortOrder) {
+                        query = query.sort(sortOrder);
+                    }
                     query.exec(callback);
                 }
-            })
+            });
         }
-    })
+    });
 };
 
 DataForm.prototype.collectionPost = function () {
@@ -858,7 +858,9 @@ DataForm.prototype.collectionPost = function () {
             next();
             return;
         }
-        if (!req.body) throw new Error('Nothing submitted.');
+        if (!req.body) {
+            throw new Error('Nothing submitted.');
+        }
 
         var cleansedBody = this.cleanseRequest(req);
         req.doc = new req.resource.model(cleansedBody);
@@ -873,7 +875,7 @@ DataForm.prototype.collectionPost = function () {
 DataForm.prototype.generateHiddenFields = function (resource, state) {
     var hidden_fields = {};
 
-    if (resource.options['hide'] !== undefined) {
+    if (resource.options.hide !== undefined) {
         resource.options.hide.forEach(function (dt) {
             hidden_fields[dt] = state;
         });
@@ -890,15 +892,17 @@ DataForm.prototype.cleanseRequest = function (req) {
         resource = req.resource;
 
     delete req_data.__v;   // Don't mess with Mongoose internal field (https://github.com/LearnBoost/mongoose/issues/1933)
-    if (typeof resource.options['hide'] == 'undefined')
+    if (typeof resource.options.hide === 'undefined') {
         return req_data;
+    }
 
     var hidden_fields = resource.options.hide;
 
     _.each(req_data, function (num, key) {
         _.each(hidden_fields, function (fi) {
-            if (fi == key)
+            if (fi === key) {
                 delete req_data[key];
+            }
         });
     });
 
@@ -929,7 +933,7 @@ DataForm.prototype.entity = function () {
                     err: util.inspect(err)
                 });
             }
-            else if (doc == null) {
+            else if (doc === null) {
                 return res.send({
                     success: false,
                     err: 'Record not found'
@@ -960,7 +964,7 @@ DataForm.prototype.replaceHiddenFields = function (record, data) {
     self._replacingHiddenFields = true;
     _.each(data, function (value, name) {
         if (_.isObject(value)) {
-            self.replaceHiddenFields(record[name], value)
+            self.replaceHiddenFields(record[name], value);
         } else {
             record[name] = value;
         }
@@ -975,13 +979,15 @@ DataForm.prototype.entityPut = function () {
             return;
         }
 
-        if (!req.body) throw new Error('Nothing submitted.');
+        if (!req.body) {
+            throw new Error('Nothing submitted.');
+        }
         var cleansedBody = this.cleanseRequest(req)
             , that = this;
 
         // Merge
         _.each(cleansedBody, function (value, name) {
-            req.doc[name] = (value === "") ? undefined : value;
+            req.doc[name] = (value === '') ? undefined : value;
         });
 
         if (req.resource.options.hide !== undefined) {
@@ -990,7 +996,7 @@ DataForm.prototype.entityPut = function () {
             req.resource.model.findById(req.doc._id, hidden_fields, {lean: true}, function (err, data) {
                 that.replaceHiddenFields(req.doc, data);
                 that.saveAndRespond(req, res, hidden_fields);
-            })
+            });
         } else {
             that.saveAndRespond(req, res);
         }

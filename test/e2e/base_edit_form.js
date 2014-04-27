@@ -27,7 +27,7 @@ describe('Base edit form', function() {
         });
 
         it('should display deletion confirmation modal', function() {
-            
+
             element('#deleteButton').click();
             expect( element('.modal').count() ).toEqual(1);
         });

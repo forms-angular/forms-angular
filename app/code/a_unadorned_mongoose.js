@@ -1,3 +1,5 @@
+'use strict';
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -13,6 +15,6 @@ var ASchema = new Schema({
 
 var A;
 
-try {A = mongoose.model('A') } catch(e) {A = mongoose.model('A', ASchema)}
+try {A = mongoose.model('A');} catch(e) {A = mongoose.model('A', ASchema);}
 
 module.exports = A;

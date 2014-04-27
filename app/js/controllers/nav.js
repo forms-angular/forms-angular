@@ -1,6 +1,8 @@
 'use strict';
 
-formsAngular.controller('NavCtrl', ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService', function ($scope, $data, $location, $filter, $locationParse, $controller, urlService) {
+formsAngular.controller('NavCtrl',
+        ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService',
+function ($scope, $data, $location, $filter, $locationParse, $controller, urlService) {
 
     $scope.items = [];
 

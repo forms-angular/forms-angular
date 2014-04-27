@@ -14,7 +14,7 @@ var JSchema = new Schema({
 });
 
 var J;
-try {J = mongoose.model('J') } catch(e) {J = mongoose.model('J', JSchema)}
+try {J = mongoose.model('J');} catch(e) {J = mongoose.model('J', JSchema);}
 
 module.exports = J;
 

@@ -1,3 +1,5 @@
+'use strict';
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -17,11 +19,11 @@ var FSchema = new Schema({
 
 //    exams: [ExamsSchema]    // defaults to horizontal compact form
     // or
-    exams: {type:[ExamsSchema], form:{formStyle:"inline"}}
+    exams: {type:[ExamsSchema], form:{formStyle: 'inline'}}
 });
 
 var F;
-try {F = mongoose.model('F') } catch(e) {F = mongoose.model('F', FSchema)}
+try {F = mongoose.model('F');} catch(e) {F = mongoose.model('F', FSchema);}
 
 F.prototype.searchResultFormat = function() {
 
@@ -37,7 +39,7 @@ F.prototype.searchResultFormat = function() {
         id: this._id,
         weighting: weighting,
         text: this.surname + ', ' + this.forename
-    }
+    };
 };
 
 FSchema.statics.form = function(layout) {

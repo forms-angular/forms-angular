@@ -11,7 +11,7 @@ var ISchema = new Schema({
         town: {type: String, form:{label: 'Town', tab:'first'}},
         postcode: {type: String, form:{label: 'Postcode',tab:'first'}}
     },
-    weight: {type : Number, form:{label:"Weight (lbs)",tab:'second'}},
+    weight: {type : Number, form:{label:'Weight (lbs)',tab:'second'}},
     dateOfBirth: {type:Date, form:{tab:'second'}},
     accepted: {type: Boolean, form:{tab:'second'}},
     interviewScore:{type:Number,form:{tab:'second'},list:{}},
@@ -19,6 +19,6 @@ var ISchema = new Schema({
 });
 
 var I;
-try {I = mongoose.model('I') } catch(e) {I = mongoose.model('I', ISchema)}
+try {I = mongoose.model('I');} catch(e) {I = mongoose.model('I', ISchema);}
 
 module.exports = I;

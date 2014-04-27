@@ -1,3 +1,4 @@
+/* global formsAngular: false */
 'use strict';
 
 formsAngular.factory('$data', [function() {

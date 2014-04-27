@@ -10,6 +10,6 @@ var ZSchema = new Schema({
 });
 
 var Z;
-try {Z = mongoose.model('Z') } catch(e) {Z = mongoose.model('Z', ZSchema)}
+try {Z = mongoose.model('Z');} catch(e) {Z = mongoose.model('Z', ZSchema);}
 
 module.exports = Z;

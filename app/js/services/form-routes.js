@@ -1,9 +1,9 @@
+/* global formsAngular: false */
 'use strict';
 
 formsAngular.provider('formRoutes', ['$routeProvider',function ($routeProvider) {
-
     return {
-        setRoutes : function(appRoutes, defaultRoute) {
+        setRoutes : function (appRoutes, defaultRoute) {
             // Set up the application specific routes
             for (var i = 0 ; i < appRoutes.length ; i++) {
                 $routeProvider.when(appRoutes[i].route, appRoutes[i].options);
@@ -22,7 +22,7 @@ formsAngular.provider('formRoutes', ['$routeProvider',function ($routeProvider) 
                 otherwise({redirectTo: defaultRoute});
         },
         $get : function() {
-            return null
-            }
+            return null;
         }
+    };
 }]);

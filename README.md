@@ -1,6 +1,6 @@
 # forms-angular
 
-Fork from https://github.com/mchapman/forms-angular for some exploratory development by Mark Chapman
+Fork from https://github.com/mchapman/forms-angular by Mark Chapman
 
 This repo includes:
 - an npm module for automatically mapping mongoose models to RESTful resources in express

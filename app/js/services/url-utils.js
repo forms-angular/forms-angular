@@ -1,3 +1,4 @@
+/* global formsAngular: false */
 'use strict';
 
 formsAngular.provider('urlService', ['$locationProvider',function ($locationProvider) {
@@ -19,7 +20,9 @@ formsAngular.provider('urlService', ['$locationProvider',function ($locationProv
                 buildUrl:function (path) {
                     var base = config.html5Mode ? '':'#';
                     base += config.hashPrefix;
-                    if (base[0]) base += '/';
+                    if (base[0]) {
+                        base += '/';
+                    }
                     return base + path;
                 }
             };

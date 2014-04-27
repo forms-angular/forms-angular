@@ -1,5 +1,15 @@
 @import url(//fonts.googleapis.com/css?family=Telex);
 
+/*!
+ * Bootstrap v2.3.2
+ *
+ * Copyright 2013 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world by @mdo and @fat.
+ */
+
 .clearfix {
   *zoom: 1;
 }
@@ -9195,6 +9205,9 @@ body {
   .page-header {
     position: static;
   }
+  .global-search {
+    padding-right: 1em;
+  }
 }
 
 .header-rhs {
@@ -9377,8 +9390,8 @@ form .form-inline > .sub-doc {
   font-family: 'FontAwesome';
   font-style: normal;
   font-weight: normal;
-  src: url('/styles/components-font-awesome/font/fontawesome-webfont.eot?v=3.2.1');
-  src: url('/styles/components-font-awesome/font/fontawesome-webfont.eot?#iefix&v=3.2.1') format('embedded-opentype'), url('/styles/components-font-awesome/font/fontawesome-webfont.woff?v=3.2.1') format('woff'), url('/styles/components-font-awesome/font/fontawesome-webfont.ttf?v=3.2.1') format('truetype'), url('/styles/components-font-awesome/font/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1') format('svg');
+  src: url('../../bower_components/components-font-awesome/font/fontawesome-webfont.eot?v=3.2.1');
+  src: url('../../bower_components/components-font-awesome/font/fontawesome-webfont.eot?#iefix&v=3.2.1') format('embedded-opentype'), url('../../bower_components/components-font-awesome/font/fontawesome-webfont.woff?v=3.2.1') format('woff'), url('../../bower_components/components-font-awesome/font/fontawesome-webfont.ttf?v=3.2.1') format('truetype'), url('../../bower_components/components-font-awesome/font/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1') format('svg');
 }
 
 /* FONT AWESOME CORE

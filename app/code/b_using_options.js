@@ -1,3 +1,5 @@
+'use strict';
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -11,11 +13,11 @@ var BSchema = new Schema({
         line1: {type: String, form:{label: 'Address'}},      // this label overrides the one generated from the field name
         line2: {type: String, form:{label: null}},           // null label - gives a blank label
         line3: {type: String, form:{label: null, add:'class="some classes here"'}},
-        town: {type: String, form:{label: 'Town', placeHolder: "Post town"}},          // You can specify place holders
+        town: {type: String, form:{label: 'Town', placeHolder: 'Post town'}},          // You can specify place holders
         postcode: {type: String,
             match: /(GIR 0AA)|([A-Z]{1,2}[0-9][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2})/,
             form:{label: 'Postcode', size:'small', help:'Enter your UK postcode (for example TN2 1AA)'}},  // help displays on the line under the control, size adds matching bootstrap input- class
-        country: {type: String, form:{label:"Country", hidden:true}},
+        country: {type: String, form:{label:'Country', hidden:true}},
         surveillance: {type: Boolean, secure:true, form:{hidden:true}}
     },
 
@@ -24,7 +26,7 @@ var BSchema = new Schema({
     //
     // The field has a custom directive to prepend (which is defined in /app/demo/directives/bespoke-field.js)
     email: {type: String, index:true, noSearch: true, form:{directive: 'email-field'}},
-    weight: {type : Number, min:5, max:300, form:{label:"Approx Weight (lbs)",  // this label overrides the one generated from the field name
+    weight: {type : Number, min:5, max:300, form:{label:'Approx Weight (lbs)',  // this label overrides the one generated from the field name
         step:5}},                         // input uses the min and max from the Mongoose schema, and the step from the form object
 
     eyeColour: {
@@ -32,12 +34,12 @@ var BSchema = new Schema({
         enum:['Blue','Brown','Green','Hazel'],
         required: false,
         form:{
-            placeHolder:"Select eye colour",   // Placeholders work in a combo box
+            placeHolder:'Select eye colour',   // Placeholders work in a combo box
             select2: {},
             help:'This control has had an event handler added to it (which looks horrid - sorry!).  See post form-input generatio processing section of <a href="/#/forms#client-side-customisation">home page</a> for details.'
         }
     },
-    sex: {type: String, enum:['Male', 'Female'], form:{type:"radio", inlineRadio: true}},
+    sex: {type: String, enum:['Male', 'Female'], form:{type:'radio', inlineRadio: true}},
     dateOfBirth: Date,
     accepted: {type: Boolean, required: true, form:{helpInline: 'Did we take them?'}, list:{}},   // helpInline displays to the right of the input control
     interviewScore:{type:Number,form:{hidden:true},list:{}},  // this field does not appear on the form or listings, even though list is defined - not sure about this
@@ -49,16 +51,16 @@ var BSchema = new Schema({
 });
 
 BSchema.pre('save', function(next) {
-    // Check for rude words (well, the word "rude", actually) to show an error
+    // Check for rude words (well, the word 'rude', actually) to show an error
 
     if (this.freeText && this.freeText.indexOf('rude') !== -1) {
-        return next(new Error("Wash your mouth!  You must not use rude words."));
+        return next(new Error('Wash your mouth!  You must not use rude words.'));
     }
     return next();
 });
 
 var B;
-try {B = mongoose.model('B') } catch(e) {B = mongoose.model('B', BSchema)}
+try {B = mongoose.model('B');} catch(e) {B = mongoose.model('B', BSchema);}
 
 // Alternative form schemas can be defined as shown below
 BSchema.statics.form = function(layout) {
@@ -67,10 +69,10 @@ BSchema.statics.form = function(layout) {
         case 'justnameandpostcode' :
             // the object overrides the form object in the schema
             formSchema = {
-                surname:{label:"Family Name"},
-                "address.postcode":{},
+                surname:{label:'Family Name'},
+                'address.postcode':{},
                 accepted: {},
-                "address.country": {hidden:false}
+                'address.country': {hidden:false}
             };
             break;
         case 'ipAddress' :   // used in testing
@@ -98,8 +100,8 @@ BSchema.statics.report = function(report) {
     switch (report) {
         case 'allVisible' :
             reportSchema = {
-                pipeline: [{$group:{_id:"$accepted",count:{"$sum":1}}}],
-                title: "Numbers of Applicants By Status"
+                pipeline: [{$group:{_id:'$accepted',count:{'$sum':1}}}],
+                title: 'Numbers of Applicants By Status'
             };
             break;
     }

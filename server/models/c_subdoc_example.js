@@ -1,11 +1,13 @@
+'use strict';
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var CSchema = new Schema({
     surname: {type: String, list:{}},
     forename:  {type: String, list:true},
-    weight: {type : Number, form:{label:"Weight (lbs)"}},
-    hairColour: {type: String, enum:['Black','Brown','Blonde','Bald'], required: true, form:{placeHolder:"Select hair colour (required)", select2: {}}},  // Required combo has appropriate styling
+    weight: {type : Number, form:{label:'Weight (lbs)'}},
+    hairColour: {type: String, enum:['Black','Brown','Blonde','Bald'], required: true, form:{placeHolder:'Select hair colour (required)', select2: {}}},  // Required combo has appropriate styling
     dateOfBirth: Date,
     accepted: Boolean,
     passwordHash: {type:String, secure:true, forms:{hidden:true}},
@@ -17,6 +19,6 @@ var CSchema = new Schema({
 });
 
 var C;
-try {C = mongoose.model('C') } catch(e) {C = mongoose.model('C', CSchema)}
+try {C = mongoose.model('C');} catch(e) {C = mongoose.model('C', CSchema);}
 
 module.exports = C;

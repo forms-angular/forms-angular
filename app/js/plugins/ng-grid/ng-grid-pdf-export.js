@@ -1,3 +1,5 @@
+/* global jsPDF: false */
+'use strict';
 /*
     An early version of this was submitted as a PR to the nggrid project.  This version depends on jspdf having footers
     (which was also submitted as a PR to that project).  If jspdf PR is accepted then we can submit this to nggrid again,
@@ -17,9 +19,9 @@ function ngGridPdfExportPlugin (options) {
         self.services = services;
 
         if (!options.inhibitButton) {
-            var fp = grid.$root.find(".ngFooterPanel");
+            var fp = grid.$root.find('.ngFooterPanel');
             var pdfDataLinkPrevious = grid.$root.find('.ngFooterPanel .pdf-data-link-span');
-            if (pdfDataLinkPrevious != null) {pdfDataLinkPrevious.remove() ; }
+            if (pdfDataLinkPrevious !== null) {pdfDataLinkPrevious.remove() ; }
             var pdfDataLinkHtml = '<button class="pdf-data-link-span">PDF Export</button>' ;
             fp.append(pdfDataLinkHtml);
             fp.on('click', function() {
