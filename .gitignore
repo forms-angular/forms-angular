@@ -33,14 +33,12 @@ pids
 logs
 results
 app/bower_components
-js-build
+bower-build
 test.js
 
 npm-debug.log
 
 node_modules/*
-
-js-build/forms-angular.js
 
 .vagrant
 Vagrantfile
