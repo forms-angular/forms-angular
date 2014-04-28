@@ -577,10 +577,12 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
 
                     function doATranslate(column, theTranslation) {
                         results.runAggregation.forEach(function (resultRow) {
-                            var thisTranslation = _.find(theTranslation.translations, function (option) {
-                                return resultRow[column.field].toString() === option.value.toString()
-                            });
-                            resultRow[column.field] = thisTranslation.display;
+                            if (resultRow[column.field]) {
+                                var thisTranslation = _.find(theTranslation.translations, function (option) {
+                                    return resultRow[column.field].toString() === option.value.toString()
+                                });
+                                resultRow[column.field] = thisTranslation.display;
+                            }
                         })
                     }
 
