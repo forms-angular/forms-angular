@@ -14,8 +14,7 @@ This repo includes:
 Documentation: http://www.forms-angular.org
 
 To build, clone the repo, then do:
-- npm install
-- bower install
+- grunt install (or 'npm install', then 'bower install')
 - grunt
 
 To run the demo website, do:

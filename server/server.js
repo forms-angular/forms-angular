@@ -223,6 +223,7 @@ slurpModelsFrom('models/*.js')
 
 app.listen(config.port);
 console.log(chalk.cyan('Express server listening on port %d in %s mode'), config.port, env);
+console.log(chalk.cyan('Attached to database %s'), config.db);
 
 
 

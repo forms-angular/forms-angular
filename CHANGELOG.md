@@ -79,7 +79,7 @@ needs to be changed to tab.
 * Changes form-input directive so that it expects
 ```
     <form-input schema="formSchema">
-```    
+```
 instead of
 ```
     <form-input ng-repeat="field in formSchema" info={{field}}>

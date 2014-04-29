@@ -1,7 +1,13 @@
 module.exports = function(config) {
     config.set({
+        // base path that will be used to resolve all patterns (eg. files, exclude)
         basePath: '../',
+
+        // frameworks to use
+        // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['jasmine'],
+
+        // list of files / patterns to load in the browser
         files: [
             "app/bower_components/jquery/jquery.js",
             "app/bower_components/jquery-ui/ui/jquery-ui.js",
@@ -27,14 +33,28 @@ module.exports = function(config) {
             'test/unit/**/*.js'
         ],
 
+        // list of files to exclude
+        exclude: [
+        ],
+
+        // preprocess matching files before serving them to the browser
+        // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        //preprocessors: %PREPROCESSORS%
+
+        // enable / disable watching file and executing tests whenever any file changes
         autoWatch : true,
 
         browsers : ['PhantomJS'],
+
+        // test results reporter to use
+        // possible values: 'dots', 'progress'
+        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
 
         // use dots reporter, as travis terminal does not support escaping sequences
         // possible values: 'dots', 'progress'
         // CLI --reporters progress
         reporters: ['progress', 'junit'],
+
 
         junitReporter:  {
             outputFile: 'test_out/unit.xml',

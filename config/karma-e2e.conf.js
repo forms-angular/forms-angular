@@ -7,9 +7,9 @@ module.exports = function(config) {
         ],
         autoWatch : true,
         browsers : ['PhantomJS'],
-        urlRoot : '/__testacular/', // Stop Testacular server serving it's own page rather than proxing the request.
+        urlRoot : '/__karma/', // Stop Testacular server serving it's own page rather than proxing the request.
         proxies : {
-          '/': 'http://localhost:3001/'
+          '/': 'http://localhost:3002/'
         },
         junitReporter : {
           outputFile:
