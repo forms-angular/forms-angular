@@ -13,9 +13,14 @@ This repo includes:
 
 Documentation: http://www.forms-angular.org
 
-This repo is multi-purpose: it contains the development environment for forms-angular
- and the web site that is used to demonstrate and document the framework.  We have
- tried splitting it up, but we weren't happy with the resulting workflow!
+To build, clone the repo, then do:
+- npm install
+- bower install
+- grunt
+
+To run the demo website, do:
+- node server/server
+
 
 
 
