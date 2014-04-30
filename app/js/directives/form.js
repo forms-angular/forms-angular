@@ -135,7 +135,7 @@ formsAngular
                             }
                             break;
                         case 'fileuploader':
-                          value = '<ng-upload-form url="//jquery-file-upload.appspot.com/" auto-upload="true" size-limit="500000"></ng-upload-form>';
+                          value = '<ng-upload-form url="/file/upload" auto-upload="true" size-limit="50000000000" name="'+fieldInfo.name+'"></ng-upload-form>';
                           break;
                         case 'link' :
                             value = '<a ng-href="/#!/' + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';

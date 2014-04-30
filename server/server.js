@@ -10,16 +10,21 @@ var express = require('express')
   , mongoose = require('mongoose')
   , exec = require('child_process').exec
   , https = require('https')
+  , multer = require('multer')
   , grid = require('gridfs-uploader');
 
 var env = process.env.NODE_ENV || 'development';
 var app = module.exports = express();
+
 
 // Configuration
 app.use(bodyParser({
   uploadDir: __dirname + '/../app/tmp',
   keepExtensions: true
 }));
+
+app.post('/file/upload', multer());
+
 app.get('*', handleCrawlers);
 app.use(methodOverride());
 if (app.get('env') === 'production') app.use(express.static(__dirname + '/../dist'));
@@ -57,12 +62,75 @@ if ('production' == env) {
 } else {
   app.use(errorHandler({ dumpExceptions: true, showStack: true }));
   mongoose.connect('mongodb://localhost/forms-ng_dev');
-  var g = new grid(mongoose.mongo);
-  g.db = mongoose.connection.db;
-/*  g.putUniqueFile(__dirname + '/../bower.json', 'bower.json', null, function (err, result) {
-    console.log(result);
-  });*/
 }
+
+var g = new grid(mongoose.mongo);
+g.db = mongoose.connection.db;
+
+var fileSchema =  new mongoose.Schema({
+  // Definition of the filename
+  filename: { type: String, list: true, required: true, trim: true, index: true },
+  // Define the content type
+  contentType: { type: String, trim: true, lowercase: true, required: true},
+  // length data
+  length: {type: Number, "default": 0, form: {readonly: true}},
+  chunkSize: {type: Number, "default": 0, form: {readonly: true}},
+  // upload date
+  uploadDate: { type: Date, "default": Date.now, form: {readonly: true}},
+
+  // additional metadata
+  metadata: {
+    filename: { type: String, trim: true, required: true},
+    test: { type: String, trim: true }
+  },
+  md5: { type: String, trim: true }
+}, {safe: false, collection: 'fs.files'});
+
+var fileModel = mongoose.model('file', fileSchema);
+
+app.post('/file/upload', function(req, res) {
+  // multipart upload library only for the needed paths
+  if(req.files) {
+    g.putUniqueFile(req.files.files.path, req.files.files.originalname, null, function (err, result) {
+      var dbResult;
+      var files = [];
+      if(err && err.name == 'NotUnique') {
+        dbResult = err.result;
+      } else if(err) {
+        res.send(500);
+      } else {
+        dbResult = result;
+      }
+      var id = dbResult._id.toString();
+      var result = {
+        name: dbResult.filename,
+        size: dbResult.length,
+        url: '/file/'+id,
+        thumbnailUrl: '/file/'+id,
+        deleteUrl: '/file/'+id,
+        deleteType: 'DELETE',
+        result: dbResult
+      }
+      files.push(result);
+      res.send({files: files});
+    });
+  }
+});
+
+app.get('/file/:id', function(req, res) {
+  var fileStream = g.getFileStream(req.params.id);
+  fileStream.pipe(res);
+});
+
+app.delete('/file/:id', function(req, res) {
+  g.deleteFile(req.params.id, function(err, result) {
+    if(err) {
+      res.send(500);
+    } else {
+      res.send();
+    }
+  });
+});
 
 var ensureAuthenticated = function (req, res, next) {
   // Here you can do authentication using things like

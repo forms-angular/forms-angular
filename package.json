@@ -18,6 +18,7 @@
     "gridfs-uploader": ">=0.0.1",
     "body-parser": ">=0.0.1",
     "method-override": ">=0.0.1",
+    "multer": ">=0.0.1",
     "errorhandler": ">=0.0.1"
   },
   "scripts": {

@@ -370,6 +370,8 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
 
                         if (typeType === "string") {
                             realType.instance = (Date.parse(type) !== NaN) ? "Date" : "String";
+                        } else if(typeType === 'undefined' && realType.options.form.type == 'fileuploader') {
+                            realType.instance = 'file';
                         } else {
                             realType.instance = typeType;
                         }
