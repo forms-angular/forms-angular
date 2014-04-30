@@ -4,7 +4,7 @@
         surname: "Smith00",
         sex: 'M',
         bribeAmount: 123,
-        forename:  "John00"        
+        forename:  "John00"
     },
     {
         _id : ObjectId("51c583d5b9991226db418f01"),

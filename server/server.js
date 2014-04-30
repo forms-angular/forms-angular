@@ -14,6 +14,7 @@ var express = require('express')
     , Q = require('q')
     , bodyParser = require('body-parser')
     , methodOverride = require('method-override')
+    , errorHandler = require('errorhandler')
     , dataForm = require('./lib/data_form')
 ;
 
@@ -23,7 +24,10 @@ var cfg = {
     development: {
         name: 'Development',
         port: process.env.PORT || 3001,
-        db: 'mongodb://192.168.1.7/forms-ng_dev',
+        db: {
+            host: '192.168.1.7',
+            name: 'forms-ng_dev'
+        },
         statics: [
             '../app'
         ],
@@ -38,7 +42,10 @@ var cfg = {
     },
     test: {
         name: 'Test',
-        db: 'mongodb://192.168.1.7/forms-ng_test',
+        db: {
+            host: '192.168.1.7',
+            name: 'forms-ng_dev'
+        },
         port: process.env.PORT || 3002,
         statics: [
             '../app'
@@ -55,7 +62,10 @@ var cfg = {
     },
     production: {
         name: 'Production',
-        db: 'mongodb://192.168.1.7/forms-ng_prod',
+        db: {
+            host: '192.168.1.7',
+            name: 'forms-ng_dev'
+        },
         port: process.env.PORT || 8090,
         statics: [
             '../dist',
@@ -76,6 +86,10 @@ var config = cfg[env];
 var app = module.exports = express();
 
 
+function mongooseConnectionString (dbconfig) {
+    return 'mongodb://' + dbconfig.host + '/' + dbconfig.name;
+}
+
 function addStatics (app) {
     config.statics.forEach( function (entry) {
         console.log(chalk.cyan('adding static path %s'), entry);
@@ -91,6 +105,7 @@ function copySchemas () {
         path.join(__dirname, '../app/code/')
     ].join(' ');
 
+    console.log(chalk.cyan('Copying schemas using command "%s"'), cmd);
     exec(cmd, function (error, stdout, stderr) {
         if (error !== null) {
             console.log('Error copying models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
@@ -183,9 +198,10 @@ var models = [];
 
 slurpModelsFrom('models/*.js')
     .then(function (success) {
+        console.log(chalk.cyan('Seeding static models:'));
         var DataFormHandler = new dataForm(app, config.dfhConfig);
         models.forEach(function (model) {
-            console.log(chalk.yellow('DataForm resource: %s'), model.name);
+            console.log(chalk.yellow('\tDataForm resource: %s'), model.name);
             DataFormHandler.addResource(model.name, model.model);
         });
     }, function (error) {
@@ -198,28 +214,40 @@ slurpModelsFrom('models/*.js')
 
         addStatics(app);
         copySchemas();
-        app.use(express.errorHandler(config.errorConfig));
-        mongoose.connect(config.db);
+        app.use(errorHandler(config.errorConfig));
+        mongoose.connect(mongooseConnectionString(config.db));
 
-        if (env === 'test') {
+        if (env == 'test') {
             var data_path = path.join(__dirname, '../test/e2edata');
+            console.log(chalk.cyan('Seeding database with %s'), data_path);
             var data_files = fs.readdirSync(data_path);
             data_files.forEach(function (file) {
                 var fname = data_path+'/'+file;
                 if (fs.statSync(fname).isFile()) {
-                    exec('mongoimport --db forms-ng_test --drop --collection '+ file.slice(0,1)+'s --jsonArray < ' + fname,
-                        function (error, stdout, stderr) {
-                            if (error !== null) {
-                                console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
-                            }
-                        });
+                    var cmd = [
+                        'mongoimport',
+                        '--host', config.db.host,
+                        '--db', config.db.name,
+                        '--drop',
+                        '--collection', file.slice(0,1)+'s',
+                        '--jsonArray <', fname
+                    ].join(' ');
+                    exec(cmd, function (error, stdout, stderr) {
+                        if (error !== null) {
+                            console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
+                        }
+                    });
                 }
             });
         }
 
     }, function (error) {
         console.log(error);
-    });
+    })
+    .catch(function (error) {
+        console.log(error);
+    })
+    .done();
 
 app.listen(config.port);
 console.log(chalk.cyan('Express server listening on port %d in %s mode'), config.port, env);
