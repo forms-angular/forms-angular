@@ -1,5 +1,5 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window','urlService',
-        function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window','urlService', 'fileUpload',
+        function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService, fileUpload) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -19,6 +19,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.select2List = [];
     $scope.page_size = 20;
     $scope.pages_loaded = 0;
+    $scope.filequeue = fileUpload.fieldData;
+
     angular.extend($scope, $locationParse($location.$$path));
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';

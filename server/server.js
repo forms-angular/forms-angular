@@ -118,18 +118,31 @@ app.post('/file/upload', function(req, res) {
 });
 
 app.get('/file/:id', function(req, res) {
-  var fileStream = g.getFileStream(req.params.id);
-  fileStream.pipe(res);
+  try {
+    g.getFileStream(req.params.id, function(err, stream) {
+      if(stream) {
+        stream.pipe(res);
+      } else {
+        res.send(400);
+      }
+    });
+  } catch(e) {
+    res.send(400);
+  }
 });
 
 app.delete('/file/:id', function(req, res) {
-  g.deleteFile(req.params.id, function(err, result) {
-    if(err) {
-      res.send(500);
-    } else {
-      res.send();
-    }
-  });
+  try{
+    g.deleteFile(req.params.id, function(err, result) {
+      if(err) {
+        res.send(500);
+      } else {
+        res.send();
+      }
+    });
+  } catch(e) {
+    res.send(500);
+  }
 });
 
 var ensureAuthenticated = function (req, res, next) {
@@ -171,6 +184,30 @@ models_files.forEach(function (file) {
   }
 });
 
+// If you want to use HTML5Mode uncomment the section below and modify
+// app/demo.js so that the call to urlService.setOptions includes {html5Mode: true}
+
+//    // Serve the static files.  This kludge is to support dev and production mode - for a better way to do it see
+//    // https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
+//    app.get(/^\/(scripts|partials|bower_components|demo|img|js)\/(.+)$/,function(req,res,next) {
+//        fs.realpath(__dirname + '/../app/' + req.params[0] + '/' + req.params[1], function (err, result) {
+//            if (err) {
+//                fs.realpath(__dirname + '/../dist/' + req.params[0] + '/' + req.params[1], function (err, result) {
+//                    if (err) {
+//                        throw err;
+//                    } else {
+//                        res.sendfile(result);
+//                    }
+//                });
+//            } else {
+//                res.sendfile(result);
+//            }
+//        });
+//    });
+//    app.all('/*', function(req, res, next) {
+//        // Just send the index.html for other files to support HTML5Mode
+//        res.sendfile('index.html', { root: __dirname + '/../app/' });
+//    });
 var port;
 
 port = process.env.PORT || 3001;
