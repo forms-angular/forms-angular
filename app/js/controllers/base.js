@@ -1,5 +1,5 @@
-formsAngular.controller('BaseCtrl', ['fileUpload', '$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window',
-        function (fileUpload, $scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window','urlService',
+        function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -19,14 +19,12 @@ formsAngular.controller('BaseCtrl', ['fileUpload', '$scope', '$routeParams', '$l
     $scope.select2List = [];
     $scope.page_size = 20;
     $scope.pages_loaded = 0;
-    $scope.filequeue = fileUpload.fieldData;
-
     angular.extend($scope, $locationParse($location.$$path));
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
-    $scope.getId = function (obj) {
-        return obj._id;
+    $scope.generateEditUrl = function(obj) {
+        return urlService.buildUrl($scope.modelName + '/' + $scope.formPlusSlash + obj._id + '/edit');
     };
 
     $scope.walkTree = function (object, fieldname, element) {
@@ -413,7 +411,7 @@ formsAngular.controller('BaseCtrl', ['fileUpload', '$scope', '$routeParams', '$l
 
     // Conventional view is that this should go in a directive.  I reckon it is quicker here.
     $scope.updateDataDependentDisplay = function (curValue, oldValue, force) {
-        var depends, i, j, k, id, element;
+        var depends, i, j, k, element;
 
         var forceNextTime;
         for (var field in $scope.dataDependencies) {

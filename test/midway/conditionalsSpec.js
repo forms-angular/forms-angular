@@ -1,4 +1,4 @@
-describe('Condition display', function() {
+ddescribe('Condition display', function() {
 
     var $httpBackend;
 
@@ -36,7 +36,7 @@ describe('Condition display', function() {
     });
 
     xdescribe('shows simple variable value field', function () {
-
+// Can't get this to work - the element isn't there in updateDataDependentDisplay
         var scope, ctrl;
 
         beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location, $compile) {

@@ -18,7 +18,7 @@ module.exports = function(config) {
             'app/bower_components/angular-mocks/angular-mocks.js',
             'app/bower_components/angular-elastic/elastic.js',
             'app/bower_components/jspdf/dist/jspdf.source.js',
-            'app/bower_components/ckeditor/ckeditor.js',
+            'app/bower_components/ng-ckeditor/libs/ckeditor/ckeditor.js',
             'app/bower_components/ng-ckeditor/ng-ckeditor.js',
             'app/bower_components/angular-jqfile-upload/dist/uploader.js',
             'app/js/forms-angular.js',
