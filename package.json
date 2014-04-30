@@ -10,11 +10,16 @@
   },
   "dependencies": {
     "bower": ">= 1.x",
-    "express": "~3.5",
+    "express": ">=4.0",
     "mongoose": "~3.8",
     "underscore": "~1.6",
     "node.extend": "~1.0",
-    "async": "~0.2"
+    "async": "~0.2",
+    "gridfs-uploader": ">=0.0.1",
+    "body-parser": ">=0.0.1",
+    "method-override": ">=0.0.1",
+    "multer": ">=0.0.1",
+    "errorhandler": ">=0.0.1"
   },
   "scripts": {
     "start": "node ./server/server.js",

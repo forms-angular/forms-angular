@@ -10,5 +10,6 @@ var formsAngular = angular.module('formsAngular', [
     , 'infinite-scroll'
     , 'monospaced.elastic'
     , 'ngCkeditor'
+    , 'uploadModule'
 ]);
 

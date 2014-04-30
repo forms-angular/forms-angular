@@ -1,5 +1,5 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window','urlService',
-        function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window','urlService', 'fileUpload',
+        function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService, fileUpload) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -19,6 +19,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.select2List = [];
     $scope.page_size = 20;
     $scope.pages_loaded = 0;
+    $scope.filequeue = fileUpload.fieldData;
+
     angular.extend($scope, $locationParse($location.$$path));
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
@@ -76,7 +78,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     var handleFieldType = function (formInstructions, mongooseType, mongooseOptions) {
-
             var select2ajaxName;
             if (mongooseType.caster) {
                 formInstructions.array = true;
@@ -237,6 +238,17 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 }
             } else if (mongooseType.instance == 'boolean') {
                 formInstructions.type = 'checkbox';
+
+            } else if (mongooseOptions.form.type == 'fileuploader') {
+              if(mongooseOptions.form.name) {
+                $scope.$watchCollection('filequeue.'+mongooseOptions.form.name, function(newvar, oldvar) {
+                  $scope.record[mongooseOptions.form.name] = newvar;
+                });
+
+                $scope.$watchCollection('record.'+mongooseOptions.form.name, function(newvar, oldvar) {
+                  $scope.filequeue[mongooseOptions.form.name] = newvar;
+                });
+              }
             } else if (mongooseType.instance == 'Number') {
                 formInstructions.type = 'number';
                 if (mongooseOptions.min) {
@@ -248,7 +260,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (formInstructions.step) {
                     formInstructions.add = 'step="' + formInstructions.step + '" ' + (formInstructions.add || '');
                 }
+
+            }else if(mongooseType.instance == 'file') {
+              formInstructions.type = 'fileuploader';
             } else {
+              console.log(mongooseType);
                 throw new Error("Field " + formInstructions.name + " is of unsupported type " + mongooseType.instance);
             }
             if (mongooseOptions.required) {
@@ -1030,7 +1046,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
 // Reverse the process of convertToAngularModel
     var convertToMongoModel = function (schema, anObject, prefixLength) {
-
         for (var i = 0; i < schema.length; i++) {
             var fieldname = schema[i].name.slice(prefixLength);
             var thisField = $scope.getListData(anObject, fieldname);
