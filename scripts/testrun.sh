@@ -3,9 +3,9 @@
 BROWSERS=PhantomJS
 
 KARMA=./node_modules/karma/bin/karma
-MOCHA=./node_modules/mocha/bin/mocha
+#MOCHA=./node_modules/mocha/bin/mocha
 
-$KARMA start config/karma.conf.js --no-auto-watch --single-run --reporters=dots,junit --browsers=$BROWSERS
+$KARMA start config/test/karma.conf.js --no-auto-watch --single-run --reporters=dots,junit --browsers=$BROWSERS
 #$KARMA start config/karma.midway.conf.js --no-auto-watch --single-run --reporters=dots,junit --browsers=$BROWSERS
 
 # A=`lsof -Pnl +M -i4 | grep '3001'`
