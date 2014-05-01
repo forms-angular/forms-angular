@@ -1,4 +1,4 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window', '$state', '$stateParse',
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window', '$state', '$stateParse', 'urlService', 'fileUpload',
     function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, $state, $stateParse, urlService, fileUpload) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
@@ -36,7 +36,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.getId = function (obj) {
       return obj._id;
     }
-    
+
     $scope.walkTree = function (object, fieldname, element) {
         // Walk through subdocs to find the required key
         // for instance walkTree(master,'address.street.number',element)
