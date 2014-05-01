@@ -3,7 +3,12 @@
 
 var fang = angular.module('formsAngular');
 
-fang.provider('formRoutes', ['$routeProvider',function ($routeProvider) {
+
+fang.provider( 'formRoutes',
+[
+    '$routeProvider'
+,
+function ($routeProvider) {
     return {
         setRoutes : function (appRoutes, defaultRoute) {
             // Set up the application specific routes
@@ -15,12 +20,12 @@ fang.provider('formRoutes', ['$routeProvider',function ($routeProvider) {
             $routeProvider.
                 when('/analyse/:model/:reportSchemaName', {templateUrl: 'partials/base-analysis.html'}).
                 when('/analyse/:model', {templateUrl: 'partials/base-analysis.html'}).
-                when('/:model/:id/edit', {templateUrl: 'partials/base-edit.html'}).
-                when('/:model/new', {templateUrl: 'partials/base-edit.html'}).
-                when('/:model', {templateUrl: 'partials/base-list.html'}).
-                when('/:model/:form/:id/edit', {templateUrl: 'partials/base-edit.html'}).  // non default form (different fields etc)
-                when('/:model/:form/new', {templateUrl: 'partials/base-edit.html'}).       // non default form (different fields etc)
-                when('/:model/:form', {templateUrl: 'partials/base-list.html'}).           // list page with links to non default form
+                when('/model/:model/:id/edit', {templateUrl: 'partials/base-edit.html'}).
+                when('/model/:model/new', {templateUrl: 'partials/base-edit.html'}).
+                when('/model/:model', {templateUrl: 'partials/base-list.html'}).
+                when('/model/:model/:form/:id/edit', {templateUrl: 'partials/base-edit.html'}).  // non default form (different fields etc)
+                when('/model/:model/:form/new', {templateUrl: 'partials/base-edit.html'}).       // non default form (different fields etc)
+                when('/model/:model/:form', {templateUrl: 'partials/base-list.html'}).           // list page with links to non default form
                 otherwise({redirectTo: defaultRoute});
         },
         $get : function() {

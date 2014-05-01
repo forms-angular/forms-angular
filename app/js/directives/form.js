@@ -2,6 +2,23 @@
 
 var fang = angular.module('formsAngular');
 
+// Directive to generate markup for bootstrap forms
+//
+//  Horizontal (default)
+//  <div class="control-group">
+//      <label class="control-label" for="inputEmail">Email</label>
+//      <div class="controls">
+//          <input type="text" id="inputEmail" placeholder="Email">
+//      </div>
+//  </div>
+//
+//  Vertical
+//  <label>Label name</label>
+//  <input type="text" placeholder="Type something…">
+//  <span class="help-block">Example block-level help text here.</span>
+//
+//  Inline
+//  <input type="text" class="input-small" placeholder="Email">
 fang.directive('formInput',
 [
     '$compile', '$rootScope', 'utils', '$filter', 'urlService'
@@ -10,34 +27,17 @@ function ($compile, $rootScope, utils, $filter, urlService) {
     return {
         restrict: 'EA',
         link: function (scope, element, attrs) {
-//                generate markup for bootstrap forms
-//
-//                Horizontal (default)
-//                <div class="control-group">
-//                    <label class="control-label" for="inputEmail">Email</label>
-//                    <div class="controls">
-//                        <input type="text" id="inputEmail" placeholder="Email">
-//                    </div>
-//                </div>
-//
-//                Vertical
-//                <label>Label name</label>
-//                <input type="text" placeholder="Type something…">
-//                <span class="help-block">Example block-level help text here.</span>
-//
-//                Inline
-//                <input type="text" class="input-small" placeholder="Email">
 
             var subkeys = []
-                , tabsSetup = false;
+            ,   tabsSetup = false;
 
             var isHorizontalStyle = function (formStyle) {
                 return (!formStyle || formStyle === "undefined" || ['vertical','inline'].indexOf(formStyle) === -1);
             };
 
-            var generateNgShow = function(showWhen, model) {
+            var generateNgShow = function (showWhen, model) {
 
-                function evaluateSide(side) {
+                var evaluateSide = function (side) {
                     var result = side;
                     if (typeof side === "string") {
                         if (side.slice(0, 1) === '$') {
@@ -45,12 +45,12 @@ function ($compile, $rootScope, utils, $filter, urlService) {
                             var parts = side.slice(1).split('.');
                             if (parts.length > 1) {
                                 var lastBit = parts.pop();
-                                result += parts.join('.')+'[$index].' + lastBit;
+                                result += parts.join('.') + '[$index].' + lastBit;
                             } else {
                                 result += side.slice(1);
                             }
                         } else {
-                            result = "'"+side+"'";
+                            result = "'" + side + "'";
                         }
                     }
                     return result;
@@ -389,8 +389,8 @@ function ($compile, $rootScope, utils, $filter, urlService) {
                 return template;
             };
 
-//              var processInstructions = function (instructionsArray, topLevel, groupId) {
-//  removing groupId as it was only used when called by containerType container, which is removed for now
+            // var processInstructions = function (instructionsArray, topLevel, groupId) {
+            // removing groupId as it was only used when called by containerType container, which is removed for now
             var processInstructions = function (instructionsArray, topLevel, options) {
                 var result = '';
                 if (instructionsArray) {
@@ -467,9 +467,9 @@ function ($compile, $rootScope, utils, $filter, urlService) {
                             }
                         }
                         if (callHandleField) {
-//                            if (groupId) {
-//                                scope['showHide' + groupId] = true;
-//                            }
+                            // if (groupId) {
+                            //     scope['showHide' + groupId] = true;
+                            // }
                             result += handleField(info, options);
                         }
                     }
@@ -558,7 +558,6 @@ function ($compile, $rootScope, utils, $filter, urlService) {
                         }
                     }
                 }
-
             }, true);
 
             var addAll = function (type, additionalClasses, options) {

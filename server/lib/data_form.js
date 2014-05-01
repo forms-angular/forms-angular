@@ -96,8 +96,17 @@ DataForm.prototype.registerRoutes = function () {
     this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entityList()]));
 };
 
-//    Add a resource, specifying the model and any options.
-//    Models may include their own options, which means they can be passed through from the model file
+/*
+*   Add a resource to the resource collection
+*   A resource is:
+*       {
+*           resource_name: string identifier
+*           model: <mongoose model object>
+*           options: a hash of options
+*       }
+*   Models may include their own options, which means they can be passed through from the model file.
+*   See models/b_using_options.js for an example.
+*/
 DataForm.prototype.addResource = function (resource_name, model, options) {
     var resource = {
         resource_name: resource_name,
@@ -321,18 +330,13 @@ DataForm.prototype.searchAll = function (req, res) {
     }, this);
 };
 
+/*
+*/
 DataForm.prototype.models = function (req, res, next) {
-
-
     var that = this;
-
     return function (req, res, next) {
         res.send(that.resources);
     };
-
-    // return _.bind(function (req, res, next) {
-    //     res.send(this.resources)
-    // }, this);
 };
 
 DataForm.prototype.renderError = function (err, redirectUrl, req, res) {

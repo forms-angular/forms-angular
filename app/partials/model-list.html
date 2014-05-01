@@ -1,0 +1,10 @@
+<div>
+    <table class="table table-striped table-condensed">
+        <tr ng-repeat="model in models | orderBy:'resource_name'">
+            <td>{{model.resource_name | titleCase}}</td>
+            <td><a href="/code/{{model.resource_name}}.js">View schema</a></td>
+            <td><a ng-href="{{newUrl(model.resource_name)}}">New</a></td>
+            <td><a ng-href="{{listUrl(model.resource_name)}}">List</a></td>
+        </tr>
+    </table>
+</div>

@@ -3,7 +3,9 @@
 
 var fang = angular.module('formsAngular');
 
-fang.factory('$data', [function() {
+fang.factory( '$data',
+[
+function() {
 
     var sharedData = {
         record: {},

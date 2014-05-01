@@ -12,6 +12,7 @@ node_modules
 .bower-tmp
 .tmp
 
+
 dist
 
 app/e2etest
@@ -20,6 +21,7 @@ app/code
 app/partials/get-started.html
 app/demo/css
 app/css
+docs
 
 npm-build/lib
 

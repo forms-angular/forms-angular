@@ -389,8 +389,8 @@ function ($compile, $rootScope, utils, $filter, urlService) {
                 return template;
             };
 
-//              var processInstructions = function (instructionsArray, topLevel, groupId) {
-//  removing groupId as it was only used when called by containerType container, which is removed for now
+            // var processInstructions = function (instructionsArray, topLevel, groupId) {
+            // removing groupId as it was only used when called by containerType container, which is removed for now
             var processInstructions = function (instructionsArray, topLevel, options) {
                 var result = '';
                 if (instructionsArray) {
