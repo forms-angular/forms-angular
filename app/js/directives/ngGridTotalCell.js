@@ -1,5 +1,15 @@
-var COL_FIELD = /COL_FIELD/g;
-formsAngular.directive('ngTotalCell', ['$compile', '$domUtilityService', function ($compile, domUtilityService) {
+'use strict';
+
+var fang = angular.module('formsAngular');
+
+fang.directive( 'ngTotalCell',
+[
+    '$domUtilityService'
+,
+function (domUtilityService) {
+
+    var COL_FIELD = /COL_FIELD/g;
+
     var ngTotalCell = {
         scope: false,
         compile: function() {

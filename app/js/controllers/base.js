@@ -1,5 +1,13 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window','urlService',
-        function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService) {
+'use strict';
+
+var fang = angular.module('formsAngular');
+
+fang.controller( 'BaseCtrl',
+[
+    '$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window','urlService'
+,
+function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService) {
+
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -376,9 +384,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         return display;
     };
 
-// TODO: Think about nested arrays
-// This doesn't handle things like :
-// {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
+    // TODO: Think about nested arrays
+    // This doesn't handle things like :
+    // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
     $scope.getListData = function (record, fieldName) {
         var nests = fieldName.split('.');
         for (var i = 0; i < nests.length; i++) {
@@ -575,7 +583,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             });
     };
 
-    function generateListQuery() {
+    var generateListQuery = function () {
         var queryString = '?l=' + $scope.page_size
             , addParameter = function (param, value) {
                 if (value && value !== '') {
@@ -589,7 +597,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         addParameter('s', $scope.pages_loaded * $scope.page_size);
         $scope.pages_loaded++;
         return queryString;
-    }
+    };
 
     $scope.scrollTheList = function () {
         $http.get('/api/' + $scope.modelName + generateListQuery()).success(function (data) {
@@ -941,7 +949,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
 // Split a field name into the next level and all following levels
-    function splitFieldName(aFieldName) {
+    var splitFieldName = function (aFieldName) {
         var nesting = aFieldName.split('.'),
             result = [nesting[0]];
 
@@ -950,9 +958,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         }
 
         return result;
-    }
+    };
 
-    function updateObject(aFieldName, portion, fn) {
+    var updateObject = function (aFieldName, portion, fn) {
         var fieldDetails = splitFieldName(aFieldName);
 
         if (fieldDetails.length > 1) {
@@ -961,9 +969,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             var theValue = portion[fieldDetails[0]];
             portion[fieldDetails[0]] = fn((typeof theValue === 'Object') ? (theValue.x || theValue.id ) : theValue)
         }
-    }
+    };
 
-    function updateArrayOrObject(aFieldName, portion, fn) {
+    var updateArrayOrObject = function (aFieldName, portion, fn) {
         if (portion !== undefined) {
             if ($.isArray(portion)) {
                 for (var i = 0; i < portion.length; i++) {
@@ -973,7 +981,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 updateObject(aFieldName, portion, fn);
             }
         }
-    }
+    };
 
 
     var simpleArrayNeedsX = function (aSchema) {
@@ -1077,11 +1085,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
 
-// Convert foreign keys into their display for selects
-// Called when the model is read and when the lookups are read
+    // Convert foreign keys into their display for selects
+    // Called when the model is read and when the lookups are read
 
-// No support for nested schemas here as it is called from convertToAngularModel which does that
-    function convertForeignKeys(schemaElement, input, values, ids) {
+    // No support for nested schemas here as it is called from convertToAngularModel which does that
+    var convertForeignKeys = function (schemaElement, input, values, ids) {
         if (schemaElement.array) {
             var returnArray = [];
             for (var j = 0; j < input.length; j++) {
@@ -1093,13 +1101,13 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         } else {
             return convertIdToListValue(input, ids, values, schemaElement.name);
         }
-    }
+    };
 
-// Convert ids into their foreign keys
-// Called when saving the model
+    // Convert ids into their foreign keys
+    // Called when saving the model
 
-// No support for nested schemas here as it is called from convertToMongoModel which does that
-    function convertToForeignKeys(schemaElement, input, values, ids) {
+    // No support for nested schemas here as it is called from convertToMongoModel which does that
+    var convertToForeignKeys = function (schemaElement, input, values, ids) {
         if (schemaElement.array) {
             var returnArray = [];
             for (var j = 0; j < input.length; j++) {
@@ -1109,7 +1117,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         } else {
             return convertListValueToId(input, values, ids, schemaElement.name);
         }
-    }
+    };
 
     var convertIdToListValue = function (id, idsArray, valuesArray, fname) {
         var index = idsArray.indexOf(id);
@@ -1188,8 +1196,13 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     }
 
 }
-])
-.controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+]);
+
+fang.controller( 'SaveChangesModalCtrl',
+[
+    '$scope', '$modalInstance'
+,
+function ($scope, $modalInstance) {
     $scope.yes = function () {
         $modalInstance.close(true);
     };
@@ -1200,3 +1213,15 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $modalInstance.dismiss('cancel');
     };
 }]);
+
+
+
+
+
+
+
+
+
+
+
+

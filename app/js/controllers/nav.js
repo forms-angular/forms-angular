@@ -1,7 +1,11 @@
 'use strict';
 
-formsAngular.controller('NavCtrl',
-        ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService',
+var fang = angular.module('formsAngular');
+
+fang.controller('NavCtrl',
+[
+    '$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService'
+,
 function ($scope, $data, $location, $filter, $locationParse, $controller, urlService) {
 
     $scope.items = [];
@@ -18,7 +22,7 @@ function ($scope, $data, $location, $filter, $locationParse, $controller, urlSer
         }
     };
 
-    function loadControllerAndMenu(controllerName, level) {
+    var loadControllerAndMenu = function (controllerName, level) {
         var locals = {}, addThis;
 
         controllerName += 'Ctrl';
@@ -47,7 +51,7 @@ function ($scope, $data, $location, $filter, $locationParse, $controller, urlSer
                 console.log("Unable to instantiate " + controllerName + " - " + error.message);
             }
         }
-    }
+    };
 
     $scope.$on('$locationChangeSuccess', function (event, newUrl, oldUrl) {
 

@@ -1,7 +1,9 @@
 /* global formsAngular: false */
 'use strict';
 
-formsAngular.provider('formRoutes', ['$routeProvider',function ($routeProvider) {
+var fang = angular.module('formsAngular');
+
+fang.provider('formRoutes', ['$routeProvider',function ($routeProvider) {
     return {
         setRoutes : function (appRoutes, defaultRoute) {
             // Set up the application specific routes

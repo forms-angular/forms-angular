@@ -1,4 +1,13 @@
-formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', '$http', '$location', '$routeParams', function ($locationParse, $filter, $scope, $http, $location, $routeParams) {
+'use strict';
+
+var fang = angular.module('formsAngular');
+
+fang.controller( 'AnalysisCtrl',
+[
+    '$locationParse', '$filter', '$scope', '$http', '$location', '$routeParams'
+,
+function ($locationParse, $filter, $scope, $http, $location, $routeParams) {
+
     var firstTime = true,
         pdfPlugIn = new ngGridPdfExportPlugin({inhibitButton:true}),
         csvPlugIn = new ngGridCsvExportPlugin({inhibitButton:true});

@@ -1,7 +1,9 @@
 /* global formsAngular: false */
 'use strict';
 
-formsAngular.factory('$locationParse', [function() {
+var fang = angular.module('formsAngular');
+
+fang.factory('$locationParse', [function() {
 
         var lastRoute = null,
             lastObject = {};

@@ -13,12 +13,12 @@ var _ = require('underscore'),
 
 mongoose.set('debug', debug);
 
-function logTheAPICalls(req, res, next) {
+var logTheAPICalls = function (req, res, next) {
     console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
     next();
-}
+};
 
-function processArgs(options, array) {
+var processArgs = function (options, array) {
     if (options.authentication) {
         array.splice(1, 0, options.authentication)
     }
@@ -27,7 +27,7 @@ function processArgs(options, array) {
     }
     array[0] = options.urlPrefix + array[0];
     return array;
-}
+};
 
 var DataForm = function (app, options) {
     this.app = app;
@@ -142,7 +142,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
         searchFor = url_parts.query.q,
         filter = url_parts.query.f;
 
-    function translate(string, array, context) {
+    var translate = function (string, array, context) {
         if (array) {
             var translation = _.find(array, function (fromTo) {
                 return fromTo.from === string && (!fromTo.context || fromTo.context === context)
@@ -152,14 +152,14 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
             }
         }
         return string;
-    }
+    };
 
     // return a string that determines the sort order of the resultObject
-    function calcResultValue(obj) {
+    var calcResultValue = function (obj) {
 
-        function padLeft(number, reqLength, str){
+        var padLeft = function (number, reqLength, str){
             return Array(reqLength-String(number).length+1).join(str||'0')+number;
-        }
+        };
 
         var sortString = '';
         sortString += padLeft(obj.addHits || 9, 1);
@@ -167,7 +167,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
         sortString += padLeft(obj.weighting || 9999, 4);
         sortString += obj.text;
         return sortString;
-    }
+    };
 
     if (filter) {
         filter = JSON.parse(filter)
@@ -566,9 +566,10 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
                 runPipeline.unshift({$match: queryObj});
             }
 
-            var toDo = {runAggregation: function (cb) {
-                resource.model.aggregate(runPipeline, cb)
-            }
+            var toDo = {
+                runAggregation: function (cb) {
+                    resource.model.aggregate(runPipeline, cb)
+                }
             };
 
             var translations = [];  // array of form {ref:'lookupname',translations:[{value:xx, display:'  '}]}
@@ -576,14 +577,14 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
             if (schema.columnTranslations) {
                 toDo.apply_translations = ['runAggregation', function (cb, results) {
 
-                    function doATranslate(column, theTranslation) {
+                    var doATranslate = function (column, theTranslation) {
                         results.runAggregation.forEach(function (resultRow) {
                             var thisTranslation = _.find(theTranslation.translations, function (option) {
                                 return resultRow[column.field].toString() === option.value.toString()
                             });
                             resultRow[column.field] = thisTranslation.display;
                         })
-                    }
+                    };
 
                     schema.columnTranslations.forEach(function (columnTranslation) {
                         if (columnTranslation.translations) {
@@ -676,7 +677,7 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
 
 DataForm.prototype.saveAndRespond = function (req, res, hidden_fields) {
 
-    function internalSave(doc) {
+    var internalSave = function (doc) {
         doc.save(function (err, doc2) {
             if (err) {
                 var err2 = {status: 'err'};
@@ -699,7 +700,7 @@ DataForm.prototype.saveAndRespond = function (req, res, hidden_fields) {
                 res.send(doc2);
             }
         });
-    }
+    };
 
     var doc = req.doc;
     if (typeof req.resource.options.onSave === "function") {
@@ -772,7 +773,7 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
     var that = this
         , hidden_fields = this.generateHiddenFields(resource, false);
 
-    function doAggregation(cb) {
+    var doAggregation = function (cb) {
         if (aggregationParam) {
             resource.model.aggregate(aggregationParam, function (err, aggregationResults) {
                 if (err) {
@@ -786,7 +787,7 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
         } else {
             cb([]);
         }
-    }
+    };
 
     doAggregation(function (idArray) {
         if (aggregationParam && idArray.length === 0) {

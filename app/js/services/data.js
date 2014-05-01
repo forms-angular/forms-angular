@@ -1,7 +1,9 @@
 /* global formsAngular: false */
 'use strict';
 
-formsAngular.factory('$data', [function() {
+var fang = angular.module('formsAngular');
+
+fang.factory('$data', [function() {
 
     var sharedData = {
         record: {},

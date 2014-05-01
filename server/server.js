@@ -86,19 +86,19 @@ var config = cfg[env];
 var app = module.exports = express();
 
 
-function mongooseConnectionString (dbconfig) {
+var mongooseConnectionString = function (dbconfig) {
     return 'mongodb://' + dbconfig.host + '/' + dbconfig.name;
-}
+};
 
-function addStatics (app) {
+var addStatics = function (app) {
     config.statics.forEach( function (entry) {
         console.log(chalk.cyan('adding static path %s'), entry);
         app.use(express.static(path.join(__dirname, entry)));
     });
-}
+};
 
 // Copy the schemas to somewhere they can be served
-function copySchemas () {
+var copySchemas = function () {
     var cmd = [
         'cp',
         path.join(__dirname, '../server/models/*'),
@@ -111,7 +111,7 @@ function copySchemas () {
             console.log('Error copying models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
         }
     });
-}
+};
 
 var ensureAuthenticated = function (req, res, next) {
     // Here you can do authentication using things like
@@ -122,7 +122,7 @@ var ensureAuthenticated = function (req, res, next) {
     res.status(401).send('No Authentication Provided');
 };
 
-function handleCrawlers(req,res,next) {
+var handleCrawlers = function (req,res,next) {
     if (req.url.slice(0,22) === '/?_escaped_fragment_=/') {
         fs.readFile(__dirname + '/seo/' + req.url.slice(22), 'utf8', function (err,data) {
             if (err) {
@@ -134,9 +134,9 @@ function handleCrawlers(req,res,next) {
     } else {
         next();
     }
-}
+};
 
-function useHtml5Mode () {
+var useHtml5Mode = function () {
     // Serve the static files.  This kludge is to support dev and production mode - for a better way to do it see
     // https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
     app.get(/^\/(scripts|partials|bower_components|demo|img|js)\/(.+)$/,function(req,res,next) {
@@ -158,9 +158,9 @@ function useHtml5Mode () {
         // Just send the index.html for other files to support HTML5Mode
         res.sendfile('index.html', { root: __dirname + '/../app/' });
     });
-}
+};
 
-function slurpModelsFrom (pattern) {
+var slurpModelsFrom = function (pattern) {
     var deferred = Q.defer();
     glob(path.join(__dirname, pattern), function (err, files) {
         if (err) {

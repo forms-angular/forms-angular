@@ -1,7 +1,9 @@
 /* global formsAngular: false */
 'use strict';
 
-formsAngular.service('utils', function() {
+var fang = angular.module('formsAngular');
+
+fang.service( 'utils', function() {
 
     this.getAddAllGroupOptions = function(scope, attrs, classes) {
         return getAddAllOptions(scope, attrs, 'Group', classes);
@@ -15,7 +17,7 @@ formsAngular.service('utils', function() {
         return getAddAllOptions(scope, attrs, 'Label', classes);
     };
 
-    function getAddAllOptions(scope, attrs, type, classes) {
+    var getAddAllOptions = function (scope, attrs, type, classes) {
 
         var addAllOptions = [],
             classList = [],
@@ -30,7 +32,7 @@ formsAngular.service('utils', function() {
             }
         }
 
-        function getAllOptions(obj) {
+        var getAllOptions = function (obj) {
 
             for (var key in obj) {
                 if (key === type) {
@@ -41,7 +43,7 @@ formsAngular.service('utils', function() {
                     getAllOptions(obj[key]);
                 }
             }
-        }
+        };
 
         getAllOptions(scope);
 
@@ -67,20 +69,31 @@ formsAngular.service('utils', function() {
             }
         }
 
-        if (classList.length > 0) {
-            classes = ' class="' + classList.join(' ') + '" ';
-        } else {
-            classes = ' ';
-        }
-
-        if (addAllOptions.length > 0) {
-            options = addAllOptions.join(' ') + ' ';
-        } else {
-            options = '';
-        }
+        classes = (classList.length > 0) ? ' class="' + classList.join(' ') + '" ' : ' ';
+        options = (addAllOptions.length > 0)  ? addAllOptions.join(' ') + ' ' : '';
 
         return classes + options;
-
-    }
+    };
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

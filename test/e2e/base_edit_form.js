@@ -22,16 +22,13 @@ describe('Base edit form', function() {
     describe('should display deletion confirmation modal', function() {
 
         beforeEach(function () {
-
             browser().navigateTo('/#!/a_unadorned_mongoose/666a6075b320153869b17599/edit');
         });
 
         it('should display deletion confirmation modal', function() {
-
             element('#deleteButton').click();
             expect( element('.modal').count() ).toEqual(1);
         });
-
     });
 
     describe('Allows user to navigate away',function() {
@@ -41,7 +38,6 @@ describe('Base edit form', function() {
             element('#newButton').click();
             expect(browser().location().url()).toMatch("/a_unadorned_mongoose/new");
         });
-
     });
 
     describe('prompts user to save changes',function() {
@@ -98,7 +94,6 @@ describe('Base edit form', function() {
             browser().navigateTo('/#!/d_array_example/51a6182aea4ea77715000005/edit');
             expect(repeater('.fng-array').count()).toEqual(0);
         });
-
     });
 
     describe('tab sets', function() {
@@ -108,7 +103,6 @@ describe('Base edit form', function() {
             element('a:contains("first")').click();
             element('a:contains("second")').click();
         })
-
     })
 
 });

@@ -1,10 +1,17 @@
-formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'urlService', function ($scope, $http, $location, urlService) {
+'use strict';
 
+var fang = angular.module('formsAngular');
+
+fang.controller( 'ModelCtrl',
+[
+    '$scope', '$http', '$location', 'urlService'
+,
+function ($scope, $http, $location, urlService) {
     $scope.models = [];
     $http.get('/api/models').success(function (data) {
         $scope.models = data;
     }).error(function () {
-            $location.path("/404");
+        $location.path("/404");
     });
 
     $scope.newUrl = function(model) {
