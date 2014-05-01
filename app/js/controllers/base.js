@@ -1,5 +1,5 @@
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window','urlService', 'fileUpload',
-        function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService, fileUpload) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window', '$state', '$stateParse',
+    function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, $state, $stateParse, urlService, fileUpload) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -21,7 +21,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.pages_loaded = 0;
     $scope.filequeue = fileUpload.fieldData;
 
-    angular.extend($scope, $locationParse($location.$$path));
+    if($state && $state.params && $state.params.model) {
+      angular.extend($scope, $stateParse($state));
+    } else {
+      angular.extend($scope, $locationParse($location.$$path));
+    }
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
@@ -264,7 +268,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             }else if(mongooseType.instance == 'file') {
               formInstructions.type = 'fileuploader';
             } else {
-              console.log(mongooseType);
                 throw new Error("Field " + formInstructions.name + " is of unsupported type " + mongooseType.instance);
             }
             if (mongooseOptions.required) {
@@ -731,8 +734,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
                 if (options.redirect) {
                     $window.location = options.redirect
                 } else {
+                  if($state && $state.params && $state.params.model) {
+                    $state.go("model::edit", {id: data._id, model: $scope.modelName });
+                  } else {
                     $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
                     //                    reset?
+                  }
                 }
             } else {
                 $scope.showError(data);
@@ -796,16 +803,24 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.new = function () {
+      if($state && $state.params && $state.params.model) {
+        $state.go("model::new", {model: $scope.modelName});
+      } else {
         $location.search("");
         $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
+      }
     };
 
     $scope.deleteRecord = function (model, id) {
         $http.delete('/api/' + model + '/' + id).success(function () {
-            if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
-                $scope.dataEventFunctions.onAfterDelete(master);
-            }
+          if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
+              $scope.dataEventFunctions.onAfterDelete(master);
+          }
+          if($state && $state.params && $state.params.model) {
+            $state.go("model::list", { model: model });
+          } else {
             $location.path('/' + $scope.modelName);
+          }
         });
     };
 
