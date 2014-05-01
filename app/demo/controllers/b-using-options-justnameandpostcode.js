@@ -1,10 +1,16 @@
-myDemoApp.controller('BUsingOptionsJustnameandpostcodeCtrl',['$scope', '$data', '$timeout', function($scope, $data, $timeout) {
+'use strict';
+
+var demo = angular.module('myDemoApp');
+
+demo.controller( 'BUsingOptionsJustnameandpostcodeCtrl',
+[
+    '$scope', '$data', '$timeout'
+,
+function($scope, $data, $timeout) {
 
     $scope.record = $data.record;
-
     $data.modelNameDisplay = "Another override";
     $data.dropDownDisplay = 'Custom 2nd Level';
-
 
     $scope.contextMenu = [
         {

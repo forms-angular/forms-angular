@@ -1,4 +1,12 @@
-myDemoApp.controller('InTheWildCtrl',['$scope', function($scope) {
+'use strict';
+
+var demo = angular.module('myDemoApp');
+
+demo.controller( 'InTheWildCtrl',
+[
+    '$scope'
+,
+function($scope) {
 
     $scope.sites = [
         {

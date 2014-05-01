@@ -1,4 +1,12 @@
-myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', function($scope, $data, $timeout) {
+'use strict';
+
+var demo = angular.module('myDemoApp');
+
+demo.controller( 'BUsingOptionsCtrl',
+[
+    '$scope', '$data', '$timeout'
+,
+function($scope, $data, $timeout) {
 
     $scope.record = $data.record;
 
@@ -14,7 +22,7 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
 
     $scope.changeCase = function() {
 
-        function changeCaseInt(newCase) {
+        var changeCaseInt = function (newCase) {
             for (var property in $scope.record) {
                 if (property !== '_id' && typeof $scope.record[property] === 'string') {
                     if (newCase === 'lower') {
@@ -24,7 +32,7 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
                     }
                 }
             }
-        }
+        };
 
         if ($scope.record.surname == $scope.record.surname.toLowerCase()) {
             changeCaseInt('upper');
@@ -59,14 +67,14 @@ myDemoApp.controller('BUsingOptionsCtrl',['$scope', '$data', '$timeout', functio
         }
     ];
 
-    function setColour(number) {
+    var setColour = function (number) {
         var colours = ['#81B7DB','#C2A369','#6DDB4F','#47820C'];
         if (number != "") {
             $('#cg_f_eyeColour').css('background-color', colours[parseInt(number)]);
         } else {
             $('#cg_f_eyeColour').css('background-color', 'white');
         }
-    }
+    };
 
     $scope.$on('formInputDone', function() {
         var eyeColor = $('#f_eyeColour');

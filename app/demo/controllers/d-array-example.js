@@ -1,4 +1,12 @@
-myDemoApp.controller('DArrayExampleCtrl',['$scope', '$data', function($scope, $data) {
+'use strict';
+
+var demo = angular.module('myDemoApp');
+
+demo.controller( 'DArrayExampleCtrl',
+[
+    '$scope', '$data'
+,
+function($scope, $data) {
 
     $scope.disableFunctions = $data.disableFunctions;
     $scope.dataEventFunctions = $data.dataEventFunctions;

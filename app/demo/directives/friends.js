@@ -1,6 +1,15 @@
-myDemoApp.controller('FriendCtrl',['$scope', '$routeParams', '$location', '$http', function($scope, $routeParams, $location, $http) {
+'use strict';
+
+var demo = angular.module('myDemoApp');
+
+demo.controller( 'FriendCtrl',
+[
+    '$scope', '$routeParams', '$location', '$http'
+,
+function($scope, $routeParams, $location, $http) {
     $scope.frdShowAdd = false;
     $scope.frdNewFriend = {};
+
     $scope.frdHideDetails = function() {
         $scope.frdPopupName = 'Move mouse over a friend';
         $scope.frdPopupPhone = 'to see their details';
@@ -47,13 +56,17 @@ myDemoApp.controller('FriendCtrl',['$scope', '$routeParams', '$location', '$http
     };
 
     $scope.frdHideDetails();
+}]);
 
-}]).directive('friends', function () {
-        return {
-            restrict: 'E',
-            replace: true,
-            priority: 1,
-            controller: 'FriendCtrl',
-            templateUrl: 'demo/template/friends.html'
-        }
-    });
+
+demo.directive( 'friends',
+[
+function () {
+    return {
+        restrict: 'E',
+        replace: true,
+        priority: 1,
+        controller: 'FriendCtrl',
+        templateUrl: 'demo/template/friends.html'
+    }
+}]);
