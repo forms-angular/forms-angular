@@ -478,7 +478,6 @@ function ($compile, $rootScope, utils, $filter, urlService) {
                     result = '';
                 }
                 return result;
-
             };
 
             var unwatch = scope.$watch(attrs.schema, function (newValue) {

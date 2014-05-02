@@ -4,9 +4,9 @@ var fang = angular.module('formsAngular');
 
 fang.controller( 'BaseCtrl',
 [
-    '$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window','urlService'
+    '$scope', '$routeParams', '$location', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService'
 ,
-function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService) {
+function ($scope, $routeParams, $location, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
 
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
@@ -84,79 +84,80 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
     };
 
     var handleFieldType = function (formInstructions, mongooseType, mongooseOptions) {
+        var select2ajaxName;
+        if (mongooseType.caster) {
+            formInstructions.array = true;
+            mongooseType = mongooseType.caster;
+            $.extend(mongooseOptions, mongooseType.options)
+        }
+        if (mongooseType.instance == 'String') {
+            if (mongooseOptions.enum) {
+                formInstructions.type = formInstructions.type || 'select';
+                // Hacky way to get required styling working on select controls
+                if (mongooseOptions.required) {
 
-            var select2ajaxName;
-            if (mongooseType.caster) {
-                formInstructions.array = true;
-                mongooseType = mongooseType.caster;
-                $.extend(mongooseOptions, mongooseType.options)
-            }
-            if (mongooseType.instance == 'String') {
-                if (mongooseOptions.enum) {
-                    formInstructions.type = formInstructions.type || 'select';
-                    // Hacky way to get required styling working on select controls
-                    if (mongooseOptions.required) {
-
-                        $scope.$watch('record.' + formInstructions.name, function (newValue) {
-                            updateInvalidClasses(newValue, formInstructions.id, formInstructions.select2);
-                        }, true);
-                        setTimeout(function () {
-                            updateInvalidClasses($scope.record[formInstructions.name], formInstructions.id, formInstructions.select2);
-                        }, 0)
-                    }
-                    if (formInstructions.select2) {
-                        $scope['select2' + formInstructions.name] = {
-                            allowClear: !mongooseOptions.required,
-                            initSelection: function (element, callback) {
-                                callback(element.select2('data'));
-                            },
-                            query: function (query) {
-                                var data = {results: []},
-                                    searchString = query.term.toUpperCase();
-                                for (var i = 0; i < mongooseOptions.enum.length; i++) {
-                                    if (mongooseOptions.enum[i].toUpperCase().indexOf(searchString) !== -1) {
-                                        data.results.push({id: i, text: mongooseOptions.enum[i]})
-                                    }
-                                }
-                                query.callback(data);
-                            }
-                        };
-                        _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
-                        formInstructions.select2.s2query = 'select2' + formInstructions.name;
-                        $scope.select2List.push(formInstructions.name)
-                    } else {
-                        formInstructions.options = suffixCleanId(formInstructions, 'Options');
-                        $scope[formInstructions.options] = mongooseOptions.enum;
-                    }
-                } else {
-                    if (!formInstructions.type) {
-                        formInstructions.type = (formInstructions.name.toLowerCase().indexOf('password') !== -1) ? 'password' : 'text';
-                    }
-                    if (mongooseOptions.match) {
-                        formInstructions.add = 'pattern="' + mongooseOptions.match + '" ' + (formInstructions.add || '');
-                    }
+                    $scope.$watch('record.' + formInstructions.name, function (newValue) {
+                        updateInvalidClasses(newValue, formInstructions.id, formInstructions.select2);
+                    }, true);
+                    setTimeout(function () {
+                        updateInvalidClasses($scope.record[formInstructions.name], formInstructions.id, formInstructions.select2);
+                    }, 0)
                 }
-            } else if (mongooseType.instance == 'ObjectID') {
-                formInstructions.ref = mongooseOptions.ref;
-                if (formInstructions.link && formInstructions.link.linkOnly) {
-                    formInstructions.type = 'link';
-                    formInstructions.linkText = formInstructions.link.text;
-                    formInstructions.form = formInstructions.link.form;
-                    delete formInstructions.link;
+                if (formInstructions.select2) {
+                    $scope['select2' + formInstructions.name] = {
+                        allowClear: !mongooseOptions.required,
+                        initSelection: function (element, callback) {
+                            callback(element.select2('data'));
+                        },
+                        query: function (query) {
+                            var data = {results: []},
+                                searchString = query.term.toUpperCase();
+                            for (var i = 0; i < mongooseOptions.enum.length; i++) {
+                                if (mongooseOptions.enum[i].toUpperCase().indexOf(searchString) !== -1) {
+                                    data.results.push({id: i, text: mongooseOptions.enum[i]})
+                                }
+                            }
+                            query.callback(data);
+                        }
+                    };
+                    _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
+                    formInstructions.select2.s2query = 'select2' + formInstructions.name;
+                    $scope.select2List.push(formInstructions.name)
                 } else {
-                    formInstructions.type = 'select';
-                    if (formInstructions.select2) {
-                        $scope.select2List.push(formInstructions.name);
-                        if (formInstructions.select2.fngAjax) {
-                            // create the instructions for select2
-                            select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
-                            $scope[select2ajaxName] = {
-                                allowClear: !mongooseOptions.required,
-                                minimumInputLength: 2,
-                                initSelection: function (element, callback) {
-                                    var theId = element.val();
-                                    if (theId && theId !== '') {
-                                        $http.get('/api/' + mongooseOptions.ref + '/' + theId + '/list').success(function (data) {
+                    formInstructions.options = suffixCleanId(formInstructions, 'Options');
+                    $scope[formInstructions.options] = mongooseOptions.enum;
+                }
+            } else {
+                if (!formInstructions.type) {
+                    formInstructions.type = (formInstructions.name.toLowerCase().indexOf('password') !== -1) ? 'password' : 'text';
+                }
+                if (mongooseOptions.match) {
+                    formInstructions.add = 'pattern="' + mongooseOptions.match + '" ' + (formInstructions.add || '');
+                }
+            }
+        } else if (mongooseType.instance == 'ObjectID') {
+            formInstructions.ref = mongooseOptions.ref;
+            if (formInstructions.link && formInstructions.link.linkOnly) {
+                formInstructions.type = 'link';
+                formInstructions.linkText = formInstructions.link.text;
+                formInstructions.form = formInstructions.link.form;
+                delete formInstructions.link;
+            } else {
+                formInstructions.type = 'select';
+                if (formInstructions.select2) {
+                    $scope.select2List.push(formInstructions.name);
+                    if (formInstructions.select2.fngAjax) {
+                        // create the instructions for select2
+                        select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
+                        $scope[select2ajaxName] = {
+                            allowClear: !mongooseOptions.required,
+                            minimumInputLength: 2,
+                            initSelection: function (element, callback) {
+                                var theId = element.val();
+                                if (theId && theId !== '') {
+
+                                    SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
+                                        .success(function (data) {
                                             if (data.success === false) {
                                                 $location.path("/404");
                                             }
@@ -174,106 +175,105 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
                                                 modelController.$pristine = true;
                                             }
                                         }).error(function () {
-                                                $location.path("/404");
-                                            });
-//                                } else {
-//                                    throw new Error('select2 initSelection called without a value');
+                                            $location.path("/404");
+                                        });
+                                    // } else {
+                                    // throw new Error('select2 initSelection called without a value');
+                                }
+                            },
+                            ajax: {
+                                url: "/api/search/" + mongooseOptions.ref,
+                                data: function (term, page) { // page is the one-based page number tracked by Select2
+                                    return {
+                                        q: term, //search term
+                                        page_limit: 10, // page size
+                                        page: page // page number
                                     }
                                 },
-                                ajax: {
-                                    url: "/api/search/" + mongooseOptions.ref,
-                                    data: function (term, page) { // page is the one-based page number tracked by Select2
-                                        return {
-                                            q: term, //search term
-                                            page_limit: 10, // page size
-                                            page: page // page number
-                                        }
-                                    },
-                                    results: function (data) {
-                                        return {results: data.results, more: data.moreCount > 0};
-                                    }
+                                results: function (data) {
+                                    return {results: data.results, more: data.moreCount > 0};
                                 }
-                            };
-                            _.extend($scope[select2ajaxName], formInstructions.select2);
-                            formInstructions.select2.fngAjax = select2ajaxName;
-                        } else {
-                            if (formInstructions.select2 == true) {
-                                formInstructions.select2 = {};
                             }
-                            $scope['select2' + formInstructions.name] = {
-                                allowClear: !mongooseOptions.required,
-                                initSelection: function (element, callback) {
-                                    var myId = element.val();
-                                    if (myId !== '' && $scope[formInstructions.ids].length > 0) {
-                                        var myVal = convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
-                                        var display = {id: myId, text: myVal};
-                                        callback(display);
-                                    }
-                                },
-                                query: function (query) {
-                                    var data = {results: []},
-                                        searchString = query.term.toUpperCase();
-                                    for (var i = 0; i < $scope[formInstructions.options].length; i++) {
-                                        if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
-                                            data.results.push({id: $scope[formInstructions.ids][i], text: $scope[formInstructions.options][i]})
-                                        }
-                                    }
-                                    query.callback(data);
-                                }
-                            };
-                            _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
-                            formInstructions.select2.s2query = 'select2' + formInstructions.name;
-                            $scope.select2List.push(formInstructions.name);
-                            formInstructions.options = suffixCleanId(formInstructions, 'Options');
-                            formInstructions.ids = suffixCleanId(formInstructions, '_ids');
-                            setUpSelectOptions(mongooseOptions.ref, formInstructions);
-                        }
+                        };
+                        _.extend($scope[select2ajaxName], formInstructions.select2);
+                        formInstructions.select2.fngAjax = select2ajaxName;
                     } else {
+                        if (formInstructions.select2 == true) {
+                            formInstructions.select2 = {};
+                        }
+                        $scope['select2' + formInstructions.name] = {
+                            allowClear: !mongooseOptions.required,
+                            initSelection: function (element, callback) {
+                                var myId = element.val();
+                                if (myId !== '' && $scope[formInstructions.ids].length > 0) {
+                                    var myVal = convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
+                                    var display = {id: myId, text: myVal};
+                                    callback(display);
+                                }
+                            },
+                            query: function (query) {
+                                var data = {results: []},
+                                    searchString = query.term.toUpperCase();
+                                for (var i = 0; i < $scope[formInstructions.options].length; i++) {
+                                    if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
+                                        data.results.push({id: $scope[formInstructions.ids][i], text: $scope[formInstructions.options][i]})
+                                    }
+                                }
+                                query.callback(data);
+                            }
+                        };
+                        _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
+                        formInstructions.select2.s2query = 'select2' + formInstructions.name;
+                        $scope.select2List.push(formInstructions.name);
                         formInstructions.options = suffixCleanId(formInstructions, 'Options');
                         formInstructions.ids = suffixCleanId(formInstructions, '_ids');
                         setUpSelectOptions(mongooseOptions.ref, formInstructions);
                     }
+                } else {
+                    formInstructions.options = suffixCleanId(formInstructions, 'Options');
+                    formInstructions.ids = suffixCleanId(formInstructions, '_ids');
+                    setUpSelectOptions(mongooseOptions.ref, formInstructions);
                 }
-            } else if (mongooseType.instance == 'Date') {
-                if (!formInstructions.type) {
-                    if (formInstructions.readonly) {
-                        formInstructions.type = 'text';
-                    } else {
-                        formInstructions.type = 'text';
-                        formInstructions.add = 'ui-date ui-date-format ';
-                    }
-                }
-            } else if (mongooseType.instance == 'boolean') {
-                formInstructions.type = 'checkbox';
-            } else if (mongooseType.instance == 'Number') {
-                formInstructions.type = 'number';
-                if (mongooseOptions.min) {
-                    formInstructions.add = 'min="' + mongooseOptions.min + '" ' + (formInstructions.add || '');
-                }
-                if (mongooseOptions.max) {
-                    formInstructions.add = 'max="' + mongooseOptions.max + '" ' + (formInstructions.add || '');
-                }
-                if (formInstructions.step) {
-                    formInstructions.add = 'step="' + formInstructions.step + '" ' + (formInstructions.add || '');
-                }
-            } else {
-                throw new Error("Field " + formInstructions.name + " is of unsupported type " + mongooseType.instance);
             }
-            if (mongooseOptions.required) {
-                formInstructions.required = true;
+        } else if (mongooseType.instance == 'Date') {
+            if (!formInstructions.type) {
+                if (formInstructions.readonly) {
+                    formInstructions.type = 'text';
+                } else {
+                    formInstructions.type = 'text';
+                    formInstructions.add = 'ui-date ui-date-format ';
+                }
             }
-            if (mongooseOptions.readonly) {
-                formInstructions.readonly = true;
+        } else if (mongooseType.instance == 'boolean') {
+            formInstructions.type = 'checkbox';
+        } else if (mongooseType.instance == 'Number') {
+            formInstructions.type = 'number';
+            if (mongooseOptions.min) {
+                formInstructions.add = 'min="' + mongooseOptions.min + '" ' + (formInstructions.add || '');
             }
-            return formInstructions;
+            if (mongooseOptions.max) {
+                formInstructions.add = 'max="' + mongooseOptions.max + '" ' + (formInstructions.add || '');
+            }
+            if (formInstructions.step) {
+                formInstructions.add = 'step="' + formInstructions.step + '" ' + (formInstructions.add || '');
+            }
+        } else {
+            throw new Error("Field " + formInstructions.name + " is of unsupported type " + mongooseType.instance);
         }
-        ;
+        if (mongooseOptions.required) {
+            formInstructions.required = true;
+        }
+        if (mongooseOptions.readonly) {
+            formInstructions.readonly = true;
+        }
+        return formInstructions;
+    };
 
     // TODO: Do this in form
     var basicInstructions = function (field, formData, prefix) {
         formData.name = prefix + field;
-//        formData.id = formData.id || 'f_' + prefix + field.replace(/\./g, '_');
-//        formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || $filter('titleCase')(field));
+        // formData.id = formData.id || 'f_' + prefix + field.replace(/\./g, '_');
+        // formData.label = (formData.hasOwnProperty('label') && formData.label) == null ? '' : (formData.label || $filter('titleCase')(field));
         return formData;
     };
 
@@ -356,9 +356,8 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
         return result;
     };
 
-//    Conditionals
-//    $scope.dataDependencies is of the form {fieldName1: [fieldId1, fieldId2], fieldName2:[fieldId2]}
-
+    // Conditionals
+    // $scope.dataDependencies is of the form {fieldName1: [fieldId1, fieldId2], fieldName2:[fieldId2]}
     var handleConditionals = function (condInst, name) {
 
         var dependency = 0;
@@ -536,25 +535,25 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
                 }
             }
         }
-//        //if a hash is defined then make that the selected tab is displayed
-//        if ($scope.tabs.length > 0 && $location.hash()) {
-//            var tab = _.find($scope.tabs, function (atab) {
-//                return atab.title === $location.hash();
-//            });
-//
-//            if (tab) {
-//                for (var i = 0; i < $scope.tabs.length; i++) {
-//                    $scope.tabs[i].active = false;
-//                }
-//                tab.active = true;
-//            }
-//        }
-//
-//        //now add a hash for the active tab if none exists
-//        if ($scope.tabs.length > 0 && !$location.hash()) {
-//            console.log($scope.tabs[0]['title'])
-//            $location.hash($scope.tabs[0]['title']);
-//        }
+        //        //if a hash is defined then make that the selected tab is displayed
+        //        if ($scope.tabs.length > 0 && $location.hash()) {
+        //            var tab = _.find($scope.tabs, function (atab) {
+        //                return atab.title === $location.hash();
+        //            });
+        //
+        //            if (tab) {
+        //                for (var i = 0; i < $scope.tabs.length; i++) {
+        //                    $scope.tabs[i].active = false;
+        //                }
+        //                tab.active = true;
+        //            }
+        //        }
+        //
+        //        //now add a hash for the active tab if none exists
+        //        if ($scope.tabs.length > 0 && !$location.hash()) {
+        //            console.log($scope.tabs[0]['title'])
+        //            $location.hash($scope.tabs[0]['title']);
+        //        }
 
         if (destList && destList.length === 0) {
             handleEmptyList(description, destList, destForm, source);
@@ -568,86 +567,176 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
     };
 
     $scope.readRecord = function () {
-        $http.get('/api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
-            if (data.success === false) {
-                $location.path("/404");
-            }
-            allowLocationChange = false;
-            $scope.phase = 'reading';
-            if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
-                $scope.dataEventFunctions.onAfterRead(data);
-            }
-            $scope.processServerData(data);
-        }).error(function () {
+        SubmissionsService.readRecord($scope.modelName, $scope.id)
+            .success(function (data) {
+                if (data.success === false) {
+                    $location.path("/404");
+                }
+                allowLocationChange = false;
+                $scope.phase = 'reading';
+                if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
+                    $scope.dataEventFunctions.onAfterRead(data);
+                }
+                $scope.processServerData(data);
+            }).error(function () {
                 $location.path("/404");
             });
-    };
-
-    var generateListQuery = function () {
-        var queryString = '?l=' + $scope.page_size
-            , addParameter = function (param, value) {
-                if (value && value !== '') {
-                    queryString += '&' + param + '=' + value;
-                }
-            };
-
-        addParameter('f', $routeParams.f);
-        addParameter('a', $routeParams.a);
-        addParameter('o', $routeParams.o);
-        addParameter('s', $scope.pages_loaded * $scope.page_size);
-        $scope.pages_loaded++;
-        return queryString;
     };
 
     $scope.scrollTheList = function () {
-        $http.get('/api/' + $scope.modelName + generateListQuery()).success(function (data) {
-            if (angular.isArray(data)) {
-                $scope.recordList = $scope.recordList.concat(data);
-            } else {
-                $scope.showError(data, "Invalid query");
-            }
-        }).error(function () {
+        SubmissionsService.getPagedAndFilteredList($scope.modelName, {
+                aggregate:  $routeParams.a,
+                find: $routeParams.f,
+                limit: $scope.page_size,
+                skip: $scope.pages_loaded * $scope.page_size,
+                order: $routeParams.o
+            })
+            .success(function (data) {
+                if (angular.isArray(data)) {
+                    $scope.pages_loaded++;
+                    $scope.recordList = $scope.recordList.concat(data);
+                } else {
+                    $scope.showError(data, "Invalid query");
+                }
+            })
+            .error(function () {
                 $location.path("/404");
             });
     };
 
-    $http.get('/api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''), {cache: true}).success(function (data) {
-
-        handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
-
-        if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
-            allowLocationChange = true;
-        } else {
-            var force = true;
-            $scope.$watch('record', function (newValue, oldValue) {
-                if (newValue !== oldValue) {
-                    force = $scope.updateDataDependentDisplay(newValue, oldValue, force);
+    $scope.deleteRecord = function (model, id) {
+        SubmissionsService.deleteRecord(model, id)
+            .success(function () {
+                if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
+                    $scope.dataEventFunctions.onAfterDelete(master);
                 }
-            }, true);
+                $location.path('/' + $scope.modelName);
+            });
+    };
 
-            if ($scope.id) {
-                // Going to read a record
-                if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
-                    $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
-                        if (err) {
-                            $scope.showError(err);
-                        } else {
-                            $scope.readRecord();
+
+    $scope.updateDocument = function (dataToSave, options) {
+        $scope.phase = 'updating';
+
+        SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave)
+            .success(function (data) {
+                if (data.success !== false) {
+                    if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
+                        $scope.dataEventFunctions.onAfterUpdate(data, master)
+                    }
+                    if (options.redirect) {
+                        if (options.allowChange) {
+                            allowLocationChange = true;
                         }
-                    });
+                        $window.location = options.redirect;
+                    } else {
+                        $scope.processServerData(data);
+                        $scope.setPristine();
+                    }
                 } else {
-                    $scope.readRecord();
+                    $scope.showError(data);
                 }
+            })
+            .error(handleError);
+
+    };
+
+    $scope.createNew = function (dataToSave, options) {
+        SubmissionsService.createRecord($scope.modelName, dataToSave)
+            .success(function (data) {
+                if (data.success !== false) {
+                    if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
+                        $scope.dataEventFunctions.onAfterCreate(data);
+                    }
+                    if (options.redirect) {
+                        $window.location = options.redirect
+                    } else {
+                        $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
+                        //                    reset?
+                    }
+                } else {
+                    $scope.showError(data);
+                }
+            })
+            .error(handleError);
+    };
+
+    SchemasService.getSchema($scope.modelName, $scope.formName)
+        .success(function (data) {
+            handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
+
+            if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
+                allowLocationChange = true;
             } else {
-                // New record
-                master = {};
-                $scope.phase = 'ready';
-                $scope.cancel();
+                var force = true;
+                $scope.$watch('record', function (newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        force = $scope.updateDataDependentDisplay(newValue, oldValue, force);
+                    }
+                }, true);
+
+                if ($scope.id) {
+                    // Going to read a record
+                    if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
+                        $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
+                            if (err) {
+                                $scope.showError(err);
+                            } else {
+                                $scope.readRecord();
+                            }
+                        });
+                    } else {
+                        $scope.readRecord();
+                    }
+                } else {
+                    // New record
+                    master = {};
+                    $scope.phase = 'ready';
+                    $scope.cancel();
+                }
             }
-        }
-    }).error(function () {
+        })
+        .error(function () {
             $location.path("/404");
         });
+
+
+    var setUpSelectOptions = function (lookupCollection, schemaElement) {
+        var optionsList = $scope[schemaElement.options] = [];
+        var idList = $scope[schemaElement.ids] = [];
+
+        SchemasService.getSchema(lookupCollection)
+            .success(function (data) {
+                var listInstructions = [];
+                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
+
+                SubmissionsService.getAll(lookupCollection)
+                    .success(function (data) {
+                        if (data) {
+                            for (var i = 0; i < data.length; i++) {
+                                var option = '';
+                                for (var j = 0; j < listInstructions.length; j++) {
+                                    option += data[i][listInstructions[j].name] + ' ';
+                                }
+                                option = option.trim();
+                                var pos = _.sortedIndex(optionsList, option);
+                                // handle dupes (ideally people will use unique indexes to stop them but...)
+                                if (optionsList[pos] === option) {
+                                    option = option + '    (' + data[i]._id + ')';
+                                    pos = _.sortedIndex(optionsList, option);
+                                }
+                                optionsList.splice(pos, 0, option);
+                                idList.splice(pos, 0, data[i]._id);
+                            }
+                            updateRecordWithLookupValues(schemaElement);
+                        }
+                    });
+            });
+    };
+
+
+
+
 
     $scope.setPristine = function() {
         $scope.dismissError();
@@ -657,7 +746,6 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
     };
 
     $scope.cancel = function () {
-
         for (var prop in $scope.record) {
             if ($scope.record.hasOwnProperty(prop)) {
                 delete $scope.record[prop];
@@ -714,46 +802,6 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
         delete $scope.errorMessage;
     };
 
-    $scope.createNew = function (dataToSave, options) {
-        $http.post('/api/' + $scope.modelName, dataToSave).success(function (data) {
-            if (data.success !== false) {
-                if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
-                    $scope.dataEventFunctions.onAfterCreate(data);
-                }
-                if (options.redirect) {
-                    $window.location = options.redirect
-                } else {
-                    $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
-                    //                    reset?
-                }
-            } else {
-                $scope.showError(data);
-            }
-        }).error(handleError);
-    };
-
-    $scope.updateDocument = function (dataToSave, options) {
-        $scope.phase = 'updating';
-        $http.post('/api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
-            if (data.success !== false) {
-                if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
-                    $scope.dataEventFunctions.onAfterUpdate(data, master)
-                }
-                if (options.redirect) {
-                    if (options.allowChange) {
-                        allowLocationChange = true;
-                    }
-                    $window.location = options.redirect;
-                } else {
-                    $scope.processServerData(data);
-                    $scope.setPristine();
-                }
-            } else {
-                $scope.showError(data);
-            }
-        }).error(handleError);
-
-    };
 
     $scope.save = function (options) {
         options = options || {};
@@ -792,14 +840,6 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
         $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
     };
 
-    $scope.deleteRecord = function (model, id) {
-        $http.delete('/api/' + model + '/' + id).success(function () {
-            if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
-                $scope.dataEventFunctions.onAfterDelete(master);
-            }
-            $location.path('/' + $scope.modelName);
-        });
-    };
 
     $scope.$on('$locationChangeStart', function (event, next) {
         if (!allowLocationChange && !$scope.isCancelDisabled()) {
@@ -948,7 +988,7 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
         $scope.setFormDirty($event);
     };
 
-// Split a field name into the next level and all following levels
+    // Split a field name into the next level and all following levels
     var splitFieldName = function (aFieldName) {
         var nesting = aFieldName.split('.'),
             result = [nesting[0]];
@@ -994,8 +1034,8 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
         return result;
     };
 
-// Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
-// Which is what we need for use in the browser
+    // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
+    // Which is what we need for use in the browser
     var convertToAngularModel = function (schema, anObject, prefixLength) {
         for (var i = 0; i < schema.length; i++) {
             var fieldname = schema[i].name.slice(prefixLength);
@@ -1036,7 +1076,7 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
         return anObject;
     };
 
-// Reverse the process of convertToAngularModel
+    // Reverse the process of convertToAngularModel
     var convertToMongoModel = function (schema, anObject, prefixLength) {
 
         for (var i = 0; i < schema.length; i++) {
@@ -1140,35 +1180,6 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
         }
     };
 
-    var setUpSelectOptions = function (lookupCollection, schemaElement) {
-        var optionsList = $scope[schemaElement.options] = [];
-        var idList = $scope[schemaElement.ids] = [];
-        $http.get('/api/schema/' + lookupCollection, {cache: true}).success(function (data) {
-            var listInstructions = [];
-            handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
-            $http.get('/api/' + lookupCollection, {cache: true}).success(function (data) {
-                if (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        var option = '';
-                        for (var j = 0; j < listInstructions.length; j++) {
-                            option += data[i][listInstructions[j].name] + ' ';
-                        }
-                        option = option.trim();
-                        var pos = _.sortedIndex(optionsList, option);
-                        // handle dupes (ideally people will use unique indexes to stop them but...)
-                        if (optionsList[pos] === option) {
-                            option = option + '    (' + data[i]._id + ')';
-                            pos = _.sortedIndex(optionsList, option);
-                        }
-                        optionsList.splice(pos, 0, option);
-                        idList.splice(pos, 0, data[i]._id);
-                    }
-                    updateRecordWithLookupValues(schemaElement);
-                }
-            })
-        })
-    };
-
     var updateRecordWithLookupValues = function (schemaElement) {
         // Update the master and the record with the lookup values
         if (!$scope.topLevelFormName || $scope[$scope.topLevelFormName].$pristine) {
@@ -1182,7 +1193,7 @@ function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse
         }
     };
 
-// Open a select2 control from the appended search button
+    // Open a select2 control from the appended search button
     $scope.openSelect2 = function (ev) {
         $('#' + $(ev.currentTarget).data('select2-open')).select2('open')
     };

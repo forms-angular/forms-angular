@@ -70,10 +70,12 @@ DataForm.prototype.getListFields = function (resource, doc) {
 DataForm.prototype.registerRoutes = function () {
 
     this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
+
     this.app.get.apply(this.app, processArgs(this.options, ['search/:resourceName', this.search()]));
 
     this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName', this.schema()]));
     this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName/:formName', this.schema()]));
+
     this.app.get.apply(this.app, processArgs(this.options, ['report/:resourceName', this.report()]));
     this.app.get.apply(this.app, processArgs(this.options, ['report/:resourceName/:reportName', this.report()]));
 

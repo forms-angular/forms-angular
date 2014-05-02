@@ -24,11 +24,11 @@ function (ModelsService, urlService) {
                     });
 
                 scope.newUrl = function(model) {
-                    return urlService.buildUrl('model/' + model + '/new');
+                    return urlService.buildUrl(model + '/new');
                 };
 
                 scope.listUrl = function(model) {
-                    return urlService.buildUrl('model/' + model);
+                    return urlService.buildUrl(model);
                 };
             },
             post: function postLink(scope, iElement, iAttrs) {
