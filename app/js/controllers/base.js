@@ -1,7 +1,7 @@
 'use strict';
 
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window', 'urlService',
-  function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService) {
+formsAngular.controller( 'BaseCtrl', ['$scope', '$routeParams', '$location', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService',
+  function ($scope, $routeParams, $location, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -350,9 +350,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
       return result;
     };
 
-//    Conditionals
-//    $scope.dataDependencies is of the form {fieldName1: [fieldId1, fieldId2], fieldName2:[fieldId2]}
-
+    // Conditionals
+    // $scope.dataDependencies is of the form {fieldName1: [fieldId1, fieldId2], fieldName2:[fieldId2]}
     var handleConditionals = function (condInst, name) {
 
       var dependency = 0;
@@ -564,92 +563,182 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.readRecord = function () {
-      $http.get('/api/' + $scope.modelName + '/' + $scope.id).success(function (data) {
-        if (data.success === false) {
-          $location.path('/404');
-        }
-        allowLocationChange = false;
-        $scope.phase = 'reading';
-        if (typeof $scope.dataEventFunctions.onAfterRead === 'function') {
-          $scope.dataEventFunctions.onAfterRead(data);
-        }
-        $scope.processServerData(data);
-      }).error(function () {
-        $location.path('/404');
-      });
+        SubmissionsService.readRecord($scope.modelName, $scope.id)
+            .success(function (data) {
+                if (data.success === false) {
+                    $location.path("/404");
+                }
+                allowLocationChange = false;
+                $scope.phase = 'reading';
+                if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
+                    $scope.dataEventFunctions.onAfterRead(data);
+                }
+                $scope.processServerData(data);
+            }).error(function () {
+                $location.path("/404");
+            });
     };
-
-    function generateListQuery() {
-      var queryString = '?l=' + $scope.pageSize,
-        addParameter = function (param, value) {
-          if (value && value !== '') {
-            queryString += '&' + param + '=' + value;
-          }
-        };
-
-      addParameter('f', $routeParams.f);
-      addParameter('a', $routeParams.a);
-      addParameter('o', $routeParams.o);
-      addParameter('s', $scope.pagesLoaded * $scope.pageSize);
-      $scope.pagesLoaded++;
-      return queryString;
-    }
 
     $scope.scrollTheList = function () {
-      $http.get('/api/' + $scope.modelName + generateListQuery()).success(function (data) {
-        if (angular.isArray(data)) {
-          $scope.recordList = $scope.recordList.concat(data);
-        } else {
-          $scope.showError(data, 'Invalid query');
-        }
-      }).error(function () {
-        $location.path('/404');
-      });
+        SubmissionsService.getPagedAndFilteredList($scope.modelName, {
+                aggregate:  $routeParams.a,
+                find: $routeParams.f,
+                limit: $scope.page_size,
+                skip: $scope.pages_loaded * $scope.page_size,
+                order: $routeParams.o
+            })
+            .success(function (data) {
+                if (angular.isArray(data)) {
+                    $scope.pages_loaded++;
+                    $scope.recordList = $scope.recordList.concat(data);
+                } else {
+                    $scope.showError(data, "Invalid query");
+                }
+            })
+            .error(function () {
+                $location.path("/404");
+            });
     };
 
-    $http.get('/api/schema/' + $scope.modelName + ($scope.formName ? '/' + $scope.formName : ''), {cache: true}).success(function (data) {
-
-      handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
-
-      if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
-        allowLocationChange = true;
-      } else {
-        var force = true;
-        $scope.$watch('record', function (newValue, oldValue) {
-          if (newValue !== oldValue) {
-            force = $scope.updateDataDependentDisplay(newValue, oldValue, force);
-          }
-        }, true);
-
-        if ($scope.id) {
-          // Going to read a record
-          if (typeof $scope.dataEventFunctions.onBeforeRead === 'function') {
-            $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
-              if (err) {
-                $scope.showError(err);
-              } else {
-                $scope.readRecord();
-              }
+    $scope.deleteRecord = function (model, id) {
+        SubmissionsService.deleteRecord(model, id)
+            .success(function () {
+                if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
+                    $scope.dataEventFunctions.onAfterDelete(master);
+                }
+                $location.path('/' + $scope.modelName);
             });
-          } else {
-            $scope.readRecord();
-          }
-        } else {
-          // New record
-          master = {};
-          $scope.phase = 'ready';
-          $scope.cancel();
-        }
-      }
-    }).error(function () {
-      $location.path('/404');
-    });
+    };
 
-    $scope.setPristine = function () {
-      $scope.dismissError();
-      if ($scope[$scope.topLevelFormName]) {
-        $scope[$scope.topLevelFormName].$setPristine();
-      }
+
+    $scope.updateDocument = function (dataToSave, options) {
+        $scope.phase = 'updating';
+
+        SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave)
+            .success(function (data) {
+                if (data.success !== false) {
+                    if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
+                        $scope.dataEventFunctions.onAfterUpdate(data, master)
+                    }
+                    if (options.redirect) {
+                        if (options.allowChange) {
+                            allowLocationChange = true;
+                        }
+                        $window.location = options.redirect;
+                    } else {
+                        $scope.processServerData(data);
+                        $scope.setPristine();
+                    }
+                } else {
+                    $scope.showError(data);
+                }
+            })
+            .error(handleError);
+
+    };
+
+    $scope.createNew = function (dataToSave, options) {
+        SubmissionsService.createRecord($scope.modelName, dataToSave)
+            .success(function (data) {
+                if (data.success !== false) {
+                    if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
+                        $scope.dataEventFunctions.onAfterCreate(data);
+                    }
+                    if (options.redirect) {
+                        $window.location = options.redirect
+                    } else {
+                        $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
+                        //                    reset?
+                    }
+                } else {
+                    $scope.showError(data);
+                }
+            })
+            .error(handleError);
+    };
+
+    SchemasService.getSchema($scope.modelName, $scope.formName)
+        .success(function (data) {
+            handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
+
+            if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
+                allowLocationChange = true;
+            } else {
+                var force = true;
+                $scope.$watch('record', function (newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        force = $scope.updateDataDependentDisplay(newValue, oldValue, force);
+                    }
+                }, true);
+
+                if ($scope.id) {
+                    // Going to read a record
+                    if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
+                        $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
+                            if (err) {
+                                $scope.showError(err);
+                            } else {
+                                $scope.readRecord();
+                            }
+                        });
+                    } else {
+                        $scope.readRecord();
+                    }
+                } else {
+                    // New record
+                    master = {};
+                    $scope.phase = 'ready';
+                    $scope.cancel();
+                }
+            }
+        })
+        .error(function () {
+            $location.path("/404");
+        });
+
+
+    var setUpSelectOptions = function (lookupCollection, schemaElement) {
+        var optionsList = $scope[schemaElement.options] = [];
+        var idList = $scope[schemaElement.ids] = [];
+
+        SchemasService.getSchema(lookupCollection)
+            .success(function (data) {
+                var listInstructions = [];
+                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
+
+                SubmissionsService.getAll(lookupCollection)
+                    .success(function (data) {
+                        if (data) {
+                            for (var i = 0; i < data.length; i++) {
+                                var option = '';
+                                for (var j = 0; j < listInstructions.length; j++) {
+                                    option += data[i][listInstructions[j].name] + ' ';
+                                }
+                                option = option.trim();
+                                var pos = _.sortedIndex(optionsList, option);
+                                // handle dupes (ideally people will use unique indexes to stop them but...)
+                                if (optionsList[pos] === option) {
+                                    option = option + '    (' + data[i]._id + ')';
+                                    pos = _.sortedIndex(optionsList, option);
+                                }
+                                optionsList.splice(pos, 0, option);
+                                idList.splice(pos, 0, data[i]._id);
+                            }
+                            updateRecordWithLookupValues(schemaElement);
+                        }
+                    });
+            });
+    };
+
+
+
+
+
+    $scope.setPristine = function() {
+        $scope.dismissError();
+        if ($scope[$scope.topLevelFormName]) {
+            $scope[$scope.topLevelFormName].$setPristine();
+        }
     };
 
     $scope.cancel = function () {
@@ -710,46 +799,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
       delete $scope.errorMessage;
     };
 
-    $scope.createNew = function (dataToSave, options) {
-      $http.post('/api/' + $scope.modelName, dataToSave).success(function (data) {
-        if (data.success !== false) {
-          if (typeof $scope.dataEventFunctions.onAfterCreate === 'function') {
-            $scope.dataEventFunctions.onAfterCreate(data);
-          }
-          if (options.redirect) {
-            $window.location = options.redirect;
-          } else {
-            $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
-            //                    reset?
-          }
-        } else {
-          $scope.showError(data);
-        }
-      }).error(handleError);
-    };
-
-    $scope.updateDocument = function (dataToSave, options) {
-      $scope.phase = 'updating';
-      $http.post('/api/' + $scope.modelName + '/' + $scope.id, dataToSave).success(function (data) {
-        if (data.success !== false) {
-          if (typeof $scope.dataEventFunctions.onAfterUpdate === 'function') {
-            $scope.dataEventFunctions.onAfterUpdate(data, master);
-          }
-          if (options.redirect) {
-            if (options.allowChange) {
-              allowLocationChange = true;
-            }
-            $window.location = options.redirect;
-          } else {
-            $scope.processServerData(data);
-            $scope.setPristine();
-          }
-        } else {
-          $scope.showError(data);
-        }
-      }).error(handleError);
-
-    };
 
     $scope.save = function (options) {
       options = options || {};
@@ -788,14 +837,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
       $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
     };
 
-    $scope.deleteRecord = function (model, id) {
-      $http.delete('/api/' + model + '/' + id).success(function () {
-        if (typeof $scope.dataEventFunctions.onAfterDelete === 'function') {
-          $scope.dataEventFunctions.onAfterDelete(master);
-        }
-        $location.path('/' + $scope.modelName);
-      });
-    };
 
     $scope.$on('$locationChangeStart', function (event, next) {
       if (!allowLocationChange && !$scope.isCancelDisabled()) {
@@ -994,8 +1035,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
       return result;
     };
 
-// Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
-// Which is what we need for use in the browser
+    // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
+    // Which is what we need for use in the browser
     var convertToAngularModel = function (schema, anObject, prefixLength) {
       for (var i = 0; i < schema.length; i++) {
         var fieldname = schema[i].name.slice(prefixLength);
@@ -1037,7 +1078,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
       return anObject;
     };
 
-// Reverse the process of convertToAngularModel
+    // Reverse the process of convertToAngularModel
     var convertToMongoModel = function (schema, anObject, prefixLength) {
 
       for (var i = 0; i < schema.length; i++) {
@@ -1141,35 +1182,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
       }
     };
 
-    var setUpSelectOptions = function (lookupCollection, schemaElement) {
-      var optionsList = $scope[schemaElement.options] = [];
-      var idList = $scope[schemaElement.ids] = [];
-      $http.get('/api/schema/' + lookupCollection, {cache: true}).success(function (data) {
-        var listInstructions = [];
-        handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
-        $http.get('/api/' + lookupCollection, {cache: true}).success(function (data) {
-          if (data) {
-            for (var i = 0; i < data.length; i++) {
-              var option = '';
-              for (var j = 0; j < listInstructions.length; j++) {
-                option += data[i][listInstructions[j].name] + ' ';
-              }
-              option = option.trim();
-              var pos = _.sortedIndex(optionsList, option);
-              // handle dupes (ideally people will use unique indexes to stop them but...)
-              if (optionsList[pos] === option) {
-                option = option + '    (' + data[i]._id + ')';
-                pos = _.sortedIndex(optionsList, option);
-              }
-              optionsList.splice(pos, 0, option);
-              idList.splice(pos, 0, data[i]._id);
-            }
-            updateRecordWithLookupValues(schemaElement);
-          }
-        });
-      });
-    };
-
     var updateRecordWithLookupValues = function (schemaElement) {
       // Update the master and the record with the lookup values
       if (!$scope.topLevelFormName || $scope[$scope.topLevelFormName].$pristine) {
@@ -1183,7 +1195,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
       }
     };
 
-// Open a select2 control from the appended search button
+    // Open a select2 control from the appended search button
     $scope.openSelect2 = function (ev) {
       $('#' + $(ev.currentTarget).data('select2-open')).select2('open');
     };
