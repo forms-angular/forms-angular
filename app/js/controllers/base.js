@@ -31,11 +31,49 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
-    $scope.generateEditUrl = function(obj) {
-        return urlService.buildUrl($scope.modelName + '/' + $scope.formPlusSlash + obj._id + '/edit');
-    };
 
-    $scope.walkTree = function (object, fieldname, element) {
+    // load up the schema
+    SchemasService.getSchema($scope.modelName, $scope.formName)
+        .success(function (data) {
+            handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
+
+            if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
+                allowLocationChange = true;
+            } else {
+                var force = true;
+                $scope.$watch('record', function (newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        force = $scope.updateDataDependentDisplay(newValue, oldValue, force);
+                    }
+                }, true);
+
+                if ($scope.id) {
+                    // Going to read a record
+                    if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
+                        $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
+                            if (err) {
+                                $scope.showError(err);
+                            } else {
+                                $scope.readRecord();
+                            }
+                        });
+                    } else {
+                        $scope.readRecord();
+                    }
+                } else {
+                    // New record
+                    master = {};
+                    $scope.phase = 'ready';
+                    $scope.cancel();
+                }
+            }
+        })
+        .error(function () {
+            $location.path("/404");
+        });
+
+
+    var walkTree = function (object, fieldname, element) {
         // Walk through subdocs to find the required key
         // for instance walkTree(master,'address.street.number',element)
         // called by getData and setData
@@ -60,24 +98,14 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         return {lastObject: workingRec, key: workingRec ? parts[higherLevels] : undefined};
     };
 
-    $scope.getData = function (object, fieldname, element) {
-        var leafData = $scope.walkTree(object, fieldname, element);
-        return (leafData.lastObject && leafData.key) ? leafData.lastObject[leafData.key] : undefined;
-    };
-
-    $scope.setData = function (object, fieldname, element, value) {
-        var leafData = $scope.walkTree(object, fieldname, element);
-        leafData.lastObject[leafData.key] = value;
-    };
-
-    function updateInvalidClasses(value, id, select2) {
+    var updateInvalidClasses = function (value, id, select2) {
         var target = '#' + ((select2) ? 'cg_' : '') + id;
         if (value) {
             $(target).removeClass(fngInvalidRequired);
         } else {
             $(target).addClass(fngInvalidRequired);
         }
-    }
+    };
 
     var suffixCleanId = function (inst, suffix) {
         return (inst.id || 'f_' + inst.name).replace(/\./g, '_') + suffix;
@@ -383,6 +411,370 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         return display;
     };
 
+    var setUpSelectOptions = function (lookupCollection, schemaElement) {
+        var optionsList = $scope[schemaElement.options] = [];
+        var idList = $scope[schemaElement.ids] = [];
+
+        SchemasService.getSchema(lookupCollection)
+            .success(function (data) {
+                var listInstructions = [];
+                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
+
+                SubmissionsService.getAll(lookupCollection)
+                    .success(function (data) {
+                        if (data) {
+                            for (var i = 0; i < data.length; i++) {
+                                var option = '';
+                                for (var j = 0; j < listInstructions.length; j++) {
+                                    option += data[i][listInstructions[j].name] + ' ';
+                                }
+                                option = option.trim();
+                                var pos = _.sortedIndex(optionsList, option);
+                                // handle dupes (ideally people will use unique indexes to stop them but...)
+                                if (optionsList[pos] === option) {
+                                    option = option + '    (' + data[i]._id + ')';
+                                    pos = _.sortedIndex(optionsList, option);
+                                }
+                                optionsList.splice(pos, 0, option);
+                                idList.splice(pos, 0, data[i]._id);
+                            }
+                            updateRecordWithLookupValues(schemaElement);
+                        }
+                    });
+            });
+    };
+
+    var handleError = function (data, status) {
+        if ([200, 400].indexOf(status) !== -1) {
+            var errorMessage = '';
+            for (var errorField in data.errors) {
+                if (data.errors.hasOwnProperty(errorField)) {
+                    errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
+                    switch (data.errors[errorField].type) {
+                        case 'enum' :
+                            errorMessage += 'You need to select from the list of values';
+                            break;
+                        default:
+                            errorMessage += data.errors[errorField].message;
+                            break;
+                    }
+                    errorMessage += '</li>'
+                }
+            }
+            if (errorMessage.length > 0) {
+                errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
+            } else {
+                errorMessage = data.message || "Error!  Sorry - No further details available.";
+            }
+            $scope.showError(errorMessage);
+        } else {
+            $scope.showError(status + ' ' + JSON.stringify(data));
+        }
+    };
+
+    // Split a field name into the next level and all following levels
+    var splitFieldName = function (aFieldName) {
+        var nesting = aFieldName.split('.'),
+            result = [nesting[0]];
+
+        if (nesting.length > 1) {
+            result.push(nesting.slice(1).join('.'));
+        }
+
+        return result;
+    };
+
+    var updateObject = function (aFieldName, portion, fn) {
+        var fieldDetails = splitFieldName(aFieldName);
+
+        if (fieldDetails.length > 1) {
+            updateArrayOrObject(fieldDetails[1], portion[fieldDetails[0]], fn);
+        } else if (portion[fieldDetails[0]]) {
+            var theValue = portion[fieldDetails[0]];
+            portion[fieldDetails[0]] = fn((typeof theValue === 'Object') ? (theValue.x || theValue.id ) : theValue)
+        }
+    };
+
+    var updateArrayOrObject = function (aFieldName, portion, fn) {
+        if (portion !== undefined) {
+            if ($.isArray(portion)) {
+                for (var i = 0; i < portion.length; i++) {
+                    updateObject(aFieldName, portion[i], fn);
+                }
+            } else {
+                updateObject(aFieldName, portion, fn);
+            }
+        }
+    };
+
+    var simpleArrayNeedsX = function (aSchema) {
+        var result = false;
+        if (aSchema.type === 'text') {
+            result = true;
+        } else if ((aSchema.type === 'select') && !aSchema.ids) {
+            result = true;
+        }
+        return result;
+    };
+
+    // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
+    // Which is what we need for use in the browser
+    var convertToAngularModel = function (schema, anObject, prefixLength) {
+        for (var i = 0; i < schema.length; i++) {
+            var fieldname = schema[i].name.slice(prefixLength);
+            if (schema[i].schema) {
+                if (anObject[fieldname]) {
+                    for (var j = 0; j < anObject[fieldname].length; j++) {
+                        anObject[fieldname][j] = convertToAngularModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
+                    }
+                }
+            } else {
+
+                // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
+                var thisField = $scope.getListData(anObject, fieldname);
+                if (schema[i].array && simpleArrayNeedsX(schema[i]) && thisField) {
+                    for (var k = 0; k < thisField.length; k++) {
+                        thisField[k] = {x: thisField[k]}
+                    }
+                }
+
+                // Convert {lookup:'012abcde'} to {lookup:'List description for 012abcde'}
+                var idList = $scope[suffixCleanId(schema[i], '_ids')];
+                if (idList && idList.length > 0 && anObject[fieldname]) {
+                    anObject[fieldname] = convertForeignKeys(schema[i], anObject[fieldname], $scope[suffixCleanId(schema[i], 'Options')], idList);
+                } else if (schema[i].select2 && !schema[i].select2.fngAjax) {
+                    if (anObject[fieldname]) {
+                        // Might as well use the function we set up to do the search
+                        $scope[schema[i].select2.s2query].query({
+                            term: anObject[fieldname],
+                            callback: function (array) {
+                                if (array.results.length > 0) {
+                                    anObject[fieldname] = array.results[0];
+                                }
+                            }});
+                    }
+                }
+            }
+        }
+        return anObject;
+    };
+
+    // Reverse the process of convertToAngularModel
+    var convertToMongoModel = function (schema, anObject, prefixLength) {
+
+        for (var i = 0; i < schema.length; i++) {
+            var fieldname = schema[i].name.slice(prefixLength);
+            var thisField = $scope.getListData(anObject, fieldname);
+
+            if (schema[i].schema) {
+                if (thisField) {
+                    for (var j = 0; j < thisField.length; j++) {
+                        thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length);
+                    }
+                }
+            } else {
+
+                // Convert {array:[{x:'item 1'}]} to {array:['item 1']}
+                if (schema[i].array && simpleArrayNeedsX(schema[i]) && thisField) {
+                    for (var k = 0; k < thisField.length; k++) {
+                        thisField[k] = thisField[k].x
+                    }
+                }
+
+                // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
+                var idList = $scope[suffixCleanId(schema[i], '_ids')];
+                if (idList && idList.length > 0) {
+                    updateObject(fieldname, anObject, function (value) {
+                        return( convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i], 'Options')], idList) );
+                    });
+                } else if (schema[i].select2) {
+                    var lookup = $scope.getData(anObject, fieldname, null);
+                    if (schema[i].select2.fngAjax) {
+                        if (lookup && lookup.id) {
+                            $scope.setData(anObject, fieldname, null, lookup.id);
+                        }
+                    } else {
+                        if (lookup) {
+                            $scope.setData(anObject, fieldname, null, lookup.text);
+                        } else {
+                            $scope.setData(anObject, fieldname, null, undefined);
+                        }
+                    }
+                }
+
+            }
+        }
+        return anObject;
+    };
+
+    // Convert foreign keys into their display for selects
+    // Called when the model is read and when the lookups are read
+    // No support for nested schemas here as it is called from convertToAngularModel which does that
+    var convertForeignKeys = function (schemaElement, input, values, ids) {
+        if (schemaElement.array) {
+            var returnArray = [];
+            for (var j = 0; j < input.length; j++) {
+                returnArray.push({x: convertIdToListValue(input[j], ids, values, schemaElement.name)});
+            }
+            return returnArray;
+        } else if (schemaElement.select2) {
+            return {id: input, text : convertIdToListValue(input, ids, values, schemaElement.name)};
+        } else {
+            return convertIdToListValue(input, ids, values, schemaElement.name);
+        }
+    };
+
+    // Convert ids into their foreign keys
+    // Called when saving the model
+    // No support for nested schemas here as it is called from convertToMongoModel which does that
+    var convertToForeignKeys = function (schemaElement, input, values, ids) {
+        if (schemaElement.array) {
+            var returnArray = [];
+            for (var j = 0; j < input.length; j++) {
+                returnArray.push(convertListValueToId(input[j], values, ids, schemaElement.name));
+            }
+            return returnArray;
+        } else {
+            return convertListValueToId(input, values, ids, schemaElement.name);
+        }
+    };
+
+    var convertIdToListValue = function (id, idsArray, valuesArray, fname) {
+        var index = idsArray.indexOf(id);
+        if (index === -1) {
+            throw new Error("convertIdToListValue: Invalid data - id " + id + " not found in " + idsArray + " processing " + fname)
+        }
+        return valuesArray[index];
+    };
+
+    var convertListValueToId = function (value, valuesArray, idsArray, fname) {
+        var textToConvert = _.isObject(value) ? (value.x || value.text) : value;
+        if (textToConvert && textToConvert.match(/^[0-9a-f]{24}$/)) {
+            return(textToConvert);  // a plugin probably added this
+        } else {
+            var index = valuesArray.indexOf(textToConvert);
+            if (index === -1) {
+                throw new Error("convertListValueToId: Invalid data - value " + textToConvert + " not found in " + valuesArray + " processing " + fname)
+            }
+            return idsArray[index];
+        }
+    };
+
+    var updateRecordWithLookupValues = function (schemaElement) {
+        // Update the master and the record with the lookup values
+        if (!$scope.topLevelFormName || $scope[$scope.topLevelFormName].$pristine) {
+            updateObject(schemaElement.name, master, function (value) {
+                return( convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement, '_ids')]));
+            });
+            // TODO This needs a rethink - it is a quick workaround.  See https://trello.com/c/q3B7Usll
+            if (master[schemaElement.name]) {
+                $scope.record[schemaElement.name] = master[schemaElement.name];
+            }
+        }
+    };
+
+    var handleSchema = function (description, source, destForm, destList, prefix, doRecursion) {
+
+        function handletabInfo(tabName, thisInst) {
+            var tabTitle = angular.copy(tabName);
+            var tab = _.find($scope.tabs, function (atab) {
+                return atab.title === tabTitle
+            });
+            if (!tab) {
+                if ($scope.tabs.length === 0) {
+                    if ($scope.formSchema.length > 0) {
+                        $scope.tabs.push({title: 'Main', content: []});
+                        tab = $scope.tabs[0];
+                        for (var i = 0; i < $scope.formSchema.length; i++) {
+                            tab.content.push($scope.formSchema[i])
+                        }
+                    }
+                }
+                tab = $scope.tabs[$scope.tabs.push({title: tabTitle, containerType: 'tab', content: []}) - 1]
+            }
+            tab.content.push(thisInst);
+        }
+
+        for (var field in source) {
+            if (field !== '_id' && source.hasOwnProperty(field)) {
+                var mongooseType = source[field],
+                    mongooseOptions = mongooseType.options || {};
+                var formData = mongooseOptions.form || {};
+                if (!formData.hidden) {
+                    if (mongooseType.schema) {
+                        if (doRecursion && destForm) {
+                            var schemaSchema = [];
+                            handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true);
+                            var sectionInstructions = basicInstructions(field, formData, prefix);
+                            sectionInstructions.schema = schemaSchema;
+                            if (formData.tab) handletabInfo(formData.tab, sectionInstructions);
+                            if (formData.order !== undefined) {
+                                destForm.splice(formData.order, 0, sectionInstructions);
+                            } else {
+                                destForm.push(sectionInstructions);
+                            }
+                        }
+                    } else {
+                        if (destForm) {
+                            var formInstructions = basicInstructions(field, formData, prefix);
+                            if (handleConditionals(formInstructions.showIf, formInstructions.name) && field !== 'options') {
+                                var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
+                                if (formInst.tab) handletabInfo(formInst.tab, formInst);
+                                if (formData.order !== undefined) {
+                                    destForm.splice(formData.order, 0, formInst);
+                                } else {
+                                    destForm.push(formInst);
+                                }
+                            }
+                        }
+                        if (destList) {
+                            handleListInfo(destList, mongooseOptions.list, field);
+                        }
+                    }
+                }
+            }
+        }
+        //        //if a hash is defined then make that the selected tab is displayed
+        //        if ($scope.tabs.length > 0 && $location.hash()) {
+        //            var tab = _.find($scope.tabs, function (atab) {
+        //                return atab.title === $location.hash();
+        //            });
+        //
+        //            if (tab) {
+        //                for (var i = 0; i < $scope.tabs.length; i++) {
+        //                    $scope.tabs[i].active = false;
+        //                }
+        //                tab.active = true;
+        //            }
+        //        }
+        //
+        //        //now add a hash for the active tab if none exists
+        //        if ($scope.tabs.length > 0 && !$location.hash()) {
+        //            console.log($scope.tabs[0]['title'])
+        //            $location.hash($scope.tabs[0]['title']);
+        //        }
+
+        if (destList && destList.length === 0) {
+            handleEmptyList(description, destList, destForm, source);
+        }
+    };
+
+
+
+    $scope.generateEditUrl = function(obj) {
+        return urlService.buildUrl($scope.modelName + '/' + $scope.formPlusSlash + obj._id + '/edit');
+    };
+
+    $scope.getData = function (object, fieldname, element) {
+        var leafData = walkTree(object, fieldname, element);
+        return (leafData.lastObject && leafData.key) ? leafData.lastObject[leafData.key] : undefined;
+    };
+
+    $scope.setData = function (object, fieldname, element, value) {
+        var leafData = walkTree(object, fieldname, element);
+        leafData.lastObject[leafData.key] = value;
+    };
+
     // TODO: Think about nested arrays
     // This doesn't handle things like :
     // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
@@ -474,92 +866,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         return forceNextTime;
     };
 
-    var handleSchema = function (description, source, destForm, destList, prefix, doRecursion) {
-
-        function handletabInfo(tabName, thisInst) {
-            var tabTitle = angular.copy(tabName);
-            var tab = _.find($scope.tabs, function (atab) {
-                return atab.title === tabTitle
-            });
-            if (!tab) {
-                if ($scope.tabs.length === 0) {
-                    if ($scope.formSchema.length > 0) {
-                        $scope.tabs.push({title: 'Main', content: []});
-                        tab = $scope.tabs[0];
-                        for (var i = 0; i < $scope.formSchema.length; i++) {
-                            tab.content.push($scope.formSchema[i])
-                        }
-                    }
-                }
-                tab = $scope.tabs[$scope.tabs.push({title: tabTitle, containerType: 'tab', content: []}) - 1]
-            }
-            tab.content.push(thisInst);
-        }
-
-        for (var field in source) {
-            if (field !== '_id' && source.hasOwnProperty(field)) {
-                var mongooseType = source[field],
-                    mongooseOptions = mongooseType.options || {};
-                var formData = mongooseOptions.form || {};
-                if (!formData.hidden) {
-                    if (mongooseType.schema) {
-                        if (doRecursion && destForm) {
-                            var schemaSchema = [];
-                            handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true);
-                            var sectionInstructions = basicInstructions(field, formData, prefix);
-                            sectionInstructions.schema = schemaSchema;
-                            if (formData.tab) handletabInfo(formData.tab, sectionInstructions);
-                            if (formData.order !== undefined) {
-                                destForm.splice(formData.order, 0, sectionInstructions);
-                            } else {
-                                destForm.push(sectionInstructions);
-                            }
-                        }
-                    } else {
-                        if (destForm) {
-                            var formInstructions = basicInstructions(field, formData, prefix);
-                            if (handleConditionals(formInstructions.showIf, formInstructions.name) && field !== 'options') {
-                                var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
-                                if (formInst.tab) handletabInfo(formInst.tab, formInst);
-                                if (formData.order !== undefined) {
-                                    destForm.splice(formData.order, 0, formInst);
-                                } else {
-                                    destForm.push(formInst);
-                                }
-                            }
-                        }
-                        if (destList) {
-                            handleListInfo(destList, mongooseOptions.list, field);
-                        }
-                    }
-                }
-            }
-        }
-        //        //if a hash is defined then make that the selected tab is displayed
-        //        if ($scope.tabs.length > 0 && $location.hash()) {
-        //            var tab = _.find($scope.tabs, function (atab) {
-        //                return atab.title === $location.hash();
-        //            });
-        //
-        //            if (tab) {
-        //                for (var i = 0; i < $scope.tabs.length; i++) {
-        //                    $scope.tabs[i].active = false;
-        //                }
-        //                tab.active = true;
-        //            }
-        //        }
-        //
-        //        //now add a hash for the active tab if none exists
-        //        if ($scope.tabs.length > 0 && !$location.hash()) {
-        //            console.log($scope.tabs[0]['title'])
-        //            $location.hash($scope.tabs[0]['title']);
-        //        }
-
-        if (destList && destList.length === 0) {
-            handleEmptyList(description, destList, destForm, source);
-        }
-    };
-
     $scope.processServerData = function(recordFromServer) {
         master = convertToAngularModel($scope.formSchema, recordFromServer, 0);
         $scope.phase = 'ready';
@@ -614,7 +920,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
             });
     };
 
-
     $scope.updateDocument = function (dataToSave, options) {
         $scope.phase = 'updating';
 
@@ -638,7 +943,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
                 }
             })
             .error(handleError);
-
     };
 
     $scope.createNew = function (dataToSave, options) {
@@ -661,83 +965,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
             .error(handleError);
     };
 
-    SchemasService.getSchema($scope.modelName, $scope.formName)
-        .success(function (data) {
-            handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
-
-            if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
-                allowLocationChange = true;
-            } else {
-                var force = true;
-                $scope.$watch('record', function (newValue, oldValue) {
-                    if (newValue !== oldValue) {
-                        force = $scope.updateDataDependentDisplay(newValue, oldValue, force);
-                    }
-                }, true);
-
-                if ($scope.id) {
-                    // Going to read a record
-                    if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
-                        $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
-                            if (err) {
-                                $scope.showError(err);
-                            } else {
-                                $scope.readRecord();
-                            }
-                        });
-                    } else {
-                        $scope.readRecord();
-                    }
-                } else {
-                    // New record
-                    master = {};
-                    $scope.phase = 'ready';
-                    $scope.cancel();
-                }
-            }
-        })
-        .error(function () {
-            $location.path("/404");
-        });
-
-
-    var setUpSelectOptions = function (lookupCollection, schemaElement) {
-        var optionsList = $scope[schemaElement.options] = [];
-        var idList = $scope[schemaElement.ids] = [];
-
-        SchemasService.getSchema(lookupCollection)
-            .success(function (data) {
-                var listInstructions = [];
-                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
-
-                SubmissionsService.getAll(lookupCollection)
-                    .success(function (data) {
-                        if (data) {
-                            for (var i = 0; i < data.length; i++) {
-                                var option = '';
-                                for (var j = 0; j < listInstructions.length; j++) {
-                                    option += data[i][listInstructions[j].name] + ' ';
-                                }
-                                option = option.trim();
-                                var pos = _.sortedIndex(optionsList, option);
-                                // handle dupes (ideally people will use unique indexes to stop them but...)
-                                if (optionsList[pos] === option) {
-                                    option = option + '    (' + data[i]._id + ')';
-                                    pos = _.sortedIndex(optionsList, option);
-                                }
-                                optionsList.splice(pos, 0, option);
-                                idList.splice(pos, 0, data[i]._id);
-                            }
-                            updateRecordWithLookupValues(schemaElement);
-                        }
-                    });
-            });
-    };
-
-
-
-
-
     $scope.setPristine = function() {
         $scope.dismissError();
         if ($scope[$scope.topLevelFormName]) {
@@ -756,43 +983,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         $scope.setPristine();
     };
 
-    //listener for any child scopes to display messages
-    // pass like this:
-    //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
-    // or
-    //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
-    $scope.$on('showErrorMessage', function (event, args) {
-        $scope.showError(args.body, args.title);
-    });
-
-    var handleError = function (data, status) {
-        if ([200, 400].indexOf(status) !== -1) {
-            var errorMessage = '';
-            for (var errorField in data.errors) {
-                if (data.errors.hasOwnProperty(errorField)) {
-                    errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
-                    switch (data.errors[errorField].type) {
-                        case 'enum' :
-                            errorMessage += 'You need to select from the list of values';
-                            break;
-                        default:
-                            errorMessage += data.errors[errorField].message;
-                            break;
-                    }
-                    errorMessage += '</li>'
-                }
-            }
-            if (errorMessage.length > 0) {
-                errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
-            } else {
-                errorMessage = data.message || "Error!  Sorry - No further details available.";
-            }
-            $scope.showError(errorMessage);
-        } else {
-            $scope.showError(status + ' ' + JSON.stringify(data));
-        }
-    };
-
     $scope.showError = function (errString, alertTitle) {
         $scope.alertTitle = alertTitle ? alertTitle : "Error!";
         $scope.errorMessage = errString;
@@ -801,7 +991,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
     $scope.dismissError = function () {
         delete $scope.errorMessage;
     };
-
 
     $scope.save = function (options) {
         options = options || {};
@@ -839,39 +1028,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         $location.search("");
         $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
     };
-
-
-    $scope.$on('$locationChangeStart', function (event, next) {
-        if (!allowLocationChange && !$scope.isCancelDisabled()) {
-            event.preventDefault();
-            var modalInstance = $modal.open({
-                template:   '<div class="modal-header">' +
-                            '   <h3>Record modified</h3>' +
-                            '</div>' +
-                            '<div class="modal-body">' +
-                            '   <p>Would you like to save your changes?</p>' +
-                            '</div>' +
-                            '<div class="modal-footer">' +
-                            '    <button class="btn btn-primary dlg-yes" ng-click="yes()">Yes</button>' +
-                            '    <button class="btn btn-warning dlg-no" ng-click="no()">No</button>' +
-                            '    <button class="btn dlg-cancel" ng-click="cancel()">Cancel</button>' +
-                            '</div>',
-                controller: 'SaveChangesModalCtrl',
-                backdrop: 'static'
-            });
-
-            modalInstance.result.then(
-                function (result) {
-                    if (result) {
-                        $scope.save({redirect: next, allowChange: true});    // save changes
-                    } else {
-                        allowLocationChange = true;
-                        $window.location = next;
-                    }
-                }
-            );
-        }
-    });
 
     $scope.delete = function () {
         if ($scope.record._id) {
@@ -988,211 +1144,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         $scope.setFormDirty($event);
     };
 
-    // Split a field name into the next level and all following levels
-    var splitFieldName = function (aFieldName) {
-        var nesting = aFieldName.split('.'),
-            result = [nesting[0]];
-
-        if (nesting.length > 1) {
-            result.push(nesting.slice(1).join('.'));
-        }
-
-        return result;
-    };
-
-    var updateObject = function (aFieldName, portion, fn) {
-        var fieldDetails = splitFieldName(aFieldName);
-
-        if (fieldDetails.length > 1) {
-            updateArrayOrObject(fieldDetails[1], portion[fieldDetails[0]], fn);
-        } else if (portion[fieldDetails[0]]) {
-            var theValue = portion[fieldDetails[0]];
-            portion[fieldDetails[0]] = fn((typeof theValue === 'Object') ? (theValue.x || theValue.id ) : theValue)
-        }
-    };
-
-    var updateArrayOrObject = function (aFieldName, portion, fn) {
-        if (portion !== undefined) {
-            if ($.isArray(portion)) {
-                for (var i = 0; i < portion.length; i++) {
-                    updateObject(aFieldName, portion[i], fn);
-                }
-            } else {
-                updateObject(aFieldName, portion, fn);
-            }
-        }
-    };
-
-
-    var simpleArrayNeedsX = function (aSchema) {
-        var result = false;
-        if (aSchema.type === 'text') {
-            result = true;
-        } else if ((aSchema.type === 'select') && !aSchema.ids) {
-            result = true;
-        }
-        return result;
-    };
-
-    // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
-    // Which is what we need for use in the browser
-    var convertToAngularModel = function (schema, anObject, prefixLength) {
-        for (var i = 0; i < schema.length; i++) {
-            var fieldname = schema[i].name.slice(prefixLength);
-            if (schema[i].schema) {
-                if (anObject[fieldname]) {
-                    for (var j = 0; j < anObject[fieldname].length; j++) {
-                        anObject[fieldname][j] = convertToAngularModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
-                    }
-                }
-            } else {
-
-                // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
-                var thisField = $scope.getListData(anObject, fieldname);
-                if (schema[i].array && simpleArrayNeedsX(schema[i]) && thisField) {
-                    for (var k = 0; k < thisField.length; k++) {
-                        thisField[k] = {x: thisField[k]}
-                    }
-                }
-
-                // Convert {lookup:'012abcde'} to {lookup:'List description for 012abcde'}
-                var idList = $scope[suffixCleanId(schema[i], '_ids')];
-                if (idList && idList.length > 0 && anObject[fieldname]) {
-                    anObject[fieldname] = convertForeignKeys(schema[i], anObject[fieldname], $scope[suffixCleanId(schema[i], 'Options')], idList);
-                } else if (schema[i].select2 && !schema[i].select2.fngAjax) {
-                    if (anObject[fieldname]) {
-                        // Might as well use the function we set up to do the search
-                        $scope[schema[i].select2.s2query].query({
-                            term: anObject[fieldname],
-                            callback: function (array) {
-                                if (array.results.length > 0) {
-                                    anObject[fieldname] = array.results[0];
-                                }
-                            }});
-                    }
-                }
-            }
-        }
-        return anObject;
-    };
-
-    // Reverse the process of convertToAngularModel
-    var convertToMongoModel = function (schema, anObject, prefixLength) {
-
-        for (var i = 0; i < schema.length; i++) {
-            var fieldname = schema[i].name.slice(prefixLength);
-            var thisField = $scope.getListData(anObject, fieldname);
-
-            if (schema[i].schema) {
-                if (thisField) {
-                    for (var j = 0; j < thisField.length; j++) {
-                        thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length);
-                    }
-                }
-            } else {
-
-                // Convert {array:[{x:'item 1'}]} to {array:['item 1']}
-                if (schema[i].array && simpleArrayNeedsX(schema[i]) && thisField) {
-                    for (var k = 0; k < thisField.length; k++) {
-                        thisField[k] = thisField[k].x
-                    }
-                }
-
-                // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
-                var idList = $scope[suffixCleanId(schema[i], '_ids')];
-                if (idList && idList.length > 0) {
-                    updateObject(fieldname, anObject, function (value) {
-                        return( convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i], 'Options')], idList) );
-                    });
-                } else if (schema[i].select2) {
-                    var lookup = $scope.getData(anObject, fieldname, null);
-                    if (schema[i].select2.fngAjax) {
-                        if (lookup && lookup.id) {
-                            $scope.setData(anObject, fieldname, null, lookup.id);
-                        }
-                    } else {
-                        if (lookup) {
-                            $scope.setData(anObject, fieldname, null, lookup.text);
-                        } else {
-                            $scope.setData(anObject, fieldname, null, undefined);
-                        }
-                    }
-                }
-
-            }
-        }
-        return anObject;
-    };
-
-
-    // Convert foreign keys into their display for selects
-    // Called when the model is read and when the lookups are read
-
-    // No support for nested schemas here as it is called from convertToAngularModel which does that
-    var convertForeignKeys = function (schemaElement, input, values, ids) {
-        if (schemaElement.array) {
-            var returnArray = [];
-            for (var j = 0; j < input.length; j++) {
-                returnArray.push({x: convertIdToListValue(input[j], ids, values, schemaElement.name)});
-            }
-            return returnArray;
-        } else if (schemaElement.select2) {
-            return {id: input, text : convertIdToListValue(input, ids, values, schemaElement.name)};
-        } else {
-            return convertIdToListValue(input, ids, values, schemaElement.name);
-        }
-    };
-
-    // Convert ids into their foreign keys
-    // Called when saving the model
-
-    // No support for nested schemas here as it is called from convertToMongoModel which does that
-    var convertToForeignKeys = function (schemaElement, input, values, ids) {
-        if (schemaElement.array) {
-            var returnArray = [];
-            for (var j = 0; j < input.length; j++) {
-                returnArray.push(convertListValueToId(input[j], values, ids, schemaElement.name));
-            }
-            return returnArray;
-        } else {
-            return convertListValueToId(input, values, ids, schemaElement.name);
-        }
-    };
-
-    var convertIdToListValue = function (id, idsArray, valuesArray, fname) {
-        var index = idsArray.indexOf(id);
-        if (index === -1) {
-            throw new Error("convertIdToListValue: Invalid data - id " + id + " not found in " + idsArray + " processing " + fname)
-        }
-        return valuesArray[index];
-    };
-
-    var convertListValueToId = function (value, valuesArray, idsArray, fname) {
-        var textToConvert = _.isObject(value) ? (value.x || value.text) : value;
-        if (textToConvert && textToConvert.match(/^[0-9a-f]{24}$/)) {
-            return(textToConvert);  // a plugin probably added this
-        } else {
-            var index = valuesArray.indexOf(textToConvert);
-            if (index === -1) {
-                throw new Error("convertListValueToId: Invalid data - value " + textToConvert + " not found in " + valuesArray + " processing " + fname)
-            }
-            return idsArray[index];
-        }
-    };
-
-    var updateRecordWithLookupValues = function (schemaElement) {
-        // Update the master and the record with the lookup values
-        if (!$scope.topLevelFormName || $scope[$scope.topLevelFormName].$pristine) {
-            updateObject(schemaElement.name, master, function (value) {
-                return( convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement, '_ids')]));
-            });
-            // TODO This needs a rethink - it is a quick workaround.  See https://trello.com/c/q3B7Usll
-            if (master[schemaElement.name]) {
-                $scope.record[schemaElement.name] = master[schemaElement.name];
-            }
-        }
-    };
-
     // Open a select2 control from the appended search button
     $scope.openSelect2 = function (ev) {
         $('#' + $(ev.currentTarget).data('select2-open')).select2('open')
@@ -1206,8 +1157,52 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         return ($scope.tabs.length ? $scope.tabs : $scope.formSchema)
     }
 
-}
-]);
+
+    //listener for any child scopes to display messages
+    // pass like this:
+    //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+    // or
+    //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+    $scope.$on('showErrorMessage', function (event, args) {
+        $scope.showError(args.body, args.title);
+    });
+
+    $scope.$on('$locationChangeStart', function (event, next) {
+        if (!allowLocationChange && !$scope.isCancelDisabled()) {
+            event.preventDefault();
+            var modalInstance = $modal.open({
+                template:   '<div class="modal-header">' +
+                            '   <h3>Record modified</h3>' +
+                            '</div>' +
+                            '<div class="modal-body">' +
+                            '   <p>Would you like to save your changes?</p>' +
+                            '</div>' +
+                            '<div class="modal-footer">' +
+                            '    <button class="btn btn-primary dlg-yes" ng-click="yes()">Yes</button>' +
+                            '    <button class="btn btn-warning dlg-no" ng-click="no()">No</button>' +
+                            '    <button class="btn dlg-cancel" ng-click="cancel()">Cancel</button>' +
+                            '</div>',
+                controller: 'SaveChangesModalCtrl',
+                backdrop: 'static'
+            });
+
+            modalInstance.result.then(
+                function (result) {
+                    if (result) {
+                        $scope.save({redirect: next, allowChange: true});    // save changes
+                    } else {
+                        allowLocationChange = true;
+                        $window.location = next;
+                    }
+                }
+            );
+        }
+    });
+
+
+}]);
+
+
 
 fang.controller( 'SaveChangesModalCtrl',
 [
