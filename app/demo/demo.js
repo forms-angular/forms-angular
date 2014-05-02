@@ -23,5 +23,5 @@ myDemoApp.config(['formRoutesProvider', function (formRoutes) {
 
 formsAngular.config(['urlServiceProvider','cssFrameworkServiceProvider',function(urlService, cssFrameworkService) {
     urlService.setOptions({html5Mode: false, hashPrefix: '!'});
-    cssFrameworkService.setOptions({framework:'bs3'});
+    cssFrameworkService.setOptions({framework:'bs2'});  // Unit and e2e tests depend on this being bs2
 }]);
