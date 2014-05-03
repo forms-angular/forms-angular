@@ -4,11 +4,11 @@ var demo = angular.module('myDemoApp');
 
 demo.controller( 'BUsingOptionsJustnameandpostcodeCtrl',
 [
-    '$scope', '$data', '$timeout'
+    '$scope', '$data', '$timeout', 'RecordService'
 ,
-function($scope, $data, $timeout) {
+function($scope, $data, $timeout, RecordService) {
 
-    $scope.record = $data.record;
+    $scope.record = RecordService.get(); //$data.record;
     $data.modelNameDisplay = "Another override";
     $data.dropDownDisplay = 'Custom 2nd Level';
 

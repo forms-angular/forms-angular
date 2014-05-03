@@ -4,11 +4,11 @@ var demo = angular.module('myDemoApp');
 
 demo.controller( 'BUsingOptionsCtrl',
 [
-    '$scope', '$data', '$timeout'
+    '$scope', '$data', '$timeout', 'RecordService'
 ,
-function($scope, $data, $timeout) {
+function($scope, $data, $timeout, RecordService) {
 
-    $scope.record = $data.record;
+    $scope.record = RecordService.get();
 
     $data.dropDownDisplay = 'Custom Dropdown';
 
@@ -21,23 +21,10 @@ function($scope, $data, $timeout) {
     };
 
     $scope.changeCase = function() {
-
-        var changeCaseInt = function (newCase) {
-            for (var property in $scope.record) {
-                if (property !== '_id' && typeof $scope.record[property] === 'string') {
-                    if (newCase === 'lower') {
-                        $scope.record[property] = $scope.record[property].toLowerCase();
-                    } else {
-                        $scope.record[property] = $scope.record[property].toUpperCase();
-                    }
-                }
-            }
-        };
-
         if ($scope.record.surname == $scope.record.surname.toLowerCase()) {
-            changeCaseInt('upper');
+            RecordService.upperCaseify();
         } else {
-            changeCaseInt('lower');
+            RecordService.lowerCaseify();
         }
     };
 
