@@ -1,8 +1,8 @@
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
-fang.filter('titleCase',[function() {
+fng.filter('titleCase',[function() {
     return function(str, stripSpaces) {
         var value = str
             .replace(/(_|\.)/g, ' ')                       // replace underscores and dots with spaces

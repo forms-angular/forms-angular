@@ -1,8 +1,8 @@
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
-fang.controller( 'AnalysisCtrl',
+fng.controller( 'AnalysisCtrl',
 [
     '$locationParse', '$filter', '$scope', '$http', '$location', '$routeParams'
 ,

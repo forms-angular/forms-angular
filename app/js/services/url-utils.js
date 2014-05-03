@@ -1,9 +1,9 @@
 /* global formsAngular: false */
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
-fang.provider( 'urlService', ['$locationProvider', function ($locationProvider) {
+fng.provider( 'urlService', ['$locationProvider', function ($locationProvider) {
     var config = {
         hashPrefix: '',
         html5Mode: false

@@ -1,9 +1,9 @@
 /* global formsAngular: false */
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
-fang.factory( '$data',
+fng.factory( '$data',
 [
 function() {
 

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Service, Factory, Provider tests</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+    <script>
+    var myApp = angular.module('myApp', []);
+
+    // service style
+    myApp.service( 'helloWorldService', function () {
+        var i = 1;
+        this.sayHello = function() {
+            var answer = "Service " + i++;
+            console.log(answer);
+            return answer;
+        };
+    });
+
+    // factory style
+    myApp.factory( 'helloWorldFactory', function () {
+        var i = 1;
+        return {
+            sayHello: function() {
+                var answer = "Factory " + i++;
+                console.log(answer);
+                return answer;
+            }
+        };
+    });
+
+
+    // provider style
+    myApp.provider( 'helloWorld', function () {
+        // In the provider function, you cannot inject any
+        // service or factory. This can only be done at the
+        // "$get" method.
+
+        var i = 1;
+        this.name = 'Default';
+
+        this.$get = function () {
+            var name = this.name;
+            return {
+                sayHello: function () {
+                    var answer = "Provider " + i++;
+                    console.log(answer);
+                    return answer;
+                }
+            }
+        };
+
+        this.setName = function (name) {
+            this.name = name;
+        };
+    });
+
+
+
+    var Class = function () {
+
+        this.i = 1;
+
+        this.sayHello = function () {
+            var answer = "Class Provider " + this.i++;
+            console.log(answer);
+            return answer;
+        };
+    };
+
+    // provider style
+    myApp.provider( 'helloWorldClass', function () {
+        // In the provider function, you cannot inject any
+        // service or factory. This can only be done at the
+        // "$get" method.
+
+        this.$get = function () {
+            return new Class();
+        }
+    });
+
+    //hey, we can configure a provider!
+    myApp.config( function (helloWorldProvider) {
+        helloWorldProvider.setName('World');
+    });
+
+
+    function MyCtrl($scope, helloWorld, helloWorldFactory, helloWorldService, helloWorldClass) {
+
+        var foo = {
+            p1: helloWorld.sayHello(),
+            f1: helloWorldFactory.sayHello(),
+            s1: helloWorldService.sayHello(),
+            c1: helloWorldClass.sayHello(),
+            i1: (new Class()).sayHello(),
+
+            p2: helloWorld.sayHello(),
+            f2: helloWorldFactory.sayHello(),
+            s2: helloWorldService.sayHello(),
+            c2: helloWorldClass.sayHello(),
+            i2: (new Class()).sayHello(),
+
+            p3: helloWorld.sayHello(),
+            f3: helloWorldFactory.sayHello(),
+            s3: helloWorldService.sayHello(),
+            c3: helloWorldClass.sayHello(),
+            i3: (new Class()).sayHello(),
+        };
+        console.log(foo);
+    }
+    </script>
+</head>
+<body ng-app="myApp">
+    <div ng-controller="MyCtrl"></div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

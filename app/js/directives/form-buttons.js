@@ -1,8 +1,8 @@
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
-fang.directive( 'formButtons',
+fng.directive( 'formButtons',
 [
     '$compile'
 ,

@@ -1,9 +1,9 @@
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
 
-fang.factory( 'ModelsService',
+fng.factory( 'ModelsService',
 [
     '$http'
 ,

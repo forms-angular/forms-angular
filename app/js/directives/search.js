@@ -1,8 +1,8 @@
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
-fang.controller('SearchCtrl',
+fng.controller('SearchCtrl',
 [
     '$scope', '$http', '$location'
 ,
@@ -98,7 +98,7 @@ function ($scope, $http, $location) {
 }]);
 
 
-fang.directive( 'globalSearch',
+fng.directive( 'globalSearch',
 [
 function () {
     return {

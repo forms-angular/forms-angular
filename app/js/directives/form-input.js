@@ -1,6 +1,6 @@
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
 // Directive to generate markup for bootstrap forms
 //
@@ -19,7 +19,7 @@ var fang = angular.module('formsAngular');
 //
 //  Inline
 //  <input type="text" class="input-small" placeholder="Email">
-fang.directive('formInput',
+fng.directive('formInput',
 [
     '$compile', '$rootScope', 'utils', '$filter', 'urlService'
 ,

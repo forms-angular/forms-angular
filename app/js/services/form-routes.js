@@ -1,10 +1,10 @@
 /* global formsAngular: false */
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
 
-fang.provider( 'formRoutes',
+fng.provider( 'formRoutes',
 [
     '$routeProvider'
 ,

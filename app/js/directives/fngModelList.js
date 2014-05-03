@@ -1,8 +1,8 @@
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
-fang.directive( 'fangModelList',
+fng.directive( 'fngModelList',
 [
     'ModelsService', 'urlService'
 ,

@@ -1,8 +1,8 @@
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
-fang.controller('NavCtrl',
+fng.controller('NavCtrl',
 [
     '$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService'
 ,

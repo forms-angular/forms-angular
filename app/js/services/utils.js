@@ -1,9 +1,9 @@
 /* global formsAngular: false */
 'use strict';
 
-var fang = angular.module('formsAngular');
+var fng = angular.module('formsAngular');
 
-fang.service( 'utils', function() {
+fng.service( 'utils', function() {
 
     this.getAddAllGroupOptions = function(scope, attrs, classes) {
         return getAddAllOptions(scope, attrs, 'Group', classes);
