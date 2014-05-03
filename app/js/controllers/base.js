@@ -4,41 +4,33 @@ var fang = angular.module('formsAngular');
 
 fang.controller( 'BaseCtrl',
 [
-    '$scope', '$routeParams', '$location', '$filter', '$data', '$locationParse', '$modal', '$window', 'RecordService', 'SubmissionsService', 'SchemasService', 'urlService'
+    '$scope', '$routeParams', '$location', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService'
 ,
 function ($scope, $routeParams, $location, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
 
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
+    var sharedStuff = $data;
     var allowLocationChange = true;   // Set when the data arrives..
 
-    $data.baseScope = $scope;
-    $scope.disableFunctions = $data.disableFunctions;
-    $scope.dataEventFunctions = $data.dataEventFunctions;
-
-
-    // record handling
-    $scope.record = RecordService.get(); //$data.record;
-    $scope.formSchema = [];
-
-
+    sharedStuff.baseScope = $scope;
+    $scope.record = sharedStuff.record;
     $scope.phase = 'init';
-
-
+    $scope.disableFunctions = sharedStuff.disableFunctions;
+    $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
     $scope.topLevelFormName = undefined;
+    $scope.formSchema = [];
     $scope.tabs = [];
     $scope.listSchema = [];
     $scope.recordList = [];
     $scope.dataDependencies = {};
     $scope.select2List = [];
-
     $scope.page_size = 20;
     $scope.pages_loaded = 0;
-
     angular.extend($scope, $locationParse($location.$$path));
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
-    $scope.modelNameDisplay = $data.modelNameDisplay || $filter('titleCase')($scope.modelName);
+    $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
 
     // load up the schema
     SchemasService.getSchema($scope.modelName, $scope.formName)
@@ -980,6 +972,17 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         }
     };
 
+    $scope.cancel = function () {
+        for (var prop in $scope.record) {
+            if ($scope.record.hasOwnProperty(prop)) {
+                delete $scope.record[prop];
+            }
+        }
+
+        $.extend(true, $scope.record, master);
+        $scope.setPristine();
+    };
+
     $scope.showError = function (errString, alertTitle) {
         $scope.alertTitle = alertTitle ? alertTitle : "Error!";
         $scope.errorMessage = errString;
@@ -989,11 +992,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         delete $scope.errorMessage;
     };
 
-
-
-
-
-    // Button Actions - see partials/form-buttons.html
     $scope.save = function (options) {
         options = options || {};
 
@@ -1026,16 +1024,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         }
     };
 
-    $scope.cancel = function () {
-        for (var prop in $scope.record) {
-            if ($scope.record.hasOwnProperty(prop)) {
-                delete $scope.record[prop];
-            }
-        }
-        $.extend(true, $scope.record, master);
-        $scope.setPristine();
-    };
-
     $scope.new = function () {
         $location.search("");
         $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
@@ -1044,8 +1032,7 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
     $scope.delete = function () {
         if ($scope.record._id) {
             var modalInstance = $modal.open({
-                template:
-                    '<div class="modal-header">' +
+                template:   '<div class="modal-header">' +
                     '   <h3>Delete Item</h3>' +
                     '</div>' +
                     '<div class="modal-body">' +
@@ -1111,13 +1098,6 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         }
     };
 
-
-
-
-
-
-
-
     $scope.disabledText = function (localStyling) {
         var text = "";
         if ($scope.isSaveDisabled) {
@@ -1153,8 +1133,8 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
         $scope.setFormDirty($event);
     };
 
-    // Remove an element from an array
     $scope.remove = function (fieldName, value, $event) {
+        // Remove an element from an array
         var fieldParts = fieldName.split('.');
         var arrayField = $scope.record;
         for (var i = 0, l = fieldParts.length; i < l; i++) {

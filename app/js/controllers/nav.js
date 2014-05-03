@@ -4,7 +4,7 @@ var fang = angular.module('formsAngular');
 
 fang.controller('NavCtrl',
 [
-    '$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'RecordService', 'urlService'
+    '$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService'
 ,
 function ($scope, $data, $location, $filter, $locationParse, $controller, urlService) {
 
@@ -53,8 +53,6 @@ function ($scope, $data, $location, $filter, $locationParse, $controller, urlSer
         }
     };
 
-
-
     $scope.$on('$locationChangeSuccess', function (event, newUrl, oldUrl) {
 
         $scope.routing = $locationParse($location.$$path);
@@ -79,19 +77,11 @@ function ($scope, $data, $location, $filter, $locationParse, $controller, urlSer
                 value.$destroy();
             });
             $scope.scopes = [];
-
-
-
-            RecordService.clear();
-            //$data.record = {};
+            $data.record = {};
             $data.disableFunctions = {};
             $data.dataEventFunctions = {};
             delete $data.dropDownDisplay;
             delete $data.modelNameDisplay;
-
-
-
-
             // Now load context menu.  For /person/client/:id/edit we need
             // to load PersonCtrl and PersonClientCtrl
             var modelName = $filter('titleCase')($scope.routing.modelName, true);
@@ -102,9 +92,6 @@ function ($scope, $data, $location, $filter, $locationParse, $controller, urlSer
             $scope.contextMenu = $data.dropDownDisplay || $data.modelNameDisplay || $filter('titleCase')($scope.routing.modelName, false);
         }
     });
-
-
-
 
     $scope.doClick = function (index) {
         if ($scope.items[index].broadcast) {

@@ -8,7 +8,7 @@ fang.factory( '$data',
 function() {
 
     var sharedData = {
-        //record: {},
+        record: {},
         disableFunctions: {},
         dataEventFunctions: {}
     };

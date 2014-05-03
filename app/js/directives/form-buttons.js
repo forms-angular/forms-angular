@@ -8,32 +8,7 @@ fang.directive( 'formButtons',
 ,
 function ($compile) {
     return {
-        restrict: 'AE',
-        replace: true,
-        // templateUrl: 'partials/form-buttons.html',
-        // link: {
-        //     pre: function preLink(scope, iElement, iAttrs) {
-        //         scope.models = [];
-
-        //         ModelsService.getAll()
-        //             .success(function (data) {
-        //                 scope.models = data;
-        //             }).error(function () {
-        //                 location.path("/404");
-        //             });
-
-        //         scope.newUrl = function(model) {
-        //             return urlService.buildUrl(model + '/new');
-        //         };
-
-        //         scope.listUrl = function(model) {
-        //             return urlService.buildUrl(model);
-        //         };
-        //     },
-        //     post: function postLink(scope, iElement, iAttrs) {
-        //     }
-        // }
-
+        restrict: 'A',
         compile: function () {
             return function ($scope, $element) {
                 var template =
