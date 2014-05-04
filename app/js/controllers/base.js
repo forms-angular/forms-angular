@@ -15,21 +15,30 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
 
     sharedStuff.baseScope = $scope;
     $scope.record = sharedStuff.record;
+
+    // only used on list pages
+    $scope.page_size = 20;
+    $scope.pages_loaded = 0;
+
+
+    // should be converted to an event instead of having form-input.js set up watches on this 'phase' thingy
     $scope.phase = 'init';
+
     $scope.disableFunctions = sharedStuff.disableFunctions;
     $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
+
     $scope.topLevelFormName = undefined;
+
     $scope.formSchema = [];
     $scope.tabs = [];
     $scope.listSchema = [];
     $scope.recordList = [];
     $scope.dataDependencies = {};
     $scope.select2List = [];
-    $scope.page_size = 20;
-    $scope.pages_loaded = 0;
+
     angular.extend($scope, $locationParse($location.$$path));
 
-    $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
+//    $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
 
     // load up the schema
@@ -810,8 +819,7 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
                     if (options.redirect) {
                         $window.location = options.redirect
                     } else {
-                        $location.path('/' + modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
-                        //                    reset?
+                        $location.path( urlService.editRecordPath(modelName, $scope.formName, data._id) );
                     }
                 } else {
                     showError(data);
@@ -916,7 +924,7 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
     //----------------------------------------------------------------------------------------
     // used in partials/base-list.html
     $scope.generateEditUrl = function(obj) {
-        return urlService.buildUrl($scope.modelName + '/' + $scope.formPlusSlash + obj._id + '/edit');
+        return urlService.editRecordUrl($scope.modelName, $scope.formName, obj._id);
     };
 
     // used in partials/base-list.html and partials/base-edit.html
@@ -1059,7 +1067,7 @@ function ($scope, $routeParams, $location, $filter, $data, $locationParse, $moda
 
     $scope.new = function () {
         $location.search("");
-        $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
+        $location.path( urlService.newRecordPath($scope.modelName, $scope.formName) );
     };
 
     $scope.delete = function () {

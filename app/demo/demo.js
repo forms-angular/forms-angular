@@ -22,6 +22,6 @@ myDemoApp.config(['formRoutesProvider', function (formRoutes) {
 }]);
 
 
-formsAngular.config(['urlServiceProvider', function (urlService) {
-    urlService.setOptions({html5Mode: false, hashPrefix: '!'});
+formsAngular.config(['urlServiceProvider', function (urlServiceProvider) {
+    urlServiceProvider.setOptions({html5Mode: false, hashPrefix: '!'});
 }]);
