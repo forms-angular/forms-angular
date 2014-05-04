@@ -197,7 +197,7 @@ app.use(methodOverride());
 var models = [];
 
 slurpModelsFrom('models/*.js')
-    .then(function (success) {
+    .then(function () {
         console.log(chalk.cyan('Seeding static models:'));
         var DataFormHandler = new dataForm(app, config.dfhConfig);
         models.forEach(function (model) {
@@ -207,7 +207,7 @@ slurpModelsFrom('models/*.js')
     }, function (error) {
         console.log(error);
     })
-    .then(function (success) {
+    .then(function () {
         // If you want to use HTML5Mode uncomment the section below and modify
         // app/demo.js so that the call to urlService.setOptions includes {html5Mode: true}
         // app.configure(useHtml5Mode);
