@@ -24,6 +24,7 @@ module.exports = function(config) {
             'app/js/**/*.js',
             'app/demo/demo.js',
             'app/demo/**/*.js',
+            'app/template/*.html',
             'app/demo/template/*.html',
             'test/midway/**/*.js'
         ],
@@ -54,6 +55,7 @@ module.exports = function(config) {
             stripPrefix: 'app/'
         },
         preprocessors: {
+            'app/template/*.html': 'ng-html2js',
             'app/demo/template/*.html': 'ng-html2js'
         }
     });

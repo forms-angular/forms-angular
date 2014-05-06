@@ -37,7 +37,7 @@
     "angular-elastic": "~2",
     "select2-bootstrap-css": "~1.2",
     "jspdf": "1.0.115",
-    "ng-ckeditor": "*",
+    "ng-ckeditor": "0.2.1",
     "ckeditor": "*"
   },
   "resolutions": {

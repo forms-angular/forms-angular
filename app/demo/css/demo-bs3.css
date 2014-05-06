@@ -6565,9 +6565,6 @@ form .tab-content {
 .ui-scrollfix {
   position: fixed;
 }
-.docs-sidenav.ui-scrollfix {
-  top: 80px;
-}
 /* Add additional stylesheets below
 -------------------------------------------------- */
 /*
@@ -6714,4 +6711,11 @@ hr.soften {
   position: absolute;
   top: auto;
   bottom: 270px;
+}
+.big-box {
+  height: 19em;
+  padding: 15px;
+}
+.docs-sidenav.ui-scrollfix {
+  top: 80px;
 }

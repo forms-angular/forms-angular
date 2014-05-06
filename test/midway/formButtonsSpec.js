@@ -1,8 +1,11 @@
 describe('formButton', function() {
     var elm, scope, ctrl;
 
-    // load the tabs code
-    beforeEach(angular.mock.module('formsAngular'));
+    beforeEach(function() {
+            angular.mock.module('formsAngular');
+            angular.mock.module('template/form-button-bs2.html');
+        }
+    );
 
     describe('form generation', function() {
 
