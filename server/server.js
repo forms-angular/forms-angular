@@ -22,7 +22,7 @@ app.use(bodyParser({
 app.get('*', handleCrawlers);
 app.use(methodOverride());
 if (app.get('env') === 'production') app.use(express.static(__dirname + '/../dist'));
-//app.use(express.static(__dirname + '/../app'));
+app.use(express.static(__dirname + '/../app'));
 
 // Copy the schemas to somewhere they can be served
 exec('cp ' + __dirname + '/../server/models/* ' + __dirname + '/../app/code/',
