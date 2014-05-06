@@ -1,8 +1,11 @@
 describe('nesting', function () {
     var elm, scope, ctrl;
 
-    // load the form code
-    beforeEach(angular.mock.module('formsAngular'));
+    beforeEach(function() {
+            angular.mock.module('formsAngular');
+            angular.mock.module('template/form-button-bs2.html');
+        }
+    );
 
     describe('Nested schemas set button state', function () {
 
