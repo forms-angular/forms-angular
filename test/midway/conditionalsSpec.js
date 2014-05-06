@@ -1,4 +1,4 @@
-ddescribe('Condition display', function() {
+describe('Condition display', function() {
 
     var $httpBackend;
 
