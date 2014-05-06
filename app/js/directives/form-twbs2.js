@@ -1,5 +1,5 @@
 formsAngular
-    .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', 'urlService', function ($compile, $rootScope, utils, $filter, urlService) {
+    .directive('formInputPreserve', ['$compile', '$rootScope', 'utils', '$filter', 'urlService', function ($compile, $rootScope, utils, $filter, urlService) {
         return {
             restrict: 'EA',
             link: function (scope, element, attrs) {
