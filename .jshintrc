@@ -43,6 +43,8 @@
     "moment": false,
 
     /* jasmine / karma */
+    "xit": false,
+    "xdescribe": false,
     "it": false,
     "iit": false,
     "describe": false,
