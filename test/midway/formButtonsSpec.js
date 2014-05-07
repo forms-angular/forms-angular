@@ -1,77 +1,79 @@
-describe('formButton', function() {
-    var elm, scope, ctrl;
+'use strict';
 
-    beforeEach(function() {
-            angular.mock.module('formsAngular');
-            angular.mock.module('template/form-button-bs2.html');
-        }
-    );
+describe('formButton', function () {
+  var elm, scope, ctrl, $httpBackend;
 
-    describe('form generation', function() {
+  beforeEach(function () {
+      angular.mock.module('formsAngular');
+      angular.mock.module('template/form-button-bs2.html');
+    }
+  );
 
-        beforeEach(inject(function($rootScope, $compile) {
-            elm = angular.element('<div><div form-buttons></div></div>');
+  describe('form generation', function () {
 
-            scope = $rootScope;
-            $compile(elm)(scope);
-            scope.$digest();
-        }));
+    beforeEach(inject(function ($rootScope, $compile) {
+      elm = angular.element('<div><div form-buttons></div></div>');
+
+      scope = $rootScope;
+      $compile(elm)(scope);
+      scope.$digest();
+    }));
 
 
-        it('should have Save, Cancel, New and Delete buttons', function() {
-            var buttons = elm.find('button');
+    it('should have Save, Cancel, New and Delete buttons', function () {
+      var buttons = elm.find('button');
 
-            expect(buttons.length).toBe(4);
-            expect(buttons.eq(0).text().trim()).toBe('Save');
-            expect(buttons.eq(1).text().trim()).toBe('Cancel');
-            expect(buttons.eq(2).text().trim()).toBe('New');
-            expect(buttons.eq(3).text().trim()).toBe('Delete');
-        });
-
+      expect(buttons.length).toBe(4);
+      expect(buttons.eq(0).text().trim()).toBe('Save');
+      expect(buttons.eq(1).text().trim()).toBe('Cancel');
+      expect(buttons.eq(2).text().trim()).toBe('New');
+      expect(buttons.eq(3).text().trim()).toBe('Delete');
     });
 
-    describe('controller', function () {
+  });
 
-        beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location, $compile) {
-            $httpBackend = _$httpBackend_;
-            $httpBackend.whenGET('/api/schema/collection').respond({
-                "name": {"instance": "String"},
-                "surname": {"instance": "String" }
-            });
-            scope = $rootScope.$new();
-            $location.$$path = '/collection/new';
-            ctrl = $controller("BaseCtrl", {$scope: scope});
+  describe('controller', function () {
 
-            elm = angular.element('<div><div form-buttons></div><form-input schema="formSchema"></form-input></div>');
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location, $compile) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.whenGET('/api/schema/collection').respond({
+        'name': {'instance': 'String'},
+        'surname': {'instance': 'String' }
+      });
+      scope = $rootScope.$new();
+      $location.$$path = '/collection/new';
+      ctrl = $controller('BaseCtrl', {$scope: scope});
 
-            $compile(elm)(scope);
-            scope.$digest();
+      elm = angular.element('<div><div form-buttons></div><form-input schema="formSchema"></form-input></div>');
 
-            $httpBackend.flush();
-        }));
+      $compile(elm)(scope);
+      scope.$digest();
 
-        it('disables save button until a change is made', function () {
-            expect(scope.isSaveDisabled()).toEqual(true);
-        });
+      $httpBackend.flush();
+    }));
 
-        it('disables cancel button until a change is made', function () {
-            expect(scope.isCancelDisabled()).toEqual(true);
-        });
-
-        it('enables save button when a change is made', function () {
-            var elem = angular.element(elm.find('input:first')[0]);
-            elem.val('new name');
-            elem.change();
-            expect(scope.isSaveDisabled()).toEqual(false);
-        });
-
-        it('enables cancel button when a change is made', function () {
-            var elem = angular.element(elm.find('input:first')[0]);
-            elem.val('new name');
-            elem.change();
-            expect(scope.isCancelDisabled()).toEqual(false);
-        });
-
+    it('disables save button until a change is made', function () {
+      expect(scope.isSaveDisabled()).toEqual(true);
     });
+
+    it('disables cancel button until a change is made', function () {
+      expect(scope.isCancelDisabled()).toEqual(true);
+    });
+
+    it('enables save button when a change is made', function () {
+      var elem = angular.element(elm.find('input:first')[0]);
+      elem.val('new name');
+      elem.change();
+      expect(scope.isSaveDisabled()).toEqual(false);
+    });
+
+    it('enables cancel button when a change is made', function () {
+      var elem = angular.element(elm.find('input:first')[0]);
+      elem.val('new name');
+      elem.change();
+      expect(scope.isCancelDisabled()).toEqual(false);
+    });
+
+  });
 
 });
