@@ -64,7 +64,8 @@
     /* e2e */
     "browser": false,
     "element": false,
-    "by": false,
+    "input": false,
+    "repeater": false,
 
     /* testabilityPatch / matchers */
     "inject": false,
