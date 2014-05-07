@@ -573,7 +573,7 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
             var translations = [];  // array of form {ref:'lookupname',translations:[{value:xx, display:'  '}]}
             // if we need to do any column translations add the function to the tasks list
             if (schema.columnTranslations) {
-                toDo.apply_translations = ['runAggregation', function (cb, results) {
+                toDo.applyTranslations = ['runAggregation', function (cb, results) {
 
                     function doATranslate(column, theTranslation) {
                         results.runAggregation.forEach(function (resultRow) {
@@ -629,7 +629,7 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
                                             }
                                         })
                                     };
-                                    toDo.apply_translations.unshift(thisColumnTranslation.ref);  // Make sure we populate lookup before doing translation
+                                    toDo.applyTranslations.unshift(thisColumnTranslation.ref);  // Make sure we populate lookup before doing translation
                                 }
                             } else {
                                 return callback("Invalid ref property of " + thisColumnTranslation.ref + " in columnTranslations " + thisColumnTranslation.field);
@@ -657,7 +657,7 @@ DataForm.prototype.reportInternal = function(req, resource, schema, options, cal
                             cb(null)
                         });
                     }];
-                    toDo.apply_translations.unshift('callFunctions');  // Make sure we do function before translating its result
+                    toDo.applyTranslations.unshift('callFunctions');  // Make sure we do function before translating its result
                 }
             }
 

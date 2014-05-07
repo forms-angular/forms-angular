@@ -30,6 +30,7 @@ module.exports = function(config) {
         ],
 
         autoWatch : true,
+        usePolling: true,
 
         browsers : ['PhantomJS'],
 
