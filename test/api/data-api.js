@@ -281,7 +281,7 @@ describe('Models API', function () {
 
     it('should send login as a hidden field in b_using_options', function () {
         assert(_.find(aData,function (resource) {
-            return resource.resource_name === "b_using_options";
+            return resource.resourceName === "b_using_options";
         }).options.hide.indexOf('login') > -1, 'must send login as a hidden field');
     });
 });
