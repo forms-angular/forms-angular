@@ -40,6 +40,14 @@ where the first parameter is an array of objects containing a route and a set of
 [$routeProvider](http://docs.angularjs.org/api/ngRoute/provider/$routeProvider) and the second parameter is the default route.
 * Stylesheets have moved down into a ./css folder relative to where they were, and there
 are now Bootstrap 2 and Bootstrap 3 versions.
+* Report drilldowns now start from the model and use | as a delimiter - so 
+```
+drilldown: '/#/g_conditional_fields/!_id!/edit'
+```
+becomes
+```
+drilldown: 'g_conditional_fields/|_id|/edit'
+```
 
 ## 0.1 to 0.2
 ### Summary
