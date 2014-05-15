@@ -18,7 +18,7 @@
     "node_modules",
     "components"
   ],
-  "comments" : [
+  "comments": [
     "Do not upgrade ng-grid to anything less than 2.0.10 (https://github.com/angular-ui/ng-grid/issues/1142)"
   ],
   "dependencies": {
