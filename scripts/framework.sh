@@ -59,7 +59,7 @@ if [ $1 ]; then
 			;;
 		"bs3" )
 			InstallBootstrap "3.1.1"
-			InstallUIBootstrap "angular-bootstrap" "0.10.0"
+			InstallUIBootstrap "angular-bootstrap" "0.11.0"
 			InstallSelect2CSS "1.3.0"
 			InstallBootstrap "3.1.1"
 			;;
