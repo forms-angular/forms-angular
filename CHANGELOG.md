@@ -6,6 +6,7 @@
  * Module specific routes are now specified with a call to the setRoutes(appRoutes, defaultRoute) method of an injected
    formRoutesProvider - see the breaking changes section for an example and details.
  * Support for HTML5Mode and hashPrefix
+ * Support for Twitter Bootstrap 3
 
 ### BREAKING CHANGES
 * Routing has changed - replace
@@ -37,6 +38,8 @@ myModule.config(['formRoutesProvider', function (formRoutes) {
 ```
 where the first parameter is an array of objects containing a route and a set of options (which are passed straight to
 [$routeProvider](http://docs.angularjs.org/api/ngRoute/provider/$routeProvider) and the second parameter is the default route.
+* Stylesheets have moved down into a ./css folder relative to where they were, and there
+are now Bootstrap 2 and Bootstrap 3 versions.
 
 ## 0.1 to 0.2
 ### Summary
