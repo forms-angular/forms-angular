@@ -5,8 +5,21 @@
 * Improvements to routing:
  * Module specific routes are now specified with a call to the setRoutes(appRoutes, defaultRoute) method of an injected
    formRoutesProvider - see the breaking changes section for an example and details.
- * Support for HTML5Mode and hashPrefix
- * Support for Twitter Bootstrap 3
+ * Support for HTML5Mode and hashPrefix, including a service to simplify use
+ * Support for Twitter Bootstrap 3, including a service to simplify use.  To use Bootstrap 3 you need to upgrade a few of the
+ libraries that Bower installs.  Change the following lines in bower.json:
+```   
+     "angular-ui-bootstrap-bower": "0.8.0",
+     "bootstrap": "2.3.2",
+     "select2-bootstrap-css": "~1.2",
+```
+     to
+```      
+     "angular-ui-bootstrap-bower": "0.11.0",
+     "bootstrap": "3.1.1",
+     "select2-bootstrap-css": "~1.3",
+```     
+
 
 ### BREAKING CHANGES
 * Routing has changed - replace
@@ -40,11 +53,19 @@ where the first parameter is an array of objects containing a route and a set of
 [$routeProvider](http://docs.angularjs.org/api/ngRoute/provider/$routeProvider) and the second parameter is the default route.
 * Stylesheets have moved down into a ./css folder relative to where they were, and there
 are now Bootstrap 2 and Bootstrap 3 versions.
-* Report drilldowns now start from the model and use | as a delimiter - so 
+* You should initialise formsAngular with something similar to:
+```
+formsAngular.config(['urlServiceProvider', 'cssFrameworkServiceProvider', function (urlService, cssFrameworkService) {
+    urlService.setOptions({html5Mode: false, hashPrefix: '!'});
+    cssFrameworkService.setOptions({framework: 'bs2'});  // bs2 and bs3 are supported
+  }]);
+```
+* Report drilldowns now start from the model
 ```
 drilldown: '/#/g_conditional_fields/!_id!/edit'
+drilldown: '/#!/g_conditional_fields/|_id|/edit'
 ```
-becomes
+both become
 ```
 drilldown: 'g_conditional_fields/|_id|/edit'
 ```
