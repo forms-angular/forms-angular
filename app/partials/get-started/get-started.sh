@@ -35,6 +35,9 @@ if [ $framework = "bs3" ]; then
 	#  set the bs3 option
 	sed -i "s_//uncomment to use Bootstrap 3--__" public/myapp.js
 fi
+if [ $2 ]; then
+	sed -i "s/var formsAngular = require('forms-angular');/var formsAngular = require('forms-angular-test');/" public/myapp.js
+fi
 mkdir public/partials
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/partials-index.html -O public/partials/index.html
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/base-edit.html -O public/partials/base-edit.html

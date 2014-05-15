@@ -55,11 +55,13 @@ if [ $1 ]; then
 			InstallBootstrap "2.3.2"
 			InstallUIBootstrap "angular-ui-bootstrap-bower" "0.8.0"
 			InstallSelect2CSS "1.2.0"
+			InstallBootstrap "2.3.2"
 			;;
 		"bs3" )
 			InstallBootstrap "3.1.1"
 			InstallUIBootstrap "angular-bootstrap" "0.10.0"
 			InstallSelect2CSS "1.3.0"
+			InstallBootstrap "3.1.1"
 			;;
 		* )
 			echo "Invalid option $1"
