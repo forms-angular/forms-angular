@@ -6,8 +6,8 @@ function Clear {
 	mkdir app/bower_components/bootstrap
 	rm -rf app/bower_components/select2-bootstrap-css
 	mkdir app/bower_components/select2-bootstrap-css
-	rm -rf app/bower_components/angular-ui-bootstrap
-	mkdir app/bower_components/angular-ui-bootstrap
+	rm -rf app/bower_components/angular-ui-bootstrap-bower
+	mkdir app/bower_components/angular-ui-bootstrap-bower
 }
 
 function InstallBootstrap {
@@ -26,8 +26,8 @@ function InstallBootstrap {
 # We will build from directory angular-ui-bootstrap, which no version is named (I think)
 function InstallUIBootstrap {
 	if [ -d "app/bower_components/$1-$2" ]; then
-		echo Using existing copy of Bootstrap UI $2
-		cp -r app/bower_components/$1-$2/* app/bower_components/angular-ui-bootstrap
+		echo Using existing copy of $1 $2
+		cp -r app/bower_components/$1-$2/* app/bower_components/$1
 	else
 		echo Downloading and installing Bootstrap UI $2
 		bower install $1\#$2
@@ -59,7 +59,7 @@ if [ $1 ]; then
 			;;
 		"bs3" )
 			InstallBootstrap "3.1.1"
-			InstallUIBootstrap "angular-bootstrap" "0.11.0"
+			InstallUIBootstrap "angular-ui-bootstrap-bower" "0.11.0"
 			InstallSelect2CSS "1.3.0"
 			InstallBootstrap "3.1.1"
 			;;
