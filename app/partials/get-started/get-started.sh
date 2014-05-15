@@ -12,7 +12,7 @@ fi
 if [ $2 ]; then
 	branch="$2"
 else
-	branch="0.2"
+	branch="live"
 fi
 
 echo Setting up example app for branch $branch
