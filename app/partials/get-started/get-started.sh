@@ -17,22 +17,11 @@ fi
 
 echo Setting up example app for branch $branch
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/get-started-create.sh
-bash get-started-create.sh
+bash get-started-create.sh $2
 echo "Sub script complete...."
 pwd
 cd myapp
 pwd
-
-# We use this next option when we want to use the bower.json from git rather than the
-# live forms-angular bower download
-if [ $3 = "bower" ]; then
-	echo Updating Packages
-	cd public
-	wget https://raw.github.com/mchapman/forms-angular/$branch/bower.json
-	bower install --allow-root
-	bower update --allow-root
-	cd ..
-fi
 
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/adds-app.js
 cat app.js adds-app.js > tempapp.js

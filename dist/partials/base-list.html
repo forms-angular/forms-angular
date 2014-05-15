@@ -1,0 +1,28 @@
+<!--BaseCtrl is used for listing data in the database as well-->
+<div ng-controller="BaseCtrl">
+    <div ng-class="css('rowFluid')" class="page-header list-header">
+        <div class="header-lhs col-sm-8 span8">
+            <h1>{{modelNameDisplay}}</h1>
+        </div>
+        <div class="header-rhs col-sm-2 span2">
+            <button class="btn btn-default" ng-click="new()"><i class="icon-plus"></i> New</button>
+        </div>
+    </div>
+    <div class="page-body list-body">
+        <div ng-show="errorMessage" ng-class="css('rowFluid')">
+            <div class="alert alert-error col-lg-offset-3 offset3 col-xs-6 span6 alert-warning alert-dismissable">
+                <button type="button" class="close" ng-click="dismissError()">×</button>
+                <h4>{{alertTitle}}</h4>
+                <div ng-bind-html="errorMessage"></div>
+            </div>
+        </div>
+
+        <div ng-class="css('rowFluid')" infinite-scroll="scrollTheList()">
+            <a ng-repeat="record in recordList" ng-href="{{generateEditUrl(record)}}">
+                <div class="list-item">
+                    <div ng-class="css('span',12/listSchema.length)" ng-repeat="field in listSchema">{{getListData(record, field.name)}} </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
