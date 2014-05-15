@@ -31,12 +31,12 @@ wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-star
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/myapp.js -O public/myapp.js
 if [ $framework = "bs3" ]; then
 	#  use the correct css
-	sed -i s_forms-angular-bs2.css_forms-angular-bs3.css_ public/index.html
+	sed -i.bak s_forms-angular-bs2.css_forms-angular-bs3.css_ public/index.html
 	#  set the bs3 option
-	sed -i "s_//uncomment to use Bootstrap 3--__" public/myapp.js
+	sed -i.bak "s_//uncomment to use Bootstrap 3--__" public/myapp.js
 fi
 if [ $2 ]; then
-	sed -i "s/var formsAngular = require('forms-angular');/var formsAngular = require('forms-angular-test');/" public/myapp.js
+	sed -i.bak "s/var formsAngular = require('forms-angular');/var formsAngular = require('forms-angular-test');/" app.js
 fi
 mkdir public/partials
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/partials-index.html -O public/partials/index.html
