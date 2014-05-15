@@ -33,6 +33,10 @@ if [ $framework = "bs3" ]; then
     # upgrade to bootstrap 3
     cd public
     bower install bootstrap#3.1.1 --allow-root
+    # upgrade to angular-ui-bootstrap 0.11
+    bower install angular-ui-bootstrap-bower#0.11.0 --allow-root
+    # upgrade to select2-bootstrap 1.3.0
+    bower install select2-bootstrap-css#1.3.0 --allow-root
 	# use the correct css
 	sed -i.bak s_forms-angular-bs2.css_forms-angular-bs3.css_ index.html
 	# set the bs3 option
