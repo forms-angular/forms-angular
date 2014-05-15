@@ -67,7 +67,7 @@ GSchema.statics.report = function (report) {
           {'$project': {'surname': 1, 'forename': 1, 'bribeAmount': 1, '_id': 1}}
         ],
         'title': 'A report with totals and drilldown',
-        drilldown: '/#!/g_conditional_fields/|_id|/edit',
+        drilldown: 'g_conditional_fields/|_id|/edit',
         'columnDefs': [
           {'field': 'surname', 'displayName': 'Surname', 'width': '200', totalsRow: 'Total'},
           {'field': 'forename', 'displayName': 'Forename', 'width': 200},
