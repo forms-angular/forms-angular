@@ -30,10 +30,14 @@ sed -i s_^app.get_//app.get_ app.js
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/index.html -O public/index.html
 wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/myapp.js -O public/myapp.js
 if [ $framework = "bs3" ]; then
-	#  use the correct css
-	sed -i.bak s_forms-angular-bs2.css_forms-angular-bs3.css_ public/index.html
-	#  set the bs3 option
-	sed -i.bak "s_//uncomment to use Bootstrap 3--__" public/myapp.js
+    # upgrade to bootstrap 3
+    cd public
+    bower install bootstrap#3.1.1 --allow-root
+	# use the correct css
+	sed -i.bak s_forms-angular-bs2.css_forms-angular-bs3.css_ index.html
+	# set the bs3 option
+	sed -i.bak "s_//uncomment to use Bootstrap 3--__" myapp.js
+    cd ..
 fi
 if [ $2 ]; then
 	sed -i.bak "s/var formsAngular = require('forms-angular');/var formsAngular = require('forms-angular-test');/" app.js

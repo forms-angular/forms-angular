@@ -69,10 +69,19 @@ mkdir myapp
 cd myapp
 express
 npm install
-npm install forms-angular --save
+
+if [ $1 ]; then
+  npm install forms-angular-test --save
+else
+  npm install forms-angular --save
+fi
 npm install mongoose --save
 cd public
-bower install forms-angular --allow-root
+if [ $1 ]; then
+  bower install forms-angular#dev --allow-root
+else
+  bower install forms-angular --allow-root
+fi
 cd ..</code></pre>
             </section>
             <section id="server-code" name="Server Code" affix-scroll>
@@ -131,18 +140,18 @@ DataFormHandler.addResource(&apos;applicant&apos;, Applicant);   // Create and a
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/bootstrap/js/bootstrap-transition.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/bootstrap/js/bootstrap-collapse.js&quot;&gt;&lt;/script&gt;
     &lt;link rel=&quot;stylesheet&quot; href=&quot;/bower_components/ng-grid/ng-grid.css&quot;&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ng-grid/ng-grid-2.0.9.debug.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ng-grid/ng-grid-2.0.7.debug.js&quot;&gt;&lt;/script&gt;
     &lt;link rel=&quot;stylesheet&quot; href=&quot;/bower_components/select2/select2.css&quot;&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/angular-elastic/elastic.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/select2/select2.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ckeditor/ckeditor.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ng-ckeditor/ng-ckeditor.src.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ng-ckeditor/ng-ckeditor.js&quot;&gt;&lt;/script&gt;
     &lt;!--[if lt IE 9]&gt;
     &lt;script src=&quot;/bower_components/html5shiv-dist/html5shiv.js&quot;&gt;&lt;/script&gt;
     &lt;![endif]--&gt;
 
     &lt;!--forms-angular stuff--&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/bower_components/forms-angular/forms-angular-bs2.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/bower_components/forms-angular/css/forms-angular-bs2.css&quot;&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/forms-angular/forms-angular.js&quot;&gt;&lt;/script&gt;
     &lt;script src=&quot;/myapp.js&quot;&gt;&lt;/script&gt;
     &lt;style type=&quot;text/css&quot; media=&quot;all&quot;&gt;
