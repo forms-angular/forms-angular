@@ -36,7 +36,7 @@ var BSchema = new Schema({
       placeHolder: 'Select eye colour',   // Placeholders work in a combo box
       select2: {},
       help: 'This control has had an event handler added to it (which looks horrid - sorry!).' +
-            '  See post form-input generatio processing section of <a href="/#/forms#client-side-customisation">home page</a> for details.'
+            '  See post form-input generation processing section of <a ng-href="{{buildUrl(\'forms#client-side-customisation\')}}">documentation</a> for details.'
     }
   },
   sex: {type: String, enum: ['Male', 'Female'], form: {type: 'radio', inlineRadio: true}},
