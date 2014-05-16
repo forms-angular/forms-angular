@@ -6712,6 +6712,14 @@ hr.soften {
   top: auto;
   bottom: 270px;
 }
+.ghb {
+  display: none;
+}
+@media (min-width: 1300px) {
+  .ghb {
+    display: block;
+  }
+}
 .big-box {
   height: 19em;
   padding: 15px;
