@@ -175,3 +175,12 @@ hr.soften {
   top: auto;
   bottom: 270px;
 }
+
+// Only show github buttons on BIG screens
+.ghb { display: none; }
+
+@media (min-width: 1300px) {
+  .ghb {
+    display: block;
+  }
+}
