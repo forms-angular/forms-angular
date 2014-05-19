@@ -519,16 +519,16 @@ describe('formInput', function () {
       scope = $rootScope;
       scope.fResultOptions = ['Fail', 'Pass', 'Merit', 'Distinction'];
       scope.schema = [
-        {"name":"surname","type":"text","add":"autofocus ","id":"f_surname","label":"Surname"},
-        {"name":"forename","type":"text","id":"f_forename","label":"Forename"},
-        {"name":"exams",
-          "schema": [
-            {"name":"exams.subject","type":"text","id":"f_exams_subject","label":"Subject"},
-            {"type":"radio","inlineRadio":true,"name":"exams.result","options":"fResultOptions","id":"f_exams_result","label":"Result"}
-          ], "type":"text","id":"f_exams","label":"Exams"
+        {'name': 'surname', 'type': 'text', 'add': 'autofocus ', 'id': 'f_surname', 'label': 'Surname'},
+        {'name': 'forename', 'type': 'text', 'id': 'f_forename', 'label': 'Forename'},
+        {'name': 'exams',
+          'schema': [
+            {'name': 'exams.subject', 'type': 'text', 'id': 'f_exams_subject', 'label': 'Subject'},
+            {'type': 'radio', 'inlineRadio': true, 'name': 'exams.result', 'options': 'fResultOptions', 'id': 'f_exams_result', 'label': 'Result'}
+          ], 'type': 'text', 'id': 'f_exams', 'label': 'Exams'
         }
-      ];
-      scope.record={surname:'Smith', forename:'Alan',exams:[{subject:'English',result:'pass'},{subject:'Maths', result:'fail'}]}
+        ];
+      scope.record = {surname: 'Smith', forename: 'Alan', exams: [{subject: 'English', result: 'pass'}, {subject: 'Maths', result: 'fail'}]};
       $compile(elm)(scope);
       scope.$digest();
     }));
