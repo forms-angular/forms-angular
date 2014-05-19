@@ -196,6 +196,7 @@ formsAngular
                 });
               } else {
                 var tagType = separateLines ? 'div' : 'span';
+                common = common.replace('$index','$parent.$index').replace('name="','name="{{$parent.$index}}-');
                 value += '<' + tagType + ' ng-repeat="option in ' + fieldInfo.options + '"><input ' + common + ' type="radio" value="{{option}}"> {{option}} </' + tagType + '> ';
               }
               break;
