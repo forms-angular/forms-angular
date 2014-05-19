@@ -512,6 +512,36 @@ describe('formInput', function () {
 
   });
 
+  describe('supports radio buttons in sub schemas', function () {
+
+    beforeEach(inject(function ($rootScope, $compile) {
+      elm = angular.element('<div><form-input schema="schema"></form-input></div>');
+      scope = $rootScope;
+      scope.fResultOptions = ['Fail', 'Pass', 'Merit', 'Distinction'];
+      scope.schema = [
+        {"name":"surname","type":"text","add":"autofocus ","id":"f_surname","label":"Surname"},
+        {"name":"forename","type":"text","id":"f_forename","label":"Forename"},
+        {"name":"exams",
+          "schema": [
+            {"name":"exams.subject","type":"text","id":"f_exams_subject","label":"Subject"},
+            {"type":"radio","inlineRadio":true,"name":"exams.result","options":"fResultOptions","id":"f_exams_result","label":"Result"}
+          ], "type":"text","id":"f_exams","label":"Exams"
+        }
+      ];
+      scope.record={surname:'Smith', forename:'Alan',exams:[{subject:'English',result:'pass'},{subject:'Maths', result:'fail'}]}
+      $compile(elm)(scope);
+      scope.$digest();
+    }));
+
+    it('modifies name and model attributes', function () {
+      var input = elm.find('input');
+      expect(input.length).toBe(12);
+      input = elm.find('input:last');
+      expect(input.attr('name')).toBe('1-exams-result');
+      expect(input.attr('ng-model')).toBe('record.exams[$parent.$index].result');
+    });
+
+  });
 
   describe('displays error messages', function () {
 
