@@ -321,11 +321,13 @@ formsAngular
 
         var generateLabel = function (fieldInfo, addButtonMarkup, options) {
           var labelHTML = '';
-          if ((options.formstyle !== 'inline' && (fieldInfo.label !== '' || cssFrameworkService.framework() === 'bs3')) || addButtonMarkup) {
+          if ((cssFrameworkService.framework() === 'bs3' || (options.formstyle !== 'inline' && fieldInfo.label !== '')) || addButtonMarkup) {
             labelHTML = '<label';
             if (isHorizontalStyle(options.formstyle)) {
               labelHTML += ' for="' + fieldInfo.id + '"';
               if (cssFrameworkService.framework() === 'bs3') { labelHTML += addAll('Label', 'col-sm-2', options); }
+            } else if (options.formstyle === 'inline') {
+              labelHTML += ' for="' + fieldInfo.id + '" class="sr-only"';
             }
             labelHTML += addAll('Label', 'control-label', options);
             labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';

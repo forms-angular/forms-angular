@@ -695,4 +695,21 @@ describe('formInput', function () {
     });
   });
 
+  describe('labels in inline forms (BS2)', function () {
+
+    beforeEach(inject(function ($rootScope, $compile) {
+      elm = angular.element('<div><form-input formStyle="inline" schema="formSchema"></form-input></div>');
+      scope = $rootScope;
+      scope.formSchema = {name: 'desc', id: 'descId', label: 'Description', type: 'text'};
+      $compile(elm)(scope);
+      scope.$digest();
+    }));
+
+    it('should not have a label', function () {
+      var label = elm.find('label');
+      expect(label.length).toBe(0);
+    });
+
+  });
+
 });
