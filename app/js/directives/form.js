@@ -172,10 +172,12 @@ formsAngular
                   value += '<option></option>';
                 }
                 if (angular.isArray(fieldInfo.options)) {
+                  if (options.subschema) { common = common.replace('name="', 'name="{{$index}}-'); }
                   angular.forEach(fieldInfo.options, function (optValue) {
                     value += '<option>' + optValue + '</option>';
                   });
                 } else {
+                  if (options.subschema) { common = common.replace('$index', '$parent.$index').replace('name="', 'name="{{$parent.$index}}-'); }
                   value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
                 }
                 value += '</select>';
