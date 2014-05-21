@@ -18,8 +18,8 @@
         </div>
 
         <div ng-class="css('rowFluid')" infinite-scroll="scrollTheList()">
-            <a ng-repeat="record in recordList" ng-href="{{generateEditUrl(record)}}">
-                <div class="list-item">
+          <a ng-repeat="record in recordList" ui-sref="model::edit({model: modelName, id: record._id})">
+            <div class="list-item">
                     <div ng-class="css('span',12/listSchema.length)" ng-repeat="field in listSchema">{{getListData(record, field.name)}} </div>
                 </div>
             </a>
