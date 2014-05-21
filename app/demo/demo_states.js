@@ -61,3 +61,8 @@ myDemoApp.config(function ($stateProvider, $urlRouterProvider) {
     });
   $urlRouterProvider.otherwise('/');
 });
+
+formsAngular.config(['urlServiceProvider', 'cssFrameworkServiceProvider', function (urlService, cssFrameworkService) {
+  urlService.setOptions({html5Mode: false, hashPrefix: ''});
+  cssFrameworkService.setOptions({framework: 'bs3'});  // e2e tests depend on this being bs2
+}]);
