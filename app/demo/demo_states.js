@@ -6,6 +6,8 @@ var myDemoApp = angular.module('myDemoApp', [
 
 myDemoApp.config(function ($stateProvider, $urlRouterProvider) {
 
+  $urlRouterProvider.otherwise('/');
+
   $stateProvider
     .state('/', {
       url: '/',
@@ -59,7 +61,6 @@ myDemoApp.config(function ($stateProvider, $urlRouterProvider) {
       url: '/el/:model',
       templateUrl: 'partials/base-list.html'
     });
-  $urlRouterProvider.otherwise('/');
 });
 
 formsAngular.config(['urlServiceProvider', 'cssFrameworkServiceProvider', function (urlService, cssFrameworkService) {
