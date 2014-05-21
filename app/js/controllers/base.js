@@ -23,6 +23,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.pagesLoaded = 0;
     $scope.filequeue = fileUpload.fieldData;
 
+    if ($state && $state.params && $state.params.model) {
+      angular.extend($scope, $stateParse($state));
+    } else {
+      angular.extend($scope, $locationParse($location.$$path));
+    }
+
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
     $scope.generateEditUrl = function (obj) {
@@ -32,12 +38,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.getId = function (obj) {
       return obj._id;
     };
-
-    if ($state && $state.params && $state.params.model) {
-      angular.extend($scope, $stateParse($state));
-    } else {
-      angular.extend($scope, $locationParse($location.$$path));
-    }
 
     $scope.walkTree = function (object, fieldname, element) {
       // Walk through subdocs to find the required key
@@ -249,7 +249,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
           }
         } else if (mongooseType.instance === 'boolean') {
           formInstructions.type = 'checkbox';
-        } else if (mongooseOptions.form.type === 'fileuploader') {
+        } else if (mongooseOptions.form && mongooseOptions.form.type === 'fileuploader') {
           if (mongooseOptions.form.name) {
             $scope.$watchCollection('filequeue.' + mongooseOptions.form.name, function (newvar) {
               $scope.record[mongooseOptions.form.name] = newvar;

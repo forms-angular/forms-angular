@@ -12,6 +12,8 @@
                 <td><a href="/code/{{model.resourceName}}.js">View schema</a></td>
                 <td><a ng-href="{{newUrl(model.resourceName)}}">New</a></td>
                 <td><a ng-href="{{listUrl(model.resourceName)}}">List</a></td>
+                <td><a ui-sref='model::new({model: model.resourceName})' href="/#!/{{model.resourceName}}/new">New</a></td>
+                <td><a ui-sref='model::list({model: model.resourceName})' href="/#!/{{model.resourceName}}">List</a></td>
             </tr>
         </table>
     </div>

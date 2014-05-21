@@ -6,7 +6,6 @@ formsAngular.factory('$locationParse', [function () {
     lastObject = {};
 
   return function (location) {
-
     if (location !== lastRoute) {
       lastRoute = location;
       var locationSplit = location.split('/');
