@@ -32,9 +32,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
 
     $scope.getId = function (obj) {
       return obj._id;
-    }
+    };
 
-    if($state && $state.params && $state.params.model) {
+    if ($state && $state.params && $state.params.model) {
       angular.extend($scope, $stateParse($state));
     } else {
       angular.extend($scope, $locationParse($location.$$path));
@@ -250,13 +250,13 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
           }
         } else if (mongooseType.instance === 'boolean') {
           formInstructions.type = 'checkbox';
-        } else if (mongooseOptions.form.type == 'fileuploader') {
-          if(mongooseOptions.form.name) {
-            $scope.$watchCollection('filequeue.'+mongooseOptions.form.name, function(newvar, oldvar) {
+        } else if (mongooseOptions.form.type === 'fileuploader') {
+          if (mongooseOptions.form.name) {
+            $scope.$watchCollection('filequeue.' + mongooseOptions.form.name, function (newvar) {
               $scope.record[mongooseOptions.form.name] = newvar;
             });
 
-            $scope.$watchCollection('record.'+mongooseOptions.form.name, function(newvar, oldvar) {
+            $scope.$watchCollection('record.' + mongooseOptions.form.name, function (newvar) {
               $scope.filequeue[mongooseOptions.form.name] = newvar;
             });
           }
@@ -271,7 +271,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
           if (formInstructions.step) {
             formInstructions.add = 'step="' + formInstructions.step + '" ' + (formInstructions.add || '');
           }
-        } else if(mongooseType.instance == 'file') {
+        } else if (mongooseType.instance === 'file') {
           formInstructions.type = 'fileuploader';
         } else {
           throw new Error('Field ' + formInstructions.name + ' is of unsupported type ' + mongooseType.instance);
@@ -742,8 +742,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
           if (options.redirect) {
             $window.location = options.redirect;
           } else {
-            if($state && $state.params && $state.params.model) {
-              $state.go("model::edit", {id: data._id, model: $scope.modelName });
+            if ($state && $state.params && $state.params.model) {
+              $state.go('model::edit', {id: data._id, model: $scope.modelName });
             } else {
               $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
               //                    reset?

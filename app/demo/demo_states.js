@@ -1,8 +1,8 @@
 'use strict';
-var myDemoApp = angular.module('myDemoApp', [
+angular.module('myDemoApp', [
   'formsAngular',
-  'ui.router'])
-.config(function ($stateProvider, $urlRouterProvider) {
+  'ui.router'
+]).config(function ($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('/', {
@@ -45,17 +45,17 @@ var myDemoApp = angular.module('myDemoApp', [
       url: '/404',
       templateUrl: 'partials/404.html'
     })
-    .state('model::edit',{
+    .state('model::edit', {
       url: '/el/:model/:id/edit',
-      templateUrl: "partials/base-edit.html"
+      templateUrl: 'partials/base-edit.html'
     })
-    .state('model::new',{
-      url: "/el/:model/new",
-      templateUrl: "partials/base-edit.html"
+    .state('model::new', {
+      url: '/el/:model/new',
+      templateUrl: 'partials/base-edit.html'
     })
-    .state('model::list',{
-      url: "/el/:model",
-      templateUrl: "partials/base-list.html"
+    .state('model::list', {
+      url: '/el/:model',
+      templateUrl: 'partials/base-list.html'
     });
-    $urlRouterProvider.otherwise("/");
+  $urlRouterProvider.otherwise('/');
 });
