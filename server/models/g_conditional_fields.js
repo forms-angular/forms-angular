@@ -21,7 +21,8 @@ try {
 }
 
 GSchema.statics.report = function (report) {
-  var reportSchema = '';
+  var reportSchema = '',
+    fullDescription = {field: '_id', translations: [ {value: 'M', display: 'Male'}, {value: 'F', display: 'Female'}, {'value': '', 'display': 'Unspecified'}]};
   switch (report) {
     case 'breakdownbysex' :
       reportSchema = {
@@ -33,12 +34,7 @@ GSchema.statics.report = function (report) {
           {field: '_id', displayName: 'Sex', totalsRow: 'Total', 'width': '160px'},
           {field: 'count', displayName: 'No of Applicants', totalsRow: '$SUM', 'width': '160px', 'cellFilter': 'number', 'align': 'right'}
         ],
-        columnTranslations: [
-          {field: '_id', translations: [
-            {value: 'M', display: 'Male'},
-            {value: 'F', display: 'Female'}
-          ]}
-        ]
+        columnTranslations: [fullDescription]
       };
       break;
     case 'totalforonesex' :
@@ -52,12 +48,7 @@ GSchema.statics.report = function (report) {
           {'field': '_id', 'displayName': 'Sex', 'width': '200'},
           {'field': 'count', 'displayName': 'No of Applicants', 'align': 'right', 'width': '200'}
         ],
-        'columnTranslations': [
-          {'field': '_id', 'translations': [
-            {'value': 'M', 'display': 'Male'},
-            {'value': 'F', 'display': 'Female'}
-          ]}
-        ],
+        'columnTranslations': [fullDescription],
         'params': {'sex': {value: 'M', type: 'select', enum: ['Male', 'Female'], required: true, conversionExpression: 'param[0]'}}
       };
       break;
@@ -86,11 +77,7 @@ GSchema.statics.report = function (report) {
           {'field': 'count', 'displayName': 'No of Applicants', 'align': 'right', 'width': '200'},
           {'field': 'functionResult', 'displayName': 'Applicants + 10', 'align': 'right', 'width': '200'}
         ],
-        'columnTranslations': [
-          {'field': '_id', 'translations': [
-            {'value': 'M', 'display': 'Male'},
-            {'value': 'F', 'display': 'Female'}
-          ]},
+        'columnTranslations':  [fullDescription,
           {field: 'functionResult',
             fn: function (row, cb) {
               row.functionResult = row.functionResult + 10;
