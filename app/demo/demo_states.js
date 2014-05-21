@@ -1,8 +1,10 @@
 'use strict';
-angular.module('myDemoApp', [
+var myDemoApp = angular.module('myDemoApp', [
   'formsAngular',
   'ui.router'
-]).config(function ($stateProvider, $urlRouterProvider) {
+]);
+
+myDemoApp.config(function ($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('/', {

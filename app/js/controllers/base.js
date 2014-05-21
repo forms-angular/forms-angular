@@ -22,7 +22,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.pageSize = 20;
     $scope.pagesLoaded = 0;
     $scope.filequeue = fileUpload.fieldData;
-    angular.extend($scope, $locationParse($location.$$path));
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
@@ -811,8 +810,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     };
 
     $scope.new = function () {
-      $location.search('');
-      $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
+      if ($state && $state.params && $state.params.model) {
+        $state.go('model::new', {model: $scope.modelName});
+      } else {
+        $location.search('');
+        $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
+      }
     };
 
     $scope.deleteRecord = function (model, id) {
