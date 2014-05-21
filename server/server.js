@@ -11,6 +11,8 @@ var express = require('express'),
     mongoose = require('mongoose'),
     exec = require('child_process').exec,
     env = process.env.NODE_ENV || 'development',
+    grid = require('gridfs-uploader'),
+    multer = require('multer'),
     app = module.exports = express();
 
 function handleCrawlers(req, res, next) {
@@ -36,6 +38,8 @@ app.get('*', handleCrawlers);
 app.use(methodOverride());
 if (app.get('env') === 'production') { app.use(express.static(__dirname + '/../dist')); }
 app.use(express.static(__dirname + '/../app'));
+
+app.post('/file/upload', multer());
 
 // Copy the schemas to somewhere they can be served
 exec('cp ' + __dirname + '/../server/models/* ' + __dirname + '/../app/code/',
@@ -120,6 +124,87 @@ modelFiles.forEach(function (file) {
 //        res.sendfile('index.html', { root: __dirname + '/../app/' });
 //    });
 //});
+
+var g = new grid(mongoose.mongo);
+g.db = mongoose.connection.db;
+
+var fileSchema =  new mongoose.Schema({
+    // Definition of the filename
+    filename: { type: String, list: true, required: true, trim: true, index: true },
+    // Define the content type
+    contentType: { type: String, trim: true, lowercase: true, required: true},
+    // length data
+    length: {type: Number, "default": 0, form: {readonly: true}},
+    chunkSize: {type: Number, "default": 0, form: {readonly: true}},
+    // upload date
+    uploadDate: { type: Date, "default": Date.now, form: {readonly: true}},
+
+    // additional metadata
+    metadata: {
+        filename: { type: String, trim: true, required: true},
+        test: { type: String, trim: true }
+    },
+    md5: { type: String, trim: true }
+}, {safe: false, collection: 'fs.files'});
+
+var fileModel = mongoose.model('file', fileSchema);
+
+app.post('/file/upload', function(req, res) {
+    // multipart upload library only for the needed paths
+    if(req.files) {
+        g.putUniqueFile(req.files.files.path, req.files.files.originalname, null, function (err, result) {
+            var dbResult;
+            var files = [];
+            if(err && err.name == 'NotUnique') {
+                dbResult = err.result;
+            } else if(err) {
+                res.send(500);
+            } else {
+                dbResult = result;
+            }
+            var id = dbResult._id.toString();
+            var result = {
+                name: dbResult.filename,
+                size: dbResult.length,
+                url: '/file/'+id,
+                thumbnailUrl: '/file/'+id,
+                deleteUrl: '/file/'+id,
+                deleteType: 'DELETE',
+                result: dbResult
+            }
+            files.push(result);
+            res.send({files: files});
+        });
+    }
+});
+
+app.get('/file/:id', function(req, res) {
+    try {
+        g.getFileStream(req.params.id, function(err, stream) {
+            if(stream) {
+                stream.pipe(res);
+            } else {
+                res.send(400);
+            }
+        });
+    } catch(e) {
+        res.send(400);
+    }
+});
+
+app.delete('/file/:id', function(req, res) {
+    try{
+        g.deleteFile(req.params.id, function(err, result) {
+            if(err) {
+                res.send(500);
+            } else {
+                res.send();
+            }
+        });
+    } catch(e) {
+        res.send(500);
+    }
+});
 
 var port;
 

@@ -181,6 +181,9 @@ formsAngular
                 value += '</select>';
               }
               break;
+            case 'fileuploader':
+              value = '<ng-upload-form url="/file/upload" auto-upload="true" size-limit="50000000000" name="'+fieldInfo.name+'"></ng-upload-form>';
+              break;
             case 'link' :
               value = '<a ng-href="/' + urlService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
               break;

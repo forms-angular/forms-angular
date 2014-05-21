@@ -17,7 +17,8 @@
     "async": "~0.2",
     "body-parser": ">=0.0.1",
     "method-override": ">=0.0.1",
-    "errorhandler": ">=0.0.1"
+    "errorhandler": ">=0.0.1",
+    "multer": ">=0.0.1"
   },
   "scripts": {
     "start": "node ./server/server.js",
