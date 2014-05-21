@@ -1,12 +1,12 @@
 'use strict';
 
-formsAngular.factory('$data', [function() {
+formsAngular.factory('$data', [function () {
 
-    var sharedData = {
-        record: {},
-        disableFunctions: {},
-        dataEventFunctions: {}
-    };
-    return sharedData;
+  var sharedData = {
+    record: {},
+    disableFunctions: {},
+    dataEventFunctions: {}
+  };
+  return sharedData;
 
 }]);

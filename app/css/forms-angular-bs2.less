@@ -1,0 +1,81 @@
+// Twitter Bootstrap 2 version of forms-angular.less
+
+@import "forms-angular-bs-common.less";
+
+@icon-font-path: "../fonts/glyphicons/";
+
+@import "../bower_components/bootstrap/less/responsive";
+
+@import "../bower_components/select2-bootstrap-css/lib/select2-bootstrap";
+
+// To use forms-angular-bs2.css from bower these paths are needed
+@iconSpritePath:          "../img/glyphicons-halflings.png";
+@iconWhiteSpritePath:     "../img/glyphicons-halflings-white.png";
+
+.list-item {
+  .well-small;
+}
+
+.page-header {
+  font-family: @headingsFontFamily;
+  font-weight: @headingsFontWeight;
+  color: @headingsColor;
+  font-size: @fontSizeLarge;
+  min-height: @navbarHeight;
+}
+
+.fixed-header {
+  background-color: @bodyBackground;
+}
+
+@media (max-width: @navbarCollapseWidth) {
+
+  // UNFIX THE TOPBAR
+  // ----------------
+  //  // Remove any padding from the page body
+  .page-body {
+    padding-top: 0;
+  }
+  // Unfix the navbars
+  .page-header {
+    position: static;
+  }
+
+  .global-search {
+    padding-right : 1em;
+  }
+}
+
+form {
+  &.form-horizontal.compact {
+    .control-group {
+      margin-bottom: 2px;
+    }
+  }
+
+  .schema-head, .sub-doc, .schema-foot {
+    background-color: @wellBackground;
+    border: 1px solid darken(@wellBackground, 7%);
+    .border-radius(@baseBorderRadius);
+  }
+
+  .form-inline > .sub-doc {
+    background-color: @bodyBackground;
+  }
+}
+
+.search-results {
+  .search-result {
+    color: @linkColor;
+  }
+  .search-result.focus {
+    background-color: @linkColorHover;
+  }
+}
+
+@media (max-width: @navbarCollapseWidth) {
+
+  .global-search {
+    padding-right : 1em;
+  }
+}

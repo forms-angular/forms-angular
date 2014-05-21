@@ -15,8 +15,8 @@
     <script type="text/javascript" src="/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-date/src/date.js"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-select2/src/select2.js"></script>
-    <script type="text/javascript" src="/bower_components/ngInfiniteScroll/ng-infinite-scroll.js"></script>
-    <script type="text/javascript" src="/bower_components/jspdf/dist/jspdf.source.js"></script>
+    <script type="text/javascript" src="/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js"></script>
+    <script type="text/javascript" src="/bower_components/jspdf/dist/jspdf.debug.js"></script>
     <script type="text/javascript" src="/bower_components/bootstrap/js/bootstrap-transition.js"></script>
     <script type="text/javascript" src="/bower_components/bootstrap/js/bootstrap-collapse.js"></script>
     <link rel="stylesheet" href="/bower_components/ng-grid/ng-grid.css">
@@ -25,59 +25,60 @@
     <script type="text/javascript" src="/bower_components/angular-elastic/elastic.js"></script>
     <script type="text/javascript" src="/bower_components/select2/select2.js"></script>
     <script type="text/javascript" src="/bower_components/ckeditor/ckeditor.js"></script>
-    <script type="text/javascript" src="/bower_components/ng-ckeditor/ng-ckeditor.src.js"></script>
+    <script type="text/javascript" src="/bower_components/ng-ckeditor/ng-ckeditor.js"></script>
     <!--[if lt IE 9]>
     <script src="/bower_components/html5shiv-dist/html5shiv.js"></script>
     <![endif]-->
 
     <!--forms-angular stuff-->
-    <link rel="stylesheet" href="/bower_components/forms-angular/forms-angular.css">
+    <link rel="stylesheet" href="/bower_components/forms-angular/css/forms-angular-bs2.css">
     <script type="text/javascript" src="/bower_components/forms-angular/forms-angular.js"></script>
+<!--strip  For testing a new branch - gets stripped out by expand-include -->
+<!--strip  <link rel="stylesheet" href="https://rawgit.com/mchapman/forms-angular/"branch"/app/css/forms-angular-bs2.css">-->
+<!--strip  <script type="text/javascript" src="https://rawgit.com/mchapman/forms-angular/"branch"/dist/scripts/"ed9f2098".lib.js"></script>-->
     <script src="/myapp.js"></script>
-
+    <style type="text/css" media="all">
+        .brandpluslogo {
+            font-size: x-large;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <!--The NavCtrl controller is responsible for parsing the URL and loading the menu for the model and form-->
-<body ng-app="myApp" ng-controller="NavCtrl">
-<div class="navbar row">
+<body ng-app="myApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
+<div class="navbar navbar-default navbar-fixed-top">
     <div class="navbar-inner">
-        <ul class="nav">
-            <li><a href="get-started/">Home</a></li>
-            <!--if The NavCtrl has loaded any menu items we display them here-->
-            <li ng-show="items.length > 0" class="dropdown" >
-                <a class="dropdown-toggle">
-                    {{contextMenu}}
-                </a>
-                <ul class="dropdown-menu">
-                    <li ng-repeat="choice in items">
-                        <a class="dropdown-option" href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+        <div class="container-fluid" ng-cloak>
+            <button type="button" class="navbar-toggle btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="glyphicon glyphicon-bar icon-bar"></span>
+                <span class="glyphicon glyphicon-bar icon-bar"></span>
+                <span class="glyphicon glyphicon-bar icon-bar"></span>
+            </button>
+            <div class="pull-left">
+                <a class="navbar-brandpluslogo brandpluslogo" ng-href="{{buildUrl('index')}}">Demo</a>
+            </div>
+            <div class="visible-lg visible-desktop pull-right col-md-2 span2"></div>      <!-- Leave some space for github flash -->
+            <global-search class="global-search"></global-search>
+            <div class="navbar-collapse collapse nav-collapse">
+                <ul class="nav navbar-nav">
+                    <li ng-show="items.length > 0" class="dropdown">
+                        <a class="dropdown-toggle">
+                            {{contextMenu}}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="choice in items">
+                                <a class="dropdown-option" ng-hide="isHidden($index)" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
-            </li>
-        </ul>
-        <div class="span9">
-            <!--The SearchCtrl handles AJAX searches of the database (which can be customised)-->
-            <div class="global-search" ng-controller="SearchCtrl">
-                <form class="navbar-search pull-right">
-                    <div id="search-cg" class="control-group" ng-class="errorClass">
-                        <input type="text" ng-model="searchTarget" class="search-query" placeholder="Search">
-                    </div>
-                </form>
-                <div class="search-results" ng-show="results.length >= 1">
-                    <div ng-repeat="result in results">
-                        <a class="search-result" ng-href="#!/{{result.resource}}/{{result.id}}/edit">
-                            {{result.resourceText}} {{result.text}}
-                        </a>
-                    </div>
-                    <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)</div>
-                </div>
             </div>
         </div>
     </div>
 </div>
-<div class="container-fluid">
-    <div ng-view></div>
-</div>
+<div ng-view></div>
+
 </body>
 
 </html>

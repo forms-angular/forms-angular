@@ -11,6 +11,7 @@ build.xml
 .bower-tmp
 .tmp
 app/styles
+app/generated
 dist/styles/components-font-awesome/*
 
 node_modules

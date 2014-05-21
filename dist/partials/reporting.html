@@ -1,4 +1,4 @@
-<div class="row-fluid">
+<div ng-class="css('rowFluid')">
     <div class="page-header">
         <h1>Reporting</h1>
         Unlock the data with just a few lines of configuration
@@ -6,12 +6,12 @@
 </div>
 
 <div class="container-fluid" ng-controller="DemoCtrl">
-    <div class="row-fluid">
-        <div class="span3">
+    <div ng-class="css('rowFluid')">
+        <div class="col-sm-3 span3">
             <affix></affix>
         </div>
 
-    <div class="span9 affix-section">
+    <div class="col-sm-9 span9 affix-section">
     <p>Simple reports can be produced by navigating to URLs of the format /#/analyse/modelname - see example <a
             href="/#!/analyse/b_using_options">here</a>.</p>
 
@@ -64,7 +64,7 @@
         </li>
         <li><strong>drilldown</strong> a url that clicking on the row will navigate to. A |fieldname| will be replaced
             with the value of the fieldname in the current row. For example a report
-            listing one row per item might have a drilldown of <em>/#/model/|_id|/edit</em> as seen in <a href="/#!/analyse/g_conditional_fields/totals">this</a> report.</li>
+            listing one row per item might have a drilldown of <em>model/|_id|/edit</em> as seen in <a href="/#!/analyse/g_conditional_fields/totals">this</a> report.</li>
         <li><strong>params</strong> contains an array of parameters that can be used in the pipeline, normally in a
             $match such as {$match:{sex:("sex")}}. Parameters can have the following properties:
             <ul>

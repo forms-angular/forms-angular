@@ -1,6 +1,7 @@
-myDemoApp.controller('HDeepNestingCtrl',['$data', function($data) {
+'use strict';
+myDemoApp.controller('HDeepNestingCtrl', ['$data', function ($data) {
 
-    $data.modelNameDisplay = "Nesting (work in early progress - buggy)";
+  $data.modelNameDisplay = 'Nesting (work in early progress - buggy)';
 
 }]);
 

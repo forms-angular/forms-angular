@@ -1,6 +1,6 @@
 {
   "name": "forms-angular",
-  "version": "0.2.4",
+  "version": "0.3.4",
   "homepage": "https://github.com/mchapman/forms-angular",
   "description": "No nonsense forms for the MEAN stack",
   "keywords": [
@@ -18,29 +18,32 @@
     "node_modules",
     "components"
   ],
+  "comments": [
+    "Do not upgrade ng-grid to anything less than 2.0.10 (https://github.com/angular-ui/ng-grid/issues/1142)"
+  ],
   "dependencies": {
-    "angular": "1.3.0-beta.5",
-    "angular-route": "1.3.0-beta.5",
-    "angular-mocks": "1.3.0-beta.5",
+    "angular": "1.3.0-beta.8",
+    "angular-route": "1.3.0-beta.8",
+    "angular-mocks": "1.3.0-beta.8",
     "angular-ui-bootstrap-bower": "0.8.0",
-    "angular-sanitize": "1.3.0-beta.5",
+    "angular-sanitize": "1.3.0-beta.8",
     "angular-ui-select2": "0.0.4",
-    "bootstrap": ">=3.1.0",
+    "bootstrap": "2.3.2",
     "html5shiv-dist": "3.6.2",
-    "jquery": ">=2.0.0",
-    "jquery-ui": ">=1.0.0",
+    "jquery": "1.10",
+    "jquery-ui": "1",
     "select2": "3.4.3",
     "underscore": "1.6",
     "angular-ui-date": "git://github.com/mchapman/ui-date#patch-1",
     "ngInfiniteScroll": "~1.0.0",
-    "ng-grid": "~2.0.7",
+    "ng-grid": "2.0.7",
     "angular-elastic": "~2",
     "select2-bootstrap-css": "~1.2",
-    "jspdf": "*",
-    "ng-ckeditor": "*",
-    "angular-jqfile-upload": "*"
+    "jspdf": "1.0.115",
+    "ng-ckeditor": "0.2.1",
+    "ckeditor": "*"
   },
   "resolutions": {
-    "angular": "1.3.0-beta.5"
+    "angular": "1.3.0-beta.8"
   }
 }

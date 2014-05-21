@@ -1,0 +1,96 @@
+// Twitter Bootstrap 3 version of forms-angular.less
+@import "forms-angular-bs-common.less";
+@import "../bower_components/select2-bootstrap-css/lib/select2-bootstrap.less";
+
+// Default styling for the forms-angular classes, to work with navbar-fixed
+
+.list-item {
+  .well-sm;
+  min-height: 40px;
+}
+
+.page-header {
+  font-family: @headings-font-family;
+  font-weight: @headings-font-weight;
+  color: @headings-color;
+  font-size: @font-size-large;
+  border-bottom: 2px solid @headings-color;
+  min-height: @navbar-height;
+}
+
+.fixed-header {
+  background-color: @body-bg;
+}
+
+@media (max-width: @grid-float-breakpoint) {
+
+  // UNFIX THE TOPBAR
+  // ----------------
+  //  // Remove any padding from the page body
+  .page-body {
+    padding-top: 0;
+  }
+  // Unfix the navbars
+  .page-header {
+    position: static;
+  }
+
+  .global-search {
+    padding-right : 1em;
+  }
+}
+
+form {
+  &.form-horizontal .form-group {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  &.form-horizontal.compact {
+    .form-group {
+      margin-bottom: 2px;
+    }
+  }
+
+  .schema-head, .sub-doc, .schema-foot {
+    background-color: @well-bg;
+    border: 1px solid darken(@well-bg, 7%);
+    border-radius : @border-radius-base;
+  }
+
+  //  .radio input[type="radio"], .radio-inline input[type="radio"], .checkbox-inline input[type="checkbox"]
+  .checkbox input[type="checkbox"] {
+    margin-left: -5px;
+  }
+
+  .form-inline > .sub-doc {
+    background-color: @body-bg;
+  }
+}
+
+.search-results {
+  .search-result {
+    color: @link-color;
+  }
+  .search-result.focus {
+    background-color: @link-hover-color;
+  }
+}
+
+.form-inline {
+  .row {
+    margin-left: 5px;
+    margin-right: 0;
+  }
+  .form-group .input-group {
+    display: table-cell;
+    .input-group-addon {
+      display: none;
+    }
+  }
+}
+
+form {
+  .tab-content {
+    margin-top: 5px;
+  }
+}

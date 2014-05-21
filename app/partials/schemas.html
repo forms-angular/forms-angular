@@ -1,4 +1,4 @@
-<div class="row-fluid">
+<div ng-class="css('rowFluid')">
     <div class="page-header">
         <h1>Schemas</h1>
         Controlling what your inputs look like
@@ -6,29 +6,27 @@
 </div>
 
 <div class="container-fluid schema-page" ng-controller="DemoCtrl">
-<div class="row-fluid">
-<div class="span3">
+<div ng-class="css('rowFluid')">
+<div class="col-sm-3 span3">
     <affix></affix>
 </div>
 
-<div class="span9 affix-section">
+<div class="affix-section col-sm-9 span9">
 <section id="introduction" name="Introduction" affix-scroll>
     <h3>Introduction</h3>
 
     <p>The most visible part of forms-angular is the <strong>form-input</strong> directive which
         takes a <em>schema</em> in the scope and creates inputs. These schemas can be very simple as in the
         example below:</p>
-    <pre>
-&lt;div ng-init="name=[{name:'surname'},{name:'forename']"&gt;
+    <pre>&lt;div ng-init="name=[{name:'surname'},{name:'forename']"&gt;
     &lt;form-input schema="name" /&gt;
 &lt;div&gt;</pre>
     <p>This simple bit of markup creates a small schema and stores it in the scope as <em>name</em> (you
         wouldn't normally it like this, but it illustrates things well) then invokes the form-input directive,
         telling it to use the schema just created to create a form with the appropriate input fields.</p>
 
-    <div class="well well-small" ng-init="name=[{name:'surname'},{name:'forename'}]">
-        <form-input schema="name" noautofocus="true" />
-        <!--Add a noautofocus here otherwise the resulting form stops the page scrolling to the internal links-->
+    <div class="well well-sm well-small" ng-init="name=[{name:'surname'},{name:'forename'}]">
+        <form-input schema="name" noautofocus="true" /> <!--Add a noautofocus here otherwise the resulting form stops the page scrolling to the internal links-->
     </div>
     <pre ng-show="record">Record content: {{record}}</pre>
 
@@ -42,7 +40,7 @@
     <ul>
         <li><strong>type</strong> sets the type of input control generated.  In addition to the
             <a href="http://www.html5rocks.com/en/tutorials/forms/html5forms/">standard
-            HTML5 types</a> there are some 'special' types:<ul>
+                HTML5 types</a> there are some 'special' types:<ul>
                 <li><strong>textarea</strong> a textarea control</li>
                 <li><strong>radio</strong> a radio button control</li>
                 <li><strong>select</strong> a select control</li>
@@ -54,25 +52,24 @@
         <li><strong>showWhen</strong> either:<ol><li>an object of the form {lhs:variable, comp:comparison, rhs:variable} where:<ul>
             <li><strong>variable</strong> can be a string, number or field in the model preceded by <strong>$</strong></li>
             <li><strong>comparison</strong> is one of 'eq', 'ne', 'gt', 'gte', 'lt', 'lte'</li></ul><p>or</p>
-            <li>an angular expression</li></ol>
-        </ul></li>
-        <li><strong>help</strong> is for specifying help text</li>
-        <li><strong>helpInline</strong> is for specifying help text which is displayed inline</li>
-        <li><strong>add</strong> allows anything else to be added to the input html.  For example
-            <code>"add": "ui-date ui-date-format "</code> (note the space at the end - add always needs this)
-            brings up the angular-ui date picker.
+        </li><li>an angular expression</li></ol>
         </li>
-        <li><strong>rows</strong> (in conjunction with a textarea type) allows the depth of the control to be
-            specified.  The <strong>auto</strong> option creates a textarea that automatically expands</li>
-        <li><strong>options</strong> (in conjunction with a select or radio type) allows the options for the select / radio button group to
+    <li><strong>help</strong> is for specifying help text</li>
+    <li><strong>helpInline</strong> is for specifying help text which is displayed inline</li>
+    <li><strong>add</strong> allows anything else to be added to the input html.  For example
+        <code>"add": "ui-date ui-date-format "</code> (note the space at the end - add always needs this)
+        brings up the angular-ui date picker.
+    </li>
+    <li><strong>rows</strong> (in conjunction with a textarea type) allows the depth of the control to be
+        specified.  The <strong>auto</strong> option creates a textarea that automatically expands</li>
+    <li><strong>options</strong> (in conjunction with a select or radio type) allows the options for the select / radio button group to
         be specified.  You can either do this by passing the option values in an array and passing it directly,
         or by putting them in an array on the scope and passing the name of the array (which allows run-time
         modification</li>
-    </ul>
+</ul>
 
     <h5>Example</h5>
-    <pre>
-&lt;div ng-init="example2=[
+    <pre>&lt;div ng-init="example2=[
         {name:'surname',label:'Family Name',required:true},
         {name:'forename',id:'fnameinput'},
         {name:'dateOfBirth',type:'date'},
@@ -82,7 +79,7 @@
 &lt;div&gt;</pre>
     <p>which looks like:</p>
     <div ng-init="colours=['brown','black','blonde','grey']"></div>
-    <div class="well well-small" ng-init="example2=[
+    <div class="well well-sm well-small" ng-init="example2=[
         {name:'surname',label:'Family Name',required:true},
         {name:'forename',id:'fnameinput'},
         {name:'dateOfBirth',type:'date'},
@@ -90,7 +87,7 @@
         {name:'hairColour',type:'select',options:['brown','black','blonde','grey']}]">
         <!--Add a noautofocus & forceform here and modify the model-->
         <form>
-            <form-input schema="example2" model="exampledata" forceForm="true" noautofocus="true"/>
+            <form-input schema="example2" model="exampledata" forceForm="true" noautofocus="true" />
         </form>
     </div>
     <pre ng-show="exampledata">Record content: {{exampledata}}</pre>
@@ -102,7 +99,7 @@
 
     <p>Mongoose is a popular package that simplifies using MongoDB with Node JS. Mongoose requires that
         a schema is created for each 'model'. As you will have seen in the <a href="/#!/get-started">Get
-        Started</a> section, <strong>forms-angular</strong> (specifically the BaseCtrl controller)
+            Started</a> section, <strong>forms-angular</strong> (specifically the BaseCtrl controller)
         can convert Mongoose schemas into the schemas that
         the form-input directive uses, which saves a lot of coding by hand and makes it very easy to
         keep your front and back ends in sync.  If you use BaseCtrl, then you should set the <strong>schema</strong>
@@ -120,16 +117,14 @@
 });</pre>
     <p>Each schema element (or field) has a type and optionally a number of other properties. Many of these properties
         are used by forms-angular to generate appropriate behaviour on the front end. The appropriate input types are
-        used (for instance an <strong>enum</strong>string> attribute will generate a select control (you can specify radio button - see below)
+        used (for instance an <strong>enum</strong>string) attribute will generate a select control (you can specify radio button - see below)
         and client side validation keeps round trips down (we cannot say "to a minimum" as work remains to
         be done in this area).</p>
 
-    <p>You can get an idea of what forms-angular does with a vanilla Mongoose JS schema by looking at <a
-            href="/code/a_unadorned_mongoose.js">this schema</a> and <a href="/#!/a_unadorned_mongoose/new">the
+    <p>You can get an idea of what forms-angular does with a vanilla Mongoose JS schema by looking at <a href="/code/a_unadorned_mongoose.js">this schema</a> and <a href="/#!/a_unadorned_mongoose/new">the
         form generated from it</a>.</p>
 
-    <p>For comprehensive information about Mongoose schemas visit the <a
-            href="http://mongoosejs.com/docs/guide.html">Mongoose JS website</a>.</p>
+    <p>For comprehensive information about Mongoose schemas visit the <a href="http://mongoosejs.com/docs/guide.html">Mongoose JS website</a>.</p>
 </section>
 <section id="list-fields" name="List Fields" affix-scroll>
     <h3>List Fields</h3>
@@ -200,25 +195,24 @@
             from the <a href="#listing">listing fields</a>.
         </li>
         <li><strong>rows</strong> sets the number of rows in inputs (such as textarea) that support this.
-            Setting rows
-            to
-            <strong>"auto"</strong> makes the textarea expand to fit the content, rather than create a
-            scrollbar.
+            Setting rows to <strong>"auto"</strong> makes the textarea expand to fit the content, rather than create a
+            scrollbar.</li>
         <li><strong>tab</strong> used to divide a large form up into a tabset with multiple tabs
-            (see <a href="/#!/i_tabbed_forms/new">example</a>).
+        (see <a href="/#!/i_tabbed_forms/new">example</a>).
         </li>
         <li><strong>showWhen</strong> allows conditional display of fields based on values elsewhere.  For example having
             prompted whether someone is a smoker you may want a field asking how many they smoke a day:
 <pre><code>smoker: {type: Boolean},
 howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true}}}</code></pre>
-            <p>As you can see from the example there are three parts to the showIf object:
+            <p>As you can see from the example there are three parts to the showIf object:</p>
             <ul>
                 <li><strong>lhs</strong> (left hand side) a value to be compared.  To use the current value of another
                     field in the document preceed it with $.</li>
                 <li><strong>comp</strong> supported comparators are 'eq' for equality, 'ne' for not equals,
                     'gt' (greater than), 'gte' (greater than or equal to), 'lt' (less than) and 'lte' (less than or equal to)</li>
                 <li><strong>rhs</strong> (right hand side) the other value to be compared.  Details as for lhs.</li>
-            </ul></p> </li>
+            </ul>
+        </li>
         <li><strong>noAdd</strong> inhibits an Add button being generated for arrays.</li>
         <li><strong>noRemove</strong> inhibits a Remove button being generated for array elements.</li>
         <li><strong>add</strong> allows arbitrary attributes to be added to the input tag. Useful for adding
@@ -226,11 +220,10 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         <li><strong>inlineRadio</strong> (only valid when type is radio) should be set to true to present all radio button options in a single line</li>
         <li><strong>editor</strong> (only valid when type is textarea) should be set to <em>ckEditor</em> to use <a href="http://ckeditor.com">CKEditor</a></li>
         <li><strong>directive</strong> allows you to specify custom behaviour.  Gets passed attributes from form-input (with
-        <em>schema</em> replaced with the current element - so <em>add</em> can be used to pass data into directives).</li>
+            <em>schema</em> replaced with the current element - so <em>add</em> can be used to pass data into directives).</li>
         <li><strong>customSubDoc</strong> (only valid on a sub document) allows you to specify custom HTML (which may include directives) for the sub doc</li>
         <li><strong>customFooter</strong> (only valid on a sub document) allows you to specify custom HTML (which may include directives) for the footer of a group of sub docs</li>
-        <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a
-                href='/#!/forms#form-styles'>form style section</a> for options.
+        <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a href="/#!/forms#form-styles">form style section</a> for options.
         </li>
         <li><strong>link</strong> sets up hyperlinks for reference fields as follows:
             <ul>
@@ -258,39 +251,37 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         but if you need them now then you need to create a schema by hand (or dynamically in code).</p>
 
     <p>An example of a use of containers would be:</p>
-    <pre>
-&ltform-input ng-init="names=[
+    <pre>&lt;form-input ng-init="names=[
   {containerType:'fieldset',title:'Name',content:
     [
       {id:'f_surname',label:'Surname',name:'surname',type:'text'},
       {id:'f_forename',label:'forename',name:'forename',type:'text'}
     ]
   }
-]" schema="names"&gt&lt/form-input&gt</pre>
+]" schema="names"&gt;&lt;/form-input&gt;</pre>
     <p>Other containers are <strong>tab</strong>,
         <strong>well</strong>, <strong>well-large</strong> and <strong>well-small</strong>.</p>
 
-    <p>If you want to &quot;roll your own&quot; you can do something like:</p>
-    <pre>
-&ltstyle&gt
+    <p>If you want to "roll your own" you can do something like:</p>
+    <pre>&lt;style&gt;
   .redBorder {border:solid 2px red;}
   p.bigRed {color: red; font-size: large}
-&lt/style&gt
-&ltform-input ng-init="names=[
+&lt;/style&gt;
+&lt;form-input ng-init="names=[
   {containerType:'redBorder',title:'Name',titleTagOrClass:'bigRed',content:
     [
       {id:'f_surname',label:'Surname',name:'surname',type:'text'},
       {id:'f_forename',label:'forename',name:'forename',type:'text'}
     ]
   }
-]" schema="names"&gt&lt/form-input&gt
+]" schema="names"&gt;&lt;/form-input&gt;
 </pre>
     <p>Where container type is seen as a class for a div and a titleTagOrClass of h1..h6 is interpreted as a
         heading tag and anything else as a class to be applied to a paragraph (as in the example).  If a title is
         specified without a corresponding titleTagOrClass then &lt;h4&gt; is used as a default.</p>
 
     <p>If you need even more flexibility then you can create a function that returns an object of the form
-    {before: <em>markup before container contents</em>, after:<em>markup after container contents</em>}.</p>
+        {before: <em>markup before container contents</em>, after:<em>markup after container contents</em>}.</p>
 </section>
 
 <section id="custom" name="Custom Schemas" affix-scroll>
@@ -304,37 +295,38 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         <li><strong>/#/:model/:formschema</strong> (<a href="/#!/b_using_options/justnameandpostcode/">example
             here</a>)
         </li>
-        <li><strong>/#/:model/:formschema/new</strong> (<a
-                href="/#!/b_using_options/justnameandpostcode/new">example
+        <li><strong>/#/:model/:formschema/new</strong> (<a href="/#!/b_using_options/justnameandpostcode/new">example
             here</a>)
         </li>
         <li><strong>/#/:model/:formschema/:id/edit</strong></li>
     </ul>
 
     <h4>Subkeys</h4>
-<p>Custom schemas are a good way to allow access to only part of a document, for instance if a customer record contained operational
-    and accounts information an accounts user would require a different view of the data (that would include account balance)
-    than a user from operations (who would not have access to the account balance).  Consider the following:</p>
+    <p>Custom schemas are a good way to allow access to only part of a document, for instance if a customer record contained operational
+        and accounts information an accounts user would require a different view of the data (that would include account balance)
+        than a user from operations (who would not have access to the account balance).  Consider the following:</p>
     <pre><code>var AddressSchema = new Schema({
-    type: { type: String, default: 'Home', enum: ['Delivery', 'Invoice', 'Historic'] },
-    street: String,
-    town: String,
-    postalCode: String
-    }, {_id: false});</code></pre>
+        type: { type: String, default: 'Home', enum: ['Delivery', 'Invoice', 'Historic'] },
+        street: String,
+        town: String,
+        postalCode: String
+        }, {_id: false});</code></pre>
     <p>and in the customer model</p>
     <pre><code>addressList: {type: [AddressSchema], mergeKey: 'type', form: {pane: 'Address', labels: 'Addresses'}}</code></pre>
     <p>We need a way of having the delivery address appear on one form (for the operation user) and the invoice address on the
-    finance form, even though they are in the same field.</p>
+        finance form, even though they are in the same field.</p>
     <p>forms-angular has the concept of a <strong>subkey</strong> for this scenario.  The custom schema for the operations user would contain:</p>
-    <pre><code>addressList: {subkey: {keyList: {type: 'Delivery'}, containerType: 'well-small', title: 'Address', titleTagOrClass: 'h5'}}</code></pre>
+    <pre><code>addressList: {subkey:
+  {keyList: {type: 'Delivery'}, containerType: 'well-small', title: 'Address', titleTagOrClass: 'h5'}
+}</code></pre>
     <p>while that for finance might include</p>
     <pre><code>addressList: {subkey:
-    [
-        {keyList: {type: 'Invoice'}, containerType: 'well-small', title: 'Invoice To:'},
-        {keyList: {type: 'Delivery'}, containerType: 'well-small', title: 'Deliver To:'}
-    ]
+  [
+    {keyList: {type: 'Invoice'}, containerType: 'well-small', title: 'Invoice To:'},
+    {keyList: {type: 'Delivery'}, containerType: 'well-small', title: 'Deliver To:'}
+  ]
 }</code></pre>
-<p>Note that subkey can be an object or an array of objects.  Where there are multiple sub docs that match the subkey the first will be used.</p>
+    <p>Note that subkey can be an object or an array of objects.  Where there are multiple sub docs that match the subkey the first will be used.</p>
 </section>
 </div>
 </div>
