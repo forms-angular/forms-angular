@@ -574,10 +574,12 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
 
           function doATranslate(column, theTranslation) {
             results.runAggregation.forEach(function (resultRow) {
+              var valToTranslate = resultRow[column.field];
+              valToTranslate = (valToTranslate ? valToTranslate.toString() : '');
               var thisTranslation = _.find(theTranslation.translations, function (option) {
-                return resultRow[column.field].toString() === option.value.toString();
+                return valToTranslate === option.value.toString();
               });
-              resultRow[column.field] = thisTranslation.display;
+              resultRow[column.field] = thisTranslation ? thisTranslation.display : ' * Missing columnTranslation * ';
             });
           }
 
