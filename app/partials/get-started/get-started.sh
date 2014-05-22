@@ -16,7 +16,7 @@ else
 fi
 
 echo Setting up example app for branch $branch
-wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/get-started-create.sh
+wget https://raw.github.com/mchapman/forms-angular/$branch/app/partials/get-started/get-started-create-auto.sh
 bash get-started-create.sh $2
 echo "Sub script complete...."
 pwd
