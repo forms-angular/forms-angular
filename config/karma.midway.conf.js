@@ -20,6 +20,7 @@ module.exports = function(config) {
             'app/bower_components/angular-elastic/elastic.js',
             'app/bower_components/ng-ckeditor/libs/ckeditor/ckeditor.js',
             'app/bower_components/ng-ckeditor/ng-ckeditor.js',
+            'app/bower_components/angular-jqfile-upload/dist/uploader.js',
             'app/js/forms-angular.js',
             'app/js/**/*.js',
             'app/demo/demo.js',
