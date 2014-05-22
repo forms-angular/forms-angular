@@ -135,10 +135,10 @@ var fileSchema =  new mongoose.Schema({
   // Define the content type
   contentType: { type: String, trim: true, lowercase: true, required: true},
   // length data
-  length: {type: Number, "default": 0, form: {readonly: true}},
-  chunkSize: {type: Number, "default": 0, form: {readonly: true}},
+  length: {type: Number, 'default': 0, form: {readonly: true}},
+  chunkSize: {type: Number, 'default': 0, form: {readonly: true}},
   // upload date
-  uploadDate: { type: Date, "default": Date.now, form: {readonly: true}},
+  uploadDate: { type: Date, 'default': Date.now, form: {readonly: true}},
 
   // additional metadata
   metadata: {
@@ -151,30 +151,30 @@ var fileSchema =  new mongoose.Schema({
 mongoose.model('file', fileSchema);
 
 app.post('/file/upload', multer());
-app.post('/file/upload', function(req, res) {
+app.post('/file/upload', function (req, res) {
   // multipart upload library only for the needed paths
-  if(req.files) {
+  if (req.files) {
     g.putUniqueFile(req.files.files.path, req.files.files.originalname, null, function (err, result) {
       var dbResult;
       var files = [];
-      if(err && err.name == 'NotUnique') {
+      if (err && err.name === 'NotUnique') {
         dbResult = err.result;
-      } else if(err) {
+      } else if (err) {
         res.send(500);
       } else {
         dbResult = result;
       }
       var id = dbResult._id.toString();
-      var result = {
+      var myresult = {
         name: dbResult.filename,
         size: dbResult.length,
-        url: '/file/'+id,
-        thumbnailUrl: '/file/'+id,
-        deleteUrl: '/file/'+id,
+        url: '/file/' + id,
+        thumbnailUrl: '/file/' + id,
+        deleteUrl: '/file/' + id,
         deleteType: 'DELETE',
         result: dbResult
-      }
-      files.push(result);
+      };
+      files.push(myresult);
       res.send({files: files});
     });
   }
@@ -194,9 +194,9 @@ app.get('/file/:id', function (req, res) {
   }
 });
 
-app.delete('/file/:id', function(req, res) {
-  g.deleteFile(req.params.id, function(err, result) {
-    if(err) {
+app.delete('/file/:id', function (req, res) {
+  g.deleteFile(req.params.id, function (err) {
+    if (err) {
       res.send(500);
     } else {
       res.send();
