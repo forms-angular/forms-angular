@@ -11,6 +11,8 @@ var express = require('express'),
     mongoose = require('mongoose'),
     exec = require('child_process').exec,
     env = process.env.NODE_ENV || 'development',
+    grid = require('gridfs-uploader'),
+    multer = require('multer'),
     app = module.exports = express();
 
 function handleCrawlers(req, res, next) {
@@ -120,6 +122,83 @@ modelFiles.forEach(function (file) {
 //        res.sendfile('index.html', { root: __dirname + '/../app/' });
 //    });
 //});
+
+/**
+ * Sample code for a possible file upload implementation
+ */
+app.post('/file/upload', multer());
+
+var g = new grid(mongoose.mongo);
+g.db = mongoose.connection.db;
+
+var fileSchema =  new mongoose.Schema({
+  // Definition of the filename
+  filename: { type: String, list: true, required: true, trim: true, index: true },
+  // Define the content type
+  contentType: { type: String, trim: true, lowercase: true, required: true},
+  // length data
+  length: {type: Number, "default": 0, form: {readonly: true}},
+  chunkSize: {type: Number, "default": 0, form: {readonly: true}},
+  // upload date
+  uploadDate: { type: Date, "default": Date.now, form: {readonly: true}},
+
+  // additional metadata
+  metadata: {
+    filename: { type: String, trim: true, required: true},
+    test: { type: String, trim: true }
+  },
+  md5: { type: String, trim: true }
+}, {safe: false, collection: 'fs.files'});
+
+mongoose.model('file', fileSchema);
+
+app.post('/file/upload', function(req, res) {
+  // multipart upload library only for the needed paths
+  if(req.files) {
+    g.putUniqueFile(req.files.files.path, req.files.files.originalname, null, function (err, result) {
+      var dbResult;
+      var files = [];
+      if(err && err.name == 'NotUnique') {
+        dbResult = err.result;
+      } else if(err) {
+        res.send(500);
+      } else {
+        dbResult = result;
+      }
+      var id = dbResult._id.toString();
+      var result = {
+        name: dbResult.filename,
+        size: dbResult.length,
+        url: '/file/'+id,
+        thumbnailUrl: '/file/'+id,
+        deleteUrl: '/file/'+id,
+        deleteType: 'DELETE',
+        result: dbResult
+      }
+      files.push(result);
+      res.send({files: files});
+    });
+  }
+});
+
+app.get('/file/:id', function(req, res) {
+  var fileStream = g.getFileStream(req.params.id);
+  if(fileStream) {
+    fileStream.pipe(res);
+  } else {
+    res.send(404);
+  }
+});
+
+app.delete('/file/:id', function(req, res) {
+  g.deleteFile(req.params.id, function(err, result) {
+    if(err) {
+      res.send(500);
+    } else {
+      res.send();
+    }
+  });
+});
 
 var port;
 
