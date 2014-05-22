@@ -1,1 +1,1 @@
-language: node_jsservices: mongodbnode_js:  - "0.10"before_script:  - apt-get install curl  - npm install -g bower  - bower install
+language: node_jsservices: mongodbnode_js:  - "0.10"before_script:  - sudo apt-get update  - sudo apt-get install curl  - npm install -g bower  - bower install
