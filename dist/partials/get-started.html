@@ -63,25 +63,15 @@
 
                 <h3>Create</h3>
                 In the shell do:
-                <pre><code>#!/bin/sh
-
-mkdir myapp
+                <pre><code>mkdir myapp
 cd myapp
 express
 npm install
 
-if [ $1 ]; then
-  npm install forms-angular-test --save
-else
-  npm install forms-angular --save
-fi
+npm install forms-angular --save
 npm install mongoose --save
 cd public
-if [ $1 ]; then
-  bower install forms-angular#dev --allow-root
-else
-  bower install forms-angular --allow-root
-fi
+bower install forms-angular
 cd ..</code></pre>
             </section>
             <section id="server-code" name="Server Code" affix-scroll>
