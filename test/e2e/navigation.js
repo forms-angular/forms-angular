@@ -2,7 +2,7 @@
 
 describe('Navigation', function () {
 
-  var baseMenuCount = 5;
+  var baseMenuCount = 6;
 
   it('should cope with a list with menu options', function () {
     browser().navigateTo('/#!/b_using_options');
