@@ -126,8 +126,6 @@ modelFiles.forEach(function (file) {
 /**
  * Sample code for a possible file upload implementation
  */
-app.post('/file/upload', multer());
-
 var g = new grid(mongoose.mongo);
 g.db = mongoose.connection.db;
 
@@ -152,6 +150,7 @@ var fileSchema =  new mongoose.Schema({
 
 mongoose.model('file', fileSchema);
 
+app.post('/file/upload', multer());
 app.post('/file/upload', function(req, res) {
   // multipart upload library only for the needed paths
   if(req.files) {
@@ -181,12 +180,17 @@ app.post('/file/upload', function(req, res) {
   }
 });
 
-app.get('/file/:id', function(req, res) {
-  var fileStream = g.getFileStream(req.params.id);
-  if(fileStream) {
-    fileStream.pipe(res);
-  } else {
-    res.send(404);
+app.get('/file/:id', function (req, res) {
+  try {
+    g.getFileStream(req.params.id, function (err, stream) {
+      if (stream) {
+        stream.pipe(res);
+      } else {
+        res.send(400);
+      }
+    });
+  } catch (e) {
+    res.send(400);
   }
 });
 
