@@ -3,7 +3,7 @@ module.exports = function(config) {
         basePath: '../',
         frameworks: ['jasmine'],
         files: [
-            "app/bower_components/jquery/jquery.js",
+            "app/bower_components/jquery/dist/jquery.js",
             "app/bower_components/jquery-ui/ui/jquery-ui.js",
             "app/bower_components/angular/angular.js",
             "app/bower_components/angular-sanitize/angular-sanitize.js",
@@ -20,6 +20,8 @@ module.exports = function(config) {
             'app/bower_components/jspdf/dist/jspdf.debug.js',
             'app/bower_components/ng-ckeditor/libs/ckeditor/ckeditor.js',
             'app/bower_components/ng-ckeditor/ng-ckeditor.js',
+            'app/bower_components/angular-jqfile-upload/dist/uploader.js',
+            'app/bower_components/angular-ui-router/release/angular-ui-router.js',
             'app/js/forms-angular.js',
             'app/js/**/*.js',
             'app/demo/demo.js',

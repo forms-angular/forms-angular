@@ -1,7 +1,7 @@
 'use strict';
 
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window', 'urlService',
-  function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$http', '$filter', '$data', '$locationParse', '$modal', '$window', 'urlService', '$state', '$stateParse', 'fileUpload',
+  function ($scope, $routeParams, $location, $http, $filter, $data, $locationParse, $modal, $window, urlService, $state, $stateParse, fileUpload) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -21,12 +21,22 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.select2List = [];
     $scope.pageSize = 20;
     $scope.pagesLoaded = 0;
-    angular.extend($scope, $locationParse($location.$$path));
+    $scope.filequeue = fileUpload.fieldData;
+
+    if ($state && $state.params && $state.params.model) {
+      angular.extend($scope, $stateParse($state));
+    } else {
+      angular.extend($scope, $locationParse($location.$$path));
+    }
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
     $scope.generateEditUrl = function (obj) {
       return urlService.buildUrl($scope.modelName + '/' + $scope.formPlusSlash + obj._id + '/edit');
+    };
+
+    $scope.getId = function (obj) {
+      return obj._id;
     };
 
     $scope.walkTree = function (object, fieldname, element) {
@@ -239,6 +249,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
           }
         } else if (mongooseType.instance === 'boolean') {
           formInstructions.type = 'checkbox';
+        } else if (mongooseOptions.form.type === 'fileuploader') {
+          if (mongooseOptions.form.name) {
+            $scope.$watchCollection('filequeue.' + mongooseOptions.form.name, function (newvar) {
+              $scope.record[mongooseOptions.form.name] = newvar;
+            });
+
+            $scope.$watchCollection('record.' + mongooseOptions.form.name, function (newvar) {
+              $scope.filequeue[mongooseOptions.form.name] = newvar;
+            });
+          }
         } else if (mongooseType.instance === 'Number') {
           formInstructions.type = 'number';
           if (mongooseOptions.min) {
@@ -250,6 +270,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
           if (formInstructions.step) {
             formInstructions.add = 'step="' + formInstructions.step + '" ' + (formInstructions.add || '');
           }
+        } else if (mongooseType.instance === 'file') {
+          formInstructions.type = 'fileuploader';
         } else {
           throw new Error('Field ' + formInstructions.name + ' is of unsupported type ' + mongooseType.instance);
         }
@@ -719,8 +741,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
           if (options.redirect) {
             $window.location = options.redirect;
           } else {
-            $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
-            //                    reset?
+            if ($state && $state.params && $state.params.model) {
+              $state.go('model::edit', {id: data._id, model: $scope.modelName });
+            } else {
+              $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
+              //                    reset?
+            }
           }
         } else {
           $scope.showError(data);

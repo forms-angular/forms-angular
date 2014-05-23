@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>forms-angular</title>
+
+    <style>[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+        display: none !important;
+    }</style>
+
+    <!-- build:css({.tmp,app}) styles/main.css -->
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="bower_components/select2/select2.css">
+    <link rel="stylesheet" href="bower_components/ng-grid/ng-grid.css">
+    <link rel="stylesheet" href="demo/css/demo.css">
+    <!-- endbuild -->
+</head>
+<body ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
+<div class="visible-desktop">
+    <a href="https://github.com/mchapman/forms-angular"><img src="img/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032"></a>
+</div>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <div class="pull-left">
+                <a class="brandpluslogo" href="/#!/index"><img src="/img/Home_icon_black.png" width="45" alt="Click on logo to go to home page"></a>
+            </div>
+            <div class="visible-desktop pull-right span2"></div>   <!-- Leave some space for github flash -->
+            <global-search class="global-search"></global-search>
+            <div class="pull-right" style="padding-top: 14px;"><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe><iframe src="http://ghbtns.com/github-btn.html?user=mchapman&repo=forms-angular&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe></div>
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li><a ui-sref="getStarted" href="/#!/get-started">Get Started</a></li>
+                    <li><a ui-sref="schemas" href="/#!/schemas">Schemas</a></li>
+                    <li><a ui-sref="forms" href="/#!/forms">Forms</a></li>
+                    <li><a ui-sref="reporting" href="/#!/reporting">Reporting</a></li>
+                    <li class="dropdown"><a class="dropdown-toggle">More</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-option" ui-sref="examples" href="/#!/examples">Examples</a></li>
+                            <li><a class="dropdown-option" ui-sref="apiDocs" href="/#!/api-docs">API Documentation</a></li>
+                            <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
+                            <li><a class="dropdown-option" href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
+                            <li><a class="dropdown-option" ui-sref="inTheWild" href="/#!/in-the-wild">Who Uses It?</a></li>
+                        </ul>
+                    </li>
+
+                    <li ng-show="items.length > 0" class="dropdown" >
+                        <a class="dropdown-toggle">
+                            {{contextMenu}}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="choice in items">
+                                <a class="dropdown-option" ng-hide="isHidden($index)" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div ui-view></div>
+<div ng-view></div>
+<footer class="footer">
+    <div class="container-fluid">
+        <p>Code licensed under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <ul class="footer-links">
+            <li><a href="https://github.com/mchapman/forms-angular/issues?state=open">Issues</a></li>
+            <li class="muted">·</li>
+            <li><a href="https://github.com/mchapman/forms-angular/releases">Changelog</a></li>
+        </ul>
+    </div>
+</footer>
+
+<!-- what forms-angular depends on -->
+<!-- *** Section must be copied to partials/get-started/index.html if it is changed *** -->
+<!-- build:js scripts/plugins.js -->
+<script type="text/javascript" src="bower_components/jquery/jquery.js"></script>
+<script type="text/javascript" src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
+<script type="text/javascript" src="bower_components/angular/angular.js"></script>
+<script type="text/javascript" src="bower_components/angular-route/angular-route.js"></script>
+<script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script type="text/javascript" src="bower_components/underscore/underscore.js"></script>
+<script type="text/javascript" src="bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
+<script type="text/javascript" src="bower_components/angular-ui-date/src/date.js"></script>
+<script type="text/javascript" src="bower_components/angular-ui-select2/src/select2.js"></script>
+<script type="text/javascript" src="bower_components/ngInfiniteScroll/ng-infinite-scroll.js"></script>
+<script type="text/javascript" src="bower_components/jspdf/dist/jspdf.source.js"></script>
+<script type="text/javascript" src="bower_components/bootstrap/js/bootstrap-transition.js"></script>
+<script type="text/javascript" src="bower_components/bootstrap/js/bootstrap-collapse.js"></script>
+<script type="text/javascript" src="bower_components/ng-grid/ng-grid-2.0.7.debug.js"></script>
+<script type="text/javascript" src="bower_components/angular-elastic/elastic.js"></script>
+<script type="text/javascript" src="bower_components/select2/select2.js"></script>
+<script type="text/javascript" src="bower_components/ng-ckeditor/ng-ckeditor.src.js"></script>
+<script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+
+<!-- endbuild -->
+<!--[if lt IE 9]>
+<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
+<![endif]-->
+<script>
+    var CKEDITOR_BASEPATH = '//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/';
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/ckeditor.min.js"></script>
+<!-- forms-angular stuff -->
+<!--This section needs to stay in sync with the concat section of the Gruntfile-->
+<!-- build:js scripts/lib.js -->
+<script src="js/forms-angular.js"></script>
+<script src="js/services/location-parse.js"></script>
+<script src="js/services/state-parse.js"></script>
+<script src="js/services/data.js"></script>
+<script src="js/services/utils.js"></script>
+<script src="js/controllers/base.js"></script>
+<script src="js/controllers/analysis.js"></script>
+<script src="js/controllers/model.js"></script>
+<script src="js/controllers/nav.js"></script>
+<script src="js/directives/form.js"></script>
+<script src="js/directives/form-buttons.js"></script>
+<script src="js/directives/search.js"></script>
+<script src="js/directives/ngGridTotalCell.js"></script>
+<script src="js/plugins/ng-grid/ng-grid-csv-export.js"></script>
+<script src="js/plugins/ng-grid/ng-grid-pdf-export.js"></script>
+<script src="js/plugins/jsPDF/jspdf-plugin.cell.js"></script>
+<script src="js/filters/titlecase.js"></script>
+<!-- endbuild -->
+
+<!--Demo application stuff-->
+<!-- build:js scripts/app.js -->
+<script src="demo/demo_states.js"></script>
+<script src="demo/directives/bespoke-field.js"></script>
+<script src="demo/directives/affix.js"></script>
+<script src="demo/directives/friends.js"></script>
+<script src="demo/controllers/b-using-options.js"></script>
+<script src="demo/controllers/in-the-wild.js"></script>
+<script src="demo/controllers/b-using-options-justnameandpostcode.js"></script>
+<script src="demo/controllers/d-array-example.js"></script>
+<script src="demo/controllers/h_deep_nesting.js"></script>
+<!-- endbuild -->
+
+<script type="text/javascript">
+    if (window.location.hostname != '0.0.0.0') {
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-3037487-9']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    }
+</script>
+
+</body>
+</html>

@@ -47,3 +47,4 @@ js-build/forms-angular.js
 Vagrantfile
 
 nohup.out
+dist/
