@@ -42,11 +42,10 @@
     "jspdf": "1.0.115",
     "ng-ckeditor": "0.2.1",
     "ckeditor": "*",
-    "angular-jqfile-upload": "*"
+    "angular-jqfile-upload": "https://github.com/forms-angular/jQuery-File-Upload"
   },
   "resolutions": {
     "angular": "1.3.0-beta.8",
-    "jquery": "1.10",
-    "bootstrap": "2.3.2"
+    "jquery": "1.10"
   }
 }
