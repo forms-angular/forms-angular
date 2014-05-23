@@ -22,7 +22,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.pageSize = 20;
     $scope.pagesLoaded = 0;
     $scope.filequeue = fileUpload.fieldData;
-    angular.extend($scope, $locationParse($location.$$path));
+
+    if ($state && $state.params && $state.params.model) {
+      angular.extend($scope, $stateParse($state));
+    } else {
+      angular.extend($scope, $locationParse($location.$$path));
+    }
 
     $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
@@ -33,12 +38,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
     $scope.getId = function (obj) {
       return obj._id;
     };
-
-    if ($state && $state.params && $state.params.model) {
-      angular.extend($scope, $stateParse($state));
-    } else {
-      angular.extend($scope, $locationParse($location.$$path));
-    }
 
     $scope.walkTree = function (object, fieldname, element) {
       // Walk through subdocs to find the required key

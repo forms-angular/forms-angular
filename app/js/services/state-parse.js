@@ -17,10 +17,13 @@ formsAngular.factory('$stateParse', [function () {
         lastObject.modelName = state.params.model;
       } else if (state.current.name === 'model::edit') {
         lastObject.id = state.params.id;
+        lastObject.formName = 'edit';
       } else if (state.current.name === 'model::new') {
         lastObject.newRecord = true;
+        lastObject.formName = 'new';
       } else if (state.current.name === 'model::analyse') {
         lastObject.analyse = true;
+        lastObject.formName = 'analyse';
       }
     }
     return lastObject;
