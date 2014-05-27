@@ -1,6 +1,6 @@
 'use strict';
 
-formsAngular.controller( 'BaseCtrl', ['$scope', '$routeParams', '$location', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService',
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService',
   function ($scope, $routeParams, $location, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
@@ -150,7 +150,8 @@ formsAngular.controller( 'BaseCtrl', ['$scope', '$routeParams', '$location', '$f
                   initSelection: function (element, callback) {
                     var theId = element.val();
                     if (theId && theId !== '') {
-                      $http.get('/api/' + mongooseOptions.ref + '/' + theId + '/list').success(function (data) {
+                      SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
+                        .success(function (data) {
                         if (data.success === false) {
                           $location.path('/404');
                         }
@@ -433,7 +434,9 @@ formsAngular.controller( 'BaseCtrl', ['$scope', '$routeParams', '$location', '$f
                   depends = $scope.dataDependencies[field];
                   for (i = 0; i < depends.length; i += 1) {
                     var nameParts = depends[i].split('.');
-                    if (nameParts.length !== 2) { throw new Error('Conditional display must control dependent fields at same level '); }
+                    if (nameParts.length !== 2) {
+                      throw new Error('Conditional display must control dependent fields at same level ');
+                    }
                     for (j = 0; j < $scope.formSchema.length; j += 1) {
                       if ($scope.formSchema[j].name === nameParts[0]) {
                         var subSchema = $scope.formSchema[j].schema;
@@ -504,7 +507,9 @@ formsAngular.controller( 'BaseCtrl', ['$scope', '$routeParams', '$location', '$f
                 handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true);
                 var sectionInstructions = basicInstructions(field, formData, prefix);
                 sectionInstructions.schema = schemaSchema;
-                if (formData.tab) { handletabInfo(formData.tab, sectionInstructions); }
+                if (formData.tab) {
+                  handletabInfo(formData.tab, sectionInstructions);
+                }
                 if (formData.order !== undefined) {
                   destForm.splice(formData.order, 0, sectionInstructions);
                 } else {
@@ -516,7 +521,9 @@ formsAngular.controller( 'BaseCtrl', ['$scope', '$routeParams', '$location', '$f
                 var formInstructions = basicInstructions(field, formData, prefix);
                 if (handleConditionals(formInstructions.showIf, formInstructions.name) && field !== 'options') {
                   var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions);
-                  if (formInst.tab) { handletabInfo(formInst.tab, formInst); }
+                  if (formInst.tab) {
+                    handletabInfo(formInst.tab, formInst);
+                  }
                   if (formData.order !== undefined) {
                     destForm.splice(formData.order, 0, formInst);
                   } else {
@@ -563,182 +570,179 @@ formsAngular.controller( 'BaseCtrl', ['$scope', '$routeParams', '$location', '$f
     };
 
     $scope.readRecord = function () {
-        SubmissionsService.readRecord($scope.modelName, $scope.id)
-            .success(function (data) {
-                if (data.success === false) {
-                    $location.path("/404");
-                }
-                allowLocationChange = false;
-                $scope.phase = 'reading';
-                if (typeof $scope.dataEventFunctions.onAfterRead === "function") {
-                    $scope.dataEventFunctions.onAfterRead(data);
-                }
-                $scope.processServerData(data);
-            }).error(function () {
-                $location.path("/404");
-            });
+      SubmissionsService.readRecord($scope.modelName, $scope.id)
+        .success(function (data) {
+          if (data.success === false) {
+            $location.path('/404');
+          }
+          allowLocationChange = false;
+          $scope.phase = 'reading';
+          if (typeof $scope.dataEventFunctions.onAfterRead === 'function') {
+            $scope.dataEventFunctions.onAfterRead(data);
+          }
+          $scope.processServerData(data);
+        }).error(function () {
+          $location.path('/404');
+        });
     };
 
     $scope.scrollTheList = function () {
-        SubmissionsService.getPagedAndFilteredList($scope.modelName, {
-                aggregate:  $routeParams.a,
-                find: $routeParams.f,
-                limit: $scope.page_size,
-                skip: $scope.pages_loaded * $scope.page_size,
-                order: $routeParams.o
-            })
-            .success(function (data) {
-                if (angular.isArray(data)) {
-                    $scope.pages_loaded++;
-                    $scope.recordList = $scope.recordList.concat(data);
-                } else {
-                    $scope.showError(data, "Invalid query");
-                }
-            })
-            .error(function () {
-                $location.path("/404");
-            });
+      SubmissionsService.getPagedAndFilteredList($scope.modelName, {
+        aggregate: $routeParams.a,
+        find: $routeParams.f,
+        limit: $scope.pageSize,
+        skip: $scope.pagesLoaded * $scope.pageSize,
+        order: $routeParams.o
+      })
+        .success(function (data) {
+          if (angular.isArray(data)) {
+            $scope.pagesLoaded++;
+            $scope.recordList = $scope.recordList.concat(data);
+          } else {
+            $scope.showError(data, 'Invalid query');
+          }
+        })
+        .error(function () {
+          $location.path('/404');
+        });
     };
 
     $scope.deleteRecord = function (model, id) {
-        SubmissionsService.deleteRecord(model, id)
-            .success(function () {
-                if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
-                    $scope.dataEventFunctions.onAfterDelete(master);
-                }
-                $location.path('/' + $scope.modelName);
-            });
+      SubmissionsService.deleteRecord(model, id)
+        .success(function () {
+          if (typeof $scope.dataEventFunctions.onAfterDelete === 'function') {
+            $scope.dataEventFunctions.onAfterDelete(master);
+          }
+          $location.path('/' + $scope.modelName);
+        });
     };
 
 
     $scope.updateDocument = function (dataToSave, options) {
-        $scope.phase = 'updating';
+      $scope.phase = 'updating';
 
-        SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave)
-            .success(function (data) {
-                if (data.success !== false) {
-                    if (typeof $scope.dataEventFunctions.onAfterUpdate === "function") {
-                        $scope.dataEventFunctions.onAfterUpdate(data, master)
-                    }
-                    if (options.redirect) {
-                        if (options.allowChange) {
-                            allowLocationChange = true;
-                        }
-                        $window.location = options.redirect;
-                    } else {
-                        $scope.processServerData(data);
-                        $scope.setPristine();
-                    }
-                } else {
-                    $scope.showError(data);
-                }
-            })
-            .error(handleError);
+      SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave)
+        .success(function (data) {
+          if (data.success !== false) {
+            if (typeof $scope.dataEventFunctions.onAfterUpdate === 'function') {
+              $scope.dataEventFunctions.onAfterUpdate(data, master);
+            }
+            if (options.redirect) {
+              if (options.allowChange) {
+                allowLocationChange = true;
+              }
+              $window.location = options.redirect;
+            } else {
+              $scope.processServerData(data);
+              $scope.setPristine();
+            }
+          } else {
+            $scope.showError(data);
+          }
+        })
+        .error(handleError);
 
     };
 
     $scope.createNew = function (dataToSave, options) {
-        SubmissionsService.createRecord($scope.modelName, dataToSave)
-            .success(function (data) {
-                if (data.success !== false) {
-                    if (typeof $scope.dataEventFunctions.onAfterCreate === "function") {
-                        $scope.dataEventFunctions.onAfterCreate(data);
-                    }
-                    if (options.redirect) {
-                        $window.location = options.redirect
-                    } else {
-                        $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
-                        //                    reset?
-                    }
-                } else {
-                    $scope.showError(data);
-                }
-            })
-            .error(handleError);
+      SubmissionsService.createRecord($scope.modelName, dataToSave)
+        .success(function (data) {
+          if (data.success !== false) {
+            if (typeof $scope.dataEventFunctions.onAfterCreate === 'function') {
+              $scope.dataEventFunctions.onAfterCreate(data);
+            }
+            if (options.redirect) {
+              $window.location = options.redirect;
+            } else {
+              $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
+              //                    reset?
+            }
+          } else {
+            $scope.showError(data);
+          }
+        })
+        .error(handleError);
     };
 
     SchemasService.getSchema($scope.modelName, $scope.formName)
-        .success(function (data) {
-            handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
+      .success(function (data) {
+        handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
 
-            if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
-                allowLocationChange = true;
-            } else {
-                var force = true;
-                $scope.$watch('record', function (newValue, oldValue) {
-                    if (newValue !== oldValue) {
-                        force = $scope.updateDataDependentDisplay(newValue, oldValue, force);
-                    }
-                }, true);
-
-                if ($scope.id) {
-                    // Going to read a record
-                    if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
-                        $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
-                            if (err) {
-                                $scope.showError(err);
-                            } else {
-                                $scope.readRecord();
-                            }
-                        });
-                    } else {
-                        $scope.readRecord();
-                    }
-                } else {
-                    // New record
-                    master = {};
-                    $scope.phase = 'ready';
-                    $scope.cancel();
-                }
+        if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
+          allowLocationChange = true;
+        } else {
+          var force = true;
+          $scope.$watch('record', function (newValue, oldValue) {
+            if (newValue !== oldValue) {
+              force = $scope.updateDataDependentDisplay(newValue, oldValue, force);
             }
-        })
-        .error(function () {
-            $location.path("/404");
-        });
+          }, true);
+
+          if ($scope.id) {
+            // Going to read a record
+            if (typeof $scope.dataEventFunctions.onBeforeRead === 'function') {
+              $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
+                if (err) {
+                  $scope.showError(err);
+                } else {
+                  $scope.readRecord();
+                }
+              });
+            } else {
+              $scope.readRecord();
+            }
+          } else {
+            // New record
+            master = {};
+            $scope.phase = 'ready';
+            $scope.cancel();
+          }
+        }
+      })
+      .error(function () {
+        $location.path('/404');
+      });
 
 
     var setUpSelectOptions = function (lookupCollection, schemaElement) {
-        var optionsList = $scope[schemaElement.options] = [];
-        var idList = $scope[schemaElement.ids] = [];
+      var optionsList = $scope[schemaElement.options] = [];
+      var idList = $scope[schemaElement.ids] = [];
 
-        SchemasService.getSchema(lookupCollection)
+      SchemasService.getSchema(lookupCollection)
+        .success(function (data) {
+          var listInstructions = [];
+          handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
+
+          SubmissionsService.getAll(lookupCollection)
             .success(function (data) {
-                var listInstructions = [];
-                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false);
-
-                SubmissionsService.getAll(lookupCollection)
-                    .success(function (data) {
-                        if (data) {
-                            for (var i = 0; i < data.length; i++) {
-                                var option = '';
-                                for (var j = 0; j < listInstructions.length; j++) {
-                                    option += data[i][listInstructions[j].name] + ' ';
-                                }
-                                option = option.trim();
-                                var pos = _.sortedIndex(optionsList, option);
-                                // handle dupes (ideally people will use unique indexes to stop them but...)
-                                if (optionsList[pos] === option) {
-                                    option = option + '    (' + data[i]._id + ')';
-                                    pos = _.sortedIndex(optionsList, option);
-                                }
-                                optionsList.splice(pos, 0, option);
-                                idList.splice(pos, 0, data[i]._id);
-                            }
-                            updateRecordWithLookupValues(schemaElement);
-                        }
-                    });
+              if (data) {
+                for (var i = 0; i < data.length; i++) {
+                  var option = '';
+                  for (var j = 0; j < listInstructions.length; j++) {
+                    option += data[i][listInstructions[j].name] + ' ';
+                  }
+                  option = option.trim();
+                  var pos = _.sortedIndex(optionsList, option);
+                  // handle dupes (ideally people will use unique indexes to stop them but...)
+                  if (optionsList[pos] === option) {
+                    option = option + '    (' + data[i]._id + ')';
+                    pos = _.sortedIndex(optionsList, option);
+                  }
+                  optionsList.splice(pos, 0, option);
+                  idList.splice(pos, 0, data[i]._id);
+                }
+                updateRecordWithLookupValues(schemaElement);
+              }
             });
+        });
     };
 
 
-
-
-
-    $scope.setPristine = function() {
-        $scope.dismissError();
-        if ($scope[$scope.topLevelFormName]) {
-            $scope[$scope.topLevelFormName].$setPristine();
-        }
+    $scope.setPristine = function () {
+      $scope.dismissError();
+      if ($scope[$scope.topLevelFormName]) {
+        $scope[$scope.topLevelFormName].$setPristine();
+      }
     };
 
     $scope.cancel = function () {
