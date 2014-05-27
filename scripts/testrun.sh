@@ -1,5 +1,7 @@
 #!/bin/bash
 
+grunt jshint
+
 KARMA=./node_modules/karma/bin/karma
 MOCHA=./node_modules/mocha/bin/mocha
 
