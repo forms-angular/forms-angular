@@ -35,6 +35,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
       return urlService.buildUrl($scope.modelName + '/' + $scope.formPlusSlash + obj._id + '/edit');
     };
 
+    $scope.go = function(state, params) {
+      $state.go(state, params);
+    };
+
     $scope.getId = function (obj) {
       return obj._id;
     };
@@ -822,6 +826,39 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
         $location.path('/' + $scope.modelName);
       });
     };
+
+    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+      if (!allowLocationChange && !$scope.isCancelDisabled()) {
+        event.preventDefault();
+        var modalInstance = $modal.open({
+          template: '<div class="modal-header">' +
+            '   <h3>Record modified</h3>' +
+            '</div>' +
+            '<div class="modal-body">' +
+            '   <p>Would you like to save your changes?</p>' +
+            '</div>' +
+            '<div class="modal-footer">' +
+            '    <button class="btn btn-primary dlg-yes" ng-click="yes()">Yes</button>' +
+            '    <button class="btn btn-warning dlg-no" ng-click="no()">No</button>' +
+            '    <button class="btn dlg-cancel" ng-click="cancel()">Cancel</button>' +
+            '</div>',
+          controller: 'SaveChangesModalCtrl',
+          backdrop: 'static'
+        });
+
+        modalInstance.result.then(
+          function (result) {
+            if (result) {
+              allowLocationChange = true;
+              $scope.save({stateChange: toState, stateParams: toParams, allowChange: true});    // save changes
+            } else {
+              allowLocationChange = true;
+              $state.go(toState, toParams);
+            }
+          }
+        );
+      }
+    });
 
     $scope.$on('$locationChangeStart', function (event, next) {
       if (!allowLocationChange && !$scope.isCancelDisabled()) {
