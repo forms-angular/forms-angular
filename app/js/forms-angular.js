@@ -11,7 +11,8 @@ var formsAngular = angular.module('formsAngular', [
   'infinite-scroll',
   'monospaced.elastic',
   'ngCkeditor',
-  'uploadModule'
+  'uploadModule',
+  'ui.bootstrap.datetimepicker'
 ]);
 
 void(formsAngular);  // Make jshint happy

@@ -247,8 +247,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ht
             if (formInstructions.readonly) {
               formInstructions.type = 'text';
             } else {
-              formInstructions.type = 'text';
-              formInstructions.add = 'ui-date ui-date-format ';
+              formInstructions.type = 'datetime';
             }
           }
         } else if (mongooseType.instance === 'boolean') {

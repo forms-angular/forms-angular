@@ -211,6 +211,9 @@ formsAngular
                 value = generateDefault(common, options, fieldInfo);
               }
               break;
+            case 'datetime':
+              value = '<div class="dropdown"><a class="dropdown-toggle my-toggle-select" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href=""><div class="input-append"><input type="text" class="input-large" data-ng-model="'+modelString+ '"><span class="add-on"><i class="icon-calendar"></i></span></div></a><ul class="dropdown-menu" role="menu" aria-labelledby="dLabel"><datetimepicker data-ng-model="'+modelString+'" data-datetimepicker-config="{ dropdownSelector: \'.my-toggle-select\' }"></datetimepicker></ul></div>';
+              break;
             default:
               common += 'class="' + formControl.trim() + compactClass + sizeClassBS2 + '"' + (fieldInfo.add ? fieldInfo.add : '');
               common += 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
