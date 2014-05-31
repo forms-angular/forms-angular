@@ -151,7 +151,7 @@
 <!-- endbuild -->
 
 <script type="text/javascript">
-    if (window.location.hostname != '0.0.0.0') {
+    if (['0.0.0.0','localhost'].indexOf(window.location.hostname) === -1) {
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-3037487-9']);
         _gaq.push(['_trackPageview']);
