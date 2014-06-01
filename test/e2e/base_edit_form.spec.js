@@ -1,17 +1,11 @@
 'use strict';
 
-var fs = require('fs');
-
-function writeScreenShot(data, filename) {
-  var stream = fs.createWriteStream(filename);
-
-  stream.write(new Buffer(data, 'base64'));
-  stream.end();
-}
-
 describe('Base edit form', function () {
 
   var browser = protractor.getInstance();
+  var width = 1024;
+  var height = 768;
+  browser.driver.manage().window().setSize(width, height);
 
   it('should display a form', function () {
     browser.get('/#!/b_using_options/new');
@@ -24,9 +18,10 @@ describe('Base edit form', function () {
     element(by.model('record.accepted')).click();
     element(by.model('record.freeText')).sendKeys('this is a rude word');
     $('#saveButton').click();
-    expect($('.alert-error').getText()).toMatch(/Error!/);
-    expect($('.alert-error').getText()).toMatch(/Wash your mouth!/);
-    expect($('.alert-error').getText()).toNotMatch(/eye/);
+    var alertTextPromise = $('.alert-error').getText();
+    expect(alertTextPromise).toMatch(/Error!/);
+    expect(alertTextPromise).toMatch(/Wash your mouth!/);
+    expect(alertTextPromise).toNotMatch(/eye/);
   });
 
   describe('should display deletion confirmation modal', function () {
@@ -79,7 +74,8 @@ describe('Base edit form', function () {
     });
 
     it('supports saving changes', function () {
-      $('.modal-footer button.dlg-yes').click();
+      var yesBtn = $('.modal-footer button.dlg-yes');
+      yesBtn.click();
       expect($('.alert-error').getText()).toMatch(/your mouth/);
       var list = element.all(by.css('.modal'));
       expect(list.count()).toBe(0);
@@ -89,7 +85,7 @@ describe('Base edit form', function () {
       $('#newButton').click();
       list = element.all(by.css('.modal'));
       expect(list.count()).toBe(1);
-      $('.modal-footer button.dlg-yes').click();
+      yesBtn.click();
       expect(browser.getCurrentUrl()).toMatch('/b_using_options/new');
       browser.get('/#!/b_using_options/519a6075b320153869b155e0/edit');
       expect($('#f_freeText').getAttribute('value')).toMatch(/polite thing/);
@@ -103,9 +99,10 @@ describe('Base edit form', function () {
       var freeTextField = element(by.model('record.surname'));
       freeTextField.clear();
       freeTextField.sendKeys('Smith');
-      expect($('#f_surname').getAttribute('value')).toMatch(/Smith/);
+      var surnameInput = $('#f_surname');
+      expect(surnameInput.getAttribute('value')).toMatch(/Smith/);
       $('#cancelButton').click();
-      expect($('#f_surname').getAttribute('value')).toNotMatch(/Smith/);
+      expect(surnameInput.getAttribute('value')).toNotMatch(/Smith/);
     });
 
     it('enables cancel button after deleting an array element (** requires server restart)', function () {
@@ -123,14 +120,12 @@ describe('Base edit form', function () {
 
   });
 
-  ddescribe('tab sets', function () {
+  describe('tab sets', function () {
 
     it('shows multiple tabs when appropriate', function () {
       browser.get('/#!/i_tabbed_forms/new');
       var list = element.all(by.css('.tabbable li a'));
       expect(list.count()).toBe(2);
-      $('.tabbable li a:first').click();
-      $('a:contains("second")').click();
     });
 
   });
