@@ -55,6 +55,7 @@ describe('Base edit form', function () {
       browser.get('/#!/b_using_options/519a6075b320153869b155e0/edit');
       element(by.model('record.freeText')).sendKeys('This is a rude thing');
       $('#newButton').click();
+      browser.sleep(500);  //Really naff, but I tried for ages to do something better.  Apparently zones.js will sort it out eventually
     });
 
     it('supports cancelling navigation', function () {
@@ -83,8 +84,10 @@ describe('Base edit form', function () {
       freeTextField.clear();
       freeTextField.sendKeys('This is a polite thing ' + new Date().getTime());  // to ensure that it is a change
       $('#newButton').click();
+      browser.sleep(500);
       list = element.all(by.css('.modal'));
       expect(list.count()).toBe(1);
+      yesBtn = $('.modal-footer button.dlg-yes');
       yesBtn.click();
       expect(browser.getCurrentUrl()).toMatch('/b_using_options/new');
       browser.get('/#!/b_using_options/519a6075b320153869b155e0/edit');
