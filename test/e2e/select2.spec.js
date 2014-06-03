@@ -5,8 +5,8 @@ describe('Select 2', function () {
   var width = 1024;
   var height = 768;
   var browser = protractor.getInstance();
-  browser.driver.manage().window().setSize(width, height);  
-  
+  browser.driver.manage().window().setSize(width, height);
+
   it('should handle enums', function () {
     browser.get('/#!/b_using_options/519a6075b320153869b155e0/edit');
     expect($('#s2id_f_eyeColour').getText()).toMatch(/Brown/);

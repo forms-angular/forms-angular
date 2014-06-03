@@ -21,6 +21,7 @@
   },
   "scripts": {
     "start": "node ./server/server.js",
+    "postinstall":"./node_modules/protractor/bin/webdriver-manager update",
     "test": "scripts/testrun.sh"
   },
   "main": "./server/server.js",
@@ -66,6 +67,7 @@
     "karma-phantomjs-launcher": "~0.1.0",
     "karma": "~0.12",
     "mocha": "~1.18",
+    "protractor": "~0.23.1",
     "karma-junit-reporter": "~0.2",
     "karma-ng-scenario": "~0.1.0",
     "grunt-expand-include-with-subs": "~0.9.7",
