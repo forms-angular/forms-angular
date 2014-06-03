@@ -14,7 +14,8 @@ describe('Reports', function () {
   });
 
   it('should do reports with options from the command line', function () {
-    browser.get('/#!/analyse/g_conditional_fields?r={"pipeline":[{"$group":{"_id":"$sex","count":{"$sum":1}}}],"title":"Breakdown By Sex","columnDefs":[{"field":"_id","displayName":"Sex"},{"field":"count","displayName":"No of Applicants"}]}');
+    browser.get('/#!/analyse/g_conditional_fields?r={"pipeline":[{"$group":{"_id":"$sex","count":{"$sum":1}}}],"title":"Breakdown By Sex"' +
+      ',"columnDefs":[{"field":"_id","displayName":"Sex"},{"field":"count","displayName":"No of Applicants"}]}');
     expect($('.ngHeaderText.ng-binding.colt1').getText()).toMatch(/No of Applicants/);
     expect($('.ngCell.col1.colt1 > div:nth-child(2) > div > span').getText()).toMatch(/11/);
   });

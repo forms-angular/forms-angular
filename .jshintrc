@@ -65,7 +65,8 @@
     "browser": false,
     "element": false,
     "input": false,
-    "repeater": false,
+    "protractor": false,
+    "by": false,
 
     /* testabilityPatch / matchers */
     "inject": false,
