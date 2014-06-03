@@ -10,7 +10,7 @@ describe('Events', function () {
   it('should get an event from form input', function () {
     // this tests the event handling between form-input directive and that it works with a select2 control
     browser.get('/#!/b_using_options/519a6075b320153869b175e0/edit');
-    expect($('#cg_f_eyeColour').getCssValue('background-color')).toEqual('rgb(109, 219, 79, 1)');
+    expect($('#cg_f_eyeColour').getCssValue('background-color')).toEqual('rgba(109, 219, 79, 1)');
   });
 
 });

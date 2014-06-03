@@ -32,5 +32,10 @@ input('record.surname').enter('Smith'); ->
 expect(repeater('.fng-array').count()).toEqual(1); ->
       var list = element.all(by.css('.fng-array'));
       expect(list.count()).toBe(1);
+expect\(repeater\('(.+?)'\).count\(\)\).toEqual\((.+?)\)
+
 
 browser().navigateTo -> browser.get
+
+expect(browser().window().hash()).toMatch('\/a_unadorned_mongoose\/new');
+expect(browser.getCurrentUrl()).toMatch('/a_unadorned_mongoose/new');
