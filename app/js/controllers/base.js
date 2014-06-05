@@ -666,9 +666,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
 
     SchemasService.getSchema($scope.modelName, $scope.formName)
       .success(function (data) {
-        handleSchema('Main ' + $scope.modelName, data, $scope.formSchema, $scope.listSchema, '', true);
+        var listOnly = (!$scope.id && !$scope.newRecord);
+        // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
+        // but should be removed when/if formschemas are cached
+        handleSchema('Main ' + $scope.modelName, data, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true);
 
-        if (!$scope.id && !$scope.newRecord) { //this is a list. listing out contents of a collection
+        if (listOnly) {
           allowLocationChange = true;
         } else {
           var force = true;
