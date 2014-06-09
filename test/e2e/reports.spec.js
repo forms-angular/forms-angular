@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Reports', function () {
+ddescribe('Reports', function () {
 
   var width = 1024;
   var height = 768;
@@ -25,7 +25,15 @@ describe('Reports', function () {
     var list = element.all(by.css('.ngRow'));
     expect(list.count()).toBe(2);
 
-    $('div.ngCell.col0.colt0 > div:nth-child(2) > div > span').click();
+    $('div.ngHeaderCell.ng-scope.col2.colt2 > div:nth-child(2) > div.ngHeaderSortColumn.ngSorted > div.ngHeaderText.ng-binding.colt2').click();
+    list = element.all(by.css('div.ngHeaderContainer > div > div.ngHeaderCell.ng-scope.col2.colt2 > div:nth-child(2) > div.ngHeaderSortColumn.ngSorted > div.ngSortButtonDown'));
+    expect(list.count()).toBe(1);
+
+    list = element.all(by.css('div.ngHeaderContainer > div > div.ngHeaderCell.ng-scope.col2.colt2 > div:nth-child(2) > div.ngHeaderSortColumn.ngSorted > div.ngSortButtonDown.ng-hide'));
+    expect(list.count()).toBe(0);
+
+    $('div.ng-scope.ngRow.odd > div.ngCell.col0.colt0 > div:nth-child(2) > div > span').click();
+
     expect(browser.getCurrentUrl()).toMatch('/b_using_options/519a6075b320153869b155e0/edit');
   });
 });
