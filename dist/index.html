@@ -10,7 +10,7 @@
         display: none !important;
     }</style>
 
-    <link rel="stylesheet" href="styles/d2e54b13.main.css"/>
+    <link rel="stylesheet" href="styles/4dc8a546.main.css"/>
 </head>
 <body ng-app="myDemoApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)">
 <div class="visible-lg visible-desktop">
@@ -48,13 +48,13 @@
                         <li><a class="dropdown-option" ng-href="{{buildUrl('in-the-wild')}}">Who Uses It?</a></li>
                     </ul>
                 </li>
-                <li ng-show="items.length > 0" class="dropdown">
+                <li ng-show="items.length > 0" class="dropdown model-controller-added">
                     <a class="dropdown-toggle">
                         {{contextMenu}}
                     </a>
                     <ul class="dropdown-menu">
                         <li ng-repeat="choice in items">
-                            <a class="dropdown-option" ng-hide="isHidden($index)" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                            <a class="dropdown-option model-controller-added" ng-hide="isHidden($index)" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
                         </li>
                     </ul>
                 </li>
@@ -74,26 +74,37 @@
 </footer>
 <!-- what forms-angular depends on -->
 <!-- *** Section must be copied to partials/get-started/index.html if it is changed *** -->
-<script src="scripts/3bf5a456.plugins.js"></script>
+<script src="scripts/a05f2b90.plugins.js"></script>
+<!--<script type="text/javascript" src="/bower_components/jquery/jquery.js"></script>-->
+<!--<script type="text/javascript" src="/bower_components/jquery-ui/ui/jquery-ui.js"></script>-->
+<!--<script type="text/javascript" src="/bower_components/angular-ui-date/src/date.js"></script>-->
+<!--<script type="text/javascript" src="/bower_components/angular-ui-select2/src/select2.js"></script>-->
+<!--<script type="text/javascript" src="/bower_components/jspdf/dist/jspdf.debug.js"></script>-->
+<!--<script type="text/javascript" src="/bower_components/bootstrap/js/bootstrap-transition.js"></script>-->
+<!--<script type="text/javascript" src="/bower_components/bootstrap/js/bootstrap-collapse.js"></script>-->
+<!--<script type="text/javascript" src="/bower_components/ng-grid/ng-grid-2.0.7.debug.js"></script>-->
+<!--<script type="text/javascript" src="/bower_components/select2/select2.js"></script>-->
+<!--<script type="text/javascript" src="/bower_components/ng-ckeditor/ng-ckeditor.js"></script>-->
+
 <!--[if lt IE 9]>
 <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
 <![endif]-->
 
 <!--<script type="text/javascript" src="/bower_components/ckeditor/ckeditor.js"></script>-->
-<script>
-    var CKEDITOR_BASEPATH = '//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/';
-</script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/ckeditor.min.js"></script>
+<!--<script>-->
+    <!--var CKEDITOR_BASEPATH = '//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/';-->
+<!--</script>-->
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/ckeditor/4.3.2/ckeditor.min.js"></script>-->
 
 <!-- forms-angular stuff -->
 <!--This section needs to stay in sync with the concat section of the Gruntfile-->
-<script src="scripts/853fa92d.lib.js"></script>
+<script src="scripts/82186646.lib.js"></script>
 
 <!--Demo application stuff-->
-<script src="scripts/9d01e8fb.app.js"></script>
+<script src="scripts/e1c33631.app.js"></script>
 
 <script type="text/javascript">
-    if (window.location.hostname != '0.0.0.0') {
+    if (['0.0.0.0','localhost'].indexOf(window.location.hostname) === -1) {
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-3037487-9']);
         _gaq.push(['_trackPageview']);

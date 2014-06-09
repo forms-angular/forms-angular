@@ -64,12 +64,14 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
       leafData.lastObject[leafData.key] = value;
     };
 
+
     function updateInvalidClasses(value, id, select2) {
       var target = '#' + ((select2) ? 'cg_' : '') + id;
+      var element = angular.element(document.querySelector(target));
       if (value) {
-        $(target).removeClass(fngInvalidRequired);
+        element.removeClass(fngInvalidRequired);
       } else {
-        $(target).addClass(fngInvalidRequired);
+        element.addClass(fngInvalidRequired);
       }
     }
 
@@ -413,7 +415,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                 var name = depends[i];
                 for (j = 0; j < $scope.formSchema.length; j += 1) {
                   if ($scope.formSchema[j].name === name) {
-                    element = angular.element('#cg_' + $scope.formSchema[j].id);
+                    element = angular.element(document.querySelector('#cg_' + $scope.formSchema[j].id));
                     if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
                       element.removeClass('ng-hide');
                     } else {
@@ -442,10 +444,10 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                         var subSchema = $scope.formSchema[j].schema;
                         for (var l = 0; l < subSchema.length; l++) {
                           if (subSchema[l].name === depends[i]) {
-                            element = angular.element('#f_' + nameParts[0] + 'List_' + k + ' #cg_f_' + depends[i].replace('.', '_'));
+                            element = angular.element(document.querySelector('#f_' + nameParts[0] + 'List_' + k + ' #cg_f_' + depends[i].replace('.', '_')));
                             if (element.length === 0) {
                               // Test Plait care plan structures if you change next line
-                              element = angular.element('#f_elements-' + k + '-' + nameParts[1]);
+                              element = angular.element(document.querySelector('#f_elements-' + k + '-' + nameParts[1]));
                             } else {
                               forceNextTime = false;  // Because the sub schema has been rendered we don't need to do this again until the record changes
                             }
@@ -749,14 +751,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
     };
 
     $scope.cancel = function () {
-
-      for (var prop in $scope.record) {
-        if ($scope.record.hasOwnProperty(prop)) {
-          delete $scope.record[prop];
-        }
-      }
-
-      $.extend(true, $scope.record, master);
+      angular.copy(master, $scope.record);
       $scope.setPristine();
     };
 

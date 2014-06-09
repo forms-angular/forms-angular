@@ -1,9 +1,9 @@
 {
-  "name": "forms-angular-demo",
+  "name": "forms-angular",
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
-  "version": "0.3.5",
+  "version": "0.4.0-alpha.1",
   "engines": {
     "node": "0.10.x",
     "npm": "1.x"
@@ -21,13 +21,12 @@
   },
   "scripts": {
     "start": "node ./server/server.js",
-    "postinstall":"./node_modules/protractor/bin/webdriver-manager update",
     "test": "scripts/testrun.sh"
   },
   "main": "./server/server.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mchapman/forms-angular"
+    "url": "https://github.com/forms-angular/forms-angular"
   },
   "keywords": [
     "angular",

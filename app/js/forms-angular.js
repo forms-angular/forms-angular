@@ -3,13 +3,9 @@
 var formsAngular = angular.module('formsAngular', [
   'ngRoute',
   'ngSanitize',
-  'ui.select2',
-  'ui.date',
   'ui.bootstrap',
-  'ngGrid',
   'infinite-scroll',
-  'monospaced.elastic',
-  'ngCkeditor'
+  'monospaced.elastic'
 ]);
 
 void(formsAngular);  // Make jshint happy

@@ -3,12 +3,15 @@
   "author": "Mark Chapman <support@reallycare.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
-  "version": "0.3.5",
+  "version": "0.4.0-alpha.1",
   "engines": {
     "node": "0.10.x",
     "npm": "1.x"
   },
   "dependencies": {
+    "bower": ">= 1.x",
+    "express": ">=4.0",
+    "mongoose": "~3.8",
     "underscore": "~1.6",
     "node.extend": "~1.0",
     "async": "~0.2",
@@ -16,10 +19,14 @@
     "method-override": ">=0.0.1",
     "errorhandler": ">=0.0.1"
   },
-  "main": "lib/data_form.js",
+  "scripts": {
+    "start": "node ./server/server.js",
+    "test": "scripts/testrun.sh"
+  },
+  "main": "./server/server.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mchapman/forms-angular"
+    "url": "https://github.com/forms-angular/forms-angular"
   },
   "keywords": [
     "angular",
@@ -30,5 +37,47 @@
     "REST API",
     "RESTful API"
   ],
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-copy": "~0.5",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-coffee": "~0.10",
+    "grunt-contrib-uglify": "~0.4",
+    "grunt-contrib-jshint": "~0.9",
+    "grunt-autoprefixer": "~0.4.0",
+    "grunt-contrib-cssmin": "~0.9",
+    "grunt-contrib-connect": "~0.7",
+    "grunt-contrib-clean": "0.5.0",
+    "grunt-contrib-htmlmin": "~0.2",
+    "grunt-contrib-imagemin": "~0.5",
+    "grunt-contrib-livereload": "0.1.2",
+    "grunt-contrib-less": "~0.11.0",
+    "grunt-ngmin": "*",
+    "grunt-rev": "~0.1.0",
+    "grunt-usemin": "^2.1.0",
+    "grunt-regarde": "~0.1.1",
+    "grunt-mocha": "~0.4.0",
+    "grunt-open": "~0.2.1",
+    "grunt-svgmin": "0.4.0",
+    "grunt-concurrent": "~0.5",
+    "grunt-contrib-nodeunit": "~0.3",
+    "grunt-bump": "0.0.13",
+    "matchdep": "~0.3",
+    "karma-phantomjs-launcher": "~0.1.0",
+    "karma": "~0.12",
+    "mocha": "~1.18",
+    "protractor": "~0.23.1",
+    "karma-junit-reporter": "~0.2",
+    "karma-ng-scenario": "~0.1.0",
+    "grunt-expand-include-with-subs": "~0.9.7",
+    "karma-ng-html2js-preprocessor": "~0.1.0",
+    "karma-jasmine": "^0.1.5",
+    "karma-chrome-launcher": "^0.1.2",
+    "karma-firefox-launcher": "^0.1.3",
+    "grunt-karma": "~0.8",
+    "grunt-newer": "^0.7.0",
+    "grunt-bower-task": "^0.3.4",
+    "grunt-angular-templates": "^0.5.4"
+  },
   "license": "MIT"
 }
