@@ -2,15 +2,20 @@
 
 describe('Select 2', function () {
 
+  var width = 1024;
+  var height = 768;
+  var browser = protractor.getInstance();
+  browser.driver.manage().window().setSize(width, height);
+
   it('should handle enums', function () {
-    browser().navigateTo('/#!/b_using_options/519a6075b320153869b155e0/edit');
-    expect(element('#s2id_f_eyeColour').text()).toMatch(/Brown/);
+    browser.get('/#!/b_using_options/519a6075b320153869b155e0/edit');
+    expect($('#s2id_f_eyeColour').getText()).toMatch(/Brown/);
   });
 
   it('should handle lookups with collection read', function () {
-    browser().navigateTo('/#!/e_referencing_another_collection/51d1b2ca8c8683571c000005/edit');
+    browser.get('/#!/e_referencing_another_collection/51d1b2ca8c8683571c000005/edit');
     setTimeout(function () {
-      expect(element('#s2id_f_teacher').text()).toMatch(/IsAccepted/);
+      expect($('#s2id_f_teacher').getText()).toMatch(/IsAccepted/);
 //            element('#s2id_f_teacher').click();
 //            setTimeout(function(){
 //                expect(element('#select2-drop ul li:last').text()).toMatch(/Jones/);
@@ -21,8 +26,8 @@ describe('Select 2', function () {
   });
 
   it('should handle lookups using Ajax', function () {
-    browser().navigateTo('/#!/f_nested_schema/51c583d5b5c51226db418f16/edit');
-    expect(element('#cg_f_exams_grader:first .select2-container').text()).toMatch(/IsAccepted/);
+    browser.get('/#!/f_nested_schema/51c583d5b5c51226db418f16/edit');
+    expect($('#s2id_autogen1 > a > span.select2-chosen').getText()).toMatch(/IsAccepted/);
   });
 
 });

@@ -53,13 +53,13 @@
                         <li><a class="dropdown-option" ng-href="{{buildUrl('in-the-wild')}}">Who Uses It?</a></li>
                     </ul>
                 </li>
-                <li ng-show="items.length > 0" class="dropdown">
+                <li ng-show="items.length > 0" class="dropdown model-controller-added">
                     <a class="dropdown-toggle">
                         {{contextMenu}}
                     </a>
                     <ul class="dropdown-menu">
                         <li ng-repeat="choice in items">
-                            <a class="dropdown-option" ng-hide="isHidden($index)" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
+                            <a class="dropdown-option model-controller-added" ng-hide="isHidden($index)" ng-href="{{choice.url}}" ng-click="doClick($index)">{{choice.text}}</a>
                         </li>
                     </ul>
                 </li>
@@ -151,7 +151,7 @@
 <!-- endbuild -->
 
 <script type="text/javascript">
-    if (window.location.hostname != '0.0.0.0') {
+    if (['0.0.0.0','localhost'].indexOf(window.location.hostname) === -1) {
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-3037487-9']);
         _gaq.push(['_trackPageview']);
