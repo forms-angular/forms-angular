@@ -134,7 +134,7 @@ DataForm.prototype.getResource = function (name) {
   });
 };
 
-DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, callback) {
+DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeResourceInResults, limit, callback) {
   var searches = [],
     resourceCount = resourcesToSearch.length,
     urlParts = url.parse(req.url, true),
@@ -269,7 +269,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, limit, cal
                   weighting: 9999,
                   text: that.getListFields(item.resource, docs[k])
                 };
-                if (resourceCount > 1) {
+                if (resourceCount > 1 || includeResourceInResults) {
                   resultObject.resource = resultObject.resourceText = item.resource.resourceName;
                 }
               }
@@ -306,7 +306,7 @@ DataForm.prototype.search = function () {
       return next();
     }
 
-    this.internalSearch(req, [req.resource], 10, function (resultsObject) {
+    this.internalSearch(req, [req.resource], 10, false, function (resultsObject) {
       res.send(resultsObject);
     });
   }, this);
@@ -314,7 +314,7 @@ DataForm.prototype.search = function () {
 
 DataForm.prototype.searchAll = function () {
   return _.bind(function (req, res) {
-    this.internalSearch(req, this.resources, 10, function (resultsObject) {
+    this.internalSearch(req, this.resources, 10, true, function (resultsObject) {
       res.send(resultsObject);
     });
   }, this);
