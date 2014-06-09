@@ -4,6 +4,7 @@ grunt jshint
 
 KARMA=./node_modules/karma/bin/karma
 MOCHA=./node_modules/mocha/bin/mocha
+PROTRACTOR=./node_modules/protractor/bin/protractor
 
 $KARMA start config/karma.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
 $KARMA start config/karma.midway.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
@@ -23,7 +24,8 @@ case ${A:0:4} in
 esac
 
 $MOCHA --recursive test/api/*.js
-$KARMA start config/karma-e2e.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
+#$KARMA start config/karma-e2e.conf.js --no-auto-watch --single-run --reporters=dots --browsers=PhantomJS
+$PROTRACTOR test/e2e/protractor-firefox.conf.js
 
 case $B in
 	0 )
