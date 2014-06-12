@@ -73,7 +73,7 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
       '</div>' +
       '</div>'
   };
-  $scope.alertTitle ='Error';
+  $scope.alertTitle = 'Error';
   $scope.report = [];
   if (!$scope.reportSchemaName && $routeParams.r) {
     switch ($routeParams.r.slice(0, 1)) {
@@ -90,7 +90,7 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
         break;
       case '{' :
         try {
-        angular.extend($scope.reportSchema, JSON.parse($routeParams.r));
+          angular.extend($scope.reportSchema, JSON.parse($routeParams.r));
         } catch (e) {
           if (e instanceof SyntaxError) {
             $scope.errorMessage = 'Cannot parse the report schema :' + e.message;
