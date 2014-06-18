@@ -11,8 +11,8 @@ describe('Find functions', function () {
     browser.get('/#!/b_using_options');
     var list = element.all(by.css('.list-item'));
     expect(list.count()).toBe(2);
-    expect($('a .list-item').getText()).toMatch(/IsAccepted/);
-    expect($('a .list-item').getText()).toNotMatch(/NotAccepted/);
+    expect($('.list-body').getText()).toMatch(/IsAccepted/);
+    expect($('.list-body').getText()).toNotMatch(/NotAccepted/);
   });
 
   it('should support filters', function () {
