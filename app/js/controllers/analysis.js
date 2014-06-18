@@ -73,15 +73,31 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
       '</div>' +
       '</div>'
   };
+  $scope.alertTitle = 'Error';
   $scope.report = [];
-
   if (!$scope.reportSchemaName && $routeParams.r) {
     switch ($routeParams.r.slice(0, 1)) {
       case '[' :
-        $scope.reportSchema.pipeline = JSON.parse($routeParams.r);
+        try {
+          $scope.reportSchema.pipeline = JSON.parse($routeParams.r);
+        } catch (e) {
+          if (e instanceof SyntaxError) {
+            $scope.errorMessage = 'Cannot parse the aggregation pipeline :' + e.message;
+          } else {
+            $scope.errorMessage = e.message;
+          }
+        }
         break;
       case '{' :
-        angular.extend($scope.reportSchema, JSON.parse($routeParams.r));
+        try {
+          angular.extend($scope.reportSchema, JSON.parse($routeParams.r));
+        } catch (e) {
+          if (e instanceof SyntaxError) {
+            $scope.errorMessage = 'Cannot parse the report schema :' + e.message;
+          } else {
+            $scope.errorMessage = e.message;
+          }
+        }
         break;
       default :
         throw new Error('No report instructions specified');
@@ -124,6 +140,11 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
   $scope.$on('exportToCSV', function () {
     csvPlugIn.createCSV();
   });
+
+  $scope.dismissError = function () {
+    delete $scope.errorMessage;
+  };
+
 
   $scope.refreshQuery = function () {
 
@@ -237,7 +258,9 @@ formsAngular.controller('AnalysisCtrl', ['$locationParse', '$filter', '$scope', 
     });
   };
 
-  $scope.refreshQuery();
+  if (!$scope.errorMessage) {
+    $scope.refreshQuery();
+  }
 
 }]);
 

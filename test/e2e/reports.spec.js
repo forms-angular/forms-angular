@@ -1,6 +1,6 @@
 'use strict';
 
-ddescribe('Reports', function () {
+describe('Reports', function () {
 
   var width = 1024;
   var height = 768;

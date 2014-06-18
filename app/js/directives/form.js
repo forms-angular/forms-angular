@@ -173,7 +173,11 @@ formsAngular
                 }
                 if (angular.isArray(fieldInfo.options)) {
                   angular.forEach(fieldInfo.options, function (optValue) {
-                    value += '<option>' + optValue + '</option>';
+                    if (_.isObject(optValue)) {
+                      value += '<option value="' + (optValue.val || optValue.id) + '">' + (optValue.label || optValue.text) + '</option>';
+                    } else {
+                      value += '<option>' + optValue + '</option>';
+                    }
                   });
                 } else {
                   value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
