@@ -36,13 +36,13 @@ var DataForm = function (app, options) {
   this.resources = [ ];
   this.searchFunc = async.forEach;
   this.registerRoutes();
-
   this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
+
+  if(this.options.JQMongoFileUploader) {
+    var FileUpload = new (require('./JQMongo-file-uploads.js'))(this, processArgs, this.options.JQMongoFileUploader);
+  }
 };
 
-/**
- * Exporting the Class
- */
 module.exports = exports = DataForm;
 
 DataForm.prototype.getListFields = function (resource, doc) {
@@ -67,7 +67,6 @@ DataForm.prototype.getListFields = function (resource, doc) {
  * Registers all REST routes with the provided `app` object.
  */
 DataForm.prototype.registerRoutes = function () {
-
   this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
   this.app.get.apply(this.app, processArgs(this.options, ['search/:resourceName', this.search()]));
 
