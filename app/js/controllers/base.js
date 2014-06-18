@@ -118,6 +118,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                 }
               };
               _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
+              if (formInstructions.select2 === true) formInstructions.select2 = {};  // In case the have used select2: true syntax
               formInstructions.select2.s2query = 'select2' + formInstructions.name;
               $scope.select2List.push(formInstructions.name);
             } else {
