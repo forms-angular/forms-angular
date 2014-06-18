@@ -11,6 +11,8 @@ var express = require('express'),
     mongoose = require('mongoose'),
     exec = require('child_process').exec,
     env = process.env.NODE_ENV || 'development',
+//    grid = require('gridfs-uploader'),
+//    multer = require('multer'),
     app = module.exports = express();
 
 function handleCrawlers(req, res, next) {
@@ -72,7 +74,7 @@ if ('production' === env) {
 }
 
 //// Bootstrap models
-var DataFormHandler = new (require(__dirname + '/lib/data_form.js'))(app, {urlPrefix: '/api/'});
+var DataFormHandler = new (require(__dirname + '/lib/data_form.js'))(app, {urlPrefix: '/api/', JQMongoFileUploader: {}});
 // Or if you want to do some form of authentication...
 // var DataFormHandler = new (require(__dirname + '/lib/data_form.js'))(app, {urlPrefix : '/api/', authentication : ensureAuthenticated});
 // var ensureAuthenticated = function (req, res, next) {
