@@ -174,7 +174,7 @@ formsAngular
                 if (angular.isArray(fieldInfo.options)) {
                   angular.forEach(fieldInfo.options, function (optValue) {
                     if(_.isObject(optValue)){
-                      value += '<option value="'+optValue.val || optValue.id+'">' + optValue.lable || optValue.text + '</option>';
+                      value += '<option value="'+(optValue.val || optValue.id)+'">' + (optValue.lable || optValue.text) + '</option>';
                     }else{
                       value += '<option>' + optValue + '</option>';  
                     }
