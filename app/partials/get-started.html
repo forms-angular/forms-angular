@@ -289,9 +289,9 @@ myApp.config([&apos;formRoutesProvider&apos;, function (formRoutes) {
         &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;container-fluid page-body report-body&quot;&gt;
-        &lt;div ng-show=&quot;errorMessage&quot; class=&quot;row-fluid&quot;&gt;
-            &lt;div class=&quot;span6 offset3 alert alert-error&quot;&gt;
-                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;&amp;times;&lt;/button&gt;
+        &lt;div id=&quot;display-error&quot; ng-show=&quot;errorMessage&quot; ng-class=&quot;css(&apos;rowFluid&apos;)&quot;&gt;
+            &lt;div class=&quot;alert alert-error col-lg-offset-3 offset3 col-sm-6 span6 alert-warning alert-dismissable&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;×&lt;/button&gt;
                 &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
                 &lt;div ng-bind-html=&quot;errorMessage&quot;&gt;&lt;/div&gt;
             &lt;/div&gt;

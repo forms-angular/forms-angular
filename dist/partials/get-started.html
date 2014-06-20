@@ -131,6 +131,12 @@ DataFormHandler.addResource(&apos;applicant&apos;, Applicant);   // Create and a
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/select2/select2.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ckeditor/ckeditor.js&quot;&gt;&lt;/script&gt;
     &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/ng-ckeditor/ng-ckeditor.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/blueimp-load-image/js/load-image.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- The Canvas to Blob plugin is included for image resizing functionality --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- blueimp Gallery script --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/blueimp-gallery/js/jquery.blueimp-gallery.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/bower_components/angular-jqfile-upload/dist/uploader.js&quot;&gt;&lt;/script&gt;
     &lt;!--[if lt IE 9]&gt;
     &lt;script src=&quot;/bower_components/html5shiv-dist/html5shiv.js&quot;&gt;&lt;/script&gt;
     &lt;![endif]--&gt;
@@ -283,9 +289,9 @@ myApp.config([&apos;formRoutesProvider&apos;, function (formRoutes) {
         &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;container-fluid page-body report-body&quot;&gt;
-        &lt;div ng-show=&quot;errorMessage&quot; class=&quot;row-fluid&quot;&gt;
-            &lt;div class=&quot;span6 offset3 alert alert-error&quot;&gt;
-                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;&amp;times;&lt;/button&gt;
+        &lt;div id=&quot;display-error&quot; ng-show=&quot;errorMessage&quot; ng-class=&quot;css(&apos;rowFluid&apos;)&quot;&gt;
+            &lt;div class=&quot;alert alert-error col-lg-offset-3 offset3 col-sm-6 span6 alert-warning alert-dismissable&quot;&gt;
+                &lt;button type=&quot;button&quot; class=&quot;close&quot; ng-click=&quot;dismissError()&quot;&gt;×&lt;/button&gt;
                 &lt;h4&gt;{{alertTitle}}&lt;/h4&gt;
                 &lt;div ng-bind-html=&quot;errorMessage&quot;&gt;&lt;/div&gt;
             &lt;/div&gt;
