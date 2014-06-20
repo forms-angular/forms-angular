@@ -39,7 +39,8 @@ var DataForm = function (app, options) {
   this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
 
   if(this.options.JQMongoFileUploader) {
-    var FileUpload = new (require('./JQMongo-file-uploads.js'))(this, processArgs, this.options.JQMongoFileUploader);
+    var fngJQPath = __dirname === '/home/mark/Projects/forms-angular/forms-angular/npm-build/lib' ? '/home/mark/Projects/forms-angular/fng-jq-upload' : 'fng-jq-upload';
+    var FileUpload = new (require(fngJQPath))(this, processArgs, this.options.JQMongoFileUploader);
   }
 };
 

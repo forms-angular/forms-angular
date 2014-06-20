@@ -36,13 +36,14 @@ var DataForm = function (app, options) {
   this.resources = [ ];
   this.searchFunc = async.forEach;
   this.registerRoutes();
-
   this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
+
+  if(this.options.JQMongoFileUploader) {
+    var fngJQPath = __dirname === '/home/mark/Projects/forms-angular/forms-angular/npm-build/lib' ? '/home/mark/Projects/forms-angular/fng-jq-upload' : 'fng-jq-upload';
+    var FileUpload = new (require(fngJQPath))(this, processArgs, this.options.JQMongoFileUploader);
+  }
 };
 
-/**
- * Exporting the Class
- */
 module.exports = exports = DataForm;
 
 DataForm.prototype.getListFields = function (resource, doc) {
@@ -67,7 +68,6 @@ DataForm.prototype.getListFields = function (resource, doc) {
  * Registers all REST routes with the provided `app` object.
  */
 DataForm.prototype.registerRoutes = function () {
-
   this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
   this.app.get.apply(this.app, processArgs(this.options, ['search/:resourceName', this.search()]));
 
