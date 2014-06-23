@@ -61,16 +61,16 @@ describe('formButton', function () {
     });
 
     it('enables save button when a change is made', function () {
-      var elem = angular.element(elm.find('input:first')[0]);
+      var elem = angular.element(elm.find('input')[0]);
       elem.val('new name');
-      elem.change();
+      elem.triggerHandler('change');
       expect(scope.isSaveDisabled()).toEqual(false);
     });
 
     it('enables cancel button when a change is made', function () {
-      var elem = angular.element(elm.find('input:first')[0]);
+      var elem = angular.element(elm.find('input')[0]);
       elem.val('new name');
-      elem.change();
+      elem.triggerHandler('change');
       expect(scope.isCancelDisabled()).toEqual(false);
     });
 

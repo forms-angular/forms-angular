@@ -10,14 +10,11 @@ build.xml
 .bower-registry
 .bower-tmp
 .tmp
-app/styles
-app/generated
-dist/styles/components-font-awesome/*
-
+generated
+bower_components
 node_modules
-app/e2etest
-.idea/*
-bin/*
+.idea
+
 test_out/*
 
 lib-cov
@@ -33,17 +30,5 @@ lib-cov
 pids
 logs
 results
-app/bower_components
-js-build
-test.js
 
 npm-debug.log
-
-node_modules/*
-
-js-build/forms-angular.js
-
-.vagrant
-Vagrantfile
-
-nohup.out

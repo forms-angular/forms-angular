@@ -79,15 +79,15 @@ describe('formInput', function () {
     }));
 
     it('should display the studies courses data', function () {
-      var thisElm = elm.find('#cg_f_studies-courses-grade input');
-      expect(thisElm.length).toBe(1);
-      expect(thisElm.val()).toBe('A');
+      var input = elm.find('input');
+      expect(input).toHaveNameCount('studies-courses-grade', 1);
+      expect(angular.element(input[5]).val()).toBe('A');
     });
 
     it('should display the studies exam data', function () {
-      var thisElm = elm.find('#cg_f_studies-exams-score input');
-      expect(thisElm.length).toBe(1);
-      expect(thisElm.val()).toBe('67');
+      var input = elm.find('input');
+      expect(input).toHaveNameCount('studies-exams-score', 1);
+      expect(angular.element(input[8]).val()).toBe('67');
     });
 
   });

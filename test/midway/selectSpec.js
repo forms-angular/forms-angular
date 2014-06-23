@@ -65,17 +65,20 @@ describe('Select.', function () {
     });
 
     it('enum field should have combobox', function () {
-      var input = elm.find('select:last');
+      var input = angular.element(elm.find('select')[1]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
       expect(input.attr('id')).toBe('f_eyeColour');
       expect(input.val()).toBe('Brown');
-      input = elm.find('#f_eyeColour option');
+
+      input = input.find('option');
       expect(input.length).toBe(5);
-      input = elm.find('#f_eyeColour option:first');
-      expect(input.text()).toBe('');
-      input = elm.find('#f_eyeColour option:last');
-      expect(input.text()).toBe('Hazel');
+
+      var option = angular.element(input[0]);
+      expect(option.text()).toBe('');
+
+      option = angular.element(input[4]);
+      expect(option.text()).toBe('Hazel');
     });
 
     it('lookup should convert to forms-angular format', function () {
@@ -83,17 +86,20 @@ describe('Select.', function () {
     });
 
     it('lookup field should have combobox', function () {
-      var input = elm.find('select:first');
+      var input = angular.element(elm.find('select')[0]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
       expect(input.attr('id')).toBe('f_lookupField');
       expect(input.val()).toBe('Jenny Rogers');
-      input = elm.find('#f_lookupField option');
+
+      input = input.find('option');
       expect(input.length).toBe(4);
-      input = elm.find('#f_lookupField option:first');
-      expect(input.text()).toBe('');
-      input = elm.find('#f_lookupField option:last');
-      expect(input.text()).toBe('John Smith');
+
+      var option = angular.element(input[0]);
+      expect(option.text()).toBe('');
+
+      option = angular.element(input[3]);
+      expect(option.text()).toBe('John Smith');
     });
 
 

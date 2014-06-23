@@ -54,13 +54,15 @@ describe('formInput', function () {
     it('should have 2 inputs', function () {
       var input = elm.find('input');
       expect(input.length).toBe(2);
-      input = elm.find('input:first');
+
+      input = angular.element(elm.find('input')[0]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
       expect(input.attr('id')).toBe('1');
-      expect(input.attr('autofocus')).toBe('autofocus');
+      expect(input.attr('autofocus')).toBe('');
       expect(input.attr('type')).toBe('text');
-      input = elm.find('input:last');
+
+      input = angular.element(elm.find('input')[1]);
       expect(input.attr('id')).toBe('2');
       expect(input.attr('type')).toBe('text');
       expect(input.attr('autofocus')).toBe(undefined);
@@ -69,10 +71,12 @@ describe('formInput', function () {
     it('should have 2 labels', function () {
       var label = elm.find('label');
       expect(label.length).toBe(2);
-      label = elm.find('label:first');
+
+      label = angular.element(elm.find('label')[0]);
       expect((label).text()).toBe('Name');
       expect(label.attr('for')).toBe('1');
-      label = elm.find('label:last');
+
+      label = angular.element(elm.find('label')[1]);
       expect(label.text()).toBe('Colour of Eyes');
       expect(label.attr('for')).toBe('2');
     });
@@ -103,29 +107,28 @@ describe('formInput', function () {
       }));
 
       it('has Exams section', function () {
-        var thisElm = elm.find('.schema-head');
-        expect(thisElm.length).toBe(1);
-        expect((thisElm).text()).toBe('Exams');
+        var thisElm = angular.element(elm.find('div')[5]);
+        expect(thisElm).toHaveClass('schema-head');
+        expect(thisElm.text()).toBe('Exams');
 
-        thisElm = elm.find('.schema-foot');
-        expect(thisElm.length).toBe(1);
+        thisElm = angular.element(elm.find('div')[22]);
+        expect(thisElm).toHaveClass('schema-foot');
 
-        thisElm = elm.find('.schema-foot button');
-        expect(thisElm.length).toBe(1);
+        thisElm = thisElm.find('button');
         expect((thisElm).text()).toMatch(/Add/);
 
-        thisElm = elm.find('.sub-doc');
-        expect(thisElm.length).toBe(2);
+        thisElm = elm.find('div');
+        expect(thisElm).toHaveClassCount('sub-doc', 2);
 
-        thisElm = elm.find('.sub-doc:first').parent();
+        thisElm = angular.element(elm.find('div')[6]);
         expect(thisElm.attr('id')).toBe('f_examsList_0');
-        thisElm = elm.find('.sub-doc:last').parent();
+        thisElm = angular.element(elm.find('div')[14]);
         expect(thisElm.attr('id')).toBe('f_examsList_1');
 
-        thisElm = elm.find('input[type=\'number\']');
-        expect(thisElm.length).toBe(2);
+        thisElm = elm.find('input');
+        expect(thisElm).toHaveTypeCount('number', 2);
 
-        thisElm = elm.find('.sub-doc button:first');
+        thisElm = angular.element(elm.find('button')[0]);
         expect(thisElm.text()).toMatch(/Remove/);
       });
     });
@@ -151,9 +154,10 @@ describe('formInput', function () {
       }));
 
       it('has amended Exams section head', function () {
-        var thisElm = elm.find('.schema-head');
-        expect(thisElm.length).toBe(1);
-        expect((thisElm).text()).toBe('Exams');
+        var thisElm = elm.find('div');
+        expect(thisElm).toHaveClassCount('schema-head', 1);
+        thisElm = angular.element(elm.find('div')[5]);
+        expect(thisElm.text()).toBe('Exams');
       });
 
       it('has amended Exams section foot', function () {
@@ -161,20 +165,16 @@ describe('formInput', function () {
         expect(thisElm.length).toBe(0);
       });
 
-      it('has amended Exams section foot button', function () {
-        var thisElm = elm.find('.schema-foot button');
+      it('has amended Exams section buttons', function () {
+        var thisElm = elm.find('button');
         expect(thisElm.length).toBe(0);
       });
 
       it('has amended Exams section subdoc', function () {
-        var thisElm = elm.find('.sub-doc');
-        expect(thisElm.length).toBe(2);
+        var thisElm = elm.find('div');
+        expect(thisElm).toHaveClassCount('sub-doc', 2);
       });
 
-      it('has amended Exams subdoc button', function () {
-        var thisElm = elm.find('.sub-doc button:first');
-        expect(thisElm.length).toBe(0);
-      });
     });
 
   });
@@ -198,12 +198,14 @@ describe('formInput', function () {
     it('should have 3 inputs', function () {
       var input = elm.find('input');
       expect(input.length).toBe(4);
-      input = elm.find('input:first');
+
+      input = angular.element(elm.find('input')[0]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
       expect(input.attr('id')).toBe('1');
       expect(input.attr('type')).toBe('text');
-      input = elm.find('input:last');
+
+      input = angular.element(elm.find('input')[3]);
       expect(input.attr('id')).toBe('2');
       expect(input.attr('type')).toBe('text');
     });
@@ -211,10 +213,12 @@ describe('formInput', function () {
     it('should have 2 label', function () {
       var label = elm.find('label');
       expect(label.length).toBe(2);
-      label = elm.find('label:first');
+
+      label = angular.element(elm.find('label')[0]);
       expect((label).text()).toBe('Name');
       expect(label.attr('for')).toBe('1');
-      label = elm.find('label:last');
+
+      label = angular.element(elm.find('label')[1]);
       expect((label).text()).toBe('Nickname');
       expect(label.attr('for')).toBe('f_nickname');
     });
@@ -238,13 +242,15 @@ describe('formInput', function () {
     it('should have correct inputs', function () {
       var input = elm.find('input');
       expect(input.length).toBe(2);
-      input = elm.find('input:first');
+
+      input = angular.element(elm.find('input')[0]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-invalid');
       expect(input.attr('id')).toBe('1');
       expect(input.attr('required')).toBe('required');
       expect(input.attr('type')).toBe('text');
-      input = elm.find('input:last');
+
+      input = angular.element(elm.find('input')[1]);
       expect(input.attr('id')).toBe('2');
       expect(input.attr('required')).toBe(undefined);
       expect(input.attr('type')).toBe('text');
@@ -269,10 +275,12 @@ describe('formInput', function () {
     it('should have correct help blocks', function () {
       var help = elm.find('span');
       expect(help.length).toBe(2);
-      help = elm.find('span:first');
+
+      help = angular.element(elm.find('span')[0]);
       expect(help).toHaveClass('help-block');
       expect(help.text()).toBe('This is some help');
-      help = elm.find('span:last');
+
+      help = angular.element(elm.find('span')[1]);
       expect(help).toHaveClass('help-inline');
       expect(help.text()).toBe('This is some inline help');
     });
@@ -328,19 +336,19 @@ describe('formInput', function () {
     }));
 
     it('text and textarea', function () {
-      var input = elm.find('input:first');
+      var input = angular.element(elm.find('input')[0]);
       expect(input.attr('readonly')).toBe('readonly');
       input = elm.find('textarea');
       expect(input.attr('readonly')).toBe('readonly');
     });
 
     it('select', function () {
-      var input = elm.find('select:first');
+      var input = angular.element(elm.find('select')[0]);
       expect(input.attr('disabled')).toBe('disabled');
     });
 
     it('select2', function () {
-      var input = elm.find('select:last');
+      var input = angular.element(elm.find('select')[1]);
       expect(input.attr('disabled')).toBe('disabled');
     });
 
@@ -359,7 +367,7 @@ describe('formInput', function () {
     }));
 
     it('creates password field', function () {
-      var input = elm.find('input:first');
+      var input = elm.find('input');
       expect(input.attr('type')).toBe('password');
     });
 
@@ -387,10 +395,12 @@ describe('formInput', function () {
       expect(input.attr('id')).toBe('f_eyeColour');
       input = elm.find('option');
       expect(input.length).toBe(5);
-      input = elm.find('option:first');
+
+      input = angular.element(elm.find('option')[0]);
       expect(input.attr('value')).toBe('');
       expect(input.text()).toBe('');
-      input = elm.find('option:last');
+
+      input = angular.element(elm.find('option')[4]);
       expect(input.attr('value')).toBe('Hazel');
       expect(input.text()).toBe('Hazel');
     });
@@ -418,10 +428,12 @@ describe('formInput', function () {
       expect(input.attr('id')).toBe('f_eyeColour');
       input = elm.find('option');
       expect(input.length).toBe(5);
-      input = elm.find('option:first');
+
+      input = angular.element(elm.find('option')[0]);
       expect(input.attr('value')).toBe('');
       expect(input.text()).toBe('');
-      input = elm.find('option:last');
+
+      input = angular.element(elm.find('option')[4]);
       expect(input.attr('value')).toBe('Hazel');
       expect(input.text()).toBe('Hazel');
     });
@@ -452,10 +464,12 @@ describe('formInput', function () {
       expect(input.attr('id')).toBe('f_eyeColour');
       input = elm.find('option');
       expect(input.length).toBe(5);
-      input = elm.find('option:first');
+
+      input = angular.element(elm.find('option')[0]);
       expect(input.attr('value')).toBe('');
       expect(input.text()).toBe('');
-      input = elm.find('option:last');
+
+      input = angular.element(elm.find('option')[4]);
       expect(input.text()).toBe('Hazel');
     });
 
@@ -478,7 +492,8 @@ describe('formInput', function () {
     it('should have radio buttons', function () {
       var input = elm.find('input');
       expect(input.length).toBe(5);
-      input = elm.find('input:last');
+
+      input = angular.element(elm.find('input')[4]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
       expect(input.attr('id')).toBe('f_eyeColour');
@@ -503,7 +518,8 @@ describe('formInput', function () {
     it('should have radio buttons', function () {
       var input = elm.find('input');
       expect(input.length).toBe(5);
-      input = elm.find('input:last');
+
+      input = angular.element(elm.find('input')[4]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
       expect(input.attr('id')).toBe('f_eyeColour');
@@ -536,7 +552,9 @@ describe('formInput', function () {
     it('modifies name and model attributes', function () {
       var input = elm.find('input');
       expect(input.length).toBe(12);
-      input = elm.find('input:last');
+
+      input = angular.element(elm.find('input')[11]);
+
       expect(input.attr('name')).toBe('1-exams-result');
       expect(input.attr('ng-model')).toBe('record.exams[$parent.$index].result');
     });
@@ -572,7 +590,7 @@ describe('formInput', function () {
     it('displays appropriately', function () {
       var h4 = elm.find('h4');
       expect(h4.text()).toBe('Error!');
-      var alert = elm.find('span.errMsg');
+      var alert = elm.find('span');
       expect(alert.text()).toBe('Test error');
     });
   });
@@ -627,17 +645,20 @@ describe('formInput', function () {
     }));
 
     it('on simple field', function () {
-      var cg = elm.find('#cg_desc_id');
+      var cg = angular.element(elm.find('div')[2]);
+      expect(cg.attr('id')).toBe('cg_desc_id');
       expect(cg.attr('ng-show')).toBe('record.boolean===true');
     });
 
     it('on nested field', function () {
-      var cg = elm.find('#cg_f_exams_subject');
+      var cg = angular.element(elm.find('span')[0]);
+      expect(cg.attr('id')).toBe('cg_f_exams_subject');
       expect(cg.attr('ng-show')).toBe('record.boolean===true');
     });
 
     it('dependent on nested field', function () {
-      var cg = elm.find('#cg_f_exams_retakeDate');
+      var cg = angular.element(elm.find('span')[2]);
+      expect(cg.attr('id')).toBe('cg_f_exams_retakeDate');
       expect(cg.attr('ng-show')).toBe('record.exams[$index].result===\'fail\'');
     });
 
@@ -702,7 +723,7 @@ describe('formInput', function () {
         }));
 
         it('should have an attribute of bobby', function () {
-          var group = elm.find('.control-group');
+          var group = angular.element(elm.find('div')[0]);
           expect(group.attr('bobby')).toBeDefined();
         });
       });

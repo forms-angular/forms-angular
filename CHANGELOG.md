@@ -1,5 +1,13 @@
 # forms-angular
 
+## 0.3 to 0.4
+### Summary
+* Split the project into multiple repos and made a yeoman generator
+* Removes dependence on jQuery
+
+### BREAKING CHANGES
+
+
 ## 0.2 to 0.3
 ### Summary
 * Improvements to routing:

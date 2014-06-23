@@ -1,7 +1,0 @@
-Not really a bower.json file, just a reminder that
-if you want to run the demo website with the nice
-icons you need to run
-
-bower install components-font-awesome#3.2.1
-
-(this is done automatically in grunt, so the Gruntfile needs to be updated is a newer version is used)
