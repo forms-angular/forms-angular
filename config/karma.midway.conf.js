@@ -3,31 +3,21 @@ module.exports = function(config) {
         basePath: '../',
         frameworks: ['jasmine'],
         files: [
-            "app/bower_components/jquery/jquery.js",
-            "app/bower_components/jquery-ui/ui/jquery-ui.js",
-            "app/bower_components/angular/angular.js",
-            "app/bower_components/angular-sanitize/angular-sanitize.js",
-            "app/bower_components/angular-route/angular-route.js",
-            "app/bower_components/underscore/underscore.js",
-            "app/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js",
-            "app/bower_components/angular-ui-date/src/date.js",
-            "app/bower_components/angular-ui-select2/src/select2.js",
-            "app/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js",
-            "app/bower_components/ng-grid/build/ng-grid.js",
-            "app/bower_components/select2/select2.js",
-            'app/bower_components/angular-mocks/angular-mocks.js',
-            'app/bower_components/jspdf/dist/jspdf.debug.js',
-            'app/bower_components/angular-elastic/elastic.js',
-            'app/bower_components/ng-ckeditor/libs/ckeditor/ckeditor.js',
-            'app/bower_components/ng-ckeditor/ng-ckeditor.js',
-            'app/bower_components/angular-jqfile-upload/dist/uploader.js',
-            'app/js/forms-angular.js',
-            'app/js/**/*.js',
-            'app/demo/demo.js',
-            'app/demo/**/*.js',
-            'app/template/*.html',
-            'app/demo/template/*.html',
-            'test/midway/**/*.js'
+          "bower_components/angular/angular.js",
+          "bower_components/angular-sanitize/angular-sanitize.js",
+          "bower_components/angular-route/angular-route.js",
+          "bower_components/underscore/underscore.js",
+          "bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js",
+          'bower_components/angular-mocks/angular-mocks.js',
+          'bower_components/angular-elastic/elastic.js',
+          'bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js',
+          'js/forms-angular.js',
+          'js/**/*.js',
+          'template/*.html',
+          'test/helpers/**/*.js',
+          'test/template/*.html',
+          'test/example-directives/*.js',
+          'test/midway/**/*.js'
         ],
 
         autoWatch : true,
@@ -46,10 +36,8 @@ module.exports = function(config) {
         },
         plugins: [
             'karma-jasmine',
-            'karma-chrome-launcher',
             'karma-phantomjs-launcher',
             'karma-ng-html2js-preprocessor',
-            'karma-firefox-launcher',
             'karma-junit-reporter'
         ],
         ngHtml2JsPreprocessor: {
@@ -57,8 +45,8 @@ module.exports = function(config) {
             stripPrefix: 'app/'
         },
         preprocessors: {
-            'app/template/*.html': 'ng-html2js',
-            'app/demo/template/*.html': 'ng-html2js'
+            'template/*.html': 'ng-html2js',
+            'test/template/*.html': 'ng-html2js'
         }
     });
 };

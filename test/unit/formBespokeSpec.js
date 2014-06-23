@@ -6,7 +6,6 @@ describe('formBespokeInput', function () {
   // load the form code
   beforeEach(function () {
     angular.mock.module('formsAngular');
-    angular.mock.module('myDemoApp');
   });
 
   describe('supports override directives for fields', function () {
@@ -29,12 +28,15 @@ describe('formBespokeInput', function () {
     it('field should have prefix', function () {
       var input = elm.find('input');
       expect(input.length).toBe(2);
-      input = elm.find('input:first');
+
+      input = angular.element(elm.find('input')[0]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
       expect(input.attr('id')).toBe('1');
       expect(input.attr('type')).toBe('email');
-      var prepend = elm.find('div.input-prepend');
+
+      var prepend = angular.element(elm.find('div')[2]);
+      expect(prepend).toHaveClass('input-prepend');
       expect(prepend.length).toBe(1);
       expect(prepend.text()).toBe('@');
     });

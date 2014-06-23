@@ -1,0 +1,179 @@
+body {
+  position: relative;
+  padding-top: 40px;
+}
+
+.list-item {
+  .well;
+}
+
+.list-header, .edit-header {
+  .fixed-header;
+}
+
+.list-body {
+  padding-top: 100px;
+}
+
+.edit-header {
+  padding-top: 10px;
+}
+
+.edit-body {
+  padding-top: 100px;
+}
+
+.page-header {
+  padding-left: 20px;
+}
+
+.header-rhs {
+  width: 226px;
+  padding-right: 60px;
+  min-height: 40px;
+}
+
+.list-header .header-rhs {
+  margin: 15px 0;
+}
+
+// "Mixins"
+.fixed-header {
+  position: fixed;
+  width: 100%;
+  margin-top: 11px;
+  z-index: 1;
+}
+
+.header-rhs {
+  width: inherited !important;
+  padding-right: 20px !important;
+  padding-bottom: 5px;
+  display: block;
+}
+
+// Modifications to ngGrid style
+
+.gridStyle {
+  border: 1px solid #d4d4d4;
+  margin: auto;
+  height: 400px;
+  .ngTopPanel {
+    background-color: #ffffff;
+  }
+  .ngHeaderCell {
+    background-color: #e4e4e4;
+  }
+  .fng-right {
+    text-align: right;
+  }
+  .fng-left {
+    text-align: left;
+  }
+  .fng-centre, .fng-center {
+    text-align: center;
+  }
+  .ngTotalCell {
+    font-weight: bold;
+  }
+}
+
+button.form-btn {
+  width: 8em;
+  height: 2em;
+}
+
+form {
+  &.form-horizontal.compact {
+    input + .help-block, select + .help-block, textarea + .help-block, .uneditable-input + .help-block,
+    .input-prepend + .help-block, .input-append + .help-block {
+      margin-top: 0;
+      margin-bottom: 2px;
+    }
+    hr {
+      margin: 8px 0;
+    }
+  }
+
+  .schema-head, .sub-doc, .schema-foot {
+    min-height: 20px;
+    margin-bottom: 20px;
+    .box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
+    blockquote {
+      border-color: #ddd;
+      border-color: rgba(0,0,0,.15);
+    }
+  }
+
+  .schema-head {
+    margin-top: 0;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    padding: 4px 180px;
+  }
+  .sub-doc {
+    padding: 0 5px 0 0;
+    width: 97%;   // which will get rid of scroll bar under most circumstances
+    margin-bottom: 3px;
+  }
+  .sub-doc-btns {
+    margin-left: 15px;
+  }
+  .schema-foot {
+    padding: 5px 180px;
+    margin: 5px 0;
+  }
+
+  input[type="checkbox"].ng-invalid-required:after {
+    content:"*";
+    font-weight: bold;
+    color: red;
+    /* padding-left is too small at 12 if inline help is not used*/
+    padding-left: 12px
+  }
+  input.ng-invalid-required, select.fng-invalid-required {
+    background-color: rgba(255, 0, 0, 0.10);
+  }
+  option {
+    background-color: white;
+  }
+  .fng-select2 {
+    width: 220px;
+  }
+  .form-inline > .sub-doc {
+    padding: 0 5px;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+.global-search {
+  position : relative;
+  float: right;
+  width: 236px;
+}
+
+.results-container {
+  width: 6000px;
+  z-index: 3;
+  position: absolute;
+  top: 41px;
+  right: 0;
+}
+
+.search-results {
+  float: right;
+  border: 1px solid gray;
+  -webkit-box-shadow: 10px 10px 10px #888;
+  box-shadow: 10px 10px 10px #888;
+  background: white;
+  padding: 5px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  .search-result.focus {
+    color: white;
+  }
+}
+
+

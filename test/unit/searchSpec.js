@@ -27,7 +27,7 @@ describe('search', function () {
     });
 
     it('should not have an error class in the search box when the form is created', function () {
-      var div = elm.find('div:first');
+      var div = angular.element(elm.find('div')[0]);
       expect(div.attr('id')).toBe('search-cg');
       expect(div.attr('class')).toBe('control-group');
     });
@@ -57,7 +57,7 @@ describe('search', function () {
       $httpBackend.flush();
       var results = elm.find('span');
       expect(results.length).toBe(2);
-      var div = elm.find('div:first');
+      var div = angular.element(elm.find('div')[0]);
       expect(div.attr('class')).toBe('control-group');
     });
 
@@ -68,7 +68,7 @@ describe('search', function () {
       $httpBackend.flush();
       var results = elm.find('span');
       expect(results.length).toBe(0);
-      var div = elm.find('div:first');
+      var div = angular.element(elm.find('div')[0]);
       expect(div.attr('class')).toBe('control-group error');
       scope.searchTarget = '';
       scope.$digest();
@@ -85,7 +85,7 @@ describe('search', function () {
       $httpBackend.flush();
       var results = elm.find('span');
       expect(results.length).toBe(2);
-      results = elm.find('span:first');
+      results = angular.element(elm.find('span')[0]);
       expect(results.text()).toMatch('Exams');
       expect(results.text()).toMatch('Brown, ');
       expect(results.text()).toMatch('John');

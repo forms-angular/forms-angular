@@ -493,14 +493,15 @@ describe('nesting', function () {
     });
 
     it('enables save button when a subDoc is deleted', function () {
-      var button = elm.find('.remove-btn:first');
+
+      var button = angular.element(elm.find('button')[6]);
       expect(button.text()).toMatch(/Remove/);
       scope.remove('studies.exams', 0, {target: button});
       expect(scope.isSaveDisabled()).toEqual(false);
     });
 
     it('enables save button when a subDoc is added', function () {
-      var button = elm.find('.add-btn:first');
+      var button = angular.element(elm.find('button')[7]);
       expect(button.text()).toMatch(/Add/);
       scope.add('studies.exams', {target: button});
       expect(scope.isSaveDisabled()).toEqual(false);

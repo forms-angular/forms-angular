@@ -23,9 +23,8 @@ describe('directive with form', function () {
   // load the form code
   beforeEach(function () {
     angular.mock.module('formsAngular');
-    angular.mock.module('myDemoApp');
-    angular.mock.module('demo/template/friends.html');
     angular.mock.module('template/form-button-bs2.html');
+    angular.mock.module('test/template/friends.html');
   });
 
   afterEach(function () {
@@ -57,21 +56,21 @@ describe('directive with form', function () {
     });
 
     it('enables save button when a change is made', function () {
-      var elem = angular.element(elm.find('input:first')[0]);
+      var elem = angular.element(elm.find('input')[0]);
       elem.val('Voronin');
-      elem.change();
+      elem.triggerHandler('change');
       expect(scope.isSaveDisabled()).toEqual(false);
     });
 
     it('enables cancel button when a change is made', function () {
-      var elem = angular.element(elm.find('input:first')[0]);
+      var elem = angular.element(elm.find('input')[0]);
       elem.val('Voronin');
-      elem.change();
+      elem.triggerHandler('change');
       expect(scope.isCancelDisabled()).toEqual(false);
     });
 
     it('shows the friend type', function () {
-      var elem = angular.element(elm.find('.friends:first')[0]);
+      var elem = elm.find('a');
       expect(elem.text()).toMatch(/colleague/);
     });
 
@@ -82,7 +81,8 @@ describe('directive with form', function () {
       var friend = scope.record.friendList[0];
       scope.frdShowDetails(friend);
       $httpBackend.flush();
-      var elem = angular.element(elm.find('.friends-head')[0]);
+      var elem = angular.element(elm.find('div')[17]);
+      expect(elem).toHaveClass('friends-head');
       expect(elem.text()).toMatch(/Andrew/);
       expect(elem.text()).toMatch(/TestPerson2/);
     });
