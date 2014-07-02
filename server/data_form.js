@@ -199,13 +199,12 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
       }
     }
   }
-
   var that = this,
     results = [],
     moreCount = 0,
     searchCriteria;
 
-  if (req.route.path === '/api/search') {
+  if (req.route && req.route.path === '/api/search') {
     // Called from search box - treat words as separate strings
     searchCriteria = {$regex: '^(' + searchFor.split(' ').join('|') + ')', $options: 'i'};
   } else {
@@ -307,7 +306,7 @@ DataForm.prototype.search = function () {
       return next();
     }
 
-    this.internalSearch(req, [req.resource], 10, false, function (resultsObject) {
+    this.internalSearch(req, [req.resource], false, 10, function (resultsObject) {
       res.send(resultsObject);
     });
   }, this);
@@ -315,7 +314,7 @@ DataForm.prototype.search = function () {
 
 DataForm.prototype.searchAll = function () {
   return _.bind(function (req, res) {
-    this.internalSearch(req, this.resources, 10, true, function (resultsObject) {
+    this.internalSearch(req, this.resources, true, 10, function (resultsObject) {
       res.send(resultsObject);
     });
   }, this);
@@ -326,6 +325,7 @@ DataForm.prototype.models = function () {
   var that = this;
 
   return function (req, res) {
+//    TODO: Make this less wasteful - we only need to send the resourceNames of the resources
     res.send(that.resources);
   };
 };
@@ -521,7 +521,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
       // Don't send the 'secure' fields
       for (var hiddenField in self.generateHiddenFields(resource, false)) {
         if (runPipeline.indexOf(hiddenField) !== -1) {
-          callback('You cannot access ' + hiddenField);
+          return callback('You cannot access ' + hiddenField);
         }
       }
 

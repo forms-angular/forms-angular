@@ -27,6 +27,10 @@
     "type": "git",
     "url": "https://github.com/forms-angular/forms-angular"
   },
+  "bugs": {
+    "url": "https://github.com/forms-angular/forms-angular/issues",
+    "email": "support@reallycare.org"
+  },
   "keywords": [
     "angular",
     "mongoose",
@@ -58,7 +62,8 @@
     "grunt-karma": "~0.8",
     "grunt-newer": "^0.7.0",
     "grunt-bower-task": "^0.3.4",
-    "grunt-angular-templates": "^0.5.4"
+    "grunt-angular-templates": "^0.5.4",
+    "grunt-mocha-test": "~0.11.0"
   },
   "license": "MIT"
 }
