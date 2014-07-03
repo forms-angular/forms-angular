@@ -13,6 +13,7 @@ var _ = require('underscore'),
 mongoose.set('debug', debug);
 
 function logTheAPICalls(req, res, next) {
+  void(res);
   console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
   next();
 }
@@ -48,19 +49,31 @@ var DataForm = function (app, options) {
 module.exports = exports = DataForm;
 
 DataForm.prototype.getListFields = function (resource, doc) {
-  var display = '',
-    listElement = 0,
-    listFields = resource.options.listFields;
+
+  function getFirstMatchingField(keyList, type) {
+    for (var i = 0; i < keyList.length; i++) {
+      var fieldDetails = resource.model.schema.tree[keyList[i]];
+      if (fieldDetails.type && (!type || fieldDetails.type.name === type) && keyList[i] !== '_id') {
+        resource.options.listFields = [{field: keyList[i]}];
+        return doc[keyList[i]];
+      }
+    }
+  }
+
+  var display = ''
+    , listElement = 0
+    , listFields = resource.options.listFields;
 
   if (listFields) {
     for (; listElement < listFields.length; listElement++) {
       display += doc[listFields[listElement].field] + ' ';
     }
   } else {
-    listFields = Object.keys(resource.model.schema.paths);
-    for (; listElement < 2; listElement++) {
-      display += doc[listFields[listElement]] + ' ';
-    }
+    var keyList = Object.keys(resource.model.schema.tree);
+    // No list field specified - use the first String field,
+    display = getFirstMatchingField(keyList, 'String') ||
+      // and if there aren't any then just take the first field
+      getFirstMatchingField(keyList);
   }
   return display.trim();
 };

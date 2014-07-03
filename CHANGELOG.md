@@ -6,7 +6,8 @@
 * Removes dependence on jQuery
 
 ### BREAKING CHANGES
-
+* List API returns only one field when no list fields defined (as happens on the client).
+* Hidden list fields now appear on list API response.  
 
 ## 0.2 to 0.3
 ### Summary
