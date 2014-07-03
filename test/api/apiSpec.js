@@ -332,7 +332,7 @@ describe('API', function () {
       fng.searchAll()(mockReq, mockRes);
     });
 
-    it('should not find records indexed on a no-search field', function (done) {
+    it('shoucd ..ld not find records indexed on a no-search field', function (done) {
       var mockReq = {
         url: '/search?q=ReportingIndex'
       };

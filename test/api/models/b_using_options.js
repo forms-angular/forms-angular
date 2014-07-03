@@ -43,7 +43,7 @@ var BSchema = new Schema({
   sex: {type: String, enum: ['Male', 'Female'], form: {type: 'radio', inlineRadio: true}},
   dateOfBirth: Date,
   accepted: {type: Boolean, required: true, form: {helpInline: 'Did we take them?'}, list: {}},   // helpInline displays to the right of the input control
-  interviewScore: {type: Number, form: {hidden: true}, list: {}},  // this field does not appear on the form or listings, even though list is defined - not sure about this
+  interviewScore: {type: Number, form: {hidden: true}, list: {}},  // this field does appear on listings, even though it is hidden on default form
   freeText: {
     type: String,
     form: {
