@@ -60,9 +60,9 @@ DataForm.prototype.getListFields = function (resource, doc) {
     }
   }
 
-  var display = ''
-    , listElement = 0
-    , listFields = resource.options.listFields;
+  var display = '';
+  var listElement = 0;
+  var listFields = resource.options.listFields;
 
   if (listFields) {
     for (; listElement < listFields.length; listElement++) {
