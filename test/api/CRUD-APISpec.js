@@ -59,33 +59,6 @@ describe('API', function () {
     });
   });
 
-  it('returns models', function () {
-    var mockReq = null;
-    var mockRes = {
-      send: function (models) {
-        assert.equal(models.length, 11);
-        assert(_.find(models, function (resource) {
-          return resource.resourceName === 'b_using_options';
-        }).options.hide.indexOf('login') > -1, 'must send login as a hidden field');
-      }
-    };
-    fng.models()(mockReq, mockRes);
-  });
-
-  it('returns schema', function (done) {
-    var mockReq = {params : {resourceName: 'a_unadorned_mongoose'}};
-    var mockRes = {
-      send: function (schema) {
-        schema = JSON.parse(schema);
-        var keys = Object.keys(schema);
-        assert.equal(keys.length, 8);
-        assert.equal(schema[keys[0]].path, 'surname');
-        done();
-      }
-    };
-    fng.schema()(mockReq, mockRes);
-  });
-
   describe('data read', function () {
 
     var aData, bData;
@@ -470,4 +443,5 @@ describe('API', function () {
       });
     });
   });
+
 });
