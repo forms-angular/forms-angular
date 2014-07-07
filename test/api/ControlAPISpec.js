@@ -135,7 +135,31 @@ describe('API', function () {
     fng.schema()(mockReq, mockRes);
   });
 
-  it.skip('allows form schemas to override nested schemas', function (done) {
+  it('supports nested schemas within form schemas', function (done) {
+    var mockReq = {params : {resourceName: 'f_nested_schema', formName: 'EnglishAndMaths'}};
+    var mockRes = {
+      send: function (schema) {
+        schema = JSON.parse(schema);
+        var keys = Object.keys(schema);
+        assert.equal(keys.length, 3);
+        assert.equal(schema[keys[0]].path, 'surname');
+        assert.equal(keys[0], 'surname');
+        assert.equal(schema[keys[1]].path, 'forename');
+        assert.equal(keys[1], 'forename');
+        assert.equal(keys[2], 'exams');
+        keys = Object.keys(schema[keys[2]].schema);
+        assert.equal(keys.length, 6);
+        assert.equal(keys[0], 'subject');
+        assert.equal(schema.exams.schema[keys[0]].path, 'subject');
+        assert.equal(keys[3], 'result');
+        assert.equal(schema.exams.schema[keys[3]].path, 'result');
+        done();
+      }
+    };
+    fng.schema()(mockReq, mockRes);
+  });
+
+  it('allows form schemas to override nested schemas', function (done) {
     var mockReq = {params : {resourceName: 'f_nested_schema', formName: 'ResultsOnly'}};
     var mockRes = {
       send: function (schema) {
