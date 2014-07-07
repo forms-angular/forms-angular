@@ -356,6 +356,36 @@ DataForm.prototype.redirect = function (address, req, res) {
   res.send(address);
 };
 
+DataForm.prototype.applySchemaSubset = function (vanilla, schema) {
+  var outPath;
+  if (schema) {
+    outPath = {};
+    for (var fld in schema) {
+      if (schema.hasOwnProperty(fld)) {
+        if (!vanilla[fld]) {
+          throw new Error('No such field as ' + fld + '.  Is it part of a sub-doc? If so you need the bit before the period.');
+        }
+        outPath[fld] = vanilla[fld];
+        if (vanilla[fld].schema) {
+          outPath[fld].schema = this.applySchemaSubset(outPath[fld].schema, schema[fld].schema);
+        }
+        outPath[fld].options = outPath[fld].options || {};
+        for (var override in schema[fld]) {
+          if (schema[fld].hasOwnProperty(override)) {
+            if (!outPath[fld].options.form) {
+              outPath[fld].options.form = {};
+            }
+            outPath[fld].options.form[override] = schema[fld][override];
+          }
+        }
+      }
+    }
+  } else {
+    outPath = vanilla;
+  }
+  return outPath;
+};
+
 DataForm.prototype.preprocess = function (paths, formSchema) {
   var outPath = {},
     hiddenFields = [],
@@ -398,27 +428,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
       }
     }
   }
-  if (formSchema) {
-    var vanilla = outPath;
-    outPath = {};
-    for (var fld in formSchema) {
-      if (formSchema.hasOwnProperty(fld)) {
-        if (!vanilla[fld]) {
-          throw new Error('No such field as ' + fld + '.  Is it part of a sub-doc? If so you need the bit before the period.');
-        }
-        outPath[fld] = vanilla[fld];
-        outPath[fld].options = outPath[fld].options || {};
-        for (var override in formSchema[fld]) {
-          if (formSchema[fld].hasOwnProperty(override)) {
-            if (!outPath[fld].options.form) {
-              outPath[fld].options.form = {};
-            }
-            outPath[fld].options.form[override] = formSchema[fld][override];
-          }
-        }
-      }
-    }
-  }
+  outPath = this.applySchemaSubset(outPath, formSchema);
   var returnObj = {paths: outPath};
   if (hiddenFields.length > 0) {
     returnObj.hide = hiddenFields;
