@@ -67,6 +67,17 @@ FSchema.statics.form = function (layout) {
         ]}
       };
       break;
+    case 'ResultsOnly' :
+      // Demonstration of specifying fields within sub schemas in a form schema
+      formSchema = {
+        surname: {},
+        forename: {},
+        exams: {schema: {
+          subject: {},
+          result: {}
+        }}
+      };
+      break;
   }
   return formSchema;
 };
