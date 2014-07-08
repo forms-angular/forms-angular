@@ -19,7 +19,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
     $scope.recordList = [];
     $scope.dataDependencies = {};
     $scope.select2List = [];
-    $scope.pageSize = 20;
+    $scope.pageSize = 60;
     $scope.pagesLoaded = 0;
     angular.extend($scope, $locationParse($location.$$path));
 
