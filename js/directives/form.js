@@ -317,7 +317,7 @@ formsAngular
                 if (info.title) {
                   var titleLook = info.titleTagOrClass || 'h4';
                   if (titleLook.match(/h[1-6]/)) {
-                    result.before += '<' + titleLook + '>' + info.title + '</' + info.titleLook + '>';
+                    result.before += '<' + titleLook + '>' + info.title + '</' + titleLook + '>';
                   } else {
                     result.before += '<p class="' + titleLook + '">' + info.title + '</p>';
                   }
