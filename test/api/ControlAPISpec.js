@@ -153,16 +153,19 @@ describe('API', function () {
         assert.equal(schema.exams.schema[keys[0]].path, 'subject');
         assert.equal(keys[3], 'result');
         assert.equal(schema.exams.schema[keys[3]].path, 'result');
+        assert.equal(keys[4], 'grader');
+        assert.equal(schema.exams.schema[keys[4]].options.form.label, 'Marked by');
         done();
       }
     };
     fng.schema()(mockReq, mockRes);
   });
 
-  it('allows form schemas to override nested schemas', function (done) {
+  it.only('allows form schemas to override nested schemas', function (done) {
     var mockReq = {params : {resourceName: 'f_nested_schema', formName: 'ResultsOnly'}};
     var mockRes = {
       send: function (schema) {
+        console.log(schema);
         schema = JSON.parse(schema);
         var keys = Object.keys(schema);
         assert.equal(keys.length, 3);
@@ -177,6 +180,7 @@ describe('API', function () {
         assert.equal(schema.exams.schema[keys[0]].path, 'subject');
         assert.equal(keys[1], 'result');
         assert.equal(schema.exams.schema[keys[1]].path, 'result');
+        assert.equal(schema.exams.schema[keys[1]].options.form.label, 'Outcome');
         done();
       }
     };

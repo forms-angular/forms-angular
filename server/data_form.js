@@ -390,6 +390,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
   var outPath = {},
     hiddenFields = [],
     listFields = [];
+
   for (var element in paths) {
     if (paths.hasOwnProperty(element) && element !== '__v') {
       // check for schemas
