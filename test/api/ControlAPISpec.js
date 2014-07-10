@@ -165,7 +165,6 @@ describe('API', function () {
     var mockReq = {params : {resourceName: 'f_nested_schema', formName: 'ResultsOnly'}};
     var mockRes = {
       send: function (schema) {
-        console.log(schema);
         schema = JSON.parse(schema);
         var keys = Object.keys(schema);
         assert.equal(keys.length, 3);
