@@ -7,7 +7,7 @@ var ExamsSchema = new Schema({
   examDate: Date,
   score: Number,
   result: {type: String, enum: ['distinction', 'merit', 'pass', 'fail']},
-  grader: { type: Schema.Types.ObjectId, ref: 'b_using_options', form: {select2: {fngAjax: true}}},
+  grader: { type: Schema.Types.ObjectId, ref: 'b_using_options', form: {select2: {fngAjax: true}, label:'Marked by'}},
   retakeDate: {type: Date, form: {showWhen: {lhs: '$exams.result', comp: 'eq', rhs: 'fail'}}}
 }, {_id: false});
 
@@ -74,7 +74,7 @@ FSchema.statics.form = function (layout) {
         forename: {},
         exams: {schema: {
           subject: {},
-          result: {}
+          result: {label: 'Outcome'}
         }}
       };
       break;
