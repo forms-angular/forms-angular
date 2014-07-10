@@ -629,10 +629,15 @@ formsAngular
                         arrayOffset,
                         matching,
                         arrayToProcess = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
-
                       for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
                         var thisSubkeyList = arrayToProcess[thisOffset].keyList;
-                        var dataVal = theRecord[info.name] = theRecord[info.name] || [];
+
+                        var parts = info.name.split('.');
+                        var dataVal = theRecord;
+                        while (parts.length > 1) {
+                          dataVal = dataVal[parts.shift()] || {};
+                        }
+                        dataVal = dataVal[parts[0]] || [];
                         for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
                           matching = true;
                           for (var keyField in thisSubkeyList) {
