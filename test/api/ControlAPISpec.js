@@ -76,7 +76,6 @@ describe('API', function () {
     var mockReq = {params : {resourceName: 'a_unadorned_mongoose'}};
     var mockRes = {
       send: function (schema) {
-        schema = JSON.parse(schema);
         var keys = Object.keys(schema);
         assert.equal(keys.length, 8);
         assert.equal(schema[keys[0]].path, 'surname');
@@ -97,7 +96,6 @@ describe('API', function () {
     var mockReq = {params : {resourceName: 'f_nested_schema'}};
     var mockRes = {
       send: function (schema) {
-        schema = JSON.parse(schema);
         var keys = Object.keys(schema);
         assert.equal(keys.length, 5);
         assert.equal(keys[0], 'surname');
@@ -124,7 +122,6 @@ describe('API', function () {
     var mockReq = {params : {resourceName: 'b_using_options', formName: 'justnameandpostcode'}};
     var mockRes = {
       send: function (schema) {
-        schema = JSON.parse(schema);
         var keys = Object.keys(schema);
         assert.equal(keys.length, 4);
         assert.equal(schema[keys[0]].path, 'surname');
@@ -139,7 +136,6 @@ describe('API', function () {
     var mockReq = {params : {resourceName: 'f_nested_schema', formName: 'EnglishAndMaths'}};
     var mockRes = {
       send: function (schema) {
-        schema = JSON.parse(schema);
         var keys = Object.keys(schema);
         assert.equal(keys.length, 3);
         assert.equal(schema[keys[0]].path, 'surname');
@@ -161,11 +157,10 @@ describe('API', function () {
     fng.schema()(mockReq, mockRes);
   });
 
-  it.only('allows form schemas to override nested schemas', function (done) {
+  it('allows form schemas to override nested schemas', function (done) {
     var mockReq = {params : {resourceName: 'f_nested_schema', formName: 'ResultsOnly'}};
     var mockRes = {
       send: function (schema) {
-        schema = JSON.parse(schema);
         var keys = Object.keys(schema);
         assert.equal(keys.length, 3);
         assert.equal(schema[keys[0]].path, 'surname');

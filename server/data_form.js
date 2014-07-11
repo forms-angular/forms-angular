@@ -450,7 +450,7 @@ DataForm.prototype.schema = function () {
       formSchema = req.resource.model.schema.statics['form'](req.params.formName);
     }
     var paths = this.preprocess(req.resource.model.schema.paths, formSchema).paths;
-    res.send(JSON.stringify(paths));
+    res.send(paths);
   }, this);
 };
 
