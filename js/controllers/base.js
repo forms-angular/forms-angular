@@ -101,7 +101,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
               }, 0);
             }
             if (formInstructions.select2) {
-              $scope['select2' + formInstructions.name] = {
+              formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
+              $scope[formInstructions.select2.s2query] = {
                 allowClear: !mongooseOptions.required,
                 initSelection: function (element, callback) {
                   callback(element.select2('data'));
@@ -117,9 +118,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                   query.callback(data);
                 }
               };
-              _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
+              _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
               if (formInstructions.select2 === true) { formInstructions.select2 = {}; }  // In case they have used select2: true syntax
-              formInstructions.select2.s2query = 'select2' + formInstructions.name;
               $scope.select2List.push(formInstructions.name);
             } else {
               formInstructions.options = suffixCleanId(formInstructions, 'Options');
@@ -198,7 +198,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                 if (formInstructions.select2 === true) {
                   formInstructions.select2 = {};
                 }
-                $scope['select2' + formInstructions.name] = {
+                formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
+                $scope['select2' + formInstructions.select2.s2query ] = {
                   allowClear: !mongooseOptions.required,
                   initSelection: function (element, callback) {
                     var myId = element.val();
@@ -219,8 +220,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                     query.callback(data);
                   }
                 };
-                _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
-                formInstructions.select2.s2query = 'select2' + formInstructions.name;
+                _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
                 $scope.select2List.push(formInstructions.name);
                 formInstructions.options = suffixCleanId(formInstructions, 'Options');
                 formInstructions.ids = suffixCleanId(formInstructions, '_ids');
