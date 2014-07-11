@@ -637,7 +637,7 @@ formsAngular
                         while (parts.length > 1) {
                           dataVal = dataVal[parts.shift()] || {};
                         }
-                        dataVal = dataVal[parts[0]] || [];
+                        dataVal = dataVal[parts[0]] = dataVal[parts[0]] || [];
                         for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
                           matching = true;
                           for (var keyField in thisSubkeyList) {
