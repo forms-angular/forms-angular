@@ -129,7 +129,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
                     if (dataVal) {
                       callback(element.select2('data'));
                     } else {
-                      $timeout(executeCallback)
+                      $timeout(executeCallback);
                     }
                   }
 
@@ -227,7 +227,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
                   formInstructions.select2 = {};
                 }
                 formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
-                $scope['select2' + formInstructions.select2.s2query ] = {
+                $scope['select2' + formInstructions.select2.s2query] = {
                   allowClear: !mongooseOptions.required,
                   initSelection: function (element, callback) {
                     // TODO: do this in a timeout like around 109
@@ -1255,30 +1255,6 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
   }]);
 'use strict';
 
-formsAngular.controller('FngCtrl', ['$scope', 'cssFrameworkService', function ($scope, cssFrameworkService) {
-
-  $scope.globalShortcuts = function (event) {
-    if (event.keyCode === 191 && event.ctrlKey) {
-      // Ctrl+/ takes you to global search
-      document.querySelector('#searchinput').focus();
-      event.preventDefault();
-    }
-  };
-
-  $scope.css = function (fn, arg) {
-    var result;
-    if (typeof cssFrameworkService[fn] === 'function') {
-      result = cssFrameworkService[fn](arg);
-    } else {
-      result = 'error text-error';
-    }
-    return result;
-  };
-
-}]);
-
-'use strict';
-
 formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'urlService', function ($scope, $http, $location, urlService) {
 
   $scope.models = [];
@@ -1301,10 +1277,28 @@ formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'urlServi
 'use strict';
 
 formsAngular.controller('NavCtrl',
-  ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService',
-    function ($scope, $data, $location, $filter, $locationParse, $controller, urlService) {
+  ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService', 'cssFrameworkService',
+    function ($scope, $data, $location, $filter, $locationParse, $controller, urlService, cssFrameworkService) {
 
   $scope.items = [];
+
+  $scope.globalShortcuts = function (event) {
+    if (event.keyCode === 191 && event.ctrlKey) {
+      // Ctrl+/ takes you to global search
+      document.querySelector('#searchinput').focus();
+      event.preventDefault();
+    }
+  };
+
+  $scope.css = function (fn, arg) {
+    var result;
+    if (typeof cssFrameworkService[fn] === 'function') {
+      result = cssFrameworkService[fn](arg);
+    } else {
+      result = 'error text-error';
+    }
+    return result;
+  };
 
   function loadControllerAndMenu(controllerName, level) {
     var locals = {}, addThis;
