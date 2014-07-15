@@ -1,4 +1,4 @@
-/*! forms-angular 2014-06-21 */
+/*! forms-angular 2014-07-15 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -12,8 +12,8 @@ var formsAngular = angular.module('formsAngular', [
 void(formsAngular);  // Make jshint happy
 'use strict';
 
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService',
-  function ($scope, $routeParams, $location, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$timeout', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService',
+  function ($scope, $routeParams, $location, $timeout, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -31,7 +31,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
     $scope.recordList = [];
     $scope.dataDependencies = {};
     $scope.select2List = [];
-    $scope.pageSize = 20;
+    $scope.pageSize = 60;
     $scope.pagesLoaded = 0;
     angular.extend($scope, $locationParse($location.$$path));
 
@@ -113,10 +113,27 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
               }, 0);
             }
             if (formInstructions.select2) {
-              $scope['select2' + formInstructions.name] = {
+              formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
+              $scope[formInstructions.select2.s2query] = {
                 allowClear: !mongooseOptions.required,
                 initSelection: function (element, callback) {
-                  callback(element.select2('data'));
+
+                  function executeCallback() {
+                    var dataVal = $scope.record;
+                    if (dataVal) {
+                      var parts = formInstructions.name.split('.');
+                      while (parts.length > 1 && dataVal) {
+                        dataVal = dataVal[parts.shift()];
+                      }
+                    }
+                    if (dataVal) {
+                      callback(element.select2('data'));
+                    } else {
+                      $timeout(executeCallback)
+                    }
+                  }
+
+                  $timeout(executeCallback);
                 },
                 query: function (query) {
                   var data = {results: []},
@@ -129,9 +146,8 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                   query.callback(data);
                 }
               };
-              _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
+              _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
               if (formInstructions.select2 === true) { formInstructions.select2 = {}; }  // In case they have used select2: true syntax
-              formInstructions.select2.s2query = 'select2' + formInstructions.name;
               $scope.select2List.push(formInstructions.name);
             } else {
               formInstructions.options = suffixCleanId(formInstructions, 'Options');
@@ -210,14 +226,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                 if (formInstructions.select2 === true) {
                   formInstructions.select2 = {};
                 }
-                $scope['select2' + formInstructions.name] = {
+                formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
+                $scope['select2' + formInstructions.select2.s2query ] = {
                   allowClear: !mongooseOptions.required,
                   initSelection: function (element, callback) {
+                    // TODO: do this in a timeout like around 109
                     var myId = element.val();
                     if (myId !== '' && $scope[formInstructions.ids].length > 0) {
                       var myVal = convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
                       var display = {id: myId, text: myVal};
-                      callback(display);
+                      $timeout(callback(display));
                     }
                   },
                   query: function (query) {
@@ -231,8 +249,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                     query.callback(data);
                   }
                 };
-                _.extend($scope['select2' + formInstructions.name], formInstructions.select2);
-                formInstructions.select2.s2query = 'select2' + formInstructions.name;
+                _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
                 $scope.select2List.push(formInstructions.name);
                 formInstructions.options = suffixCleanId(formInstructions, 'Options');
                 formInstructions.ids = suffixCleanId(formInstructions, '_ids');
@@ -1238,6 +1255,30 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
   }]);
 'use strict';
 
+formsAngular.controller('FngCtrl', ['$scope', 'cssFrameworkService', function ($scope, cssFrameworkService) {
+
+  $scope.globalShortcuts = function (event) {
+    if (event.keyCode === 191 && event.ctrlKey) {
+      // Ctrl+/ takes you to global search
+      document.querySelector('#searchinput').focus();
+      event.preventDefault();
+    }
+  };
+
+  $scope.css = function (fn, arg) {
+    var result;
+    if (typeof cssFrameworkService[fn] === 'function') {
+      result = cssFrameworkService[fn](arg);
+    } else {
+      result = 'error text-error';
+    }
+    return result;
+  };
+
+}]);
+
+'use strict';
+
 formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'urlService', function ($scope, $http, $location, urlService) {
 
   $scope.models = [];
@@ -1260,28 +1301,10 @@ formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'urlServi
 'use strict';
 
 formsAngular.controller('NavCtrl',
-  ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService', 'cssFrameworkService',
-    function ($scope, $data, $location, $filter, $locationParse, $controller, urlService, cssFrameworkService) {
+  ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService',
+    function ($scope, $data, $location, $filter, $locationParse, $controller, urlService) {
 
   $scope.items = [];
-
-  $scope.globalShortcuts = function (event) {
-    if (event.keyCode === 191 && event.ctrlKey) {
-      // Ctrl+/ takes you to global search
-      document.querySelector('#searchinput').focus();
-      event.preventDefault();
-    }
-  };
-
-  $scope.css = function (fn, arg) {
-    var result;
-    if (typeof cssFrameworkService[fn] === 'function') {
-      result = cssFrameworkService[fn](arg);
-    } else {
-      result = 'error text-error';
-    }
-    return result;
-  };
 
   function loadControllerAndMenu(controllerName, level) {
     var locals = {}, addThis;
@@ -1718,7 +1741,7 @@ formsAngular
                 if (info.title) {
                   var titleLook = info.titleTagOrClass || 'h4';
                   if (titleLook.match(/h[1-6]/)) {
-                    result.before += '<' + titleLook + '>' + info.title + '</' + info.titleLook + '>';
+                    result.before += '<' + titleLook + '>' + info.title + '</' + titleLook + '>';
                   } else {
                     result.before += '<p class="' + titleLook + '">' + info.title + '</p>';
                   }
@@ -2030,10 +2053,15 @@ formsAngular
                         arrayOffset,
                         matching,
                         arrayToProcess = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
-
                       for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
                         var thisSubkeyList = arrayToProcess[thisOffset].keyList;
-                        var dataVal = theRecord[info.name] = theRecord[info.name] || [];
+
+                        var parts = info.name.split('.');
+                        var dataVal = theRecord;
+                        while (parts.length > 1) {
+                          dataVal = dataVal[parts.shift()] || {};
+                        }
+                        dataVal = dataVal[parts[0]] = dataVal[parts[0]] || [];
                         for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
                           matching = true;
                           for (var keyField in thisSubkeyList) {
