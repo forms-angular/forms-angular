@@ -1,7 +1,7 @@
 'use strict';
 
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService',
-  function ($scope, $routeParams, $location, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
+formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$timeout', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService',
+  function ($scope, $routeParams, $location, $timeout, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -105,7 +105,23 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
               $scope[formInstructions.select2.s2query] = {
                 allowClear: !mongooseOptions.required,
                 initSelection: function (element, callback) {
-                  callback(element.select2('data'));
+
+                  function executeCallback() {
+                    var dataVal = $scope.record;
+                    if (dataVal) {
+                      var parts = formInstructions.name.split('.');
+                      while (parts.length > 1 && dataVal) {
+                        dataVal = dataVal[parts.shift()];
+                      }
+                    }
+                    if (dataVal) {
+                      callback(element.select2('data'));
+                    } else {
+                      $timeout(executeCallback);
+                    }
+                  }
+
+                  $timeout(executeCallback);
                 },
                 query: function (query) {
                   var data = {results: []},
@@ -199,7 +215,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$fi
                   formInstructions.select2 = {};
                 }
                 formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
-                $scope['select2' + formInstructions.select2.s2query ] = {
+                $scope['select2' + formInstructions.select2.s2query] = {
                   allowClear: !mongooseOptions.required,
                   initSelection: function (element, callback) {
                     var myId = element.val();
