@@ -31,7 +31,8 @@ formsAngular.provider('formRoutes', ['$routeProvider', function ($routeProvider)
   return {
     setRoutes: function (appRoutes, defaultRoute) {
       _setRoutes(appRoutes);
-      setTimeout(function() {_setRoutes(_fngRoutes)});   // add our routes when all other modules have had a chance to get theirs in
+      // add our routes when all other modules have had a chance to get theirs in
+      setTimeout(function () {_setRoutes(_fngRoutes); });
       _setDefaultRoute(defaultRoute);
     },
     $get: function () {

@@ -1,4 +1,4 @@
-/*! forms-angular 2014-07-15 */
+/*! forms-angular 2014-07-16 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -230,12 +230,11 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
                 $scope['select2' + formInstructions.select2.s2query] = {
                   allowClear: !mongooseOptions.required,
                   initSelection: function (element, callback) {
-                    // TODO: do this in a timeout like around 109
                     var myId = element.val();
                     if (myId !== '' && $scope[formInstructions.ids].length > 0) {
                       var myVal = convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
                       var display = {id: myId, text: myVal};
-                      $timeout(callback(display));
+                      callback(display);
                     }
                   },
                   query: function (query) {
@@ -2015,6 +2014,7 @@ formsAngular
               unwatch();
               var elementHtml = '';
               var theRecord = scope[attrs.model || 'record'];      // By default data comes from scope.record
+              theRecord = theRecord || {};
               if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                 elementHtml = '';
               } else {
@@ -2326,7 +2326,8 @@ formsAngular.provider('formRoutes', ['$routeProvider', function ($routeProvider)
   return {
     setRoutes: function (appRoutes, defaultRoute) {
       _setRoutes(appRoutes);
-      _setRoutes(_fngRoutes);
+      // add our routes when all other modules have had a chance to get theirs in
+      setTimeout(function () {_setRoutes(_fngRoutes); });
       _setDefaultRoute(defaultRoute);
     },
     $get: function () {
