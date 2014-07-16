@@ -597,6 +597,7 @@ formsAngular
               unwatch();
               var elementHtml = '';
               var theRecord = scope[attrs.model || 'record'];      // By default data comes from scope.record
+              theRecord = theRecord || {};
               if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                 elementHtml = '';
               } else {
