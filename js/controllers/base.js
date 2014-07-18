@@ -1,7 +1,9 @@
 'use strict';
 
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$timeout', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService',
-  function ($scope, $routeParams, $location, $timeout, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
+formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$routeParams', '$location', '$timeout', '$filter', '$data',
+  '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService', 'routingService',
+  function ($injector, $scope, $routeParams, $location, $timeout, $filter, $data,
+            $modal, $window, SubmissionsService, SchemasService, urlService, routingService) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -21,12 +23,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
     $scope.select2List = [];
     $scope.pageSize = 60;
     $scope.pagesLoaded = 0;
-    angular.extend($scope, $locationParse($location.$$path));
 
-    $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
+    angular.extend($scope, routingService.parsePathFunc()($location.$$path));
+
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
     $scope.generateEditUrl = function (obj) {
-      return urlService.buildUrl($scope.modelName + '/' + $scope.formPlusSlash + obj._id + '/edit');
+      return urlService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
     };
 
     $scope.walkTree = function (object, fieldname, element) {
@@ -626,16 +628,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
         });
     };
 
+    // TODO: Do we need model here?  Can we not infer it from scope?
     $scope.deleteRecord = function (model, id) {
       SubmissionsService.deleteRecord(model, id)
         .success(function () {
           if (typeof $scope.dataEventFunctions.onAfterDelete === 'function') {
             $scope.dataEventFunctions.onAfterDelete(master);
           }
-          $location.path('/' + $scope.modelName);
+          routingService.redirectTo()('list', $scope, $location);
         });
     };
-
 
     $scope.updateDocument = function (dataToSave, options) {
       $scope.phase = 'updating';
@@ -673,8 +675,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
             if (options.redirect) {
               $window.location = options.redirect;
             } else {
-              $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
-              //                    reset?
+              routingService.redirectTo()('edit', $scope, $location, data._id);
             }
           } else {
             $scope.showError(data);
@@ -851,11 +852,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
       }
     };
 
-    $scope.new = function () {
-      $location.search('');
-      $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
+    $scope.newClick = function () {
+      routingService.redirectTo()('new', $scope, $location);
     };
-
 
     $scope.$on('$locationChangeStart', function (event, next) {
       if (!allowLocationChange && !$scope.isCancelDisabled()) {
@@ -889,7 +888,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
       }
     });
 
-    $scope.delete = function () {
+    $scope.deleteClick = function () {
       if ($scope.record._id) {
         var modalInstance = $modal.open({
           template: '<div class="modal-header">' +

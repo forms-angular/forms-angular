@@ -16,13 +16,13 @@ describe('BaseCtrl', function () {
   describe('Schema requests', function () {
 
     it('should request a schema', function () {
-      inject(function (_$httpBackend_, $rootScope, $controller, $location) {
+      inject(function (_$httpBackend_, $rootScope, $controller) {
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({
           'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}
         });
-        $location.$$path = '/collection/new';
         scope = $rootScope.$new();
+        angular.extend(scope, {newRecord: true, modelName: 'collection'});
         ctrl = $controller('BaseCtrl', {$scope: scope});
         $httpBackend.flush();
       });
@@ -35,8 +35,8 @@ describe('BaseCtrl', function () {
         $httpBackend.when('GET', '/api/schema/collection').respond(function () {
           return [404, 'Some error', {}];
         });
-        $location.$$path = '/collection/new';
         scope = $rootScope.$new();
+        angular.extend(scope, {newRecord: true, modelName: 'collection'});
         ctrl = $controller('BaseCtrl', {$scope: scope});
         $httpBackend.flush();
         expect($location.path()).toBe('/404');
@@ -46,12 +46,13 @@ describe('BaseCtrl', function () {
     it('should allow for override screens', function () {
       inject(function (_$httpBackend_, $rootScope, $controller, _$location_) {
         $httpBackend = _$httpBackend_;
-        _$location_.path('/someModel/new');
-        $httpBackend.when('GET', '/api/schema/someModel').respond({
+        $httpBackend.when('GET', '/api/schema/someModel/someForm').respond({
           'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}
         });
         scope = $rootScope.$new();
-        ctrl = $controller('BaseCtrl', {$scope: scope, $location: _$location_});
+        angular.extend(scope, {newRecord: true, modelName: 'someModel', formName: 'someForm'});
+
+        ctrl = $controller('BaseCtrl', {$scope: scope});
         $httpBackend.flush();
       });
     });
@@ -61,13 +62,13 @@ describe('BaseCtrl', function () {
 
     var scope, ctrl;
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller) {
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $controller) {
       $httpBackend = _$httpBackend_;
       $httpBackend.whenGET('/api/schema/collection').respond(
         {'name': {'instance': 'String'}, 'hide_me': {'instance': 'String', 'options': {'form': {'hidden': true}}}}
       );
-      $location.$$path = '/collection/new';
       scope = $rootScope.$new();
+      angular.extend(scope, {newRecord: true, modelName: 'collection'});
       ctrl = $controller('BaseCtrl', {$scope: scope});
       $httpBackend.flush();
     }));
