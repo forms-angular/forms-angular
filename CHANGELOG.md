@@ -7,7 +7,8 @@
 
 ### BREAKING CHANGES
 * List API returns only one field when no list fields defined (as happens on the client).
-* Hidden list fields now appear on list API response.  
+* Hidden list fields now appear on list API response.
+* In BaseCtrl $scope.new() and $scope.delete() have been renamed ('Click' added)
 
 ## 0.2 to 0.3
 ### Summary

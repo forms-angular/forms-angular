@@ -1,8 +1,7 @@
-/*! forms-angular 2014-07-16 */
+/*! forms-angular 2014-07-18 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
-  'ngRoute',
   'ngSanitize',
   'ui.bootstrap',
   'infinite-scroll',
@@ -12,8 +11,10 @@ var formsAngular = angular.module('formsAngular', [
 void(formsAngular);  // Make jshint happy
 'use strict';
 
-formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$timeout', '$filter', '$data', '$locationParse', '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService',
-  function ($scope, $routeParams, $location, $timeout, $filter, $data, $locationParse, $modal, $window, SubmissionsService, SchemasService, urlService) {
+formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$routeParams', '$location', '$timeout', '$filter', '$data',
+  '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService', 'routingService',
+  function ($injector, $scope, $routeParams, $location, $timeout, $filter, $data,
+            $modal, $window, SubmissionsService, SchemasService, urlService, routingService) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -33,12 +34,12 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
     $scope.select2List = [];
     $scope.pageSize = 60;
     $scope.pagesLoaded = 0;
-    angular.extend($scope, $locationParse($location.$$path));
 
-    $scope.formPlusSlash = $scope.formName ? $scope.formName + '/' : '';
+    angular.extend($scope, routingService.parsePathFunc()($location.$$path));
+
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
     $scope.generateEditUrl = function (obj) {
-      return urlService.buildUrl($scope.modelName + '/' + $scope.formPlusSlash + obj._id + '/edit');
+      return urlService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
     };
 
     $scope.walkTree = function (object, fieldname, element) {
@@ -638,16 +639,16 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
         });
     };
 
+    // TODO: Do we need model here?  Can we not infer it from scope?
     $scope.deleteRecord = function (model, id) {
       SubmissionsService.deleteRecord(model, id)
         .success(function () {
           if (typeof $scope.dataEventFunctions.onAfterDelete === 'function') {
             $scope.dataEventFunctions.onAfterDelete(master);
           }
-          $location.path('/' + $scope.modelName);
+          routingService.redirectTo()('list', $scope, $location);
         });
     };
-
 
     $scope.updateDocument = function (dataToSave, options) {
       $scope.phase = 'updating';
@@ -685,8 +686,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
             if (options.redirect) {
               $window.location = options.redirect;
             } else {
-              $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + data._id + '/edit');
-              //                    reset?
+              routingService.redirectTo()('edit', $scope, $location, data._id);
             }
           } else {
             $scope.showError(data);
@@ -863,11 +863,9 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
       }
     };
 
-    $scope.new = function () {
-      $location.search('');
-      $location.path('/' + $scope.modelName + '/' + $scope.formPlusSlash + 'new');
+    $scope.newClick = function () {
+      routingService.redirectTo()('new', $scope, $location);
     };
-
 
     $scope.$on('$locationChangeStart', function (event, next) {
       if (!allowLocationChange && !$scope.isCancelDisabled()) {
@@ -901,7 +899,7 @@ formsAngular.controller('BaseCtrl', ['$scope', '$routeParams', '$location', '$ti
       }
     });
 
-    $scope.delete = function () {
+    $scope.deleteClick = function () {
       if ($scope.record._id) {
         var modalInstance = $modal.open({
           template: '<div class="modal-header">' +
@@ -2295,47 +2293,114 @@ formsAngular.factory('$data', [function () {
 
 'use strict';
 
-formsAngular.provider('formRoutes', ['$routeProvider', function ($routeProvider) {
+formsAngular.provider('routingService', [ '$injector', function ($injector) {
 
-  var _fngRoutes = [
-    {route: '/analyse/:model/:reportSchemaName',  options: {templateUrl: 'partials/base-analysis.html'}},
-    {route: '/analyse/:model',                    options: {templateUrl: 'partials/base-analysis.html'}},
-    {route: '/:model/:id/edit',                   options: {templateUrl: 'partials/base-edit.html'}},
-    {route: '/:model/new',                        options: {templateUrl: 'partials/base-edit.html'}},
-    {route: '/:model',                            options: {templateUrl: 'partials/base-list.html'}},
-    {route: '/:model/:form/:id/edit',             options: {templateUrl: 'partials/base-edit.html'}},       // non default form (different fields etc)
-    {route: '/:model/:form/new',                  options: {templateUrl: 'partials/base-edit.html'}},       // non default form (different fields etc)
-    {route: '/:model/:form',                      options: {templateUrl: 'partials/base-list.html'}}        // list page with links to non default form
+  var config = {
+    routing: null    // What sort of routing do we want?  null (which does nothing but is used in tests), ngroute or uirouter
+  };
+
+  var builtInRoutes = [
+    {route: '/analyse/:model/:reportSchemaName', state: 'analyse::model::report', templateUrl: 'partials/base-analysis.html'},
+    {route: '/analyse/:model',                   state: 'analyse::model',         templateUrl: 'partials/base-analysis.html'},
+    {route: '/:model/:id/edit',                  state: 'model::edit',            templateUrl: 'partials/base-edit.html'},
+    {route: '/:model/new',                       state: 'model::new',             templateUrl: 'partials/base-edit.html'},
+    {route: '/:model',                           state: 'model::list',            templateUrl: 'partials/base-list.html'},
+    {route: '/:model/:form/:id/edit',            state: 'model::form::edit',      templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
+    {route: '/:model/:form/new',                 state: 'model::form::new',       templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
+    {route: '/:model/:form',                     state: 'model::form::list',      templateUrl: 'partials/base-list.html'}        // list page with links to non default form
   ];
 
-  var _setRoutes = function (appRoutes) {
-    if (appRoutes === null || appRoutes === undefined) {
-      throw new Error('invalid app routes being added to forms-angular');
-    }
-    for (var i = 0, end = appRoutes.length; i < end; i++) {
-      $routeProvider.when(appRoutes[i].route, appRoutes[i].options);
-    }
-  };
-
-  var _setDefaultRoute = function (defaultRoute) {
-    if (defaultRoute !== null) {
-      $routeProvider.otherwise({redirectTo: defaultRoute});
-    }
-  };
+  var _routeProvider;
+  var lastRoute = null,
+    lastObject = {};
 
   return {
-    setRoutes: function (appRoutes, defaultRoute) {
-      _setRoutes(appRoutes);
-      // add our routes when all other modules have had a chance to get theirs in
-      setTimeout(function () {_setRoutes(_fngRoutes); });
-      _setDefaultRoute(defaultRoute);
+    setOptions: function (options) {
+      angular.extend(config, options);
+      switch (config.routing) {
+        case 'ngroute' :
+          _routeProvider = $injector.get('$routeProvider');
+          setTimeout(function () {
+            angular.forEach(builtInRoutes, function (routeSpec, key) {
+              _routeProvider.when(routeSpec.route, {templateUrl:routeSpec.templateUrl});
+            });
+          });
+          break;
+        case 'uirouter' :
+          break;
+      }
     },
     $get: function () {
-      return null;
+      return {
+        router: function () {return config.routing; },
+        parsePathFunc: function () {
+          return function(location) {
+            if (location !== lastRoute) {
+              lastRoute = location;
+              var locationSplit = location.split('/');
+              var locationParts = locationSplit.length;
+              if (locationParts === 2 && locationSplit[1] === 'index') {
+                lastObject = {index: true};
+              } else {
+                lastObject = {newRecord: false};
+                if (locationSplit[1] === 'analyse') {
+                  lastObject.analyse = true;
+                  lastObject.modelName = locationSplit[2];
+                } else {
+                  lastObject.modelName = locationSplit[1];
+                  var lastPart = locationSplit[locationParts - 1];
+                  if (lastPart === 'new') {
+                    lastObject.newRecord = true;
+                    locationParts--;
+                  } else if (lastPart === 'edit') {
+                    locationParts = locationParts - 2;
+                    lastObject.id = locationSplit[locationParts];
+                  }
+                  if (locationParts > 2) {
+                    lastObject.formName = locationSplit[2];
+                  }
+                }
+              }
+            }
+            return lastObject;
+          }
+        },
+        redirectTo: function () {
+          return function (operation, scope, location, id) {
+            switch (config.routing) {
+              case 'ngroute' :
+                if (location.search()) {
+                  location.url(location.path());
+                }
+                var formString = scope.formName ? ('/' + scope.formName) : '';
+                switch (operation) {
+                  case 'list' :
+                    location.path('/' + scope.modelName + formString);
+                    break;
+                  case 'edit' :
+                    location.path('/' + scope.modelName + formString + '/' + id + '/edit');
+                    break;
+                  case 'new' :
+                    location.path('/' + scope.modelName + formString + '/new');
+                    break;
+                }
+                break;
+              case 'uirouter' :
+                //  list: $state.go('model::list', { model: model });
+                //  edit: $state.go('model::edit', {id: data._id, model: $scope.modelName });
+                //  new:  $state.go('model::new', {model: $scope.modelName});
+                break;
+              case 'suppressWarnings' :
+                void(operation);
+                void(scope);
+                break;
+            }
+          }
+        }
+      };
     }
   };
 }]);
-
 'use strict';
 
 formsAngular.factory('$locationParse', [function () {
@@ -2386,6 +2451,34 @@ formsAngular.factory('SchemasService', ['$http', function ($http) {
     }
   };
 }]);
+///**
+// * Created by DominicBoettger on 09.04.14.
+// *
+// * Parser for the states provided by ui.router
+// */
+//'use strict';
+//formsAngular.factory('$stateParse', [function () {
+//
+//  var lastObject = {};
+//
+//  return function (state) {
+//    if (state.current && state.current.name) {
+//      lastObject = {newRecord: false};
+//      lastObject.modelName = state.params.model;
+//      if (state.current.name === 'model::list') {
+//        lastObject = {index: true};
+//        lastObject.modelName = state.params.model;
+//      } else if (state.current.name === 'model::edit') {
+//        lastObject.id = state.params.id;
+//      } else if (state.current.name === 'model::new') {
+//        lastObject.newRecord = true;
+//      } else if (state.current.name === 'model::analyse') {
+//        lastObject.analyse = true;
+//      }
+//    }
+//    return lastObject;
+//  };
+//}]);
 'use strict';
 
 formsAngular.factory('SubmissionsService', ['$http', function ($http) {
@@ -2558,12 +2651,12 @@ angular.module('formsAngular').run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('template/form-button-bs2.html',
-    "<div class=\"btn-group pull-right\"><button id=saveButton class=\"btn btn-mini btn-primary form-btn\" ng-click=save() ng-disabled=isSaveDisabled()><i class=icon-ok></i> Save</button> <button id=cancelButton class=\"btn btn-mini btn-warning form-btn\" ng-click=cancel() ng-disabled=isCancelDisabled()><i class=icon-remove></i> Cancel</button></div><div class=\"btn-group pull-right\"><button id=newButton class=\"btn btn-mini btn-success form-btn\" ng-click=new() ng-disabled=isNewDisabled()><i class=icon-plus></i> New</button> <button id=deleteButton class=\"btn btn-mini btn-danger form-btn\" ng-click=delete() ng-disabled=isDeleteDisabled()><i class=icon-minus></i> Delete</button></div>"
+    "<div class=\"btn-group pull-right\"><button id=saveButton class=\"btn btn-mini btn-primary form-btn\" ng-click=save() ng-disabled=isSaveDisabled()><i class=icon-ok></i> Save</button> <button id=cancelButton class=\"btn btn-mini btn-warning form-btn\" ng-click=cancel() ng-disabled=isCancelDisabled()><i class=icon-remove></i> Cancel</button></div><div class=\"btn-group pull-right\"><button id=newButton class=\"btn btn-mini btn-success form-btn\" ng-click=newClick() ng-disabled=isNewDisabled()><i class=icon-plus></i> New</button> <button id=deleteButton class=\"btn btn-mini btn-danger form-btn\" ng-click=deleteClick() ng-disabled=isDeleteDisabled()><i class=icon-minus></i> Delete</button></div>"
   );
 
 
   $templateCache.put('template/form-button-bs3.html',
-    "<div class=\"btn-group pull-right\"><button id=saveButton class=\"btn btn-primary form-btn btn-xs\" ng-click=save() ng-disabled=isSaveDisabled()><i class=\"glyphicon glyphicon-ok\"></i> Save</button> <button id=cancelButton class=\"btn btn-warning form-btn btn-xs\" ng-click=cancel() ng-disabled=isCancelDisabled()><i class=\"glyphicon glyphicon-remove\"></i> Cancel</button></div><div class=\"btn-group pull-right\"><button id=newButton class=\"btn btn-success form-btn btn-xs\" ng-click=new() ng-disabled=isNewDisabled()><i class=\"glyphicon glyphicon-plus\"></i> New</button> <button id=deleteButton class=\"btn btn-danger form-btn btn-xs\" ng-click=delete() ng-disabled=isDeleteDisabled()><i class=\"glyphicon glyphicon-minus\"></i> Delete</button></div>"
+    "<div class=\"btn-group pull-right\"><button id=saveButton class=\"btn btn-primary form-btn btn-xs\" ng-click=save() ng-disabled=isSaveDisabled()><i class=\"glyphicon glyphicon-ok\"></i> Save</button> <button id=cancelButton class=\"btn btn-warning form-btn btn-xs\" ng-click=cancel() ng-disabled=isCancelDisabled()><i class=\"glyphicon glyphicon-remove\"></i> Cancel</button></div><div class=\"btn-group pull-right\"><button id=newButton class=\"btn btn-success form-btn btn-xs\" ng-click=newClick() ng-disabled=isNewDisabled()><i class=\"glyphicon glyphicon-plus\"></i> New</button> <button id=deleteButton class=\"btn btn-danger form-btn btn-xs\" ng-click=deleteClick() ng-disabled=isDeleteDisabled()><i class=\"glyphicon glyphicon-minus\"></i> Delete</button></div>"
   );
 
 

@@ -8,7 +8,7 @@ var _ = require('underscore'),
   async = require('async'),
   url = require('url'),
   mongoose = require('mongoose'),
-  debug = false;
+  debug = true;
 
 mongoose.set('debug', debug);
 
@@ -447,6 +447,7 @@ DataForm.prototype.schema = function () {
     }
     var formSchema = null;
     if (req.params.formName) {
+      console.log('Formname : ', req.params.formName);
       formSchema = req.resource.model.schema.statics['form'](req.params.formName);
     }
     var paths = this.preprocess(req.resource.model.schema.paths, formSchema).paths;
