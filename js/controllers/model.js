@@ -1,6 +1,6 @@
 'use strict';
 
-formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'urlService', function ($scope, $http, $location, urlService) {
+formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'routingService', function ($scope, $http, $location, routingService) {
 
   $scope.models = [];
   $http.get('/api/models').success(function (data) {
@@ -10,11 +10,11 @@ formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'urlServi
   });
 
   $scope.newUrl = function (model) {
-    return urlService.buildUrl(model + '/new');
+    return routingService.buildUrl(model + '/new');
   };
 
   $scope.listUrl = function (model) {
-    return urlService.buildUrl(model);
+    return routingService.buildUrl(model);
   };
 
 }]);

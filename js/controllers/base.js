@@ -1,9 +1,9 @@
 'use strict';
 
-formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$routeParams', '$location', '$timeout', '$filter', '$data',
-  '$modal', '$window', 'SubmissionsService', 'SchemasService', 'urlService', 'routingService',
-  function ($injector, $scope, $routeParams, $location, $timeout, $filter, $data,
-            $modal, $window, SubmissionsService, SchemasService, urlService, routingService) {
+formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeout', '$filter', '$data',
+  '$modal', '$window', 'SubmissionsService', 'SchemasService', 'routingService', '$routeParams',
+  function ($injector, $scope, $location, $timeout, $filter, $data,
+            $modal, $window, SubmissionsService, SchemasService, routingService, $routeParams) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -28,7 +28,7 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$routeParams', '$lo
 
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
     $scope.generateEditUrl = function (obj) {
-      return urlService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
+      return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
     };
 
     $scope.walkTree = function (object, fieldname, element) {
@@ -608,6 +608,7 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$routeParams', '$lo
     };
 
     $scope.scrollTheList = function () {
+      debugger;
       SubmissionsService.getPagedAndFilteredList($scope.modelName, {
         aggregate: $routeParams.a,
         find: $routeParams.f,

@@ -1,7 +1,7 @@
 'use strict';
 
 formsAngular
-  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', 'urlService', 'cssFrameworkService', function ($compile, $rootScope, utils, $filter, urlService, cssFrameworkService) {
+  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', 'routingService', 'cssFrameworkService', function ($compile, $rootScope, utils, $filter, routingService, cssFrameworkService) {
     return {
       restrict: 'EA',
       link: function (scope, element, attrs) {
@@ -190,7 +190,7 @@ formsAngular
               value = '<ng-upload-form url="/file/upload" auto-upload="true" size-limit="50000000"></ng-upload-form>';
               break;
             case 'link' :
-              value = '<a ng-href="/' + urlService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
+              value = '<a ng-href="/' + routingService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
               break;
             case 'radio' :
               value = '';
