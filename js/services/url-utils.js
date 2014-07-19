@@ -1,6 +1,6 @@
 'use strict';
 
-formsAngular.provider('urlService', ['$locationProvider', function ($locationProvider) {
+formsAngular.provider('urlService', ['$locationProvider', 'routingServiceProvider', function ($locationProvider, routingService) {
   var config = {
     hashPrefix: '',
     html5Mode: false
@@ -19,6 +19,7 @@ formsAngular.provider('urlService', ['$locationProvider', function ($locationPro
         buildUrl: function (path) {
           var base = config.html5Mode ? '' : '#';
           base += config.hashPrefix;
+          base += routingService.prefix();
           if (base[0]) { base += '/'; }
           return base + path;
         }

@@ -1,8 +1,8 @@
 'use strict';
 
 formsAngular.controller('NavCtrl',
-  ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'urlService', 'cssFrameworkService',
-    function ($scope, $data, $location, $filter, $locationParse, $controller, urlService, cssFrameworkService) {
+  ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'routingService', 'cssFrameworkService',
+    function ($scope, $data, $location, $filter, $locationParse, $controller, routingService, cssFrameworkService) {
 
   $scope.items = [];
 
@@ -126,7 +126,7 @@ formsAngular.controller('NavCtrl',
   };
 
   $scope.buildUrl = function (path) {
-    return urlService.buildUrl(path);
+    return routingService.buildUrl(path);
   };
 
 }]);
