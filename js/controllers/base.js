@@ -1,9 +1,9 @@
 'use strict';
 
 formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeout', '$filter', '$data',
-  '$modal', '$window', 'SubmissionsService', 'SchemasService', 'routingService', '$routeParams',
+  '$modal', '$window', 'SubmissionsService', 'SchemasService', 'routingService',
   function ($injector, $scope, $location, $timeout, $filter, $data,
-            $modal, $window, SubmissionsService, SchemasService, routingService, $routeParams) {
+            $modal, $window, SubmissionsService, SchemasService, routingService) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -608,13 +608,12 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
     };
 
     $scope.scrollTheList = function () {
-      debugger;
       SubmissionsService.getPagedAndFilteredList($scope.modelName, {
-        aggregate: $routeParams.a,
-        find: $routeParams.f,
+        aggregate: $location.$$search.a,
+        find: $location.$$search.f,
         limit: $scope.pageSize,
         skip: $scope.pagesLoaded * $scope.pageSize,
-        order: $routeParams.o
+        order: $location.$$search.o
       })
         .success(function (data) {
           if (angular.isArray(data)) {
