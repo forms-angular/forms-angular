@@ -4,11 +4,22 @@
 ### Summary
 * Split the project into multiple repos and made a yeoman generator
 * Removes dependence on jQuery
-
+* ngRoute is no longer a dependency - either ngRoute or ui.router can be used, and a new provider allows the choice to be
+set up as follows:
+```
+  formsAngular.config(['routingServiceProvider', function (routingService) {
+      routingService.setOptions({html5Mode: true, routing: 'ngroute'});
+      }]);
+```      
+This service incorporates some of the functionality of the old form routes provider and supersedes urlService and 
+locationParse.
+* The ability to add a routing prefix has been added
+ 
 ### BREAKING CHANGES
 * List API returns only one field when no list fields defined (as happens on the client).
 * Hidden list fields now appear on list API response.
 * In BaseCtrl $scope.new() and $scope.delete() have been renamed ('Click' added)
+* 
 
 ## 0.2 to 0.3
 ### Summary

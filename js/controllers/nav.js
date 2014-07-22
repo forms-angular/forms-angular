@@ -1,8 +1,8 @@
 'use strict';
 
 formsAngular.controller('NavCtrl',
-  ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'routingService', 'cssFrameworkService',
-    function ($scope, $data, $location, $filter, $locationParse, $controller, routingService, cssFrameworkService) {
+  ['$scope', '$data', '$location', '$filter', '$controller', 'routingService', 'cssFrameworkService',
+    function ($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
 
   $scope.items = [];
 
@@ -56,7 +56,7 @@ formsAngular.controller('NavCtrl',
 
   $scope.$on('$locationChangeSuccess', function () {
 
-    $scope.routing = $locationParse($location.$$path);
+    $scope.routing = routingService.parsePathFunc()($location.$$path);
 
     $scope.items = [];
 

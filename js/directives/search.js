@@ -1,6 +1,7 @@
 'use strict';
 
-formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', 'routingService',
+    function ($scope, $http, $location, routingService) {
 
   var currentRequest = '';
 
@@ -40,7 +41,7 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function 
 
   $scope.selectResult = function (resultNo) {
     var result = $scope.results[resultNo];
-    $location.path('/' + result.resource + '/' + result.id + '/edit');
+    $location.path(routingService.prefix() + '/' + result.resource + '/' + result.id + '/edit');
   };
 
   $scope.resultClass = function (index) {

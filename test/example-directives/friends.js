@@ -1,5 +1,5 @@
 'use strict';
-formsAngular.controller('FriendCtrl', ['$scope', '$routeParams', '$location', '$http', function ($scope, $routeParams, $location, $http) {
+formsAngular.controller('FriendCtrl', ['$scope', '$location', '$http', function ($scope, $location, $http) {
   $scope.frdShowAdd = false;
   $scope.frdNewFriend = {};
   $scope.frdHideDetails = function () {

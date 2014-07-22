@@ -179,7 +179,7 @@ describe('Data Events', function () {
           $httpBackend.expectDELETE('/api/collection/125');
           scope.record._id = 125;
           scope.record.name = 'John';
-          scope.delete();
+          scope.deleteClick();
           $httpBackend.flush();
           expect(scope.dataEventFunctions.onBeforeDelete).toHaveBeenCalled();
         });
@@ -209,7 +209,7 @@ describe('Data Events', function () {
 
           scope.record._id = 125;
           scope.record.name = 'John';
-          scope.delete();
+          scope.deleteClick();
           $httpBackend.flush();
           expect(scope.dataEventFunctions.onBeforeDelete).toHaveBeenCalled();
         });
@@ -311,7 +311,7 @@ describe('Data Events', function () {
           $httpBackend.expectDELETE('/api/collection/125');
           scope.record._id = 125;
           scope.record.name = 'John';
-          scope.delete();
+          scope.deleteClick();
           $httpBackend.flush();
 
           expect(scope.dataEventFunctions.onAfterDelete).toHaveBeenCalled();
