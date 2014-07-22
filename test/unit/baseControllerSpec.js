@@ -2,7 +2,17 @@
 
 describe('BaseCtrl', function () {
 
-  var $httpBackend, scope, ctrl;
+  var $httpBackend;
+  var scope;
+  var ctrl;
+  var routingService = {
+    parsePathFunc: function () {
+      return function  () {
+        return {modelName: 'collection', newRecord: true};
+      };
+    }
+  };
+
 
   beforeEach(function () {
     angular.mock.module('formsAngular');
@@ -22,8 +32,7 @@ describe('BaseCtrl', function () {
           'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}
         });
         scope = $rootScope.$new();
-        angular.extend(scope, {newRecord: true, modelName: 'collection'});
-        ctrl = $controller('BaseCtrl', {$scope: scope});
+        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
         $httpBackend.flush();
       });
       expect(scope.formSchema.length).toBe(1);
@@ -36,23 +45,27 @@ describe('BaseCtrl', function () {
           return [404, 'Some error', {}];
         });
         scope = $rootScope.$new();
-        angular.extend(scope, {newRecord: true, modelName: 'collection'});
-        ctrl = $controller('BaseCtrl', {$scope: scope});
+        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
         $httpBackend.flush();
         expect($location.path()).toBe('/404');
       });
     });
 
     it('should allow for override screens', function () {
-      inject(function (_$httpBackend_, $rootScope, $controller, _$location_) {
+      inject(function (_$httpBackend_, $rootScope, $controller) {
         $httpBackend = _$httpBackend_;
         $httpBackend.when('GET', '/api/schema/someModel/someForm').respond({
           'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}
         });
+        var routingService = {
+          parsePathFunc: function () {
+            return function  () {
+              return {modelName: 'someModel', newRecord: true, formName: 'someForm'};
+            };
+          }
+        };
         scope = $rootScope.$new();
-        angular.extend(scope, {newRecord: true, modelName: 'someModel', formName: 'someForm'});
-
-        ctrl = $controller('BaseCtrl', {$scope: scope});
+        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
         $httpBackend.flush();
       });
     });
@@ -68,8 +81,7 @@ describe('BaseCtrl', function () {
         {'name': {'instance': 'String'}, 'hide_me': {'instance': 'String', 'options': {'form': {'hidden': true}}}}
       );
       scope = $rootScope.$new();
-      angular.extend(scope, {newRecord: true, modelName: 'collection'});
-      ctrl = $controller('BaseCtrl', {$scope: scope});
+      ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
       $httpBackend.flush();
     }));
 
@@ -709,12 +721,11 @@ describe('BaseCtrl', function () {
   describe('error message handling', function () {
 
     it('generates an error message', function () {
-      inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
+      inject(function (_$httpBackend_, $rootScope, $controller) {
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}});
-        $location.$$path = '/collection/new';
         scope = $rootScope.$new();
-        ctrl = $controller('BaseCtrl', {$scope: scope});
+        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
         scope.record = {'familyName': 'Chapman', 'givenName': 'Mark'};
         $httpBackend.when('POST', '/api/collection', {'familyName': 'Chapman', 'givenName': 'Mark'}).respond(400, {message: 'There is some kind of error', status: 'err'});
         scope.save();
@@ -729,12 +740,11 @@ describe('BaseCtrl', function () {
   describe('extracts custom directives from schemas', function () {
 
     it('extracts custom directives from schemas', function () {
-      inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location) {
+      inject(function (_$httpBackend_, $rootScope, $controller) {
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({'email': {'path': 'email', 'instance': 'String', 'options': {'form': {'directive': 'email-field'}}, '$conditionalHandlers': {}}});
-        $location.$$path = '/collection/new';
         scope = $rootScope.$new();
-        ctrl = $controller('BaseCtrl', {$scope: scope});
+        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
         $httpBackend.flush();
       });
 
@@ -744,22 +754,38 @@ describe('BaseCtrl', function () {
 
   describe('deletion confirmation modal', function () {
 
-    var $scope, $modal, provider, deferred;
+    var $scope;
+    var $modal;
+    var provider;
+    var deferred;
+    var routingService = {
+      parsePathFunc: function () {
+        return function  () {
+          return {modelName: 'collection', newRecord: false, id: 125};
+        };
+      },
+      redirectTo: function () {
+        return function (path) {
+          void(path);
+        };
+      }
+    };
+
 
     beforeEach(function () {
       module(function ($modalProvider) {
         provider = $modalProvider;
       });
-      inject(function (_$httpBackend_, $rootScope, $routeParams, $controller, $location, _$modal_, $q) {
+      inject(function (_$httpBackend_, $rootScope, $controller, _$modal_, $q) {
         $modal = _$modal_;
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}});
         $httpBackend.whenGET('/api/collection/125').respond({'name': 'Alan'});
-        $location.$$path = '/collection/125/edit';
         $scope = $rootScope.$new();
         ctrl = $controller('BaseCtrl', {
           $scope: $scope,
-          $modal: $modal
+          $modal: $modal,
+          routingService: routingService
         });
 
         deferred = $q.defer();
@@ -782,13 +808,13 @@ describe('BaseCtrl', function () {
 
     it('modal messageBox should be defined', function () {
 
-      $scope.delete();
+      $scope.deleteClick();
       $httpBackend.flush();
       expect($modal.open).toHaveBeenCalled();
     });
 
     it('should not delete when No is clicked', function () {
-      $scope.delete();
+      $scope.deleteClick();
       deferred.resolve(false);    // Same as clicking on Yes
       $httpBackend.flush();
     });
@@ -796,7 +822,7 @@ describe('BaseCtrl', function () {
     it('send a delete request when yes is clicked', function () {
       $httpBackend.when('DELETE', '/api/collection/125').respond(200, 'SUCCESS');
       $httpBackend.expectDELETE('/api/collection/125');
-      $scope.delete();
+      $scope.deleteClick();
       deferred.resolve(true);    // Same as clicking on Yes
       $httpBackend.flush();
     });

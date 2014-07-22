@@ -6,7 +6,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     hashPrefix: '',
     html5Mode: false,
     routing: 'ngroute',    // What sort of routing do we want?  ngroute or uirouter
-    prefix: '/data'        // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
+    prefix: ''        // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
   };
 
   var builtInRoutes = [
@@ -27,7 +27,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
   return {
     start: function (options) {
       angular.extend(config, options);
-      if (config.prefix[0] !== '/') config.prefix = '/' + config.prefix;
+      if (config.prefix[0] !== '/') { config.prefix = '/' + config.prefix; }
       $locationProvider.html5Mode(config.html5Mode);
       if (config.hashPrefix !== '') {
         $locationProvider.hashPrefix(config.hashPrefix);
@@ -36,7 +36,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
         case 'ngroute' :
           _routeProvider = $injector.get('$routeProvider');
           angular.forEach(builtInRoutes, function (routeSpec) {
-            _routeProvider.when(config.prefix + routeSpec.route, {templateUrl:routeSpec.templateUrl});
+            _routeProvider.when(config.prefix + routeSpec.route, {templateUrl: routeSpec.templateUrl});
           });
           break;
         case 'uirouter' :
@@ -57,7 +57,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
         router: function () {return config.routing; },
         prefix: function () {return config.prefix; },
         parsePathFunc: function () {
-          return function(location) {
+          return function (location) {
             if (location !== lastRoute) {
               lastRoute = location;
 
@@ -65,7 +65,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
               // Get rid of the prefix
               if (config.prefix.length > 0) {
                 if (location.indexOf(config.prefix) === 0) {
-                  location = location.slice(config.prefix.length)
+                  location = location.slice(config.prefix.length);
                 }
               }
 
@@ -90,7 +90,35 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
               }
             }
             return lastObject;
-          }
+          };
+///**
+// * DominicBoettger wrote:
+// *
+// * Parser for the states provided by ui.router
+// */
+//'use strict';
+//formsAngular.factory('$stateParse', [function () {
+//
+//  var lastObject = {};
+//
+//  return function (state) {
+//    if (state.current && state.current.name) {
+//      lastObject = {newRecord: false};
+//      lastObject.modelName = state.params.model;
+//      if (state.current.name === 'model::list') {
+//        lastObject = {index: true};
+//        lastObject.modelName = state.params.model;
+//      } else if (state.current.name === 'model::edit') {
+//        lastObject.id = state.params.id;
+//      } else if (state.current.name === 'model::new') {
+//        lastObject.newRecord = true;
+//      } else if (state.current.name === 'model::analyse') {
+//        lastObject.analyse = true;
+//      }
+//    }
+//    return lastObject;
+//  };
+//}]);
         },
         buildUrl: function (path) {
           var base = config.html5Mode ? '' : '#';
@@ -152,12 +180,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
 //                //  edit: $state.go('model::edit', {id: data._id, model: $scope.modelName });
 //                //  new:  $state.go('model::new', {model: $scope.modelName});
 //                break;
-//              case 'suppressWarnings' :
-//                void(operation);
-//                void(scope);
-//                break;
-//            }
-          }
+              };
         }
       };
     }

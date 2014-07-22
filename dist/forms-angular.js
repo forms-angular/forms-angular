@@ -1,4 +1,4 @@
-/*! forms-angular 2014-07-19 */
+/*! forms-angular 2014-07-23 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -12,9 +12,9 @@ void(formsAngular);  // Make jshint happy
 'use strict';
 
 formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeout', '$filter', '$data',
-  '$modal', '$window', 'SubmissionsService', 'SchemasService', 'routingService', '$routeParams',
+  '$modal', '$window', 'SubmissionsService', 'SchemasService', 'routingService',
   function ($injector, $scope, $location, $timeout, $filter, $data,
-            $modal, $window, SubmissionsService, SchemasService, routingService, $routeParams) {
+            $modal, $window, SubmissionsService, SchemasService, routingService) {
     var master = {};
     var fngInvalidRequired = 'fng-invalid-required';
     var sharedStuff = $data;
@@ -619,13 +619,12 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
     };
 
     $scope.scrollTheList = function () {
-      debugger;
       SubmissionsService.getPagedAndFilteredList($scope.modelName, {
-        aggregate: $routeParams.a,
-        find: $routeParams.f,
+        aggregate: $location.$$search.a,
+        find: $location.$$search.f,
         limit: $scope.pageSize,
         skip: $scope.pagesLoaded * $scope.pageSize,
-        order: $routeParams.o
+        order: $location.$$search.o
       })
         .success(function (data) {
           if (angular.isArray(data)) {
@@ -1275,8 +1274,8 @@ formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'routingS
 'use strict';
 
 formsAngular.controller('NavCtrl',
-  ['$scope', '$data', '$location', '$filter', '$locationParse', '$controller', 'routingService', 'cssFrameworkService',
-    function ($scope, $data, $location, $filter, $locationParse, $controller, routingService, cssFrameworkService) {
+  ['$scope', '$data', '$location', '$filter', '$controller', 'routingService', 'cssFrameworkService',
+    function ($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
 
   $scope.items = [];
 
@@ -1330,7 +1329,7 @@ formsAngular.controller('NavCtrl',
 
   $scope.$on('$locationChangeSuccess', function () {
 
-    $scope.routing = $locationParse($location.$$path);
+    $scope.routing = routingService.parsePathFunc()($location.$$path);
 
     $scope.items = [];
 
@@ -2103,7 +2102,8 @@ formsAngular
 
 'use strict';
 
-formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', 'routingService',
+    function ($scope, $http, $location, routingService) {
 
   var currentRequest = '';
 
@@ -2143,7 +2143,7 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', function 
 
   $scope.selectResult = function (resultNo) {
     var result = $scope.results[resultNo];
-    $location.path('/' + result.resource + '/' + result.id + '/edit');
+    $location.path(routingService.prefix() + '/' + result.resource + '/' + result.id + '/edit');
   };
 
   $scope.resultClass = function (index) {
@@ -2300,7 +2300,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     hashPrefix: '',
     html5Mode: false,
     routing: 'ngroute',    // What sort of routing do we want?  ngroute or uirouter
-    prefix: '/data'        // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
+    prefix: ''        // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
   };
 
   var builtInRoutes = [
@@ -2321,7 +2321,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
   return {
     start: function (options) {
       angular.extend(config, options);
-      if (config.prefix[0] !== '/') config.prefix = '/' + config.prefix;
+      if (config.prefix[0] !== '/') { config.prefix = '/' + config.prefix; }
       $locationProvider.html5Mode(config.html5Mode);
       if (config.hashPrefix !== '') {
         $locationProvider.hashPrefix(config.hashPrefix);
@@ -2330,7 +2330,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
         case 'ngroute' :
           _routeProvider = $injector.get('$routeProvider');
           angular.forEach(builtInRoutes, function (routeSpec) {
-            _routeProvider.when(config.prefix + routeSpec.route, {templateUrl:routeSpec.templateUrl});
+            _routeProvider.when(config.prefix + routeSpec.route, {templateUrl: routeSpec.templateUrl});
           });
           break;
         case 'uirouter' :
@@ -2351,7 +2351,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
         router: function () {return config.routing; },
         prefix: function () {return config.prefix; },
         parsePathFunc: function () {
-          return function(location) {
+          return function (location) {
             if (location !== lastRoute) {
               lastRoute = location;
 
@@ -2359,7 +2359,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
               // Get rid of the prefix
               if (config.prefix.length > 0) {
                 if (location.indexOf(config.prefix) === 0) {
-                  location = location.slice(config.prefix.length)
+                  location = location.slice(config.prefix.length);
                 }
               }
 
@@ -2384,7 +2384,35 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
               }
             }
             return lastObject;
-          }
+          };
+///**
+// * DominicBoettger wrote:
+// *
+// * Parser for the states provided by ui.router
+// */
+//'use strict';
+//formsAngular.factory('$stateParse', [function () {
+//
+//  var lastObject = {};
+//
+//  return function (state) {
+//    if (state.current && state.current.name) {
+//      lastObject = {newRecord: false};
+//      lastObject.modelName = state.params.model;
+//      if (state.current.name === 'model::list') {
+//        lastObject = {index: true};
+//        lastObject.modelName = state.params.model;
+//      } else if (state.current.name === 'model::edit') {
+//        lastObject.id = state.params.id;
+//      } else if (state.current.name === 'model::new') {
+//        lastObject.newRecord = true;
+//      } else if (state.current.name === 'model::analyse') {
+//        lastObject.analyse = true;
+//      }
+//    }
+//    return lastObject;
+//  };
+//}]);
         },
         buildUrl: function (path) {
           var base = config.html5Mode ? '' : '#';
@@ -2446,58 +2474,12 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
 //                //  edit: $state.go('model::edit', {id: data._id, model: $scope.modelName });
 //                //  new:  $state.go('model::new', {model: $scope.modelName});
 //                break;
-//              case 'suppressWarnings' :
-//                void(operation);
-//                void(scope);
-//                break;
-//            }
-          }
+              };
         }
       };
     }
   };
 }]);
-'use strict';
-
-formsAngular.factory('$locationParse', [function () {
-
-  var lastRoute = null,
-    lastObject = {};
-
-  return function (location) {
-
-    if (location !== lastRoute) {
-      lastRoute = location;
-      var locationSplit = location.split('/');
-      var locationParts = locationSplit.length;
-      if (locationParts === 2 && locationSplit[1] === 'index') {
-        lastObject = {index: true};
-      } else {
-        lastObject = {newRecord: false};
-        if (locationSplit[1] === 'analyse') {
-          lastObject.analyse = true;
-          lastObject.modelName = locationSplit[2];
-        } else {
-          lastObject.modelName = locationSplit[1];
-          var lastPart = locationSplit[locationParts - 1];
-          if (lastPart === 'new') {
-            lastObject.newRecord = true;
-            locationParts--;
-          } else if (lastPart === 'edit') {
-            locationParts = locationParts - 2;
-            lastObject.id = locationSplit[locationParts];
-          }
-          if (locationParts > 2) {
-            lastObject.formName = locationSplit[2];
-          }
-        }
-      }
-    }
-    return lastObject;
-  };
-}]);
-
-
 'use strict';
 
 formsAngular.factory('SchemasService', ['$http', function ($http) {
@@ -2507,34 +2489,6 @@ formsAngular.factory('SchemasService', ['$http', function ($http) {
     }
   };
 }]);
-///**
-// * Created by DominicBoettger on 09.04.14.
-// *
-// * Parser for the states provided by ui.router
-// */
-//'use strict';
-//formsAngular.factory('$stateParse', [function () {
-//
-//  var lastObject = {};
-//
-//  return function (state) {
-//    if (state.current && state.current.name) {
-//      lastObject = {newRecord: false};
-//      lastObject.modelName = state.params.model;
-//      if (state.current.name === 'model::list') {
-//        lastObject = {index: true};
-//        lastObject.modelName = state.params.model;
-//      } else if (state.current.name === 'model::edit') {
-//        lastObject.id = state.params.id;
-//      } else if (state.current.name === 'model::new') {
-//        lastObject.newRecord = true;
-//      } else if (state.current.name === 'model::analyse') {
-//        lastObject.analyse = true;
-//      }
-//    }
-//    return lastObject;
-//  };
-//}]);
 'use strict';
 
 formsAngular.factory('SubmissionsService', ['$http', function ($http) {
@@ -2592,35 +2546,6 @@ formsAngular.factory('SubmissionsService', ['$http', function ($http) {
   };
 }]);
 
-'use strict';
-
-formsAngular.provider('urlService', ['$locationProvider', 'routingServiceProvider', function ($locationProvider, routingService) {
-  var config = {
-    hashPrefix: '',
-    html5Mode: false
-  };
-
-  return {
-    setOptions: function (options) {
-      angular.extend(config, options);
-      $locationProvider.html5Mode(config.html5Mode);
-      if (config.hashPrefix !== '') {
-        $locationProvider.hashPrefix(config.hashPrefix);
-      }
-    },
-    $get: function () {
-      return {
-        buildUrl: function (path) {
-          var base = config.html5Mode ? '' : '#';
-          base += config.hashPrefix;
-          base += routingService.prefix();
-          if (base[0]) { base += '/'; }
-          return base + path;
-        }
-      };
-    }
-  };
-}]);
 formsAngular.service('utils', function () {
 
   this.getAddAllGroupOptions = function (scope, attrs, classes) {
