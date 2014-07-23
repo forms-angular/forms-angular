@@ -25,15 +25,15 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
   var lastRoute = null,
     lastObject = {};
 
-  function _setUpNgRoutes (routes) {
+  function _setUpNgRoutes(routes) {
     angular.forEach(routes, function (routeSpec) {
       _routeProvider.when(config.prefix + routeSpec.route, routeSpec.options || {templateUrl: routeSpec.templateUrl});
     });
   }
 
-  function _setUpUIRoutes (routes) {
+  function _setUpUIRoutes(routes) {
     angular.forEach(routes, function (routeSpec) {
-      _stateProvider.state(routeSpec.state, {
+      _stateProvider.state(routeSpec.state, routeSpec.options || {
         url: routeSpec.route,
         templateUrl: routeSpec.templateUrl
       });
@@ -57,7 +57,9 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
         case 'uirouter' :
           _stateProvider = $injector.get('$stateProvider');
           if (config.fixedRoutes) { _setUpUIRoutes(config.fixedRoutes); }
-          _setUpUIRoutes(builtInRoutes);
+          setTimeout(function () {
+            _setUpUIRoutes(builtInRoutes);
+          });
           break;
       }
     },
