@@ -2297,6 +2297,7 @@ formsAngular.factory('$data', [function () {
 formsAngular.provider('routingService', [ '$injector', '$locationProvider', function ($injector, $locationProvider) {
 
   var config = {
+//  fixedRoutes: [] an array in the same format as builtInRoutes that is matched before the generic routes.  Can be omitted
     hashPrefix: '',
     html5Mode: false,
     routing: 'ngroute',    // What sort of routing do we want?  ngroute or uirouter
@@ -2318,10 +2319,25 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
   var lastRoute = null,
     lastObject = {};
 
+  function _setUpNgRoutes (routes) {
+    angular.forEach(routes, function (routeSpec) {
+      _routeProvider.when(config.prefix + routeSpec.route, routeSpec.options || {templateUrl: routeSpec.templateUrl});
+    });
+  }
+
+  function _setUpUIRoutes (routes) {
+    angular.forEach(routes, function (routeSpec) {
+      _stateProvider.state(routeSpec.state, {
+        url: routeSpec.route,
+        templateUrl: routeSpec.templateUrl
+      });
+    });
+  }
+
   return {
     start: function (options) {
       angular.extend(config, options);
-      if (config.prefix[0] !== '/') { config.prefix = '/' + config.prefix; }
+      if (config.prefix[0] && config.prefix[0] !== '/') { config.prefix = '/' + config.prefix; }
       $locationProvider.html5Mode(config.html5Mode);
       if (config.hashPrefix !== '') {
         $locationProvider.hashPrefix(config.hashPrefix);
@@ -2329,20 +2345,13 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
       switch (config.routing) {
         case 'ngroute' :
           _routeProvider = $injector.get('$routeProvider');
-          angular.forEach(builtInRoutes, function (routeSpec) {
-            _routeProvider.when(config.prefix + routeSpec.route, {templateUrl: routeSpec.templateUrl});
-          });
+          if (config.fixedRoutes) { _setUpNgRoutes(config.fixedRoutes); }
+          _setUpNgRoutes(builtInRoutes);
           break;
         case 'uirouter' :
           _stateProvider = $injector.get('$stateProvider');
-          setTimeout(function () {
-            angular.forEach(builtInRoutes, function (routeSpec) {
-              _stateProvider.state(routeSpec.state, {
-                url: routeSpec.route,
-                templateUrl: routeSpec.templateUrl
-              });
-            });
-          });
+          if (config.fixedRoutes) { _setUpUIRoutes(config.fixedRoutes); }
+          _setUpUIRoutes(builtInRoutes);
           break;
       }
     },
@@ -2415,11 +2424,12 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
 //}]);
         },
         buildUrl: function (path) {
-          var base = config.html5Mode ? '' : '#';
-          base += config.hashPrefix;
-          base += config.prefix;
-          if (base[0]) { base += '/'; }
-          return base + path;
+          var url = config.html5Mode ? '' : '#';
+          url += config.hashPrefix;
+          url += config.prefix;
+          if (url[0]) { url += '/'; }
+          url += (path[0] === '/' ? path.slice(1) : path);
+          return url;
         },
         redirectTo: function () {
           return function (operation, scope, location, id) {
