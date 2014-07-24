@@ -111,6 +111,29 @@ describe('Report API', function () {
     fng.report()(mockReq, mockRes);
   });
 
+  it('supports two reference lookups', function(done) {
+    var reportSpec = {
+      "pipeline":[{"$project":{"surname":1, "forename": 1, "teacher":1, "mentor":1}}],
+      "title":"Class Sizes",
+      "columnTranslations":[{"field":"teacher","ref":"b_using_options"} ,{"field":"mentor", "ref":"c_subdoc_example"}]
+    };
+    var mockReq = {
+      url: 'report/e_referencing_another_collection?r='+JSON.stringify(reportSpec),
+      params: {resourceName: 'e_referencing_another_collection'}
+    };
+    var mockRes = {
+      send: function (data) {
+        assert.equal(data.report.length, 1);
+        assert.equal(data.report[0].surname, 'Smith');
+        assert.equal(data.report[0].forename, 'John');
+        assert.equal(data.report[0].teacher, 'IsAccepted John true 89');
+        assert.equal(data.report[0].mentor, 'Anderson John');
+        done();
+      }
+    };
+    fng.report()(mockReq, mockRes);
+  });
+
   it('supports functions in column translate', function (done) {
     var mockReq = {
       url: 'report/g_conditional_fields/functiondemo',
