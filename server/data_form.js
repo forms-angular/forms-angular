@@ -639,20 +639,24 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
               var lookup = self.getResource(thisColumnTranslation.ref);
               if (lookup) {
                 if (!toDo[thisColumnTranslation.ref]) {
-                  toDo[thisColumnTranslation.ref] = function (cb) {
-                    var translateObject = {ref: lookup.resourceName, translations: [] };
-                    translations.push(translateObject);
-                    lookup.model.find({}, {}, {lean: true}, function (err, findResults) {
-                      if (err) {
-                        cb(err);
-                      } else {
-                        for (var j = 0; j < findResults.length; j++) {
-                          translateObject.translations[j] = {value: findResults[j]._id, display: self.getListFields(lookup, findResults[j])};
+                  var getFunc = function(ref) {
+                    var lookup = ref;
+                    return function (cb) {
+                      var translateObject = {ref: lookup.resourceName, translations: [] };
+                      translations.push(translateObject);
+                      lookup.model.find({}, {}, {lean: true}, function (err, findResults) {
+                        if (err) {
+                          cb(err);
+                        } else {
+                          for (var j = 0; j < findResults.length; j++) {
+                            translateObject.translations[j] = {value: findResults[j]._id, display: self.getListFields(lookup, findResults[j])};
+                          }
+                          cb(null, null);
                         }
-                        cb(null, null);
-                      }
-                    });
-                  };
+                      });
+                    };
+                  }
+                  toDo[thisColumnTranslation.ref] = getFunc(lookup);
                   toDo.applyTranslations.unshift(thisColumnTranslation.ref);  // Make sure we populate lookup before doing translation
                 }
               } else {
