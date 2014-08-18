@@ -1,4 +1,4 @@
-/*! forms-angular 2014-07-23 */
+/*! forms-angular 2014-07-26 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -1599,10 +1599,6 @@ formsAngular
                 }
                 value += '</select>';
               }
-              break;
-            case 'fileuploader':
-
-              value = '<ng-upload-form url="/file/upload" auto-upload="true" size-limit="50000000"></ng-upload-form>';
               break;
             case 'link' :
               value = '<a ng-href="/' + routingService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';

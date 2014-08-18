@@ -31,6 +31,7 @@ function processArgs(options, array) {
 
 var DataForm = function (app, options) {
   this.app = app;
+  this.mongoose = mongoose;
   this.options = _.extend({
     urlPrefix: '/api/'
   }, options || {});
@@ -38,11 +39,8 @@ var DataForm = function (app, options) {
   this.searchFunc = async.forEach;
   this.registerRoutes();
   this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
-
   if (this.options.JQMongoFileUploader) {
-    var fngJQPath = __dirname === '/home/mark/Projects/forms-angular/forms-angular/npm-build/lib' ? '/home/mark/Projects/forms-angular/fng-jq-upload' : 'fng-jq-upload';
-    var FileUpload = new (require(fngJQPath))(this, processArgs, this.options.JQMongoFileUploader);
-    void (FileUpload);
+    this.fileUploader = new (require('fng-jq-upload'))(this, processArgs, this.options.JQMongoFileUploader);
   }
 };
 
