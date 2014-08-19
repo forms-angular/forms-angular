@@ -10,7 +10,7 @@ var _ = require('underscore');
 var exec = require('child_process').exec;
 var mongoose = require('mongoose');
 
-describe('API', function () {
+describe('original API', function () {
 
   var fng, app;
 
@@ -30,7 +30,7 @@ describe('API', function () {
       fs.readdirSync(modelsPath).forEach(function (file) {
         var fname = modelsPath + '/' + file;
         if (fs.statSync(fname).isFile()) {
-          fng.addResource(file.slice(0, -3), require(fname));
+          fng.addResource(file.slice(0, -3), require(fname), {suppressDeprecatedMessage: true});
         }
       });
     });
