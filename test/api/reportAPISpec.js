@@ -30,7 +30,7 @@ describe('Report API', function () {
       fs.readdirSync(modelsPath).forEach(function (file) {
         var fname = modelsPath + '/' + file;
         if (fs.statSync(fname).isFile()) {
-          fng.addResource(file.slice(0, -3), require(fname));
+          fng.addResource(file.slice(0, -3), require(fname), {suppressDeprecatedMessage: true});
         }
       });
     });
@@ -111,14 +111,14 @@ describe('Report API', function () {
     fng.report()(mockReq, mockRes);
   });
 
-  it('supports two reference lookups', function(done) {
+  it('supports two reference lookups', function (done) {
     var reportSpec = {
-      "pipeline":[{"$project":{"surname":1, "forename": 1, "teacher":1, "mentor":1}}],
-      "title":"Class Sizes",
-      "columnTranslations":[{"field":"teacher","ref":"b_using_options"} ,{"field":"mentor", "ref":"c_subdoc_example"}]
+      'pipeline': [{'$project': {'surname': 1, 'forename': 1, 'teacher': 1, 'mentor': 1}}],
+      'title': 'Class Sizes',
+      'columnTranslations': [{'field': 'teacher', 'ref': 'b_using_options'}, {'field': 'mentor', 'ref': 'c_subdoc_example'}]
     };
     var mockReq = {
-      url: 'report/e_referencing_another_collection?r='+JSON.stringify(reportSpec),
+      url: 'report/e_referencing_another_collection?r=' + JSON.stringify(reportSpec),
       params: {resourceName: 'e_referencing_another_collection'}
     };
     var mockRes = {
