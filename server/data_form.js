@@ -41,6 +41,7 @@ var DataForm = function (app, options) {
   this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
   if (this.options.JQMongoFileUploader) {
     this.fileUploader = new (require('fng-jq-upload'))(this, processArgs, this.options.JQMongoFileUploader);
+    void (this.fileUploader);  // suppress warning
   }
 };
 
@@ -107,6 +108,16 @@ DataForm.prototype.registerRoutes = function () {
   this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entityList()]));
 };
 
+DataForm.prototype.newResource = function (model, options) {
+  options = options || {};
+  options.suppressDeprecatedMessage = true;
+  var passModel = model;
+  if (typeof model !== 'function') {
+    passModel = model.model;
+  }
+  this.addResource(passModel.modelName, passModel, options);
+};
+
 //    Add a resource, specifying the model and any options.
 //    Models may include their own options, which means they can be passed through from the model file
 DataForm.prototype.addResource = function (resourceName, model, options) {
@@ -114,6 +125,7 @@ DataForm.prototype.addResource = function (resourceName, model, options) {
     resourceName: resourceName,
     options: options || {}
   };
+  if (!resource.options.suppressDeprecatedMessage) { console.log('addResource is deprecated - see https://github.com/forms-angular/forms-angular/issues/39'); }
 
   if (typeof model === 'function') {
     resource.model = model;
@@ -541,9 +553,12 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
       }
 
       // Don't send the 'secure' fields
-      for (var hiddenField in self.generateHiddenFields(resource, false)) {
-        if (runPipeline.indexOf(hiddenField) !== -1) {
-          return callback('You cannot access ' + hiddenField);
+      var hiddenFields = self.generateHiddenFields(resource, false);
+      for (var hiddenField in hiddenFields) {
+        if (hiddenFields.hasOwnProperty(hiddenField)) {
+          if (runPipeline.indexOf(hiddenField) !== -1) {
+            return callback('You cannot access ' + hiddenField);
+          }
         }
       }
 
@@ -637,7 +652,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
               var lookup = self.getResource(thisColumnTranslation.ref);
               if (lookup) {
                 if (!toDo[thisColumnTranslation.ref]) {
-                  var getFunc = function(ref) {
+                  var getFunc = function (ref) {
                     var lookup = ref;
                     return function (cb) {
                       var translateObject = {ref: lookup.resourceName, translations: [] };
@@ -653,7 +668,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
                         }
                       });
                     };
-                  }
+                  };
                   toDo[thisColumnTranslation.ref] = getFunc(lookup);
                   toDo.applyTranslations.unshift(thisColumnTranslation.ref);  // Make sure we populate lookup before doing translation
                 }
@@ -716,8 +731,10 @@ DataForm.prototype.saveAndRespond = function (req, res, hiddenFields) {
       } else {
         doc2 = doc2.toObject();
         for (var hiddenField in hiddenFields) {
-          if (doc2.hasOwnProperty(hiddenField)) {
-            delete doc2[hiddenField];
+          if (hiddenFields.hasOwnProperty(hiddenField)) {
+            if (doc2.hasOwnProperty(hiddenField)) {
+              delete doc2[hiddenField];
+            }
           }
         }
         res.send(doc2);

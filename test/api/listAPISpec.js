@@ -30,7 +30,7 @@ describe('List API', function () {
       fs.readdirSync(modelsPath).forEach(function (file) {
         var fname = modelsPath + '/' + file;
         if (fs.statSync(fname).isFile()) {
-          fng.addResource(file.slice(0, -3), require(fname));
+          fng.addResource(file.slice(0, -3), require(fname), {suppressDeprecatedMessage: true});
         }
       });
     });
