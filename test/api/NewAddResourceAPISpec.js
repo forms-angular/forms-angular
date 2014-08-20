@@ -13,7 +13,6 @@ describe('mongoose collection name API', function () {
   var fng, app;
 
   before(function (done) {
-    var modelsDone = false;
     app = express();
 
     fng = new (formsAngular)(app, {urlPrefix: '/api/'});
@@ -23,19 +22,16 @@ describe('mongoose collection name API', function () {
       console.error('connection error', arguments);
     });
 
-    mongoose.connection.on('open', function () {
-      if (!modelsDone) {
-        modelsDone = true;
-        // Bootstrap models
-        var modelsPath = path.join(__dirname, '/models');
-        fs.readdirSync(modelsPath).forEach(function (file) {
-          var fname = modelsPath + '/' + file;
-          if (fs.statSync(fname).isFile()) {
-            fng.newResource(require(fname), {suppressDeprecatedMessage: true});
-          }
-        });
-        done();
-      }
+    mongoose.connection.once('open', function () {
+      // Bootstrap models
+      var modelsPath = path.join(__dirname, '/models');
+      fs.readdirSync(modelsPath).forEach(function (file) {
+        var fname = modelsPath + '/' + file;
+        if (fs.statSync(fname).isFile()) {
+          fng.newResource(require(fname), {suppressDeprecatedMessage: true});
+        }
+      });
+      done();
     });
 
   });
