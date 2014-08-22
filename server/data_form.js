@@ -451,9 +451,9 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
 };
 
 DataForm.prototype.schema = function () {
-  return _.bind(function (req, res, next) {
+  return _.bind(function (req, res) {
     if (!(req.resource = this.getResource(req.params.resourceName))) {
-      return next();
+      return res.send(404);
     }
     var formSchema = null;
     if (req.params.formName) {
