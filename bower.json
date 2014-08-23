@@ -1,6 +1,6 @@
 {
   "name": "forms-angular",
-  "version": "0.4.0-alpha.2",
+  "version": "0.4.0-alpha.3",
   "homepage": "https://github.com/mchapman/forms-angular",
   "description": "No nonsense forms for the MEAN stack",
   "keywords": [
@@ -20,15 +20,15 @@
     "When https://github.com/sroze/ngInfiniteScroll/issues/82 gets closed go back to the original repo (and use wiredep overide if still required)"
   ],
   "dependencies": {
-    "angular": "1.3.0-beta.16",
-    "angular-sanitize": "1.3.0-beta.16",
+    "angular": "1.3.0-beta.19",
+    "angular-sanitize": "1.3.0-beta.19",
     "angular-ui-bootstrap-bower": ">=0.8.0",
     "underscore": "1.6",
     "ngInfiniteScroll": "git://github.com/forms-angular/ngInfiniteScroll",
     "angular-elastic": "~2"
   },
   "devDependencies": {
-    "angular-mocks": "1.3.0-beta.16",
+    "angular-mocks": "1.3.0-beta.19",
     "bootstrap-3-1-1": "git://github.com/twbs/bootstrap.git#v3.1.1",
     "bootstrap-2-3-2": "git://github.com/twbs/bootstrap.git#v2.3.2"
 
