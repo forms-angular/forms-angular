@@ -1,4 +1,4 @@
-/*! forms-angular 2014-08-23 */
+/*! forms-angular 2014-08-29 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -48,16 +48,19 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
       // called by getData and setData
 
       // element is used when accessing in the context of a input, as the id (like exams-2-grader)
-      // gives us the element of an array (one level down only for now)
-      // TODO: nesting breaks this
+      // gives us the element of an array (one level down only for now).  Leaving element blank returns the whole array
       var parts = fieldname.split('.'),
         higherLevels = parts.length - 1,
         workingRec = object;
 
       for (var i = 0; i < higherLevels; i++) {
-        workingRec = workingRec[parts[i]];
         if (angular.isArray(workingRec)) {
-          // If we come across an array we need to find the correct position
+          workingRec = _.map(workingRec, function (obj) {return obj[parts[i]]; });
+        } else {
+          workingRec = workingRec[parts[i]];
+        }
+        if (angular.isArray(workingRec) && element && element.scope && typeof element.scope === 'function') {
+          // If we come across an array we need to find the correct position, if we have an element
           workingRec = workingRec[element.scope().$index];
         }
         if (!workingRec) {
@@ -69,12 +72,29 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
 
     $scope.getData = function (object, fieldname, element) {
       var leafData = $scope.walkTree(object, fieldname, element);
-      return (leafData.lastObject && leafData.key) ? leafData.lastObject[leafData.key] : undefined;
+      var retVal;
+      if (leafData.lastObject && leafData.key) {
+        if (angular.isArray(leafData.lastObject)) {
+          retVal = _.map(leafData.lastObject, function (obj) {return obj[leafData.key]; });
+        } else {
+          retVal = leafData.lastObject[leafData.key];
+        }
+      }
+      return retVal;
     };
 
     $scope.setData = function (object, fieldname, element, value) {
       var leafData = $scope.walkTree(object, fieldname, element);
-      leafData.lastObject[leafData.key] = value;
+
+      if (leafData.lastObject && leafData.key) {
+        if (angular.isArray(leafData.lastObject)) {
+          for (var i = 0; i < leafData.lastObject.length; i++) {
+            leafData.lastObject[i][leafData.key] = value[i];
+          }
+        } else {
+          leafData.lastObject[leafData.key] = value;
+        }
+      }
     };
 
 
@@ -1212,14 +1232,15 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
     };
 
     var updateRecordWithLookupValues = function (schemaElement) {
-      // Update the master and the record with the lookup values
+      // Update the master and the record with the lookup values, master first
       if (!$scope.topLevelFormName || $scope[$scope.topLevelFormName].$pristine) {
         updateObject(schemaElement.name, master, function (value) {
           return convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, 'Options')], $scope[suffixCleanId(schemaElement, '_ids')]);
         });
-        // TODO This needs a rethink - it is a quick workaround.  See https://trello.com/c/q3B7Usll
-        if (master[schemaElement.name]) {
-          $scope.record[schemaElement.name] = master[schemaElement.name];
+        // Then copy the converted keys from master into record
+        var newVal = $scope.getData(master, schemaElement.name);
+        if (newVal) {
+          $scope.setData($scope.record, schemaElement.name, undefined, newVal);
         }
       }
     };
