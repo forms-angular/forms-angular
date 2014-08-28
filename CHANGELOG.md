@@ -13,6 +13,29 @@ set up as follows:
 ```      
 This service incorporates some of the functionality of the old form routes provider and supersedes urlService and 
 locationParse.
+
+For example in 0.3.x where you had something like:
+```
+plaitApp.config(['formRoutesProvider', function (formRoutes) {
+    formRoutes.setRoutes([
+        {route: '/index', options: {templateUrl: 'partials/menu.html'}},
+        {route: '/login', options: {templateUrl: 'partials/login.html' }},
+        {route: '/client/referral', options: {templateUrl: 'partials/upload', controller: 'ClientReferralCtrl'}}
+    ], '/index');
+```    
+you would have something like
+```
+formsAngular.config(['routingServiceProvider', function (routingService) {
+  routingService.start({
+    routing: 'ngroute',
+    fixedRoutes: [
+      {route: '/index', options: {templateUrl: 'partials/menu.html'}},
+      {route: '/login', options: {templateUrl: 'partials/login.html' }},
+      {route: '/404', options: {templateUrl: 'partials/404.html'}},
+      {route: '/client/referral', options: {templateUrl: 'partials/upload', controller: 'ClientReferralCtrl'}}
+    ]
+  });
+```
 * The ability to add a routing prefix has been added
  
 ### BREAKING CHANGES
