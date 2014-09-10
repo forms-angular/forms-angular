@@ -763,4 +763,47 @@ describe('formInput', function () {
 
   });
 
+  describe('add arbitrary markup', function () {
+
+    it('adds an attribute to a text input', function() {
+      inject(function ($rootScope, $compile) {
+        elm = angular.element('<div><form-input formStyle="inline" schema="formSchema"></form-input></div>');
+        scope = $rootScope;
+        scope.formSchema = {name: 'desc', id: 'descId', label: 'Description', type: 'text', add: 'thing'};
+        $compile(elm)(scope);
+        scope.$digest();
+        var input = elm.find('input');
+        expect(input.attr('thing')).toBe('');
+        expect(input.attr('controlthing')).toBe(undefined);
+      });
+    });
+
+    it('adds a class to text input without size using add (deprecated behaviour)', function() {
+      inject(function ($rootScope, $compile) {
+        elm = angular.element('<div><form-input formStyle="inline" schema="formSchema"></form-input></div>');
+        scope = $rootScope;
+        scope.formSchema = {name: 'desc', id: 'descId', label: 'Description', type: 'text',  add: 'class="some class"'};
+        $compile(elm)(scope);
+        scope.$digest();
+        var input = elm.find('input');
+        expect(input).toHaveClass('some');
+        expect(input).toHaveClass('class');
+      });
+    });
+
+    it('adds a class to text input without size using class', function() {
+      inject(function ($rootScope, $compile) {
+        elm = angular.element('<div><form-input formStyle="inline" schema="formSchema"></form-input></div>');
+        scope = $rootScope;
+        scope.formSchema = {name: 'desc', id: 'descId', label: 'Description', type: 'text',  class: 'some class'};
+        $compile(elm)(scope);
+        scope.$digest();
+        var input = elm.find('input');
+        expect(input).toHaveClass('some');
+        expect(input).toHaveClass('class');
+      });
+    });
+
+  });
+
 });

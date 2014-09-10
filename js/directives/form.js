@@ -213,7 +213,9 @@ formsAngular
               }
               break;
             default:
-              common += 'class="' + formControl.trim() + compactClass + sizeClassBS2 + '"' + (fieldInfo.add ? fieldInfo.add : '');
+              var setClass = formControl.trim() + compactClass + sizeClassBS2 + (fieldInfo.class ? ' ' + fieldInfo.class : '');
+              if (setClass.length !== 0) { common += 'class="' + setClass + '"' ; }
+              if (fieldInfo.add) { common += ' ' + fieldInfo.add + ' '; }
               common += 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
@@ -502,7 +504,7 @@ formsAngular
             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
               var info = instructionsArray[anInstruction];
               if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/)) {
-                info.add = (info.add || '');
+                info.add = info.add ? ' ' + info.add + ' ' : '';
                 if (info.add.indexOf('ui-date') === -1 && !options.noautofocus && !info.containerType) {
                   info.add = info.add + 'autofocus ';
                 }
