@@ -6529,3 +6529,11 @@ form .form-inline > .sub-doc {
     padding-right: 1em;
   }
 }
+.fileupload-form {
+  position: relative;
+  top: -30px;
+  margin-bottom: -30px;
+}
+.fileupload-buttonbar {
+  margin-left: 0;
+}

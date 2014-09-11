@@ -1,4 +1,4 @@
-/*! forms-angular 2014-09-01 */
+/*! forms-angular 2014-09-11 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -1568,7 +1568,7 @@ formsAngular
 
           if (cssFrameworkService.framework() === 'bs3') {
             compactClass = (['horizontal', 'vertical', 'inline'].indexOf(options.formstyle) === -1) ? ' input-sm' : '';
-            sizeClassBS3 = 'col-xs-' + sizeMapping[fieldInfo.size ? sizeDescriptions.indexOf(fieldInfo.size) : defaultSizeOffset];
+            sizeClassBS3 = 'col-sm-' + sizeMapping[fieldInfo.size ? sizeDescriptions.indexOf(fieldInfo.size) : defaultSizeOffset];
             formControl = ' form-control';
           } else {
             sizeClassBS2 = (fieldInfo.size ? ' input-' + fieldInfo.size : '');
@@ -1649,7 +1649,9 @@ formsAngular
               }
               break;
             default:
-              common += 'class="' + formControl.trim() + compactClass + sizeClassBS2 + '"' + (fieldInfo.add ? fieldInfo.add : '');
+              var setClass = formControl.trim() + compactClass + sizeClassBS2 + (fieldInfo.class ? ' ' + fieldInfo.class : '');
+              if (setClass.length !== 0) { common += 'class="' + setClass + '"' ; }
+              if (fieldInfo.add) { common += ' ' + fieldInfo.add + ' '; }
               common += 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
@@ -1765,14 +1767,15 @@ formsAngular
           var labelHTML = '';
           if ((cssFrameworkService.framework() === 'bs3' || (options.formstyle !== 'inline' && fieldInfo.label !== '')) || addButtonMarkup) {
             labelHTML = '<label';
+            var classes = 'control-label';
             if (isHorizontalStyle(options.formstyle)) {
               labelHTML += ' for="' + fieldInfo.id + '"';
-              if (cssFrameworkService.framework() === 'bs3') { labelHTML += addAll('Label', 'col-sm-2', options); }
+              if (cssFrameworkService.framework() === 'bs3') { classes += ' col-sm-2'; }
             } else if (options.formstyle === 'inline') {
-              labelHTML += ' for="' + fieldInfo.id + '" class="sr-only"';
+              labelHTML += ' for="' + fieldInfo.id + '"';
+              classes += ' sr-only';
             }
-            labelHTML += addAll('Label', 'control-label', options);
-            labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
+            labelHTML += addAll('Label', null, options) + ' class="' + classes + '">' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
           }
           return labelHTML;
         };
@@ -1789,7 +1792,7 @@ formsAngular
             classes = 'form-group';
             if (options.formstyle === 'vertical' && info.size !== 'block-level') {
               template += '<div class="row">';
-              classes += ' col-xs-' + sizeMapping[info.size ? sizeDescriptions.indexOf(info.size) : defaultSizeOffset];
+              classes += ' col-sm-' + sizeMapping[info.size ? sizeDescriptions.indexOf(info.size) : defaultSizeOffset];
               closeTag += '</div>';
             }
             template += '<div' + addAll('Group', classes, options);
@@ -1938,7 +1941,7 @@ formsAngular
             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
               var info = instructionsArray[anInstruction];
               if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/)) {
-                info.add = (info.add || '');
+                info.add = info.add ? ' ' + info.add + ' ' : '';
                 if (info.add.indexOf('ui-date') === -1 && !options.noautofocus && !info.containerType) {
                   info.add = info.add + 'autofocus ';
                 }
