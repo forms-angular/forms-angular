@@ -132,7 +132,7 @@ formsAngular
 
           if (cssFrameworkService.framework() === 'bs3') {
             compactClass = (['horizontal', 'vertical', 'inline'].indexOf(options.formstyle) === -1) ? ' input-sm' : '';
-            sizeClassBS3 = 'col-xs-' + sizeMapping[fieldInfo.size ? sizeDescriptions.indexOf(fieldInfo.size) : defaultSizeOffset];
+            sizeClassBS3 = 'col-sm-' + sizeMapping[fieldInfo.size ? sizeDescriptions.indexOf(fieldInfo.size) : defaultSizeOffset];
             formControl = ' form-control';
           } else {
             sizeClassBS2 = (fieldInfo.size ? ' input-' + fieldInfo.size : '');
@@ -331,14 +331,15 @@ formsAngular
           var labelHTML = '';
           if ((cssFrameworkService.framework() === 'bs3' || (options.formstyle !== 'inline' && fieldInfo.label !== '')) || addButtonMarkup) {
             labelHTML = '<label';
+            var classes = 'control-label';
             if (isHorizontalStyle(options.formstyle)) {
               labelHTML += ' for="' + fieldInfo.id + '"';
-              if (cssFrameworkService.framework() === 'bs3') { labelHTML += addAll('Label', 'col-sm-2', options); }
+              if (cssFrameworkService.framework() === 'bs3') { classes += ' col-sm-2'; }
             } else if (options.formstyle === 'inline') {
-              labelHTML += ' for="' + fieldInfo.id + '" class="sr-only"';
+              labelHTML += ' for="' + fieldInfo.id + '"';
+              classes += ' sr-only';
             }
-            labelHTML += addAll('Label', 'control-label', options);
-            labelHTML += '>' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
+            labelHTML += addAll('Label', null, options) + ' class="' + classes + '">' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
           }
           return labelHTML;
         };
@@ -355,7 +356,7 @@ formsAngular
             classes = 'form-group';
             if (options.formstyle === 'vertical' && info.size !== 'block-level') {
               template += '<div class="row">';
-              classes += ' col-xs-' + sizeMapping[info.size ? sizeDescriptions.indexOf(info.size) : defaultSizeOffset];
+              classes += ' col-sm-' + sizeMapping[info.size ? sizeDescriptions.indexOf(info.size) : defaultSizeOffset];
               closeTag += '</div>';
             }
             template += '<div' + addAll('Group', classes, options);
