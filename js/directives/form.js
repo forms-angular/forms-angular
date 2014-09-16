@@ -534,6 +534,9 @@ formsAngular
                       newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.nodeValue + '"';
                   }
                 }
+                if (info.add) {
+                  newElement += ' ' + info.add;
+                }
                 newElement += '></' + directiveName + '>';
                 result += newElement;
                 callHandleField = false;
