@@ -1,4 +1,4 @@
-/*! forms-angular 2014-09-11 */
+/*! forms-angular 2014-09-16 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -137,23 +137,22 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
               formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
               $scope[formInstructions.select2.s2query] = {
                 allowClear: !mongooseOptions.required,
-                initSelection: function (element, callback) {
 
+                initSelection: function (element, callback) {
                   function executeCallback() {
                     var dataVal = $scope.record;
                     if (dataVal) {
                       var parts = formInstructions.name.split('.');
-                      while (parts.length > 1 && dataVal) {
+                      while (parts.length > 0 && dataVal) {
                         dataVal = dataVal[parts.shift()];
                       }
                     }
                     if (dataVal) {
-                      callback(element.select2('data'));
+                      callback(dataVal);
                     } else {
                       $timeout(executeCallback);
                     }
                   }
-
                   $timeout(executeCallback);
                 },
                 query: function (query) {
