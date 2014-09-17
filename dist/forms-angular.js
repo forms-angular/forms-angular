@@ -1,4 +1,4 @@
-/*! forms-angular 2014-09-16 */
+/*! forms-angular 2014-09-17 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -1539,8 +1539,8 @@ formsAngular
                 lastPart = compoundName.slice(lastPartStart + 1);
               if (options.index) {
                 var cut = modelString.length;
-                modelString += compoundName.slice(0, lastPartStart) + '.' + options.index + '.' + lastPart;
-                idString = 'f_' + modelString.slice(cut).replace(/\./g, '-');
+                modelString += compoundName.slice(0, lastPartStart) + '[' + options.index + '].' + lastPart;
+                idString = 'f_' + modelString.slice(cut).replace(/(\.|\[|\]\.)/g, '-');
               } else {
                 modelString += compoundName.slice(0, lastPartStart);
                 if (options.subkey) {

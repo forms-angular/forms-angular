@@ -104,8 +104,8 @@ formsAngular
                 lastPart = compoundName.slice(lastPartStart + 1);
               if (options.index) {
                 var cut = modelString.length;
-                modelString += compoundName.slice(0, lastPartStart) + '.' + options.index + '.' + lastPart;
-                idString = 'f_' + modelString.slice(cut).replace(/\./g, '-');
+                modelString += compoundName.slice(0, lastPartStart) + '[' + options.index + '].' + lastPart;
+                idString = 'f_' + modelString.slice(cut).replace(/(\.|\[|\]\.)/g, '-');
               } else {
                 modelString += compoundName.slice(0, lastPartStart);
                 if (options.subkey) {
