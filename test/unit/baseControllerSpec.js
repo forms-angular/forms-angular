@@ -39,7 +39,7 @@ describe('BaseCtrl', function () {
     });
 
     it('should handle an invalid model', function () {
-      inject(function (_$httpBackend_, $rootScope, $controller, $location) {
+      inject(function (_$httpBackend_, $rootScope, $controller) {
         $httpBackend = _$httpBackend_;
         $httpBackend.when('GET', '/api/schema/collection').respond(function () {
           return [404, 'Some error', {}];
@@ -47,7 +47,9 @@ describe('BaseCtrl', function () {
         scope = $rootScope.$new();
         ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
         $httpBackend.flush();
-        expect($location.path()).toBe('/404');
+        expect(scope.alertTitle).toBe('Error!');
+        expect(scope.errorMessage).toBe('404 "Some error"');
+
       });
     });
 

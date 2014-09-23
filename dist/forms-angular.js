@@ -1,4 +1,4 @@
-/*! forms-angular 2014-09-17 */
+/*! forms-angular 2014-09-23 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -38,8 +38,60 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
     angular.extend($scope, routingService.parsePathFunc()($location.$$path));
 
     $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
+
+//    Error handling code
+    //listener for any child scopes to display messages
+    // pass like this:
+    //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+    // or
+    //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+    $scope.$on('showErrorMessage', function (event, args) {
+      $scope.showError(args.body, args.title);
+    });
+
+    var handleError = function (data, status) {
+      if ([200, 400].indexOf(status) !== -1) {
+        var errorMessage = '';
+        for (var errorField in data.errors) {
+          if (data.errors.hasOwnProperty(errorField)) {
+            errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
+            switch (data.errors[errorField].type) {
+              case 'enum' :
+                errorMessage += 'You need to select from the list of values';
+                break;
+              default:
+                errorMessage += data.errors[errorField].message;
+                break;
+            }
+            errorMessage += '</li>';
+          }
+        }
+        if (errorMessage.length > 0) {
+          errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
+        } else {
+          errorMessage = data.message || 'Error!  Sorry - No further details available.';
+        }
+        $scope.showError(errorMessage);
+      } else {
+        $scope.showError(status + ' ' + JSON.stringify(data));
+      }
+    };
+
+    $scope.showError = function (errString, alertTitle) {
+      $scope.alertTitle = alertTitle ? alertTitle : 'Error!';
+      $scope.errorMessage = errString;
+    };
+
+    $scope.dismissError = function () {
+      delete $scope.errorMessage;
+    };
+
     $scope.generateEditUrl = function (obj) {
       return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
+    };
+
+    $scope.generateNewUrl = function () {
+      return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + 'new');
     };
 
     $scope.walkTree = function (object, fieldname, element) {
@@ -219,9 +271,7 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
                         if (isClean) {
                           modelController.$pristine = true;
                         }
-                      }).error(function () {
-                        $location.path('/404');
-                      });
+                      }).error(handleError);
 //                                } else {
 //                                    throw new Error('select2 initSelection called without a value');
                     }
@@ -632,9 +682,7 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
             $scope.dataEventFunctions.onAfterRead(data);
           }
           $scope.processServerData(data);
-        }).error(function () {
-          $location.path('/404');
-        });
+        }).error(handleError);
     };
 
     $scope.scrollTheList = function () {
@@ -653,9 +701,7 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
             $scope.showError(data, 'Invalid query');
           }
         })
-        .error(function () {
-          $location.path('/404');
-        });
+        .error(handleError);
     };
 
     // TODO: Do we need model here?  Can we not infer it from scope?
@@ -752,9 +798,7 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
           }
         }
       })
-      .error(function () {
-        $location.path('/404');
-      });
+      .error(handleError);
 
 
     var setUpSelectOptions = function (lookupCollection, schemaElement) {
@@ -802,53 +846,6 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
       angular.copy(master, $scope.record);
       $scope.setPristine();
     };
-
-    //listener for any child scopes to display messages
-    // pass like this:
-    //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
-    // or
-    //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
-    $scope.$on('showErrorMessage', function (event, args) {
-      $scope.showError(args.body, args.title);
-    });
-
-    var handleError = function (data, status) {
-      if ([200, 400].indexOf(status) !== -1) {
-        var errorMessage = '';
-        for (var errorField in data.errors) {
-          if (data.errors.hasOwnProperty(errorField)) {
-            errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
-            switch (data.errors[errorField].type) {
-              case 'enum' :
-                errorMessage += 'You need to select from the list of values';
-                break;
-              default:
-                errorMessage += data.errors[errorField].message;
-                break;
-            }
-            errorMessage += '</li>';
-          }
-        }
-        if (errorMessage.length > 0) {
-          errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
-        } else {
-          errorMessage = data.message || 'Error!  Sorry - No further details available.';
-        }
-        $scope.showError(errorMessage);
-      } else {
-        $scope.showError(status + ' ' + JSON.stringify(data));
-      }
-    };
-
-    $scope.showError = function (errString, alertTitle) {
-      $scope.alertTitle = alertTitle ? alertTitle : 'Error!';
-      $scope.errorMessage = errString;
-    };
-
-    $scope.dismissError = function () {
-      delete $scope.errorMessage;
-    };
-
 
     $scope.save = function (options) {
       options = options || {};
@@ -1244,7 +1241,7 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
       }
     };
 
-    // Open a select2 control from the appended search button
+    // Open a select2 control from the appended search button.  OK to use $ here as select2 itself is dependent on jQuery.
     $scope.openSelect2 = function (ev) {
       $('#' + $(ev.currentTarget).data('select2-open')).select2('open');
     };
