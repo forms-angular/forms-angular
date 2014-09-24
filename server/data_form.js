@@ -217,6 +217,9 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
           }
         }
       }
+      if (indexedFields.length === 0) {
+        console.log('ERROR: Searching on a collection with no indexes ' + resource.resourceName);
+      }
       for (var m = 0; m < indexedFields.length; m++) {
         searches.push({resource: resource, field: indexedFields[m] });
       }
