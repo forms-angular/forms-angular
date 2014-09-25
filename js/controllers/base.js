@@ -192,8 +192,8 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
                     if (dataVal) {
                       if (formInstructions.array) {
                         var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
-                        if (dataVal[offset].text) {
-                          callback(dataVal[offset].text);
+                        if (dataVal[offset].x) {
+                          callback(dataVal[offset].x);
                         }
                       } else {
                         callback(dataVal);
@@ -239,7 +239,12 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
             delete formInstructions.link;
           } else {
             formInstructions.type = 'select';
-            if (formInstructions.select2) {
+
+// Support both of the syntaxes below
+//            team : [ { type: Schema.Types.ObjectId , ref: 'f_nested_schema', form: {select2: {fngAjax: true}}} ],
+//            team2:   { type:[Schema.Types.ObjectId], ref: 'f_nested_schema', form: {select2: {fngAjax: true}}},
+            if (formInstructions.select2 || (mongooseOptions.form && mongooseOptions.form.select2)) {
+              if (!formInstructions.select2) {formInstructions.select2 = mongooseOptions.form.select2;}
               if (formInstructions.select2 === true) {formInstructions.select2 = {}; }
               $scope.select2List.push(formInstructions.name);
               if (formInstructions.select2.fngAjax) {
