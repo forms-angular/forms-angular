@@ -9,7 +9,7 @@
  *
  */
 
-formsAngular.provider('formGenerator', [function (
+formsAngular.factory('formGenerator', function (
     $location, $timeout,
     SubmissionsService, routingService, recordHandler) {
     var exports = {};
@@ -545,4 +545,4 @@ formsAngular.provider('formGenerator', [function (
 
 
     return exports;
-}]);
+});

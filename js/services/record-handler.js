@@ -9,7 +9,7 @@
  *
  */
 
-formsAngular.provider('recordHandler', [function (
+formsAngular.factory('recordHandler', function (
     $location, $window,
     routingService, SubmissionsService, SchemasService) {
     var exports = {};
@@ -440,4 +440,4 @@ formsAngular.provider('recordHandler', [function (
 
 
     return exports;
-}]);
+});
