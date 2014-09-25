@@ -171,11 +171,11 @@ formsAngular.controller('BaseCtrl', [
                         if (err) {
                             $scope.showError(err);
                         } else {
-                            $scope.createNew(dataToSave, options, handleError);
+                            recordHandler.createNew(dataToSave, options, $scope, handleError);
                         }
                     });
                 } else {
-                    $scope.createNew(dataToSave, options, handleError);
+                    recordHandler.createNew(dataToSave, options, $scope, handleError);
                 }
             }
         };

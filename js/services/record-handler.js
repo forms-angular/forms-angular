@@ -211,14 +211,14 @@ formsAngular.factory('recordHandler', function (
         }
     };
 
-    exports.setUpSelectOptions = function (lookupCollection, schemaElement, $scope, ctrlState) {
+    exports.setUpSelectOptions = function (lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
         var optionsList = $scope[schemaElement.options] = [];
         var idList = $scope[schemaElement.ids] = [];
 
         SchemasService.getSchema(lookupCollection)
             .success(function (data) {
                 var listInstructions = [];
-                exports.handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState);
+                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState);
 
                 SubmissionsService.getAll(lookupCollection)
                     .success(function (data) {
