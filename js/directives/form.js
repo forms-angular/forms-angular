@@ -1,7 +1,9 @@
 'use strict';
 
 formsAngular
-  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', 'routingService', 'cssFrameworkService', function ($compile, $rootScope, utils, $filter, routingService, cssFrameworkService) {
+  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter',
+        'routingService', 'cssFrameworkService', 'formGenerator',
+        function ($compile, $rootScope, utils, $filter, routingService, cssFrameworkService, formGenerator) {
     return {
       restrict: 'EA',
       link: function (scope, element, attrs) {
@@ -669,9 +671,9 @@ formsAngular
 
               $rootScope.$broadcast('formInputDone');
 
-              if (scope.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
+              if (formGenerator.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
                 // If this is not a test force the data dependent updates to the DOM
-                scope.updateDataDependentDisplay(theRecord, null, true);
+                  formGenerator.updateDataDependentDisplay(theRecord, null, true, scope);
               }
             }
           }
