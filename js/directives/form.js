@@ -472,19 +472,18 @@ formsAngular
             if (info.array) {
               controlClass.push('fng-array');
               if (options.formstyle === 'inline') { throw 'Cannot use arrays in an inline form'; }
+              var glyphClass, ngClassString;
               if (cssFrameworkService.framework() === 'bs2') {
-                template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="icon-plus-sign"></i>', options) +
-                  '<div class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
-                  generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options) +
-                  '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
-                  '</div>';
+                glyphClass = 'icon';
+                ngClassString = '';
               } else {
-                template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="glyphicon glyphicon-plus-sign"></i>', options) +
-                  '<div ng-class="skipCols($index)" class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
-                  generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options) +
-                  '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="glyphicon glyphicon-minus-sign"></i>' +
-                  '</div>';
+                glyphClass = 'glyphicon glyphicon';
+                ngClassString = 'ng-class="skipCols($index)" ';
               }
+              template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="' + glyphClass + '-plus-sign">' +
+                '</i>', options) + '<div ' + ngClassString + 'class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' +
+                (options.model || 'record') + '.' + info.name + '">' + generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options) +
+                '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass + '-minus-sign"></i></div>';
             } else {
               // Single fields here
               template += generateLabel(info, null, options);
