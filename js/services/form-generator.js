@@ -29,6 +29,98 @@ formsAngular.factory('formGenerator', function (
         }
     }
 
+
+    exports.handleSchema = function (description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
+
+        function handletabInfo(tabName, thisInst) {
+            var tabTitle = angular.copy(tabName);
+            var tab = _.find($scope.tabs, function (atab) {
+                return atab.title === tabTitle;
+            });
+            if (!tab) {
+                if ($scope.tabs.length === 0) {
+                    if ($scope.formSchema.length > 0) {
+                        $scope.tabs.push({title: 'Main', content: []});
+                        tab = $scope.tabs[0];
+                        for (var i = 0; i < $scope.formSchema.length; i++) {
+                            tab.content.push($scope.formSchema[i]);
+                        }
+                    }
+                }
+                tab = $scope.tabs[$scope.tabs.push({title: tabTitle, containerType: 'tab', content: []}) - 1];
+            }
+            tab.content.push(thisInst);
+        }
+
+        for (var field in source) {
+            if (field !== '_id' && source.hasOwnProperty(field)) {
+                var mongooseType = source[field],
+                    mongooseOptions = mongooseType.options || {};
+                var formData = mongooseOptions.form || {};
+                if (!formData.hidden) {
+                    if (mongooseType.schema) {
+                        if (doRecursion && destForm) {
+                            var schemaSchema = [];
+                            exports.handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
+                            var sectionInstructions = basicInstructions(field, formData, prefix);
+                            sectionInstructions.schema = schemaSchema;
+                            if (formData.tab) {
+                                handletabInfo(formData.tab, sectionInstructions);
+                            }
+                            if (formData.order !== undefined) {
+                                destForm.splice(formData.order, 0, sectionInstructions);
+                            } else {
+                                destForm.push(sectionInstructions);
+                            }
+                        }
+                    } else {
+                        if (destForm) {
+                            var formInstructions = basicInstructions(field, formData, prefix);
+                            if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
+                                var formInst = exports.handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
+                                if (formInst.tab) {
+                                    handletabInfo(formInst.tab, formInst);
+                                }
+                                if (formData.order !== undefined) {
+                                    destForm.splice(formData.order, 0, formInst);
+                                } else {
+                                    destForm.push(formInst);
+                                }
+                            }
+                        }
+                        if (destList) {
+                            handleListInfo(destList, mongooseOptions.list, field);
+                        }
+                    }
+                }
+            }
+        }
+//        //if a hash is defined then make that the selected tab is displayed
+//        if ($scope.tabs.length > 0 && $location.hash()) {
+//            var tab = _.find($scope.tabs, function (atab) {
+//                return atab.title === $location.hash();
+//            });
+//
+//            if (tab) {
+//                for (var i = 0; i < $scope.tabs.length; i++) {
+//                    $scope.tabs[i].active = false;
+//                }
+//                tab.active = true;
+//            }
+//        }
+//
+//        //now add a hash for the active tab if none exists
+//        if ($scope.tabs.length > 0 && !$location.hash()) {
+//            console.log($scope.tabs[0]['title'])
+//            $location.hash($scope.tabs[0]['title']);
+//        }
+
+        if (destList && destList.length === 0) {
+            handleEmptyList(description, destList, destForm, source);
+        }
+    };
+
+
     exports.handleFieldType = function (formInstructions, mongooseType, mongooseOptions, $scope, ctrlState) {
 
         var select2ajaxName;
@@ -190,12 +282,12 @@ formsAngular.factory('formGenerator', function (
                         $scope.select2List.push(formInstructions.name);
                         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                         formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                        recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState);
+                        recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema);
                     }
                 } else {
                     formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                     formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                    recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState);
+                    recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema);
                 }
             }
         } else if (mongooseType.instance === 'Date') {
@@ -422,96 +514,6 @@ formsAngular.factory('formGenerator', function (
             }
         }
         return forceNextTime;
-    };
-
-    exports.handleSchema = function (description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
-
-        function handletabInfo(tabName, thisInst) {
-            var tabTitle = angular.copy(tabName);
-            var tab = _.find($scope.tabs, function (atab) {
-                return atab.title === tabTitle;
-            });
-            if (!tab) {
-                if ($scope.tabs.length === 0) {
-                    if ($scope.formSchema.length > 0) {
-                        $scope.tabs.push({title: 'Main', content: []});
-                        tab = $scope.tabs[0];
-                        for (var i = 0; i < $scope.formSchema.length; i++) {
-                            tab.content.push($scope.formSchema[i]);
-                        }
-                    }
-                }
-                tab = $scope.tabs[$scope.tabs.push({title: tabTitle, containerType: 'tab', content: []}) - 1];
-            }
-            tab.content.push(thisInst);
-        }
-
-        for (var field in source) {
-            if (field !== '_id' && source.hasOwnProperty(field)) {
-                var mongooseType = source[field],
-                    mongooseOptions = mongooseType.options || {};
-                var formData = mongooseOptions.form || {};
-                if (!formData.hidden) {
-                    if (mongooseType.schema) {
-                        if (doRecursion && destForm) {
-                            var schemaSchema = [];
-                            exports.handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
-                            var sectionInstructions = basicInstructions(field, formData, prefix);
-                            sectionInstructions.schema = schemaSchema;
-                            if (formData.tab) {
-                                handletabInfo(formData.tab, sectionInstructions);
-                            }
-                            if (formData.order !== undefined) {
-                                destForm.splice(formData.order, 0, sectionInstructions);
-                            } else {
-                                destForm.push(sectionInstructions);
-                            }
-                        }
-                    } else {
-                        if (destForm) {
-                            var formInstructions = basicInstructions(field, formData, prefix);
-                            if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
-                                var formInst = exports.handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
-                                if (formInst.tab) {
-                                    handletabInfo(formInst.tab, formInst);
-                                }
-                                if (formData.order !== undefined) {
-                                    destForm.splice(formData.order, 0, formInst);
-                                } else {
-                                    destForm.push(formInst);
-                                }
-                            }
-                        }
-                        if (destList) {
-                            handleListInfo(destList, mongooseOptions.list, field);
-                        }
-                    }
-                }
-            }
-        }
-//        //if a hash is defined then make that the selected tab is displayed
-//        if ($scope.tabs.length > 0 && $location.hash()) {
-//            var tab = _.find($scope.tabs, function (atab) {
-//                return atab.title === $location.hash();
-//            });
-//
-//            if (tab) {
-//                for (var i = 0; i < $scope.tabs.length; i++) {
-//                    $scope.tabs[i].active = false;
-//                }
-//                tab.active = true;
-//            }
-//        }
-//
-//        //now add a hash for the active tab if none exists
-//        if ($scope.tabs.length > 0 && !$location.hash()) {
-//            console.log($scope.tabs[0]['title'])
-//            $location.hash($scope.tabs[0]['title']);
-//        }
-
-        if (destList && destList.length === 0) {
-            handleEmptyList(description, destList, destForm, source);
-        }
     };
 
     exports.add = function (fieldName, $event, $scope) {
