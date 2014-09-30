@@ -188,15 +188,15 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
                       while (parts.length > 0 && dataVal) {
                         dataVal = dataVal[parts.shift()];
                       }
-                    }
-                    if (dataVal) {
-                      if (formInstructions.array) {
-                        var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
-                        if (dataVal[offset].x) {
-                          callback(dataVal[offset].x);
+                      if (dataVal) {
+                        if (formInstructions.array) {
+                          var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
+                          if (dataVal[offset].x) {
+                            callback(dataVal[offset].x);
+                          }
+                        } else {
+                          callback(dataVal);
                         }
-                      } else {
-                        callback(dataVal);
                       }
                     } else {
                       $timeout(executeCallback);
