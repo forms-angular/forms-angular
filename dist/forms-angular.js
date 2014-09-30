@@ -1208,8 +1208,10 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
             var newVal;
             if (schema[i].array) {
               newVal = [];
-              for (var n=0; n < lookup.length; n++) {
-                newVal[n] = convertLookup(lookup[n], schema[i]);
+              if (lookup) {
+                  for (var n = 0; n < lookup.length; n++) {
+                      newVal[n] = convertLookup(lookup[n], schema[i]);
+                  }
               }
             } else {
               newVal = convertLookup(lookup, schema[i]);
