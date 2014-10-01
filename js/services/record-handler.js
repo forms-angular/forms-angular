@@ -183,7 +183,7 @@ formsAngular.factory('recordHandler', function (
         return retVal;
     };
 
-    var setData = function (object, fieldname, element, value) {
+    exports.setData = function (object, fieldname, element, value) {
         var leafData = walkTree(object, fieldname, element);
 
         if (leafData.lastObject && leafData.key) {
@@ -206,7 +206,7 @@ formsAngular.factory('recordHandler', function (
             // Then copy the converted keys from master into record
             var newVal = getData(ctrlState.master, schemaElement.name);
             if (newVal) {
-                setData($scope.record, schemaElement.name, undefined, newVal);
+                exports.setData($scope.record, schemaElement.name, undefined, newVal);
             }
         }
     };
@@ -366,13 +366,13 @@ formsAngular.factory('recordHandler', function (
                     var lookup = getData(anObject, fieldname, null);
                     if (schema[i].select2.fngAjax) {
                         if (lookup && lookup.id) {
-                            setData(anObject, fieldname, null, lookup.id);
+                            exports.setData(anObject, fieldname, null, lookup.id);
                         }
                     } else {
                         if (lookup) {
-                            setData(anObject, fieldname, null, lookup.text);
+                            exports.setData(anObject, fieldname, null, lookup.text);
                         } else {
-                            setData(anObject, fieldname, null, undefined);
+                            exports.setData(anObject, fieldname, null, undefined);
                         }
                     }
                 }
@@ -438,6 +438,253 @@ formsAngular.factory('recordHandler', function (
         }
     };
 
+    exports.decorateScope = function($scope, $modal, recordHandlerInstance, ctrlState) {
+
+        $scope.cancel = function () {
+            angular.copy(ctrlState.master, $scope.record);
+            $scope.setPristine();
+        };
+
+
+        //listener for any child scopes to display messages
+        // pass like this:
+        //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+        // or
+        //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+        $scope.$on('showErrorMessage', function (event, args) {
+            $scope.showError(args.body, args.title);
+        });
+
+        var handleError = function (data, status) {
+            if ([200, 400].indexOf(status) !== -1) {
+                var errorMessage = '';
+                for (var errorField in data.errors) {
+                    if (data.errors.hasOwnProperty(errorField)) {
+                        errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
+                        switch (data.errors[errorField].type) {
+                            case 'enum' :
+                                errorMessage += 'You need to select from the list of values';
+                                break;
+                            default:
+                                errorMessage += data.errors[errorField].message;
+                                break;
+                        }
+                        errorMessage += '</li>';
+                    }
+                }
+                if (errorMessage.length > 0) {
+                    errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
+                } else {
+                    errorMessage = data.message || 'Error!  Sorry - No further details available.';
+                }
+                $scope.showError(errorMessage);
+            } else {
+                $scope.showError(status + ' ' + JSON.stringify(data));
+            }
+        };
+
+        $scope.showError = function (errString, alertTitle) {
+            $scope.alertTitle = alertTitle ? alertTitle : 'Error!';
+            $scope.errorMessage = errString;
+        };
+
+        $scope.dismissError = function () {
+            delete $scope.errorMessage;
+        };
+
+
+        $scope.save = function (options) {
+            options = options || {};
+
+            //Convert the lookup values into ids
+            var dataToSave = recordHandlerInstance.convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0, $scope);
+            if ($scope.id) {
+                if (typeof $scope.dataEventFunctions.onBeforeUpdate === 'function') {
+                    $scope.dataEventFunctions.onBeforeUpdate(dataToSave, ctrlState.master, function (err) {
+                        if (err) {
+                            $scope.showError(err);
+                        } else {
+                            recordHandlerInstance.updateDocument(dataToSave, options, $scope, handleError, ctrlState);
+                        }
+                    });
+                } else {
+                    recordHandlerInstance.updateDocument(dataToSave, options, $scope, handleError, ctrlState);
+                }
+            } else {
+                if (typeof $scope.dataEventFunctions.onBeforeCreate === 'function') {
+                    $scope.dataEventFunctions.onBeforeCreate(dataToSave, function (err) {
+                        if (err) {
+                            $scope.showError(err);
+                        } else {
+                            recordHandlerInstance.createNew(dataToSave, options, $scope, handleError);
+                        }
+                    });
+                } else {
+                    recordHandlerInstance.createNew(dataToSave, options, $scope, handleError);
+                }
+            }
+        };
+
+        $scope.newClick = function () {
+            routingService.redirectTo()('new', $scope, $location);
+        };
+
+        $scope.$on('$locationChangeStart', function (event, next) {
+            if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
+                event.preventDefault();
+                var modalInstance = $modal.open({
+                    template: '<div class="modal-header">' +
+                        '   <h3>Record modified</h3>' +
+                        '</div>' +
+                        '<div class="modal-body">' +
+                        '   <p>Would you like to save your changes?</p>' +
+                        '</div>' +
+                        '<div class="modal-footer">' +
+                        '    <button class="btn btn-primary dlg-yes" ng-click="yes()">Yes</button>' +
+                        '    <button class="btn btn-warning dlg-no" ng-click="no()">No</button>' +
+                        '    <button class="btn dlg-cancel" ng-click="cancel()">Cancel</button>' +
+                        '</div>',
+                    controller: 'SaveChangesModalCtrl',
+                    backdrop: 'static'
+                });
+
+                modalInstance.result.then(
+                    function (result) {
+                        if (result) {
+                            $scope.save({redirect: next, allowChange: true});    // save changes
+                        } else {
+                            ctrlState.allowLocationChange = true;
+                            $window.location = next;
+                        }
+                    }
+                );
+            }
+        });
+
+        $scope.deleteClick = function () {
+            if ($scope.record._id) {
+                var modalInstance = $modal.open({
+                    template: '<div class="modal-header">' +
+                        '   <h3>Delete Item</h3>' +
+                        '</div>' +
+                        '<div class="modal-body">' +
+                        '   <p>Are you sure you want to delete this record?</p>' +
+                        '</div>' +
+                        '<div class="modal-footer">' +
+                        '    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>' +
+                        '    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>' +
+                        '</div>',
+                    controller: 'SaveChangesModalCtrl',
+                    backdrop: 'static'
+                });
+
+                modalInstance.result.then(
+                    function (result) {
+                        if (result) {
+                            if (typeof $scope.dataEventFunctions.onBeforeDelete === 'function') {
+                                $scope.dataEventFunctions.onBeforeDelete(ctrlState.master, function (err) {
+                                    if (err) {
+                                        $scope.showError(err);
+                                    } else {
+                                        recordHandlerInstance.deleteRecord($scope.modelName, $scope.id, $scope, ctrlState);
+                                    }
+                                });
+                            } else {
+                                recordHandlerInstance.deleteRecord($scope.modelName, $scope.id, $scope, ctrlState);
+                            }
+                        }
+                    }
+                );
+            }
+        };
+
+        $scope.isCancelDisabled = function () {
+            if (typeof $scope.disableFunctions.isCancelDisabled === 'function') {
+                return $scope.disableFunctions.isCancelDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
+            } else {
+                return $scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine;
+            }
+        };
+
+        $scope.isSaveDisabled = function () {
+            if (typeof $scope.disableFunctions.isSaveDisabled === 'function') {
+                return $scope.disableFunctions.isSaveDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
+            } else {
+                return ($scope[$scope.topLevelFormName] && ($scope[$scope.topLevelFormName].$invalid || $scope[$scope.topLevelFormName].$pristine));
+            }
+        };
+
+        $scope.isDeleteDisabled = function () {
+            if (typeof $scope.disableFunctions.isDeleteDisabled === 'function') {
+                return $scope.disableFunctions.isDeleteDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
+            } else {
+                return (!$scope.id);
+            }
+        };
+
+        $scope.isNewDisabled = function () {
+            if (typeof $scope.disableFunctions.isNewDisabled === 'function') {
+                return $scope.disableFunctions.isNewDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
+            } else {
+                return false;
+            }
+        };
+
+        $scope.disabledText = function (localStyling) {
+            var text = '';
+            if ($scope.isSaveDisabled) {
+                text = 'This button is only enabled when the form is complete and valid.  Make sure all required inputs are filled in. ' + localStyling;
+            }
+            return text;
+        };
+
+
+    };
+
+    exports.fillForm = function($scope, formGeneratorInstance, recordHandlerInstance, ctrlState){
+
+        SchemasService.getSchema($scope.modelName, $scope.formName)
+            .success(function (data) {
+                var listOnly = (!$scope.id && !$scope.newRecord);
+                // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
+                // but should be removed when/if formschemas are cached
+                formGeneratorInstance.handleSchema('Main ' + $scope.modelName, data, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState);
+
+                if (listOnly) {
+                    ctrlState.allowLocationChange = true;
+                } else {
+                    var force = true;
+                    $scope.$watch('record', function (newValue, oldValue) {
+                        if (newValue !== oldValue) {
+                            force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
+                        }
+                    }, true);
+
+                    if ($scope.id) {
+                        // Going to read a record
+                        if (typeof $scope.dataEventFunctions.onBeforeRead === 'function') {
+                            $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
+                                if (err) {
+                                    $scope.showError(err);
+                                } else {
+                                    recordHandlerInstance.readRecord($scope, ctrlState);
+                                }
+                            });
+                        } else {
+                            recordHandlerInstance.readRecord($scope, ctrlState);
+                        }
+                    } else {
+                        // New record
+                        ctrlState.master = {};
+                        $scope.phase = 'ready';
+                        $scope.cancel();
+                    }
+                }
+            })
+            .error(function () {
+                $location.path('/404');
+            });
+    };
 
     return exports;
 });

@@ -217,7 +217,7 @@ formsAngular.factory('formGenerator', function (
                                                 $location.path('/404');
                                             }
                                             var display = {id: theId, text: data.list};
-                                            exports.setData(ctrlState.master, formInstructions.name, element, display);
+                                            recordHandler.setData(ctrlState.master, formInstructions.name, element, display);
                                             // stop the form being set to dirty
                                             var modelController = element.inheritedData('$ngModelController'),
                                                 isClean = modelController.$pristine;
@@ -543,6 +543,79 @@ formsAngular.factory('formGenerator', function (
         }
         arrayField.splice(value, 1);
         $scope.setFormDirty($event);
+    };
+
+    exports.decorateScope = function($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
+        sharedStuff.baseScope = $scope;
+        $scope.record = sharedStuff.record;
+        $scope.phase = 'init';
+        $scope.disableFunctions = sharedStuff.disableFunctions;
+        $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
+        $scope.topLevelFormName = undefined;
+        $scope.formSchema = [];
+        $scope.tabs = [];
+        $scope.listSchema = [];
+        $scope.recordList = [];
+        $scope.dataDependencies = {};
+        $scope.select2List = [];
+        $scope.pageSize = 60;
+        $scope.pagesLoaded = 0;
+
+        $scope.generateEditUrl = function (obj) {
+            return formGeneratorInstance.generateEditUrl(obj, $scope);
+        };
+
+        $scope.scrollTheList =  function () {
+            return recordHandlerInstance.scrollTheList($scope);
+        };
+
+        $scope.getListData = function(record, fieldName) {
+            return recordHandlerInstance.getListData(record, fieldName, $scope.select2List);
+        };
+
+        $scope.setPristine = function () {
+            $scope.dismissError();
+            if ($scope[$scope.topLevelFormName]) {
+                $scope[$scope.topLevelFormName].$setPristine();
+            }
+        };
+
+        $scope.skipCols = function (index) {
+            return index > 0 ? 'col-md-offset-2' : '';
+        };
+
+        $scope.setFormDirty = function (event) {
+            if (event) {
+                var form = angular.element(event.target).inheritedData('$formController');
+                form.$setDirty();
+            } else {
+                console.log('setFormDirty called without an event (fine in a unit test)');
+            }
+        };
+
+        $scope.add = function (fieldName, $event) {
+            return formGeneratorInstance.add(fieldName, $event, $scope);
+        };
+
+        $scope.remove = function (fieldName, value, $event) {
+            return formGeneratorInstance.remove(fieldName, value, $event, $scope);
+        };
+
+        // Open a select2 control from the appended search button
+        $scope.openSelect2 = function (ev) {
+            $('#' + $(ev.currentTarget).data('select2-open')).select2('open');
+        };
+
+        // FIXME: still used?
+        $scope.toJSON = function (obj) {
+            return JSON.stringify(obj, null, 2);
+        };
+
+        $scope.baseSchema = function () {
+            return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
+        };
+
+
     };
 
 
