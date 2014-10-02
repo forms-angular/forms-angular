@@ -961,15 +961,17 @@ DataForm.prototype.entityGet = function () {
 
 DataForm.prototype.replaceHiddenFields = function (record, data) {
   var self = this;
-  self._replacingHiddenFields = true;
-  _.each(data, function (value, name) {
-    if (_.isObject(value)) {
-      self.replaceHiddenFields(record[name], value);
-    } else {
-      record[name] = value;
-    }
-  });
-  delete self._replacingHiddenFields;
+  if (record) {
+    record._replacingHiddenFields = true;
+    _.each(data, function (value, name) {
+      if (_.isObject(value)) {
+        self.replaceHiddenFields(record[name], value);
+      } else {
+        record[name] = value;
+      }
+    });
+    delete record._replacingHiddenFields;
+  }
 };
 
 DataForm.prototype.entityPut = function () {
