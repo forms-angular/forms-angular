@@ -730,7 +730,7 @@ DataForm.prototype.saveAndRespond = function (req, res, hiddenFields) {
         if (debug) {
           console.log('Error saving record: ' + JSON.stringify(err2));
         }
-        res.send(400, err2);
+        res.status(400).send(err2);
       } else {
         doc2 = doc2.toObject();
         for (var hiddenField in hiddenFields) {
