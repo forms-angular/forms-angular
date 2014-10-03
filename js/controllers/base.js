@@ -182,22 +182,44 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
 
                 initSelection: function (element, callback) {
                   function executeCallback() {
+
+                    function drillIntoObject(parts, dataVal, fn) {
+                      if (dataVal) {
+                        if (parts.length === 0) {
+                          fn(dataVal);
+                        } else {
+                          if (angular.isArray(dataVal)) {
+                            // extract the array offset of the subkey from the element id
+                            var workString = element.context.id;
+                            var pos = workString.indexOf('.'+parts[0]);
+                            workString = workString.slice(0,pos);
+                            pos = workString.lastIndexOf('.');
+                            workString = workString.slice(pos+1);
+                            workString = /.+\[(.+)\]/.exec(workString);
+                            dataVal = dataVal[$scope[workString[1]]];
+                          }
+                          dataVal = dataVal[parts.shift()];
+                          drillIntoObject(parts, dataVal, fn);
+                        }
+                      }
+                    }
+
                     var dataVal = $scope.record;
                     if (dataVal) {
                       var parts = formInstructions.name.split('.');
-                      while (parts.length > 0 && dataVal) {
-                        dataVal = dataVal[parts.shift()];
-                      }
-                      if (dataVal) {
-                        if (formInstructions.array) {
-                          var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
-                          if (dataVal[offset].x) {
-                            callback(dataVal[offset].x);
+                      drillIntoObject(parts, dataVal, function(leafVal) {
+                        setTimeout(updateInvalidClasses(leafVal, formInstructions.id, formInstructions.select2));
+                        if (leafVal) {
+                          if (formInstructions.array) {
+                            var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
+                            if (leafVal[offset].x) {
+                              callback(leafVal[offset].x);
+                            }
+                          } else {
+                            callback(leafVal);
                           }
-                        } else {
-                          callback(dataVal);
                         }
-                      }
+                      });
                     } else {
                       $timeout(executeCallback);
                     }
@@ -1099,9 +1121,10 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
       for (var i = 0; i < schema.length; i++) {
         var fieldname = schema[i].name.slice(prefixLength);
         if (schema[i].schema) {
-          if (anObject[fieldname]) {
-            for (var j = 0; j < anObject[fieldname].length; j++) {
-              anObject[fieldname][j] = convertToAngularModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
+          var extractField = $scope.getData(anObject, fieldname);
+          if (extractField) {
+            for (var j = 0; j < extractField.length; j++) {
+              extractField[j] = convertToAngularModel(schema[i].schema, extractField[j], prefixLength + 1 + fieldname.length);
             }
           }
         } else {

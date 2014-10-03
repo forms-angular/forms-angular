@@ -1,4 +1,4 @@
-/*! forms-angular 2014-10-02 */
+/*! forms-angular 2014-10-03 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -193,22 +193,44 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
 
                 initSelection: function (element, callback) {
                   function executeCallback() {
+
+                    function drillIntoObject(parts, dataVal, fn) {
+                      if (dataVal) {
+                        if (parts.length === 0) {
+                          fn(dataVal);
+                        } else {
+                          if (angular.isArray(dataVal)) {
+                            // extract the array offset of the subkey from the element id
+                            var workString = element.context.id;
+                            var pos = workString.indexOf('.'+parts[0]);
+                            workString = workString.slice(0,pos);
+                            pos = workString.lastIndexOf('.');
+                            workString = workString.slice(pos+1);
+                            workString = /.+\[(.+)\]/.exec(workString);
+                            dataVal = dataVal[$scope[workString[1]]];
+                          }
+                          dataVal = dataVal[parts.shift()];
+                          drillIntoObject(parts, dataVal, fn);
+                        }
+                      }
+                    }
+
                     var dataVal = $scope.record;
                     if (dataVal) {
                       var parts = formInstructions.name.split('.');
-                      while (parts.length > 0 && dataVal) {
-                        dataVal = dataVal[parts.shift()];
-                      }
-                      if (dataVal) {
-                        if (formInstructions.array) {
-                          var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
-                          if (dataVal[offset].x) {
-                            callback(dataVal[offset].x);
+                      drillIntoObject(parts, dataVal, function(leafVal) {
+                        setTimeout(updateInvalidClasses(leafVal, formInstructions.id, formInstructions.select2));
+                        if (leafVal) {
+                          if (formInstructions.array) {
+                            var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
+                            if (leafVal[offset].x) {
+                              callback(leafVal[offset].x);
+                            }
+                          } else {
+                            callback(leafVal);
                           }
-                        } else {
-                          callback(dataVal);
                         }
-                      }
+                      });
                     } else {
                       $timeout(executeCallback);
                     }
@@ -1110,9 +1132,10 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
       for (var i = 0; i < schema.length; i++) {
         var fieldname = schema[i].name.slice(prefixLength);
         if (schema[i].schema) {
-          if (anObject[fieldname]) {
-            for (var j = 0; j < anObject[fieldname].length; j++) {
-              anObject[fieldname][j] = convertToAngularModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length);
+          var extractField = $scope.getData(anObject, fieldname);
+          if (extractField) {
+            for (var j = 0; j < extractField.length; j++) {
+              extractField[j] = convertToAngularModel(schema[i].schema, extractField[j], prefixLength + 1 + fieldname.length);
             }
           }
         } else {
@@ -1581,21 +1604,22 @@ formsAngular
         var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
           var nameString;
           if (!modelString) {
-            modelString = (options.model || 'record') + '.';
+            var modelBase = (options.model || 'record') + '.';
+            modelString = modelBase;
             if (options.subschema && fieldInfo.name.indexOf('.') !== -1) {
               // Schema handling - need to massage the ngModel and the id
-              var compoundName = fieldInfo.name,
-                lastPartStart = compoundName.lastIndexOf('.'),
-                lastPart = compoundName.slice(lastPartStart + 1);
+              var compoundName = fieldInfo.name;
+              var lastPartStart = compoundName.lastIndexOf('.');
+              var lastPart = compoundName.slice(lastPartStart + 1);
+              var root = compoundName.slice(0, lastPartStart);
               if (options.index) {
-                var cut = modelString.length;
-                modelString += compoundName.slice(0, lastPartStart) + '[' + options.index + '].' + lastPart;
-                idString = 'f_' + modelString.slice(cut).replace(/(\.|\[|\]\.)/g, '-');
+                modelString += root + '[' + options.index + '].' + lastPart;
+                idString = 'f_' + modelString.slice(modelBase.length).replace(/(\.|\[|\]\.)/g, '-');
               } else {
-                modelString += compoundName.slice(0, lastPartStart);
+                modelString += root;
                 if (options.subkey) {
-                  modelString += '[' + '$_arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
-                  idString = compoundName + '_subkey';
+                  modelString += '[' + '$_arrayOffset_' + root.replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
+                  idString = modelString.slice(modelBase.length);
                 } else {
                   modelString += '[$index].' + lastPart;
                   idString = null;
