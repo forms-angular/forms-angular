@@ -96,21 +96,22 @@ formsAngular
         var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
           var nameString;
           if (!modelString) {
-            modelString = (options.model || 'record') + '.';
+            var modelBase = (options.model || 'record') + '.';
+            modelString = modelBase;
             if (options.subschema && fieldInfo.name.indexOf('.') !== -1) {
               // Schema handling - need to massage the ngModel and the id
-              var compoundName = fieldInfo.name,
-                lastPartStart = compoundName.lastIndexOf('.'),
-                lastPart = compoundName.slice(lastPartStart + 1);
+              var compoundName = fieldInfo.name;
+              var lastPartStart = compoundName.lastIndexOf('.');
+              var lastPart = compoundName.slice(lastPartStart + 1);
+              var root = compoundName.slice(0, lastPartStart);
               if (options.index) {
-                var cut = modelString.length;
-                modelString += compoundName.slice(0, lastPartStart) + '[' + options.index + '].' + lastPart;
-                idString = 'f_' + modelString.slice(cut).replace(/(\.|\[|\]\.)/g, '-');
+                modelString += root + '[' + options.index + '].' + lastPart;
+                idString = 'f_' + modelString.slice(modelBase.length).replace(/(\.|\[|\]\.)/g, '-');
               } else {
-                modelString += compoundName.slice(0, lastPartStart);
+                modelString += root;
                 if (options.subkey) {
-                  modelString += '[' + '$_arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
-                  idString = compoundName + '_subkey';
+                  modelString += '[' + '$_arrayOffset_' + root.replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
+                  idString = modelString.slice(modelBase.length);
                 } else {
                   modelString += '[$index].' + lastPart;
                   idString = null;
