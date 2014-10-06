@@ -170,6 +170,7 @@ formsAngular.factory('formGenerator', function (
                                             }
                                         } else {
                                             callback(dataVal);
+                                        }
                                     }
                                 } else {
                                     $timeout(executeCallback);
