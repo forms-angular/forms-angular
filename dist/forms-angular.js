@@ -1444,6 +1444,7 @@ formsAngular.factory('formGenerator', function (
                     }, 0);
                 }
                 if (formInstructions.select2) {
+                    if (formInstructions.select2 === true) {formInstructions.select2 = {}; }
                     formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
                     $scope[formInstructions.select2.s2query] = {
                         allowClear: !mongooseOptions.required,
@@ -1458,7 +1459,14 @@ formsAngular.factory('formGenerator', function (
                                     }
                                 }
                                 if (dataVal) {
-                                    callback(dataVal);
+                                    if (formInstructions.array) {
+                                        var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
+                                        if (dataVal[offset].text) {
+                                            callback(dataVal[offset].text);
+                                        }
+                                    } else {
+                                        callback(dataVal);
+                                    }
                                 } else {
                                     $timeout(executeCallback);
                                 }
@@ -1501,6 +1509,7 @@ formsAngular.factory('formGenerator', function (
             } else {
                 formInstructions.type = 'select';
                 if (formInstructions.select2) {
+                    if (formInstructions.select2 === true) {formInstructions.select2 = {}; }
                     $scope.select2List.push(formInstructions.name);
                     if (formInstructions.select2.fngAjax) {
                         // create the instructions for select2
@@ -2046,7 +2055,7 @@ formsAngular.factory('recordHandler', function (
             }
         }
         if (record && select2List.indexOf(nests[i - 1]) !== -1) {
-            record = record.text;
+            record = record.text || record;
         }
         if (record === undefined) {
             record = '';
@@ -2185,6 +2194,16 @@ formsAngular.factory('recordHandler', function (
             updateArrayOrObject(fieldDetails[1], portion[fieldDetails[0]], fn);
         } else if (portion[fieldDetails[0]]) {
             var theValue = portion[fieldDetails[0]];
+
+            // Strip out empty objects here (in case anyone added to an array and didn't populate it)
+            if (angular.isArray(theValue)) {
+                for (var i = theValue.length - 1; i >= 0; i--) {
+                    var type = typeof theValue[i];
+                    if (type === 'undefined' || (type === 'object' && Object.keys(theValue[i]).length === 0)) {
+                        theValue.splice(i, 1);
+                    }
+                }
+            }
             portion[fieldDetails[0]] = fn(theValue);
         }
     }
@@ -2239,15 +2258,31 @@ formsAngular.factory('recordHandler', function (
                     anObject[fieldname] = convertForeignKeys(schema[i], anObject[fieldname], $scope[exports.suffixCleanId(schema[i], 'Options')], idList);
                 } else if (schema[i].select2 && !schema[i].select2.fngAjax) {
                     if (anObject[fieldname]) {
-                        // Might as well use the function we set up to do the search
-                        $scope[schema[i].select2.s2query].query({
-                            term: anObject[fieldname],
-                            callback: function (array) {
-                                if (array.results.length > 0) {
-                                    anObject[fieldname] = array.results[0];
-                                }
+                        if (schema[i].array) {
+                            for (var n = 0; n < anObject[fieldname].length; n++) {
+                                $scope[schema[i].select2.s2query].query({
+                                    term: anObject[fieldname][n].x.text || anObject[fieldname][n].text || anObject[fieldname][n].x || anObject[fieldname][n],
+                                    callback: function (array) {
+                                        if (array.results.length > 0) {
+                                            if (anObject[fieldname][n].x) {
+                                                anObject[fieldname][n].x = array.results[0];
+                                            } else {
+                                                anObject[fieldname][n] = array.results[0];
+                                            }
+                                        }
+                                    }
+                                });
                             }
-                        });
+                        } else {
+                            $scope[schema[i].select2.s2query].query({
+                                term: anObject[fieldname],
+                                callback: function (array) {
+                                    if (array.results.length > 0) {
+                                        anObject[fieldname] = array.results[0];
+                                    }
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -2257,6 +2292,18 @@ formsAngular.factory('recordHandler', function (
 
     // Reverse the process of convertToAngularModel
     exports.convertToMongoModel = function (schema, anObject, prefixLength, $scope) {
+
+        function convertLookup(lookup, schemaElement) {
+            var retVal;
+            if (schemaElement.select2.fngAjax) {
+                if (lookup && lookup.id) {
+                    retVal = lookup.id;
+                }
+            } else if (lookup) {
+                retVal = lookup.text || lookup.x.text;
+            }
+            return retVal;
+        }
 
         for (var i = 0; i < schema.length; i++) {
             var fieldname = schema[i].name.slice(prefixLength);
@@ -2285,17 +2332,16 @@ formsAngular.factory('recordHandler', function (
                     });
                 } else if (schema[i].select2) {
                     var lookup = getData(anObject, fieldname, null);
-                    if (schema[i].select2.fngAjax) {
-                        if (lookup && lookup.id) {
-                            exports.setData(anObject, fieldname, null, lookup.id);
+                    var newVal;
+                    if (schema[i].array) {
+                        newVal = [];
+                        for (var n=0; n < lookup.length; n++) {
+                            newVal[n] = convertLookup(lookup[n], schema[i]);
                         }
                     } else {
-                        if (lookup) {
-                            exports.setData(anObject, fieldname, null, lookup.text);
-                        } else {
-                            exports.setData(anObject, fieldname, null, undefined);
-                        }
+                        newVal = convertLookup(lookup, schema[i]);
                     }
+                    exports.setData(anObject, fieldname, null, newVal);
                 }
 
             }
