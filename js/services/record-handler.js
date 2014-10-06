@@ -303,9 +303,10 @@ formsAngular.factory('recordHandler', function (
         for (var i = 0; i < schema.length; i++) {
             var fieldname = schema[i].name.slice(prefixLength);
             if (schema[i].schema) {
-                if (anObject[fieldname]) {
-                    for (var j = 0; j < anObject[fieldname].length; j++) {
-                        anObject[fieldname][j] = convertToAngularModel(schema[i].schema, anObject[fieldname][j], prefixLength + 1 + fieldname.length, $scope);
+                var extractField = getData(anObject, fieldname);
+                if (extractField) {
+                    for (var j = 0; j < extractField.length; j++) {
+                        extractField[j] = convertToAngularModel(schema[i].schema, extractField[j], prefixLength + 1 + fieldname.length, $scope);
                     }
                 }
             } else {
