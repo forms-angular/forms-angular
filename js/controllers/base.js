@@ -21,7 +21,7 @@ formsAngular.controller('BaseCtrl', [
         formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
         recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
 
-        recordHandler.fillForm($scope, formGenerator, recordHandler, ctrlState);
+        recordHandler.fillForm($scope, formGenerator, recordHandler, ctrlState, recordHandler.handleError($scope));
 
     }
 ])

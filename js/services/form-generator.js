@@ -19,6 +19,11 @@ formsAngular.factory('formGenerator', function (
         return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
     };
 
+    exports.generateNewUrl = function ($scope) {
+        return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + 'new');
+    };
+
+
     function updateInvalidClasses(value, id, select2, ctrlState) {
         var target = '#' + ((select2) ? 'cg_' : '') + id;
         var element = angular.element(document.querySelector(target));
@@ -30,7 +35,7 @@ formsAngular.factory('formGenerator', function (
     }
 
 
-    exports.handleSchema = function (description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
+    exports.handleSchema = function (description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState, handleError) {
 
         function handletabInfo(tabName, thisInst) {
             var tabTitle = angular.copy(tabName);
@@ -61,7 +66,7 @@ formsAngular.factory('formGenerator', function (
                     if (mongooseType.schema) {
                         if (doRecursion && destForm) {
                             var schemaSchema = [];
-                            exports.handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
+                            exports.handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState, handleError);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
                             if (formData.tab) {
@@ -77,7 +82,7 @@ formsAngular.factory('formGenerator', function (
                         if (destForm) {
                             var formInstructions = basicInstructions(field, formData, prefix);
                             if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
-                                var formInst = exports.handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
+                                var formInst = exports.handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError);
                                 if (formInst.tab) {
                                     handletabInfo(formInst.tab, formInst);
                                 }
@@ -121,7 +126,7 @@ formsAngular.factory('formGenerator', function (
     };
 
 
-    exports.handleFieldType = function (formInstructions, mongooseType, mongooseOptions, $scope, ctrlState) {
+    exports.handleFieldType = function (formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError) {
 
         var select2ajaxName;
         if (mongooseType.caster) {
@@ -229,9 +234,7 @@ formsAngular.factory('formGenerator', function (
                                             if (isClean) {
                                                 modelController.$pristine = true;
                                             }
-                                        }).error(function () {
-                                            $location.path('/404');
-                                        });
+                                        }).error(handleError);
 //                                } else {
 //                                    throw new Error('select2 initSelection called without a value');
                                 }
@@ -282,12 +285,12 @@ formsAngular.factory('formGenerator', function (
                         $scope.select2List.push(formInstructions.name);
                         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                         formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                        recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema);
+                        recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema, handleError);
                     }
                 } else {
                     formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                     formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                    recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema);
+                    recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema, handleError);
                 }
             }
         } else if (mongooseType.instance === 'Date') {
@@ -565,8 +568,12 @@ formsAngular.factory('formGenerator', function (
             return formGeneratorInstance.generateEditUrl(obj, $scope);
         };
 
+        $scope.generateNewUrl = function () {
+            return formGeneratorInstance.generateNewUrl($scope);
+        };
+
         $scope.scrollTheList =  function () {
-            return recordHandlerInstance.scrollTheList($scope);
+            return recordHandlerInstance.scrollTheList($scope, recordHandlerInstance.handleError($scope));
         };
 
         $scope.getListData = function(record, fieldName) {
@@ -601,7 +608,7 @@ formsAngular.factory('formGenerator', function (
             return formGeneratorInstance.remove(fieldName, value, $event, $scope);
         };
 
-        // Open a select2 control from the appended search button
+        // Open a select2 control from the appended search button.  OK to use $ here as select2 itself is dependent on jQuery.
         $scope.openSelect2 = function (ev) {
             $('#' + $(ev.currentTarget).data('select2-open')).select2('open');
         };

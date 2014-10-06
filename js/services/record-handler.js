@@ -20,7 +20,7 @@ formsAngular.factory('recordHandler', function (
         $scope.cancel();
     };
 
-    exports.readRecord = function ($scope, ctrlState) {
+    exports.readRecord = function ($scope, ctrlState, handleError) {
         SubmissionsService.readRecord($scope.modelName, $scope.id)
             .success(function (data) {
                 if (data.success === false) {
@@ -32,13 +32,11 @@ formsAngular.factory('recordHandler', function (
                     $scope.dataEventFunctions.onAfterRead(data);
                 }
                 exports.processServerData(data, $scope, ctrlState);
-            }).error(function () {
-                $location.path('/404');
-            });
+            }).error(handleError);
     };
 
     // FIXME: this method seems to be not used anymore
-    exports.scrollTheList = function ($scope) {
+    exports.scrollTheList = function ($scope, handleError) {
         SubmissionsService.getPagedAndFilteredList($scope.modelName, {
             aggregate: $location.$$search.a,
             find: $location.$$search.f,
@@ -54,9 +52,7 @@ formsAngular.factory('recordHandler', function (
                     $scope.showError(data, 'Invalid query');
                 }
             })
-            .error(function () {
-                $location.path('/404');
-            });
+            .error(handleError);
     };
 
 // TODO: Do we need model here?  Can we not infer it from scope?
@@ -211,14 +207,14 @@ formsAngular.factory('recordHandler', function (
         }
     };
 
-    exports.setUpSelectOptions = function (lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
+    exports.setUpSelectOptions = function (lookupCollection, schemaElement, $scope, ctrlState, handleSchema, handleError) {
         var optionsList = $scope[schemaElement.options] = [];
         var idList = $scope[schemaElement.ids] = [];
 
         SchemasService.getSchema(lookupCollection)
             .success(function (data) {
                 var listInstructions = [];
-                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState);
+                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState, handleError);
 
                 SubmissionsService.getAll(lookupCollection)
                     .success(function (data) {
@@ -438,24 +434,8 @@ formsAngular.factory('recordHandler', function (
         }
     };
 
-    exports.decorateScope = function($scope, $modal, recordHandlerInstance, ctrlState) {
-
-        $scope.cancel = function () {
-            angular.copy(ctrlState.master, $scope.record);
-            $scope.setPristine();
-        };
-
-
-        //listener for any child scopes to display messages
-        // pass like this:
-        //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
-        // or
-        //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
-        $scope.$on('showErrorMessage', function (event, args) {
-            $scope.showError(args.body, args.title);
-        });
-
-        var handleError = function (data, status) {
+    exports.handleError = function ($scope) {
+        return function(data, status) {
             if ([200, 400].indexOf(status) !== -1) {
                 var errorMessage = '';
                 for (var errorField in data.errors) {
@@ -482,6 +462,25 @@ formsAngular.factory('recordHandler', function (
                 $scope.showError(status + ' ' + JSON.stringify(data));
             }
         };
+    };
+
+    exports.decorateScope = function($scope, $modal, recordHandlerInstance, ctrlState) {
+
+        $scope.cancel = function () {
+            angular.copy(ctrlState.master, $scope.record);
+            $scope.setPristine();
+        };
+
+        var handleError = exports.handleError($scope);
+
+        //listener for any child scopes to display messages
+        // pass like this:
+        //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+        // or
+        //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+        $scope.$on('showErrorMessage', function (event, args) {
+            $scope.showError(args.body, args.title);
+        });
 
         $scope.showError = function (errString, alertTitle) {
             $scope.alertTitle = alertTitle ? alertTitle : 'Error!';
@@ -641,14 +640,14 @@ formsAngular.factory('recordHandler', function (
 
     };
 
-    exports.fillForm = function($scope, formGeneratorInstance, recordHandlerInstance, ctrlState){
+    exports.fillForm = function($scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError){
 
         SchemasService.getSchema($scope.modelName, $scope.formName)
             .success(function (data) {
                 var listOnly = (!$scope.id && !$scope.newRecord);
                 // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
                 // but should be removed when/if formschemas are cached
-                formGeneratorInstance.handleSchema('Main ' + $scope.modelName, data, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState);
+                formGeneratorInstance.handleSchema('Main ' + $scope.modelName, data, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState, handleError);
 
                 if (listOnly) {
                     ctrlState.allowLocationChange = true;
@@ -667,11 +666,11 @@ formsAngular.factory('recordHandler', function (
                                 if (err) {
                                     $scope.showError(err);
                                 } else {
-                                    recordHandlerInstance.readRecord($scope, ctrlState);
+                                    recordHandlerInstance.readRecord($scope, ctrlState, handleError);
                                 }
                             });
                         } else {
-                            recordHandlerInstance.readRecord($scope, ctrlState);
+                            recordHandlerInstance.readRecord($scope, ctrlState, handleError);
                         }
                     } else {
                         // New record
@@ -681,9 +680,7 @@ formsAngular.factory('recordHandler', function (
                     }
                 }
             })
-            .error(function () {
-                $location.path('/404');
-            });
+            .error(handleError);
     };
 
     return exports;
