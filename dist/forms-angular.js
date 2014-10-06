@@ -1971,7 +1971,7 @@ formsAngular.factory('formGenerator', function (
  */
 
 formsAngular.factory('recordHandler', function (
-    $location, $window,
+    $location, $window, $filter,
     routingService, SubmissionsService, SchemasService) {
     var exports = {};
 
