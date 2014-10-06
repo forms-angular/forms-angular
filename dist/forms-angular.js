@@ -1,4 +1,4 @@
-/*! forms-angular 2014-10-02 */
+/*! forms-angular 2014-10-06 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -32,7 +32,7 @@ formsAngular.controller('BaseCtrl', [
         formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
         recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
 
-        recordHandler.fillForm($scope, formGenerator, recordHandler, ctrlState);
+        recordHandler.fillForm($scope, formGenerator, recordHandler, ctrlState, recordHandler.handleError($scope));
 
     }
 ])
@@ -1314,6 +1314,11 @@ formsAngular.factory('formGenerator', function (
         return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
     };
 
+    exports.generateNewUrl = function ($scope) {
+        return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + 'new');
+    };
+
+
     function updateInvalidClasses(value, id, select2, ctrlState) {
         var target = '#' + ((select2) ? 'cg_' : '') + id;
         var element = angular.element(document.querySelector(target));
@@ -1325,7 +1330,7 @@ formsAngular.factory('formGenerator', function (
     }
 
 
-    exports.handleSchema = function (description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
+    exports.handleSchema = function (description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState, handleError) {
 
         function handletabInfo(tabName, thisInst) {
             var tabTitle = angular.copy(tabName);
@@ -1356,7 +1361,7 @@ formsAngular.factory('formGenerator', function (
                     if (mongooseType.schema) {
                         if (doRecursion && destForm) {
                             var schemaSchema = [];
-                            exports.handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
+                            exports.handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState, handleError);
                             var sectionInstructions = basicInstructions(field, formData, prefix);
                             sectionInstructions.schema = schemaSchema;
                             if (formData.tab) {
@@ -1372,7 +1377,7 @@ formsAngular.factory('formGenerator', function (
                         if (destForm) {
                             var formInstructions = basicInstructions(field, formData, prefix);
                             if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
-                                var formInst = exports.handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
+                                var formInst = exports.handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError);
                                 if (formInst.tab) {
                                     handletabInfo(formInst.tab, formInst);
                                 }
@@ -1416,7 +1421,7 @@ formsAngular.factory('formGenerator', function (
     };
 
 
-    exports.handleFieldType = function (formInstructions, mongooseType, mongooseOptions, $scope, ctrlState) {
+    exports.handleFieldType = function (formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError) {
 
         var select2ajaxName;
         if (mongooseType.caster) {
@@ -1524,9 +1529,7 @@ formsAngular.factory('formGenerator', function (
                                             if (isClean) {
                                                 modelController.$pristine = true;
                                             }
-                                        }).error(function () {
-                                            $location.path('/404');
-                                        });
+                                        }).error(handleError);
 //                                } else {
 //                                    throw new Error('select2 initSelection called without a value');
                                 }
@@ -1577,12 +1580,12 @@ formsAngular.factory('formGenerator', function (
                         $scope.select2List.push(formInstructions.name);
                         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                         formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                        recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema);
+                        recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema, handleError);
                     }
                 } else {
                     formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                     formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                    recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema);
+                    recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema, handleError);
                 }
             }
         } else if (mongooseType.instance === 'Date') {
@@ -1860,8 +1863,12 @@ formsAngular.factory('formGenerator', function (
             return formGeneratorInstance.generateEditUrl(obj, $scope);
         };
 
+        $scope.generateNewUrl = function () {
+            return formGeneratorInstance.generateNewUrl($scope);
+        };
+
         $scope.scrollTheList =  function () {
-            return recordHandlerInstance.scrollTheList($scope);
+            return recordHandlerInstance.scrollTheList($scope, recordHandlerInstance.handleError($scope));
         };
 
         $scope.getListData = function(record, fieldName) {
@@ -1896,7 +1903,7 @@ formsAngular.factory('formGenerator', function (
             return formGeneratorInstance.remove(fieldName, value, $event, $scope);
         };
 
-        // Open a select2 control from the appended search button
+        // Open a select2 control from the appended search button.  OK to use $ here as select2 itself is dependent on jQuery.
         $scope.openSelect2 = function (ev) {
             $('#' + $(ev.currentTarget).data('select2-open')).select2('open');
         };
@@ -1938,7 +1945,7 @@ formsAngular.factory('recordHandler', function (
         $scope.cancel();
     };
 
-    exports.readRecord = function ($scope, ctrlState) {
+    exports.readRecord = function ($scope, ctrlState, handleError) {
         SubmissionsService.readRecord($scope.modelName, $scope.id)
             .success(function (data) {
                 if (data.success === false) {
@@ -1950,13 +1957,11 @@ formsAngular.factory('recordHandler', function (
                     $scope.dataEventFunctions.onAfterRead(data);
                 }
                 exports.processServerData(data, $scope, ctrlState);
-            }).error(function () {
-                $location.path('/404');
-            });
+            }).error(handleError);
     };
 
     // FIXME: this method seems to be not used anymore
-    exports.scrollTheList = function ($scope) {
+    exports.scrollTheList = function ($scope, handleError) {
         SubmissionsService.getPagedAndFilteredList($scope.modelName, {
             aggregate: $location.$$search.a,
             find: $location.$$search.f,
@@ -1972,9 +1977,7 @@ formsAngular.factory('recordHandler', function (
                     $scope.showError(data, 'Invalid query');
                 }
             })
-            .error(function () {
-                $location.path('/404');
-            });
+            .error(handleError);
     };
 
 // TODO: Do we need model here?  Can we not infer it from scope?
@@ -2129,14 +2132,14 @@ formsAngular.factory('recordHandler', function (
         }
     };
 
-    exports.setUpSelectOptions = function (lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
+    exports.setUpSelectOptions = function (lookupCollection, schemaElement, $scope, ctrlState, handleSchema, handleError) {
         var optionsList = $scope[schemaElement.options] = [];
         var idList = $scope[schemaElement.ids] = [];
 
         SchemasService.getSchema(lookupCollection)
             .success(function (data) {
                 var listInstructions = [];
-                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState);
+                handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState, handleError);
 
                 SubmissionsService.getAll(lookupCollection)
                     .success(function (data) {
@@ -2356,24 +2359,8 @@ formsAngular.factory('recordHandler', function (
         }
     };
 
-    exports.decorateScope = function($scope, $modal, recordHandlerInstance, ctrlState) {
-
-        $scope.cancel = function () {
-            angular.copy(ctrlState.master, $scope.record);
-            $scope.setPristine();
-        };
-
-
-        //listener for any child scopes to display messages
-        // pass like this:
-        //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
-        // or
-        //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
-        $scope.$on('showErrorMessage', function (event, args) {
-            $scope.showError(args.body, args.title);
-        });
-
-        var handleError = function (data, status) {
+    exports.handleError = function ($scope) {
+        return function(data, status) {
             if ([200, 400].indexOf(status) !== -1) {
                 var errorMessage = '';
                 for (var errorField in data.errors) {
@@ -2400,6 +2387,25 @@ formsAngular.factory('recordHandler', function (
                 $scope.showError(status + ' ' + JSON.stringify(data));
             }
         };
+    };
+
+    exports.decorateScope = function($scope, $modal, recordHandlerInstance, ctrlState) {
+
+        $scope.cancel = function () {
+            angular.copy(ctrlState.master, $scope.record);
+            $scope.setPristine();
+        };
+
+        var handleError = exports.handleError($scope);
+
+        //listener for any child scopes to display messages
+        // pass like this:
+        //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+        // or
+        //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+        $scope.$on('showErrorMessage', function (event, args) {
+            $scope.showError(args.body, args.title);
+        });
 
         $scope.showError = function (errString, alertTitle) {
             $scope.alertTitle = alertTitle ? alertTitle : 'Error!';
@@ -2559,14 +2565,14 @@ formsAngular.factory('recordHandler', function (
 
     };
 
-    exports.fillForm = function($scope, formGeneratorInstance, recordHandlerInstance, ctrlState){
+    exports.fillForm = function($scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError){
 
         SchemasService.getSchema($scope.modelName, $scope.formName)
             .success(function (data) {
                 var listOnly = (!$scope.id && !$scope.newRecord);
                 // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
                 // but should be removed when/if formschemas are cached
-                formGeneratorInstance.handleSchema('Main ' + $scope.modelName, data, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState);
+                formGeneratorInstance.handleSchema('Main ' + $scope.modelName, data, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState, handleError);
 
                 if (listOnly) {
                     ctrlState.allowLocationChange = true;
@@ -2585,11 +2591,11 @@ formsAngular.factory('recordHandler', function (
                                 if (err) {
                                     $scope.showError(err);
                                 } else {
-                                    recordHandlerInstance.readRecord($scope, ctrlState);
+                                    recordHandlerInstance.readRecord($scope, ctrlState, handleError);
                                 }
                             });
                         } else {
-                            recordHandlerInstance.readRecord($scope, ctrlState);
+                            recordHandlerInstance.readRecord($scope, ctrlState, handleError);
                         }
                     } else {
                         // New record
@@ -2599,9 +2605,7 @@ formsAngular.factory('recordHandler', function (
                     }
                 }
             })
-            .error(function () {
-                $location.path('/404');
-            });
+            .error(handleError);
     };
 
     return exports;
