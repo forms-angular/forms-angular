@@ -217,6 +217,9 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
           }
         }
       }
+      if (indexedFields.length === 0) {
+        console.log('ERROR: Searching on a collection with no indexes ' + resource.resourceName);
+      }
       for (var m = 0; m < indexedFields.length; m++) {
         searches.push({resource: resource, field: indexedFields[m] });
       }
@@ -727,7 +730,7 @@ DataForm.prototype.saveAndRespond = function (req, res, hiddenFields) {
         if (debug) {
           console.log('Error saving record: ' + JSON.stringify(err2));
         }
-        res.send(400, err2);
+        res.status(400).send(err2);
       } else {
         doc2 = doc2.toObject();
         for (var hiddenField in hiddenFields) {
@@ -958,15 +961,17 @@ DataForm.prototype.entityGet = function () {
 
 DataForm.prototype.replaceHiddenFields = function (record, data) {
   var self = this;
-  self._replacingHiddenFields = true;
-  _.each(data, function (value, name) {
-    if (_.isObject(value)) {
-      self.replaceHiddenFields(record[name], value);
-    } else {
-      record[name] = value;
-    }
-  });
-  delete self._replacingHiddenFields;
+  if (record) {
+    record._replacingHiddenFields = true;
+    _.each(data, function (value, name) {
+      if (_.isObject(value)) {
+        self.replaceHiddenFields(record[name], value);
+      } else {
+        record[name] = value;
+      }
+    });
+    delete record._replacingHiddenFields;
+  }
 };
 
 DataForm.prototype.entityPut = function () {
