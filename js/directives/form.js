@@ -98,21 +98,22 @@ formsAngular
         var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
           var nameString;
           if (!modelString) {
-            modelString = (options.model || 'record') + '.';
+            var modelBase = (options.model || 'record') + '.';
+            modelString = modelBase;
             if (options.subschema && fieldInfo.name.indexOf('.') !== -1) {
               // Schema handling - need to massage the ngModel and the id
-              var compoundName = fieldInfo.name,
-                lastPartStart = compoundName.lastIndexOf('.'),
-                lastPart = compoundName.slice(lastPartStart + 1);
+              var compoundName = fieldInfo.name;
+              var lastPartStart = compoundName.lastIndexOf('.');
+              var lastPart = compoundName.slice(lastPartStart + 1);
+              var root = compoundName.slice(0, lastPartStart);
               if (options.index) {
-                var cut = modelString.length;
-                modelString += compoundName.slice(0, lastPartStart) + '[' + options.index + '].' + lastPart;
-                idString = 'f_' + modelString.slice(cut).replace(/(\.|\[|\]\.)/g, '-');
+                modelString += root + '[' + options.index + '].' + lastPart;
+                idString = 'f_' + modelString.slice(modelBase.length).replace(/(\.|\[|\]\.)/g, '-');
               } else {
-                modelString += compoundName.slice(0, lastPartStart);
+                modelString += root;
                 if (options.subkey) {
-                  modelString += '[' + '$_arrayOffset_' + compoundName.slice(0, lastPartStart).replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
-                  idString = compoundName + '_subkey';
+                  modelString += '[' + '$_arrayOffset_' + root.replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
+                  idString = modelString.slice(modelBase.length);
                 } else {
                   modelString += '[$index].' + lastPart;
                   idString = null;
@@ -474,19 +475,18 @@ formsAngular
             if (info.array) {
               controlClass.push('fng-array');
               if (options.formstyle === 'inline') { throw 'Cannot use arrays in an inline form'; }
+              var glyphClass, ngClassString;
               if (cssFrameworkService.framework() === 'bs2') {
-                template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="icon-plus-sign"></i>', options) +
-                  '<div class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
-                  generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options) +
-                  '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="icon-minus-sign"></i>' +
-                  '</div>';
+                glyphClass = 'icon';
+                ngClassString = '';
               } else {
-                template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="glyphicon glyphicon-plus-sign"></i>', options) +
-                  '<div ng-class="skipCols($index)" class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">' +
-                  generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options) +
-                  '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="glyphicon glyphicon-minus-sign"></i>' +
-                  '</div>';
+                glyphClass = 'glyphicon glyphicon';
+                ngClassString = 'ng-class="skipCols($index)" ';
               }
+              template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="' + glyphClass + '-plus-sign">' +
+                '</i>', options) + '<div ' + ngClassString + 'class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' +
+                (options.model || 'record') + '.' + info.name + '">' + generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options) +
+                '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass + '-minus-sign"></i></div>';
             } else {
               // Single fields here
               template += generateLabel(info, null, options);
