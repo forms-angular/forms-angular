@@ -149,6 +149,7 @@ formsAngular.factory('formGenerator', function (
                     }, 0);
                 }
                 if (formInstructions.select2) {
+                    if (formInstructions.select2 === true) {formInstructions.select2 = {}; }
                     formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
                     $scope[formInstructions.select2.s2query] = {
                         allowClear: !mongooseOptions.required,
@@ -163,7 +164,14 @@ formsAngular.factory('formGenerator', function (
                                     }
                                 }
                                 if (dataVal) {
-                                    callback(dataVal);
+                                    if (formInstructions.array) {
+                                        var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
+                                        if (dataVal[offset].text) {
+                                            callback(dataVal[offset].text);
+                                        }
+                                    } else {
+                                        callback(dataVal);
+                                    }
                                 } else {
                                     $timeout(executeCallback);
                                 }
@@ -206,6 +214,7 @@ formsAngular.factory('formGenerator', function (
             } else {
                 formInstructions.type = 'select';
                 if (formInstructions.select2) {
+                    if (formInstructions.select2 === true) {formInstructions.select2 = {}; }
                     $scope.select2List.push(formInstructions.name);
                     if (formInstructions.select2.fngAjax) {
                         // create the instructions for select2
