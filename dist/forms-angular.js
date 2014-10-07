@@ -32,7 +32,7 @@ formsAngular.controller('BaseCtrl', [
         formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
         recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
 
-        recordHandler.fillForm($scope, formGenerator, recordHandler, ctrlState, recordHandler.handleError($scope));
+        recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState, recordHandler.handleError($scope));
 
     }
 ])
@@ -2653,45 +2653,49 @@ formsAngular.factory('recordHandler', function (
 
     };
 
-    exports.fillForm = function($scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError){
+    exports.fillFormFromBackendCustomSchema = function(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError) {
+        var listOnly = (!$scope.id && !$scope.newRecord);
+        // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
+        // but should be removed when/if formschemas are cached
+        formGeneratorInstance.handleSchema('Main ' + $scope.modelName, schema, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState, handleError);
 
-        SchemasService.getSchema($scope.modelName, $scope.formName)
-            .success(function (data) {
-                var listOnly = (!$scope.id && !$scope.newRecord);
-                // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
-                // but should be removed when/if formschemas are cached
-                formGeneratorInstance.handleSchema('Main ' + $scope.modelName, data, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState, handleError);
+        if (listOnly) {
+            ctrlState.allowLocationChange = true;
+        } else {
+            var force = true;
+            $scope.$watch('record', function (newValue, oldValue) {
+                if (newValue !== oldValue) {
+                    force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
+                }
+            }, true);
 
-                if (listOnly) {
-                    ctrlState.allowLocationChange = true;
-                } else {
-                    var force = true;
-                    $scope.$watch('record', function (newValue, oldValue) {
-                        if (newValue !== oldValue) {
-                            force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
-                        }
-                    }, true);
-
-                    if ($scope.id) {
-                        // Going to read a record
-                        if (typeof $scope.dataEventFunctions.onBeforeRead === 'function') {
-                            $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
-                                if (err) {
-                                    $scope.showError(err);
-                                } else {
-                                    recordHandlerInstance.readRecord($scope, ctrlState, handleError);
-                                }
-                            });
+            if ($scope.id) {
+                // Going to read a record
+                if (typeof $scope.dataEventFunctions.onBeforeRead === 'function') {
+                    $scope.dataEventFunctions.onBeforeRead($scope.id, function (err) {
+                        if (err) {
+                            $scope.showError(err);
                         } else {
                             recordHandlerInstance.readRecord($scope, ctrlState, handleError);
                         }
-                    } else {
-                        // New record
-                        ctrlState.master = {};
-                        $scope.phase = 'ready';
-                        $scope.cancel();
-                    }
+                    });
+                } else {
+                    recordHandlerInstance.readRecord($scope, ctrlState, handleError);
                 }
+            } else {
+                // New record
+                ctrlState.master = {};
+                $scope.phase = 'ready';
+                $scope.cancel();
+            }
+        }
+    };
+
+    exports.fillFormWithBackendSchema = function($scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError){
+
+        SchemasService.getSchema($scope.modelName, $scope.formName)
+            .success(function (schema) {
+                exports.fillFormFromBackendCustomSchema(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError);
             })
             .error(handleError);
     };
