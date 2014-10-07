@@ -40,6 +40,24 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     });
   }
 
+  function _buildOperationUrl(prefix, operation, modelName, formName, id) {
+      var formString = formName ? ('/' + formName) : '';
+      var modelString = prefix + '/' + modelName;
+      var urlStr;
+      switch (operation) {
+          case 'list' :
+              urlStr = modelString + formString;
+              break;
+          case 'edit' :
+              urlStr = modelString + formString + '/' + id + '/edit';
+              break;
+          case 'new' :
+              urlStr = modelString + formString + '/new';
+              break;
+      }
+      return urlStr;
+  }
+
   return {
     start: function (options) {
       angular.extend(config, options);
@@ -139,6 +157,9 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
           url += (path[0] === '/' ? path.slice(1) : path);
           return url;
         },
+        buildOperationUrl: function(operation, modelName, formName, id) {
+            return _buildOperationUrl(config.prefix, operation, modelName, formName, id);
+        },
         redirectTo: function () {
           return function (operation, scope, location, id) {
 //            switch (config.routing) {
@@ -146,19 +167,10 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
                 if (location.search()) {
                   location.url(location.path());
                 }
-                var formString = scope.formName ? ('/' + scope.formName) : '';
-                var modelString = config.prefix + '/' + scope.modelName;
-                switch (operation) {
-                  case 'list' :
-                    location.path(modelString + formString);
-                    break;
-                  case 'edit' :
-                    location.path(modelString + formString + '/' + id + '/edit');
-                    break;
-                  case 'new' :
-                    location.path(modelString + formString + '/new');
-                    break;
-                }
+
+                var urlStr = _buildOperationUrl(config.prefix, operation, scope.modelName, scope.formName, id);
+                location.path(urlStr);
+
 //                break;
 //              case 'uirouter' :
 //                var formString = scope.formName ? ('/' + scope.formName) : '';
