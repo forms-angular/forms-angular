@@ -242,6 +242,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
     searches,
     function (item, cb) {
       var searchDoc = {};
+//      console.log(searchCriteria);
       if (filter) {
         extend(searchDoc, filter);
         if (filter[item.field]) {
