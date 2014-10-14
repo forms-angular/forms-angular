@@ -246,6 +246,10 @@ formsAngular.factory('formGenerator', function (
                     if (formInstructions.select2.fngAjax) {
                         // create the instructions for select2
                         select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
+                        // If not required then generate a place holder if none specified (see https://github.com/forms-angular/forms-angular/issues/53)
+                        if (!mongooseOptions.required && !formInstructions.placeHolder) {
+                            formInstructions.placeHolder = 'Select...';
+                        }
                         $scope[select2ajaxName] = {
                             allowClear: !mongooseOptions.required,
                             minimumInputLength: 2,
