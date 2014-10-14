@@ -1,7 +1,7 @@
 {
   "name": "forms-angular",
-  "author": "Mark Chapman <support@forms-angular.org>",  
-  "version": "0.4.0-beta.2",
+  "author": "Mark Chapman <support@forms-angular.org>",
+  "version": "0.4.0",
   "homepage": "https://github.com/forms-angular/forms-angular",
   "description": "No nonsense forms for the MEAN stack",
   "keywords": [
@@ -18,15 +18,15 @@
     "dist/forms-angular.js"
   ],
   "dependencies": {
-    "angular": ">=1.3.0-rc.1",
-    "angular-sanitize": ">=1.3.0-rc.1",
+    "angular": ">=1.3.0",
+    "angular-sanitize": ">=1.3.0",
     "angular-ui-bootstrap-bower": ">=0.8.0",
     "underscore": "1.6",
     "ngInfiniteScroll": "^1.1.2",
     "angular-elastic": "~2"
   },
   "devDependencies": {
-    "angular-mocks": ">=1.3.0-rc.1",
+    "angular-mocks": ">=1.3.0",
     "bootstrap-3-1-1": "git://github.com/twbs/bootstrap.git#v3.1.1",
     "bootstrap-2-3-2": "git://github.com/twbs/bootstrap.git#v2.3.2"
 

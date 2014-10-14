@@ -841,38 +841,54 @@ formsAngular
                 var unwatch2 = scope.$watch('phase', function (newValue) {
                   if (newValue === 'ready') {
                     unwatch2();
-                    for (var subkeyCtr = 0; subkeyCtr < subkeys.length; subkeyCtr++) {
-                      var info = subkeys[subkeyCtr],
-                        arrayOffset,
-                        matching,
-                        arrayToProcess = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
-                      for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
-                        var thisSubkeyList = arrayToProcess[thisOffset].keyList;
 
-                        var parts = info.name.split('.');
-                        var dataVal = theRecord;
-                        while (parts.length > 1) {
-                          dataVal = dataVal[parts.shift()] || {};
-                        }
-                        dataVal = dataVal[parts[0]] = dataVal[parts[0]] || [];
-                        for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
-                          matching = true;
-                          for (var keyField in thisSubkeyList) {
-                            if (thisSubkeyList.hasOwnProperty(keyField)) {
-                              // Not (currently) concerned with objects here - just simple types
-                              if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField]) {
-                                matching = false;
-                                break;
+                    // For each one of the subkeys sets in the form
+                    for (var subkeyCtr = 0; subkeyCtr < subkeys.length; subkeyCtr++) {
+                      var info = subkeys[subkeyCtr];
+                      var arrayOffset;
+                      var matching;
+                      var arrayToProcess = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
+
+                      var parts = info.name.split('.');
+                      var dataVal = theRecord;
+                      while (parts.length > 1) {
+                        dataVal = dataVal[parts.shift()] || {};
+                      }
+                      dataVal = dataVal[parts[0]] = dataVal[parts[0]] || [];
+
+                      // For each of the required subkeys of this type
+                      for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
+
+                        if (arrayToProcess[thisOffset].selectFunc) {
+                          // Get the array offset from a function
+                          arrayOffset = scope[arrayToProcess[thisOffset].selectFunc](theRecord, info);
+
+                        } else if (arrayToProcess[thisOffset].keyList) {
+                          // We are chosing the array element by matching one or more keys
+                          var thisSubkeyList = arrayToProcess[thisOffset].keyList;
+
+                          for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
+                            matching = true;
+                            for (var keyField in thisSubkeyList) {
+                              if (thisSubkeyList.hasOwnProperty(keyField)) {
+                                // Not (currently) concerned with objects here - just simple types and lookups
+                                if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField] &&
+                                  (!dataVal[arrayOffset][keyField].text || dataVal[arrayOffset][keyField].text !== thisSubkeyList[keyField])) {
+                                  matching = false;
+                                  break;
+                                }
                               }
                             }
+                            if (matching) {
+                              break;
+                            }
                           }
-                          if (matching) {
-                            break;
+                          if (!matching) {
+                            // There is no matching array element - we need to create one
+                            arrayOffset = theRecord[info.name].push(thisSubkeyList) - 1;
                           }
-                        }
-                        if (!matching) {
-                          // There is no matching array element - we need to create one
-                          arrayOffset = theRecord[info.name].push(thisSubkeyList) - 1;
+                        } else {
+                          throw new Error('Invalid subkey setup for ' + info.name);
                         }
                         scope['$_arrayOffset_' + info.name.replace(/\./g, '_') + '_' + thisOffset] = arrayOffset;
                       }
