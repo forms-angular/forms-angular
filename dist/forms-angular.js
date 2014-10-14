@@ -1,4 +1,4 @@
-/*! forms-angular 2014-10-07 */
+/*! forms-angular 2014-10-15 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -1263,7 +1263,9 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
                   location.url(location.path());
                 }
 
-                var urlStr = _buildOperationUrl(config.prefix, operation, scope.modelName, scope.formName, id);
+                var viewName = scope.viewName ? scope.viewName : scope.modelName;
+
+                var urlStr = _buildOperationUrl(config.prefix, operation, viewName, scope.formName, id);
                 location.path(urlStr);
 
 //                break;
@@ -1553,6 +1555,10 @@ formsAngular.factory('formGenerator', function (
                     if (formInstructions.select2.fngAjax) {
                         // create the instructions for select2
                         select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
+                        // If not required then generate a place holder if none specified (see https://github.com/forms-angular/forms-angular/issues/53)
+                        if (!mongooseOptions.required && !formInstructions.placeHolder) {
+                            formInstructions.placeHolder = 'Select...';
+                        }
                         $scope[select2ajaxName] = {
                             allowClear: !mongooseOptions.required,
                             minimumInputLength: 2,
