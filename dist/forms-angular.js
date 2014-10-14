@@ -200,14 +200,25 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
                           fn(dataVal);
                         } else {
                           if (angular.isArray(dataVal)) {
-                            // extract the array offset of the subkey from the element id
-                            var workString = element.context.id;
-                            var pos = workString.indexOf('.'+parts[0]);
-                            workString = workString.slice(0,pos);
-                            pos = workString.lastIndexOf('.');
-                            workString = workString.slice(pos+1);
-                            workString = /.+\[(.+)\]/.exec(workString);
-                            dataVal = dataVal[$scope[workString[1]]];
+                            var workString, pos;
+                            if (!dataVal[0].x || !dataVal[0].x.text) {
+                              // We are in a nested sub doc array
+                              // Extract the sub doc relating to this form
+                              workString = element.inheritedData('$formController').$name;
+                              pos = workString.lastIndexOf('_');
+                              workString = workString.slice(pos + 1);
+                              dataVal = dataVal[parseInt(workString)];
+                            } else {
+                              // We are in a simple array
+                              // extract the array offset of the subkey from the element id
+                              workString = element.context.id;
+                              pos = workString.indexOf('.' + parts[0]);
+                              workString = workString.slice(0, pos);
+                              pos = workString.lastIndexOf('.');
+                              workString = workString.slice(pos + 1);
+                              workString = /.+\[(.+)\]/.exec(workString);
+                              dataVal = dataVal[$scope[workString[1]]];
+                            }
                           }
                           dataVal = dataVal[parts.shift()];
                           drillIntoObject(parts, dataVal, fn);
@@ -1347,6 +1358,7 @@ formsAngular.controller('BaseCtrl', ['$injector', '$scope', '$location', '$timeo
       $modalInstance.dismiss('cancel');
     };
   }]);
+
 'use strict';
 
 formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'routingService', function ($scope, $http, $location, routingService) {
@@ -1929,7 +1941,7 @@ formsAngular
                 template += '<div class="schema-head">' + info.label +
                   '</div>' +
                   '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
-                  convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
+                  convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '_{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
                   ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
                   '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">' +
                   '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model}) +
