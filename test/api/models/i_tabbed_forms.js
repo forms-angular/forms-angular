@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ISchema = new Schema({
-  surname: {type: String, required: true, list: {}, form: {tab: 'first'}},
+  surname: {type: String, required: true, list: {}, form: {tab: 'first'}, index: true},
   forename: {type: String, list: true, form: {tab: 'first'}},
   address: {
     line1: {type: String, form: {label: 'Address', tab: 'first'}},

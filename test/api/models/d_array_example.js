@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var DSchema = new Schema({
-  surname: {type: String, list: {}},
+  surname: {type: String, list: {}, index: true},
   forename: {type: String, list: true},
   weight: {type: Number, form: {label: 'Weight (lbs)'}},
   dateOfBirth: Date,
