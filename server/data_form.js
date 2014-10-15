@@ -108,35 +108,42 @@ DataForm.prototype.registerRoutes = function () {
   this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entityList()]));
 };
 
-DataForm.prototype.newResource = function (model, options) {
-  options = options || {};
-  options.suppressDeprecatedMessage = true;
-  var passModel = model;
-  if (typeof model !== 'function') {
-    passModel = model.model;
-  }
-  this.addResource(passModel.modelName, passModel, options);
+DataForm.prototype.newResource = function (resource, options) {
+    var model;
+    if (typeof resource !== 'function') {
+        model = resource.model;
+    } else { model = resource;}
+
+    if (!model) {
+        throw new Error('newResource: cannot detect model in resource argument');
+    }
+    var modelName = model.modelName;
+
+    options = options || {};
+    options.suppressDeprecatedMessage = true;
+
+    this.addResource(modelName, resource, options);
 };
 
 //    Add a resource, specifying the model and any options.
 //    Models may include their own options, which means they can be passed through from the model file
-DataForm.prototype.addResource = function (resourceName, model, options) {
-  var resource = {
-    resourceName: resourceName,
-    options: options || {}
-  };
-  if (!resource.options.suppressDeprecatedMessage) { console.log('addResource is deprecated - see https://github.com/forms-angular/forms-angular/issues/39'); }
+DataForm.prototype.addResource = function (resourceName, module, options) {
+    var resource = {
+        resourceName: resourceName,
+        options: options || {}
+    };
+    if (!resource.options.suppressDeprecatedMessage) { console.log('addResource is deprecated - see https://github.com/forms-angular/forms-angular/issues/39'); }
 
-  if (typeof model === 'function') {
-    resource.model = model;
-  } else {
-    resource.model = model.model;
-    for (var prop in model) {
-      if (model.hasOwnProperty(prop) && prop !== 'model') {
-        resource.options[prop] = model[prop];
-      }
+    if (typeof module === 'function') {
+        resource.model = module;
+    } else {
+        resource.model = module.model;
+        for (var prop in module) {
+            if (module.hasOwnProperty(prop) && prop !== 'model') {
+                resource.options[prop] = module[prop];
+            }
+        }
     }
-  }
 
   extend(resource.options, this.preprocess(resource.model.schema.paths, null));
 
