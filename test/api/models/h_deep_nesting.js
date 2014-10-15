@@ -22,7 +22,7 @@ var CourseSchema = new Schema({
 });
 
 var HSchema = new Schema({
-  surname: {type: String, list: {}},
+  surname: {type: String, list: {}, index: true},
   forename: {type: String, list: true},
   address: {
     street: String,

@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ZSchema = new Schema({
-  surname: String,
+  surname: {type: String, index: true},
   forename: String,
   weight: Number,
   dateOfBirth: Date,

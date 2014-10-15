@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ESchema = new Schema({
-  surname: {type: String, list: {}},
+  surname: {type: String, list: {}, index: true},
   forename: {type: String, list: true},
   weight: {type: Number, form: {label: 'Weight (lbs)'}},
   mentor: { type: Schema.Types.ObjectId, ref: 'c_subdoc_example'},

@@ -9,7 +9,7 @@ var FriendSchema = new Schema({
 }, {_id: false});
 
 var JSchema = new Schema({
-  surname: {type: String, required: true, list: {}},
+  surname: {type: String, required: true, list: {}, index: true},
   forename: {type: String, list: true},
   friendList: {type: [FriendSchema], form: {directive: 'friends'}}
 });
