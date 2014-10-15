@@ -24,9 +24,9 @@ two space indentation, multiple var statements and whitespace around arguments. 
 * Add relevant tests to cover the change
 * Lint the code and run unit tests by running `grunt`
 * Run the end to end tests in the [website repo](https://github.com/forms-angular/website) by doing the following:
-  # Run the website with `NODE_ENV=test` using your up to date forms-angular (`npm link` and `bower link` are useful here)
-  # Change the port number in the relavant protractor config file(s) in test/e2e/protractor*.conf.js
-  # Run `protractor test/e2e/protractor-firefox.conf.js` (the more browsers the better)
+  * Run the website with `NODE_ENV=test` using your up to date forms-angular (`npm link` and `bower link` are useful here)
+  * Change the port number in the relavant protractor config file(s) in test/e2e/protractor*.conf.js
+  * Run `protractor test/e2e/protractor-firefox.conf.js` (the more browsers the better)
 * Squash your commits
 * Write a convincing description of your PR and why we should land it
 * Please submit PRs to the `master` branch, it is the main development branch for this repo.
