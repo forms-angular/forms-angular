@@ -671,37 +671,37 @@ describe('formInput', function () {
       scope = $rootScope;
       scope.formSchema = [
         {
-          "name": "theThing",
-          "type": "text",
-          "add": "autofocus ",
-          "id": "f_theThing",
-          "label": "The Thing"
+          'name': 'theThing',
+          'type': 'text',
+          'add': 'autofocus ',
+          'id': 'f_theThing',
+          'label': 'The Thing'
         },
         {
-          "name": "mentions",
-          "schema": [
+          'name': 'mentions',
+          'schema': [
             {
-              "name": "mentions.someString",
-              "type": "text",
-              "id": "f_mentions_someString",
-              "label": "Some String"
+              'name': 'mentions.someString',
+              'type': 'text',
+              'id': 'f_mentions_someString',
+              'label': 'Some String'
             },
             {
-              "name": "mentions.grades.low",
-              "type": "number",
-              "id": "f_mentions_grades_low",
-              "label": "Low"
+              'name': 'mentions.grades.low',
+              'type': 'number',
+              'id': 'f_mentions_grades_low',
+              'label': 'Low'
             },
             {
-              "name": "mentions.grades.high",
-              "type": "number",
-              "id": "f_mentions_grades_high",
-              "label": "High"
+              'name': 'mentions.grades.high',
+              'type': 'number',
+              'id': 'f_mentions_grades_high',
+              'label': 'High'
             }
           ],
-          "type": "text",
-          "id": "f_mentions",
-          "label": "Mentions"
+          'type': 'text',
+          'id': 'f_mentions',
+          'label': 'Mentions'
         }
       ];
       scope.record = {theThing: 'a name', mentions: [ {someString: 'Maths', grades:{low:10, high:20}}, {someString: 'English', grades:{low:30, high:40}}] };
@@ -712,7 +712,7 @@ describe('formInput', function () {
     it('should put the index in the correct place in the ng-model attribute', function () {
       var input = angular.element(elm.find('input')[1]);
       expect(input.attr('ng-model')).toBe('record.mentions[$index].someString');
-      var input = angular.element(elm.find('input')[2]);
+      input = angular.element(elm.find('input')[2]);
       expect(input.attr('ng-model')).toBe('record.mentions[$index].grades.low');
     });
 
