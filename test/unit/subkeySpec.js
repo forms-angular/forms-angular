@@ -334,7 +334,7 @@ describe('Subkeys', function () {
 
   });
 
-  ddescribe('subkey selected by function', function () {
+  describe('subkey selected by function', function () {
 
     var $httpBackend, scope, ctrl, elm,
       subkeySchema = {
