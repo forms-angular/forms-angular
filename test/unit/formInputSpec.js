@@ -664,6 +664,60 @@ describe('formInput', function () {
 
   });
 
+  describe('Issue 41', function () {
+
+    beforeEach(inject(function ($rootScope, $compile) {
+      elm = angular.element('<div><form-input schema="formSchema"></form-input></div>');
+      scope = $rootScope;
+      scope.formSchema = [
+        {
+          "name": "theThing",
+          "type": "text",
+          "add": "autofocus ",
+          "id": "f_theThing",
+          "label": "The Thing"
+        },
+        {
+          "name": "mentions",
+          "schema": [
+            {
+              "name": "mentions.someString",
+              "type": "text",
+              "id": "f_mentions_someString",
+              "label": "Some String"
+            },
+            {
+              "name": "mentions.grades.low",
+              "type": "number",
+              "id": "f_mentions_grades_low",
+              "label": "Low"
+            },
+            {
+              "name": "mentions.grades.high",
+              "type": "number",
+              "id": "f_mentions_grades_high",
+              "label": "High"
+            }
+          ],
+          "type": "text",
+          "id": "f_mentions",
+          "label": "Mentions"
+        }
+      ];
+      scope.record = {theThing: 'a name', mentions: [ {someString: 'Maths', grades:{low:10, high:20}}, {someString: 'English', grades:{low:30, high:40}}] };
+      $compile(elm)(scope);
+      scope.$digest();
+    }));
+
+    it('should put the index in the correct place in the ng-model attribute', function () {
+      var input = angular.element(elm.find('input')[1]);
+      expect(input.attr('ng-model')).toBe('record.mentions[$index].someString');
+      var input = angular.element(elm.find('input')[2]);
+      expect(input.attr('ng-model')).toBe('record.mentions[$index].grades.low');
+    });
+
+  });
+
   describe('Testing add all functionality, ', function () {
 
     describe('a text box', function () {
