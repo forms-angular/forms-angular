@@ -1,4 +1,4 @@
-/*! forms-angular 2014-10-15 */
+/*! forms-angular 2014-10-17 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -549,7 +549,12 @@ formsAngular
             var classes = 'control-label';
             if (isHorizontalStyle(options.formstyle)) {
               labelHTML += ' for="' + fieldInfo.id + '"';
-              if (cssFrameworkService.framework() === 'bs3') { classes += ' col-sm-2'; }
+              if (typeof fieldInfo.labelDefaultClass !== 'undefined') {
+                // Override default label class (can be empty)
+                classes += ' ' + fieldInfo.labelDefaultClass;
+              } else if (cssFrameworkService.framework() === 'bs3') {
+                classes += ' col-sm-2';
+              }
             } else if (options.formstyle === 'inline') {
               labelHTML += ' for="' + fieldInfo.id + '"';
               classes += ' sr-only';
