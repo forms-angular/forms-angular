@@ -2216,10 +2216,16 @@ formsAngular.factory('recordHandler', function (
                 var listInstructions = [];
                 handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState, handleError);
 
-                SubmissionsService.getAll(lookupCollection)
+                var dataRequest;
+                if (typeof schemaElement.filter !== 'undefined' && schemaElement.filter) {
+                    console.log('filtering');
+                    dataRequest = SubmissionsService.getPagedAndFilteredList(lookupCollection, schemaElement.filter);
+                } else {
+                    dataRequest = SubmissionsService.getAll(lookupCollection);
+                }
+                dataRequest
                     .success(function (data) {
                         if (data) {
-                            console.log('data', data);
                             for (var i = 0; i < data.length; i++) {
                                 var option = '';
                                 for (var j = 0; j < listInstructions.length; j++) {
@@ -2758,6 +2764,9 @@ formsAngular.factory('SubmissionsService', ['$http', function ($http) {
 
     var addParameter = function (param, value) {
       if (value && value !== '') {
+          if (typeof value === 'object') {
+              value = JSON.stringify(value);
+          }
         queryString += '&' + param + '=' + value;
       }
     };
