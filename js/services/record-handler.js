@@ -216,7 +216,14 @@ formsAngular.factory('recordHandler', function (
                 var listInstructions = [];
                 handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState, handleError);
 
-                SubmissionsService.getAll(lookupCollection)
+                var dataRequest;
+                if (typeof schemaElement.filter !== 'undefined' && schemaElement.filter) {
+                    console.log('filtering');
+                    dataRequest = SubmissionsService.getPagedAndFilteredList(lookupCollection, schemaElement.filter);
+                } else {
+                    dataRequest = SubmissionsService.getAll(lookupCollection);
+                }
+                dataRequest
                     .success(function (data) {
                         if (data) {
                             for (var i = 0; i < data.length; i++) {

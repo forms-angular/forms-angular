@@ -2219,6 +2219,7 @@ formsAngular.factory('recordHandler', function (
                 SubmissionsService.getAll(lookupCollection)
                     .success(function (data) {
                         if (data) {
+                            console.log('data', data);
                             for (var i = 0; i < data.length; i++) {
                                 var option = '';
                                 for (var j = 0; j < listInstructions.length; j++) {

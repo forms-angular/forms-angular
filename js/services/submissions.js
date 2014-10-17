@@ -17,6 +17,9 @@ formsAngular.factory('SubmissionsService', ['$http', function ($http) {
 
     var addParameter = function (param, value) {
       if (value && value !== '') {
+          if (typeof value === 'object') {
+              value = JSON.stringify(value);
+          }
         queryString += '&' + param + '=' + value;
       }
     };
