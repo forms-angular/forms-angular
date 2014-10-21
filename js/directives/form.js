@@ -291,7 +291,7 @@ formsAngular
           } else {
             switch (info.containerType) {
               case 'tab' :
-                result.before = '<tab heading="' + info.title + '">';
+                result.before = '<tab active="tab.active" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '">';
                 result.after = '</tab>';
                 break;
               case 'tabset' :
