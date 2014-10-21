@@ -13,14 +13,14 @@ formsAngular.factory('SubmissionsService', ['$http', function ($http) {
    }
    */
   var generateListQuery = function (options) {
-    var queryString;
+    var queryString = '';
 
     var addParameter = function (param, value) {
       if (value && value !== '') {
           if (typeof value === 'object') {
               value = JSON.stringify(value);
           }
-          if (typeof queryString === 'undefined') {
+          if (queryString === '') {
               queryString = '?';
           } else {
               queryString += '&';
