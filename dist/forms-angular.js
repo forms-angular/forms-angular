@@ -1,4 +1,4 @@
-/*! forms-angular 2014-10-17 */
+/*! forms-angular 2014-10-21 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -2760,17 +2760,23 @@ formsAngular.factory('SubmissionsService', ['$http', function ($http) {
    }
    */
   var generateListQuery = function (options) {
-    var queryString = '?l=' + options.limit;
+    var queryString;
 
     var addParameter = function (param, value) {
       if (value && value !== '') {
           if (typeof value === 'object') {
               value = JSON.stringify(value);
           }
-        queryString += '&' + param + '=' + value;
+          if (typeof queryString === 'undefined') {
+              queryString = '?';
+          } else {
+              queryString += '&';
+          }
+        queryString += param + '=' + value;
       }
     };
 
+    addParameter('l', options.limit);
     addParameter('f', options.find);
     addParameter('a', options.aggregate);
     addParameter('o', options.order);
