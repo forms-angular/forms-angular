@@ -103,9 +103,8 @@ formsAngular
             if (options.subschema && fieldInfo.name.indexOf('.') !== -1) {
               // Schema handling - need to massage the ngModel and the id
               var compoundName = fieldInfo.name;
-              var lastPartStart = compoundName.lastIndexOf('.');
-              var lastPart = compoundName.slice(lastPartStart + 1);
-              var root = compoundName.slice(0, lastPartStart);
+              var root = options.subschemaRoot;
+              var lastPart = compoundName.slice(root.length+1);
               if (options.index) {
                 modelString += root + '[' + options.index + '].' + lastPart;
                 idString = 'f_' + modelString.slice(modelBase.length).replace(/(\.|\[|\]\.)/g, '-');
@@ -416,7 +415,7 @@ formsAngular
                 for (var arraySel = 0; arraySel < subKeyArray.length; arraySel++) {
                   var topAndTail = containerInstructions(subKeyArray[arraySel]);
                   template += topAndTail.before;
-                  template += processInstructions(info.schema, null, {subschema: true, formStyle: options.formstyle, subkey: schemaDefName + '_subkey', subkeyno: arraySel});
+                  template += processInstructions(info.schema, null, {subschema: true, formStyle: options.formstyle, subkey: schemaDefName + '_subkey', subkeyno: arraySel, subschemaRoot: info.name});
                   template += topAndTail.after;
                 }
                 subkeys.push(info);
@@ -427,7 +426,7 @@ formsAngular
                   convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
                   ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
                   '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">' +
-                  '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model}) +
+                  '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaRoot: info.name}) +
                   '      </div>';
 
                 if (!info.noRemove || info.customSubDoc) {
