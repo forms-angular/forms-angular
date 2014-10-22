@@ -1,4 +1,4 @@
-/*! forms-angular 2014-10-21 */
+/*! forms-angular 2014-10-22 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -1512,7 +1512,7 @@ formsAngular.factory('formGenerator', function (
                                 if (dataVal) {
                                     var parts = formInstructions.name.split('.');
                                     drillIntoObject(parts, dataVal, function(leafVal) {
-                                        setTimeout(updateInvalidClasses(leafVal, formInstructions.id, formInstructions.select2));
+                                        setTimeout(updateInvalidClasses(leafVal, formInstructions.id, formInstructions.select2, ctrlState));
                                         if (leafVal) {
                                             if (formInstructions.array) {
                                                 var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
@@ -1612,11 +1612,21 @@ formsAngular.factory('formGenerator', function (
                             ajax: {
                                 url: '/api/search/' + mongooseOptions.ref,
                                 data: function (term, page) { // page is the one-based page number tracked by Select2
-                                    return {
+                                    var queryList = {
                                         q: term, //search term
                                         pageLimit: 10, // page size
                                         page: page // page number
                                     };
+                                    var queryListExtension;
+                                    if (typeof mongooseOptions.form.searchQuery === 'object') {
+                                        queryListExtension = mongooseOptions.form.searchQuery;
+                                    } else if (typeof mongooseOptions.form.searchQuery === 'function') {
+                                        queryListExtension = mongooseOptions.form.searchQuery($scope, mongooseOptions);
+                                    }
+                                    if (queryListExtension){
+                                        _.extend(queryList, queryListExtension);
+                                    }
+                                    return queryList;
                                 },
                                 results: function (data) {
                                     return {results: data.results, more: data.moreCount > 0};
