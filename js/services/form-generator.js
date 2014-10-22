@@ -182,7 +182,7 @@ formsAngular.factory('formGenerator', function (
                                 if (dataVal) {
                                     var parts = formInstructions.name.split('.');
                                     drillIntoObject(parts, dataVal, function(leafVal) {
-                                        setTimeout(updateInvalidClasses(leafVal, formInstructions.id, formInstructions.select2));
+                                        setTimeout(updateInvalidClasses(leafVal, formInstructions.id, formInstructions.select2, ctrlState));
                                         if (leafVal) {
                                             if (formInstructions.array) {
                                                 var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
