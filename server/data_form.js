@@ -227,25 +227,22 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
   }
   var that = this,
     results = [],
-    moreCount = 0;
+    moreCount = 0,
+    searchCriteria;
 
-  var getSearchCriteria = function(request, needle) {
-      var searchCriteria;
-      if (request.route && request.route.path === '/api/search') {
+  if (req.route && req.route.path === '/api/search') {
           // Called from search box - treat words as separate strings
-          searchCriteria = {$regex: '^(' + needle.split(' ').join('|') + ')', $options: 'i'};
+    searchCriteria = {$regex: '^(' + searchFor.split(' ').join('|') + ')', $options: 'i'};
       } else {
           // called from somewhere else (probably select2 ajax) preserve spaces
-          searchCriteria = {$regex: '^' + needle, $options: 'i'};
+    searchCriteria = {$regex: '^' + searchFor, $options: 'i'};
       }
-      return searchCriteria;
-  };
 
   this.searchFunc(
     searches,
     function (item, cb) {
       var searchDoc = {};
-      var searchCriteria = getSearchCriteria(req, searchFor);
+//      console.log(searchCriteria);
       if (filter) {
         extend(searchDoc, filter);
         if (filter[item.field]) {
