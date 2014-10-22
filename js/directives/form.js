@@ -1,7 +1,9 @@
 'use strict';
 
 formsAngular
-  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', 'routingService', 'cssFrameworkService', function ($compile, $rootScope, utils, $filter, routingService, cssFrameworkService) {
+  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter',
+        'routingService', 'cssFrameworkService', 'formGenerator',
+        function ($compile, $rootScope, utils, $filter, routingService, cssFrameworkService, formGenerator) {
     return {
       restrict: 'EA',
       link: function (scope, element, attrs) {
@@ -80,9 +82,7 @@ formsAngular
             conditionSymbols = ['===', '!==', '>', '>=', '<', '<='],
             conditionPos = conditionText.indexOf(showWhen.comp);
 
-          if (conditionPos === -1) {
-            throw new Error('Invalid comparison in showWhen');
-          }
+          if (conditionPos === -1) { throw new Error('Invalid comparison in showWhen'); }
           return evaluateSide(showWhen.lhs) + conditionSymbols[conditionPos] + evaluateSide(showWhen.rhs);
         };
 
@@ -103,8 +103,9 @@ formsAngular
             if (options.subschema && fieldInfo.name.indexOf('.') !== -1) {
               // Schema handling - need to massage the ngModel and the id
               var compoundName = fieldInfo.name;
-              var root = options.subschemaRoot;
-              var lastPart = compoundName.slice(root.length+1);
+              var lastPartStart = compoundName.lastIndexOf('.');
+              var lastPart = compoundName.slice(lastPartStart + 1);
+              var root = compoundName.slice(0, lastPartStart);
               if (options.index) {
                 modelString += root + '[' + options.index + '].' + lastPart;
                 idString = 'f_' + modelString.slice(modelBase.length).replace(/(\.|\[|\]\.)/g, '-');
@@ -140,9 +141,7 @@ formsAngular
             sizeClassBS2 = (fieldInfo.size ? ' input-' + fieldInfo.size : '');
           }
 
-          if (options.formstyle === 'inline') {
-            placeHolder = placeHolder || fieldInfo.label;
-          }
+          if (options.formstyle === 'inline') { placeHolder = placeHolder || fieldInfo.label; }
           var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' name="' + nameString + '" ');
           common += (placeHolder ? ('placeholder="' + placeHolder + '" ') : '');
           if (fieldInfo.popup) {
@@ -197,21 +196,15 @@ formsAngular
               var separateLines = (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
               if (angular.isArray(fieldInfo.options)) {
-                if (options.subschema) {
-                  common = common.replace('name="', 'name="{{$index}}-');
-                }
+                if (options.subschema) { common = common.replace('name="', 'name="{{$index}}-'); }
                 angular.forEach(fieldInfo.options, function (optValue) {
                   value += '<input ' + common + 'type="radio"';
                   value += ' value="' + optValue + '">' + optValue;
-                  if (separateLines) {
-                    value += '<br />';
-                  }
+                  if (separateLines) { value += '<br />'; }
                 });
               } else {
                 var tagType = separateLines ? 'div' : 'span';
-                if (options.subschema) {
-                  common = common.replace('$index', '$parent.$index').replace('name="', 'name="{{$parent.$index}}-');
-                }
+                if (options.subschema) { common = common.replace('$index', '$parent.$index').replace('name="', 'name="{{$parent.$index}}-'); }
                 value += '<' + tagType + ' ng-repeat="option in ' + fieldInfo.options + '"><input ' + common + ' type="radio" value="{{option}}"> {{option}} </' + tagType + '> ';
               }
               break;
@@ -224,12 +217,8 @@ formsAngular
               break;
             default:
               var setClass = formControl.trim() + compactClass + sizeClassBS2 + (fieldInfo.class ? ' ' + fieldInfo.class : '');
-              if (setClass.length !== 0) {
-                common += 'class="' + setClass + '"';
-              }
-              if (fieldInfo.add) {
-                common += ' ' + fieldInfo.add + ' ';
-              }
+              if (setClass.length !== 0) { common += 'class="' + setClass + '"' ; }
+              if (fieldInfo.add) { common += ' ' + fieldInfo.add + ' '; }
               common += 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
@@ -241,9 +230,7 @@ formsAngular
                 }
                 if (fieldInfo.editor === 'ckEditor') {
                   common += 'ckeditor = "" ';
-                  if (cssFrameworkService.framework() === 'bs3') {
-                    sizeClassBS3 = 'col-xs-12';
-                  }
+                  if (cssFrameworkService.framework() === 'bs3') { sizeClassBS3 = 'col-xs-12'; }
                 }
                 value = '<textarea ' + common + ' />';
               } else {
@@ -291,7 +278,7 @@ formsAngular
           } else {
             switch (info.containerType) {
               case 'tab' :
-                result.before = '<tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '">';
+                result.before = '<tab heading="' + info.title + '">';
                 result.after = '</tab>';
                 break;
               case 'tabset' :
@@ -350,7 +337,10 @@ formsAngular
             var classes = 'control-label';
             if (isHorizontalStyle(options.formstyle)) {
               labelHTML += ' for="' + fieldInfo.id + '"';
-              if (cssFrameworkService.framework() === 'bs3') {
+              if (typeof fieldInfo.labelDefaultClass !== 'undefined') {
+                // Override default label class (can be empty)
+                classes += ' ' + fieldInfo.labelDefaultClass;
+              } else if (cssFrameworkService.framework() === 'bs3') {
                 classes += ' col-sm-2';
               }
             } else if (options.formstyle === 'inline') {
@@ -412,96 +402,84 @@ formsAngular
           }
 
           if (info.schema) {
-            // display as a control group
-            //schemas (which means they are arrays in Mongoose)
             var niceName = info.name.replace(/\./g, '_');
             var schemaDefName = '$_schema_' + niceName;
             scope[schemaDefName] = info.schema;
-            // Check for subkey - selecting out one or more of the array
-            if (info.subkey) {
-              info.subkey.path = info.name;
-              scope[schemaDefName + '_subkey'] = info.subkey;
+            if (info.schema) { // display as a control group
+              //schemas (which means they are arrays in Mongoose)
+              // Check for subkey - selecting out one or more of the array
+              if (info.subkey) {
+                info.subkey.path = info.name;
+                scope[schemaDefName + '_subkey'] = info.subkey;
 
-              var subKeyArray = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
-              for (var arraySel = 0; arraySel < subKeyArray.length; arraySel++) {
-                var topAndTail = containerInstructions(subKeyArray[arraySel]);
-                template += topAndTail.before;
-                template += processInstructions(info.schema, null, {
-                  subschema: true,
-                  formStyle: options.formstyle,
-                  subschemaRoot: info.name,
-                  subkey: schemaDefName + '_subkey',
-                  subkeyno: arraySel
-                });
-                template += topAndTail.after;
-              }
-              subkeys.push(info);
-            } else {
-              template += '<div class="schema-head">' + info.label +
-              '</div>' +
-              '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
-              convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '_{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
-              ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
-              '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">' +
-              '      <div class="pull-left">' + processInstructions(info.schema, false, {
-                subschema: true,
-                subschemaRoot: info.name,
-                formstyle: info.formStyle,
-                model: options.model
-              }) +
-              '      </div>';
-
-              if (!info.noRemove || info.customSubDoc) {
-                template += '   <div class="pull-left sub-doc-btns">';
-                if (info.customSubDoc) {
-                  template += info.customSubDoc;
+                var subKeyArray = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
+                for (var arraySel = 0; arraySel < subKeyArray.length; arraySel++) {
+                  var topAndTail = containerInstructions(subKeyArray[arraySel]);
+                  template += topAndTail.before;
+                  template += processInstructions(info.schema, null, {subschema: true, formStyle: options.formstyle, subkey: schemaDefName + '_subkey', subkeyno: arraySel});
+                  template += topAndTail.after;
                 }
-                if (!info.noRemove) {
-                  if (cssFrameworkService.framework() === 'bs2') {
-                    template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                    '          <i class="icon-minus">';
+                subkeys.push(info);
+              } else {
+                template += '<div class="schema-head">' + info.label +
+                  '</div>' +
+                  '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
+                  convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
+                  ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
+                  '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">' +
+                  '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model}) +
+                  '      </div>';
 
-                  } else {
-                    template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                    '          <i class="glyphicon glyphicon-minus">';
+                if (!info.noRemove || info.customSubDoc) {
+                  template += '   <div class="pull-left sub-doc-btns">';
+                  if (info.customSubDoc) {
+                    template += info.customSubDoc;
                   }
-                  template += '          </i> Remove' +
-                  '      </button>';
-                }
-                template += '  </div> ';
-              }
-              template += '   </div>' +
-              '</div>';
-              if (!info.noAdd || info.customFooter) {
-                template += '<div class = "schema-foot">';
-                if (info.customFooter) {
-                  template += info.customFooter;
-                }
-                if (!info.noAdd) {
-                  if (cssFrameworkService.framework() === 'bs2') {
-                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                    '        <i class="icon-plus"></i> Add';
-                  } else {
-                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                    '        <i class="glyphicon glyphicon-plus"></i> Add';
+                  if (!info.noRemove) {
+                    if (cssFrameworkService.framework() === 'bs2') {
+                      template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
+                        '          <i class="icon-minus">';
+
+                    } else {
+                      template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
+                        '          <i class="glyphicon glyphicon-minus">';
+                    }
+                    template += '          </i> Remove' +
+                      '      </button>';
                   }
-                  template += '    </button>';
+                  template += '  </div> ';
                 }
-                template += '</div>';
+                template += '   </div>' +
+                  '</div>';
+                if (!info.noAdd || info.customFooter) {
+                  template += '<div class = "schema-foot">';
+                  if (info.customFooter) {
+                    template += info.customFooter;
+                  }
+                  if (!info.noAdd) {
+                    if (cssFrameworkService.framework() === 'bs2') {
+                      template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                        '        <i class="icon-plus"></i> Add';
+                    } else {
+                      template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                        '        <i class="glyphicon glyphicon-plus"></i> Add';
+                    }
+                    template += '    </button>';
+                  }
+                  template += '</div>';
+                }
               }
             }
-          } else {
-            // not a schema then...
+          }
+          else {
+            // Handle arrays here
             var controlClass = [];
             if (isHorizontalStyle(options.formstyle)) {
               controlClass.push(cssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-10');
             }
-            // Handle arrays here
             if (info.array) {
               controlClass.push('fng-array');
-              if (options.formstyle === 'inline') {
-                throw 'Cannot use arrays in an inline form';
-              }
+              if (options.formstyle === 'inline') { throw 'Cannot use arrays in an inline form'; }
               var glyphClass, ngClassString;
               if (cssFrameworkService.framework() === 'bs2') {
                 glyphClass = 'icon';
@@ -511,19 +489,15 @@ formsAngular
                 ngClassString = 'ng-class="skipCols($index)" ';
               }
               template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="' + glyphClass + '-plus-sign">' +
-              '</i>', options) + '<div ' + ngClassString + 'class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' +
-              (options.model || 'record') + '.' + info.name + '">' + generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options) +
-              '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass + '-minus-sign"></i></div>';
+                '</i>', options) + '<div ' + ngClassString + 'class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' +
+                (options.model || 'record') + '.' + info.name + '">' + generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options) +
+                '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass + '-minus-sign"></i></div>';
             } else {
               // Single fields here
               template += generateLabel(info, null, options);
-              if (controlClass.length > 0) {
-                template += '<div class="' + controlClass.join(' ') + '">';
-              }
+              if (controlClass.length > 0) { template += '<div class="' + controlClass.join(' ') + '">'; }
               template += generateInput(info, null, options.required, info.id, options);
-              if (controlClass.length > 0) {
-                template += '</div>';
-              }
+              if (controlClass.length > 0) { template += '</div>'; }
             }
           }
           template += closeTag;
@@ -605,8 +579,8 @@ formsAngular
                 // Don't display fields that form part of the subkey, as they should not be edited (because in these circumstances they form some kind of key)
                 var objectToSearch = angular.isArray(scope[options.subkey]) ? scope[options.subkey][0].keyList : scope[options.subkey].keyList;
                 if (_.find(objectToSearch, function (value, key) {
-                    return scope[options.subkey].path + '.' + key === info.name;
-                  })) {
+                  return scope[options.subkey].path + '.' + key === info.name;
+                })) {
                   callHandleField = false;
                 }
               }
@@ -648,9 +622,7 @@ formsAngular
                 }
                 elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate"' + customAttrs + '>';
               }
-              if (theRecord === scope.topLevelFormName) {
-                throw new Error('Model and Name must be distinct - they are both ' + theRecord);
-              }
+              if (theRecord === scope.topLevelFormName) { throw new Error('Model and Name must be distinct - they are both ' + theRecord); }
               elementHtml += processInstructions(newValue, true, attrs);
               if (tabsSetup === 'forced') {
                 elementHtml += '</tabset>';
@@ -720,9 +692,9 @@ formsAngular
 
               $rootScope.$broadcast('formInputDone');
 
-              if (scope.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
+              if (formGenerator.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
                 // If this is not a test force the data dependent updates to the DOM
-                scope.updateDataDependentDisplay(theRecord, null, true);
+                  formGenerator.updateDataDependentDisplay(theRecord, null, true, scope);
               }
             }
           }
