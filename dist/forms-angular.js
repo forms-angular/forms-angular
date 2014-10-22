@@ -1283,10 +1283,8 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
                   location.url(location.path());
                 }
 
-                var viewName = scope.viewName ? scope.viewName : scope.modelName;
-
-                var urlStr = _buildOperationUrl(config.prefix, operation, viewName, scope.formName, id);
-                location.path(urlStr);
+              var urlStr = _buildOperationUrl(config.prefix, operation, scope.modelName, scope.formName, id);
+              location.path(urlStr);
 
 //                break;
 //              case 'uirouter' :
@@ -1327,6 +1325,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     }
   };
 }]);
+
 
 'use strict';
 
