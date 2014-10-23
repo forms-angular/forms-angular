@@ -1,4 +1,3 @@
-
 'use strict';
 
 /**
@@ -14,8 +13,8 @@ formsAngular.factory('formGenerator', function (
     SubmissionsService, routingService, recordHandler) {
     var exports = {};
 
+    // utility for apps that use forms-angular
     exports.generateEditUrl = function (obj, $scope) {
-        // FIXME: this method seems to be not used anymore
         return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
     };
 
@@ -45,14 +44,14 @@ formsAngular.factory('formGenerator', function (
             if (!tab) {
                 if ($scope.tabs.length === 0) {
                     if ($scope.formSchema.length > 0) {
-                        $scope.tabs.push({title: 'Main', content: []});
+                        $scope.tabs.push({title: 'Main', content: [], active: ($scope.tab==='Main' || !$scope.tab)});
                         tab = $scope.tabs[0];
                         for (var i = 0; i < $scope.formSchema.length; i++) {
                             tab.content.push($scope.formSchema[i]);
                         }
                     }
                 }
-                tab = $scope.tabs[$scope.tabs.push({title: tabTitle, containerType: 'tab', content: []}) - 1];
+              tab = $scope.tabs[$scope.tabs.push({title: tabTitle, containerType: 'tab', content: [], active: (tabTitle===$scope.tab)}) - 1];
             }
             tab.content.push(thisInst);
         }
@@ -663,7 +662,7 @@ formsAngular.factory('formGenerator', function (
             $('#' + $(ev.currentTarget).data('select2-open')).select2('open');
         };
 
-        // FIXME: still used?
+        // Useful utility when debugging
         $scope.toJSON = function (obj) {
             return JSON.stringify(obj, null, 2);
         };
@@ -672,9 +671,7 @@ formsAngular.factory('formGenerator', function (
             return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
         };
 
-
     };
-
 
     return exports;
 });
