@@ -277,8 +277,20 @@ formsAngular
           } else {
             switch (info.containerType) {
               case 'tab' :
-                result.before = '<tab heading="' + info.title + '">';
-                result.after = '</tab>';
+                var tabNo=-1;
+                for (var i=0 ; i < scope.tabs.length; i++) {
+                  if (scope.tabs[i].title === info.title) {
+                    tabNo = i;
+                    break;
+                  }
+                }
+                if (tabNo >= 0) {
+                  result.before = '<tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '" active="tabs[' + tabNo + '].active">';
+                  result.after = '</tab>';
+                } else {
+                  result.before = '<p>Error!  Tab ' + info.title + ' not found in tab list</p>';
+                  result.after = '';
+                }
                 break;
               case 'tabset' :
                 result.before = '<tabset>';
@@ -653,6 +665,11 @@ formsAngular
 
                         if (arrayToProcess[thisOffset].selectFunc) {
                           // Get the array offset from a function
+                          if (!scope[arrayToProcess[thisOffset].selectFunc]) {
+                            throw new Error('No function at ' + arrayToProcess[thisOffset].selectFunc);
+                          } else if (typeof scope[arrayToProcess[thisOffset].selectFunc] !== "function") {
+                            throw new Error(arrayToProcess[thisOffset].selectFunc + ' is not a function')
+                          }
                           arrayOffset = scope[arrayToProcess[thisOffset].selectFunc](theRecord, info);
 
                         } else if (arrayToProcess[thisOffset].keyList) {

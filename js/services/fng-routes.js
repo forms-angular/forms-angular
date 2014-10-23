@@ -14,9 +14,11 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     {route: '/analyse/:model/:reportSchemaName', state: 'analyse::model::report', templateUrl: 'partials/base-analysis.html'},
     {route: '/analyse/:model',                   state: 'analyse::model',         templateUrl: 'partials/base-analysis.html'},
     {route: '/:model/:id/edit',                  state: 'model::edit',            templateUrl: 'partials/base-edit.html'},
+    {route: '/:model/:id/edit/:tab',             state: 'model::edit::tab',       templateUrl: 'partials/base-edit.html'},
     {route: '/:model/new',                       state: 'model::new',             templateUrl: 'partials/base-edit.html'},
     {route: '/:model',                           state: 'model::list',            templateUrl: 'partials/base-list.html'},
     {route: '/:model/:form/:id/edit',            state: 'model::form::edit',      templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
+    {route: '/:model/:form/:id/edit/:tab',       state: 'model::form::edit::tab', templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
     {route: '/:model/:form/new',                 state: 'model::form::new',       templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
     {route: '/:model/:form',                     state: 'model::form::list',      templateUrl: 'partials/base-list.html'}        // list page with links to non default form
   ];
@@ -105,13 +107,21 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
                 lastObject.modelName = locationSplit[2];
               } else {
                 lastObject.modelName = locationSplit[1];
-                var lastPart = locationSplit[locationParts - 1];
-                if (lastPart === 'new') {
+                var lastParts = [locationSplit[locationParts - 1], locationSplit[locationParts - 2]];
+                var newPos = lastParts.indexOf('new');
+                var editPos;
+                if (newPos === -1) {
+                  editPos = lastParts.indexOf('edit');
+                  if (editPos !== -1) {
+                    locationParts -= (2 + editPos);
+                    lastObject.id = locationSplit[locationParts];
+                  }
+                } else {
                   lastObject.newRecord = true;
-                  locationParts--;
-                } else if (lastPart === 'edit') {
-                  locationParts = locationParts - 2;
-                  lastObject.id = locationSplit[locationParts];
+                  locationParts -= (1 + newPos);
+                }
+                if (editPos === 1 || newPos === 1) {
+                  lastObject.tab = lastParts[0];
                 }
                 if (locationParts > 2) {
                   lastObject.formName = locationSplit[2];
