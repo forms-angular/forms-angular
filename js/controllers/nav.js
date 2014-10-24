@@ -28,7 +28,7 @@ formsAngular.controller('NavCtrl',
     var locals = {}, addThis;
 
     controllerName += 'Ctrl';
-    locals.$scope = $scope.scopes[level] = $scope.$new();
+    locals.$scope = $data.modelControllers[level] = $scope.$new();
     try {
       $controller(controllerName, locals);
       if ($scope.routing.newRecord) {
@@ -74,10 +74,10 @@ formsAngular.controller('NavCtrl',
       ];
     } else if ($scope.routing.modelName) {
 
-      angular.forEach($scope.scopes, function (value) {
+      angular.forEach($data.modelControllers, function (value) {
         value.$destroy();
       });
-      $scope.scopes = [];
+      $data.modelControllers = [];
       $data.record = {};
       $data.disableFunctions = {};
       $data.dataEventFunctions = {};

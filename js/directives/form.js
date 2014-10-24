@@ -665,10 +665,8 @@ formsAngular
 
                         if (arrayToProcess[thisOffset].selectFunc) {
                           // Get the array offset from a function
-                          if (!scope[arrayToProcess[thisOffset].selectFunc]) {
-                            throw new Error('No function at ' + arrayToProcess[thisOffset].selectFunc);
-                          } else if (typeof scope[arrayToProcess[thisOffset].selectFunc] !== "function") {
-                            throw new Error(arrayToProcess[thisOffset].selectFunc + ' is not a function')
+                          if (!scope[arrayToProcess[thisOffset].selectFunc] || typeof scope[arrayToProcess[thisOffset].selectFunc] !== 'function') {
+                            throw new Error('Subkey function ' + arrayToProcess[thisOffset].selectFunc + ' is not properly set up');
                           }
                           arrayOffset = scope[arrayToProcess[thisOffset].selectFunc](theRecord, info);
 

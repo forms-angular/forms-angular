@@ -491,7 +491,6 @@ formsAngular.factory('formGenerator', function (
         return display;
     };
 
-
     // Conventional view is that this should go in a directive.  I reckon it is quicker here.
     exports.updateDataDependentDisplay = function (curValue, oldValue, force, $scope) {
         var depends, i, j, k, element;
@@ -598,7 +597,6 @@ formsAngular.factory('formGenerator', function (
     };
 
     exports.decorateScope = function($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
-        sharedStuff.baseScope = $scope;
         $scope.record = sharedStuff.record;
         $scope.phase = 'init';
         $scope.disableFunctions = sharedStuff.disableFunctions;
@@ -612,6 +610,14 @@ formsAngular.factory('formGenerator', function (
         $scope.select2List = [];
         $scope.pageSize = 60;
         $scope.pagesLoaded = 0;
+
+      sharedStuff.baseScope = $scope;
+      // Tell the 'model controllers' that they can start fiddling with basescope
+      for (var i = 0 ; i < sharedStuff.modelControllers.length ; i++) {
+        if (sharedStuff.modelControllers[i].modifyBaseCtrl) {
+          sharedStuff.modelControllers[i].modifyBaseCtrl($scope);
+        }
+      }
 
         $scope.generateEditUrl = function (obj) {
             return formGeneratorInstance.generateEditUrl(obj, $scope);
