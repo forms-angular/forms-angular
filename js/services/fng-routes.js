@@ -105,6 +105,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
               if (locationSplit[1] === 'analyse') {
                 lastObject.analyse = true;
                 lastObject.modelName = locationSplit[2];
+                lastObject.reportSchemaName = locationParts >= 4 ? locationSplit[3] : null;
               } else {
                 lastObject.modelName = locationSplit[1];
                 var lastParts = [locationSplit[locationParts - 1], locationSplit[locationParts - 2]];
