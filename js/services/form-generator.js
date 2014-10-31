@@ -567,22 +567,32 @@ formsAngular.factory('formGenerator', function (
         return forceNextTime;
     };
 
-    exports.add = function (fieldName, $event, $scope) {
-        var arrayField;
-        var fieldParts = fieldName.split('.');
-        arrayField = $scope.record;
-        for (var i = 0, l = fieldParts.length; i < l; i++) {
-            if (!arrayField[fieldParts[i]]) {
-                if (i === l - 1) {
-                    arrayField[fieldParts[i]] = [];
-                } else {
-                    arrayField[fieldParts[i]] = {};
-                }
-            }
-            arrayField = arrayField[fieldParts[i]];
+    function getArrayFieldToExtend(fieldName, $scope) {
+      var fieldParts = fieldName.split('.');
+      var arrayField = $scope.record;
+      for (var i = 0, l = fieldParts.length; i < l; i++) {
+        if (!arrayField[fieldParts[i]]) {
+          if (i === l - 1) {
+            arrayField[fieldParts[i]] = [];
+          } else {
+            arrayField[fieldParts[i]] = {};
+          }
         }
+        arrayField = arrayField[fieldParts[i]];
+      }
+      return arrayField;
+    }
+
+    exports.add = function (fieldName, $event, $scope) {
+        var arrayField = getArrayFieldToExtend(fieldName, $scope);
         arrayField.push({});
         $scope.setFormDirty($event);
+    };
+
+    exports.unshift = function (fieldName, $event, $scope) {
+      var arrayField = getArrayFieldToExtend(fieldName, $scope);
+      arrayField.unshift({});
+      $scope.setFormDirty($event);
     };
 
     exports.remove = function (fieldName, value, $event, $scope) {
@@ -657,6 +667,10 @@ formsAngular.factory('formGenerator', function (
 
         $scope.add = function (fieldName, $event) {
             return formGeneratorInstance.add(fieldName, $event, $scope);
+        };
+
+        $scope.unshift = function (fieldName, $event) {
+          return formGeneratorInstance.unshift(fieldName, $event, $scope);
         };
 
         $scope.remove = function (fieldName, value, $event) {

@@ -1,9 +1,9 @@
 'use strict';
 
 formsAngular
-  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter',
+  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', '$data',
         'routingService', 'cssFrameworkService', 'formGenerator',
-        function ($compile, $rootScope, utils, $filter, routingService, cssFrameworkService, formGenerator) {
+        function ($compile, $rootScope, utils, $filter, $data, routingService, cssFrameworkService, formGenerator) {
     return {
       restrict: 'EA',
       link: function (scope, element, attrs) {
@@ -432,8 +432,19 @@ formsAngular
                 }
                 subkeys.push(info);
               } else {
-                template += '<div class="schema-head">' + info.label +
-                  '</div>' +
+                template += '<div class="schema-head">' + info.label;
+                if (info.unshift) {
+                  if (cssFrameworkService.framework() === 'bs2') {
+                    template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
+                    '        <i class="icon-plus"></i> Add';
+                  } else {
+                    template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
+                    '        <i class="glyphicon glyphicon-plus"></i> Add';
+                  }
+                  template += '    </button>';
+                }
+
+                template +=  '</div>' +
                   '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
                   convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
                   ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
@@ -469,14 +480,14 @@ formsAngular
                   }
                   if (!info.noAdd) {
                     if (cssFrameworkService.framework() === 'bs2') {
-                      template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                        '        <i class="icon-plus"></i> Add';
-                    } else {
-                      template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                        '        <i class="glyphicon glyphicon-plus"></i> Add';
-                    }
-                    template += '    </button>';
+                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                    '        <i class="icon-plus"></i> Add';
+                  } else {
+                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                    '        <i class="glyphicon glyphicon-plus"></i> Add';
                   }
+                  template += '    </button>';
+                }
                   template += '</div>';
                 }
               }
@@ -641,10 +652,18 @@ formsAngular
               elementHtml += attrs.subschema ? '' : '</form>';
               element.replaceWith($compile(elementHtml)(scope));
               // If there are subkeys we need to fix up ng-model references when record is read
-              if (subkeys.length > 0) {
+              // If we have modelControllers we need to let them know when we have form + data
+              if (subkeys.length > 0 || $data.modelControllers.length > 0) {
                 var unwatch2 = scope.$watch('phase', function (newValue) {
                   if (newValue === 'ready') {
                     unwatch2();
+
+                    // Tell the 'model controllers' that the form and data are there
+                    for (var i = 0 ; i < $data.modelControllers.length ; i++) {
+                      if ($data.modelControllers[i].onAllReady) {
+                        $data.modelControllers[i].onAllReady(scope);
+                      }
+                    }
 
                     // For each one of the subkeys sets in the form
                     for (var subkeyCtr = 0; subkeyCtr < subkeys.length; subkeyCtr++) {
