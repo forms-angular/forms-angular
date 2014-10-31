@@ -622,12 +622,6 @@ formsAngular.factory('formGenerator', function (
         $scope.pagesLoaded = 0;
 
       sharedStuff.baseScope = $scope;
-      // Tell the 'model controllers' that they can start fiddling with basescope
-      for (var i = 0 ; i < sharedStuff.modelControllers.length ; i++) {
-        if (sharedStuff.modelControllers[i].modifyBaseCtrl) {
-          sharedStuff.modelControllers[i].modifyBaseCtrl($scope);
-        }
-      }
 
         $scope.generateEditUrl = function (obj) {
             return formGeneratorInstance.generateEditUrl(obj, $scope);
