@@ -1,4 +1,4 @@
-/*! forms-angular 2014-10-22 */
+/*! forms-angular 2014-10-30 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -98,7 +98,7 @@ formsAngular.controller('NavCtrl',
     var locals = {}, addThis;
 
     controllerName += 'Ctrl';
-    locals.$scope = $scope.scopes[level] = $scope.$new();
+    locals.$scope = $data.modelControllers[level] = $scope.$new();
     try {
       $controller(controllerName, locals);
       if ($scope.routing.newRecord) {
@@ -144,10 +144,10 @@ formsAngular.controller('NavCtrl',
       ];
     } else if ($scope.routing.modelName) {
 
-      angular.forEach($scope.scopes, function (value) {
+      angular.forEach($data.modelControllers, function (value) {
         value.$destroy();
       });
-      $scope.scopes = [];
+      $data.modelControllers = [];
       $data.record = {};
       $data.disableFunctions = {};
       $data.dataEventFunctions = {};
@@ -213,9 +213,9 @@ formsAngular
 'use strict';
 
 formsAngular
-  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter',
+  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', '$data',
         'routingService', 'cssFrameworkService', 'formGenerator',
-        function ($compile, $rootScope, utils, $filter, routingService, cssFrameworkService, formGenerator) {
+        function ($compile, $rootScope, utils, $filter, $data, routingService, cssFrameworkService, formGenerator) {
     return {
       restrict: 'EA',
       link: function (scope, element, attrs) {
@@ -489,8 +489,20 @@ formsAngular
           } else {
             switch (info.containerType) {
               case 'tab' :
-                result.before = '<tab heading="' + info.title + '">';
-                result.after = '</tab>';
+                var tabNo=-1;
+                for (var i=0 ; i < scope.tabs.length; i++) {
+                  if (scope.tabs[i].title === info.title) {
+                    tabNo = i;
+                    break;
+                  }
+                }
+                if (tabNo >= 0) {
+                  result.before = '<tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '" active="tabs[' + tabNo + '].active">';
+                  result.after = '</tab>';
+                } else {
+                  result.before = '<p>Error!  Tab ' + info.title + ' not found in tab list</p>';
+                  result.after = '';
+                }
                 break;
               case 'tabset' :
                 result.before = '<tabset>';
@@ -632,8 +644,19 @@ formsAngular
                 }
                 subkeys.push(info);
               } else {
-                template += '<div class="schema-head">' + info.label +
-                  '</div>' +
+                template += '<div class="schema-head">' + info.label;
+                if (info.unshift) {
+                  if (cssFrameworkService.framework() === 'bs2') {
+                    template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
+                    '        <i class="icon-plus"></i> Add';
+                  } else {
+                    template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
+                    '        <i class="glyphicon glyphicon-plus"></i> Add';
+                  }
+                  template += '    </button>';
+                }
+
+                template +=  '</div>' +
                   '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
                   convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
                   ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
@@ -669,14 +692,14 @@ formsAngular
                   }
                   if (!info.noAdd) {
                     if (cssFrameworkService.framework() === 'bs2') {
-                      template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                        '        <i class="icon-plus"></i> Add';
-                    } else {
-                      template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                        '        <i class="glyphicon glyphicon-plus"></i> Add';
-                    }
-                    template += '    </button>';
+                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                    '        <i class="icon-plus"></i> Add';
+                  } else {
+                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                    '        <i class="glyphicon glyphicon-plus"></i> Add';
                   }
+                  template += '    </button>';
+                }
                   template += '</div>';
                 }
               }
@@ -841,10 +864,18 @@ formsAngular
               elementHtml += attrs.subschema ? '' : '</form>';
               element.replaceWith($compile(elementHtml)(scope));
               // If there are subkeys we need to fix up ng-model references when record is read
-              if (subkeys.length > 0) {
+              // If we have modelControllers we need to let them know when we have form + data
+              if (subkeys.length > 0 || $data.modelControllers.length > 0) {
                 var unwatch2 = scope.$watch('phase', function (newValue) {
                   if (newValue === 'ready') {
                     unwatch2();
+
+                    // Tell the 'model controllers' that the form and data are there
+                    for (var i = 0 ; i < $data.modelControllers.length ; i++) {
+                      if ($data.modelControllers[i].onAllReady) {
+                        $data.modelControllers[i].onAllReady(scope);
+                      }
+                    }
 
                     // For each one of the subkeys sets in the form
                     for (var subkeyCtr = 0; subkeyCtr < subkeys.length; subkeyCtr++) {
@@ -865,6 +896,9 @@ formsAngular
 
                         if (arrayToProcess[thisOffset].selectFunc) {
                           // Get the array offset from a function
+                          if (!scope[arrayToProcess[thisOffset].selectFunc] || typeof scope[arrayToProcess[thisOffset].selectFunc] !== 'function') {
+                            throw new Error('Subkey function ' + arrayToProcess[thisOffset].selectFunc + ' is not properly set up');
+                          }
                           arrayOffset = scope[arrayToProcess[thisOffset].selectFunc](theRecord, info);
 
                         } else if (arrayToProcess[thisOffset].keyList) {
@@ -1105,9 +1139,13 @@ formsAngular.provider('cssFrameworkService', [function () {
 formsAngular.factory('$data', [function () {
 
   var sharedData = {
+
+    // The record from BaseCtrl
     record: {},
     disableFunctions: {},
-    dataEventFunctions: {}
+    dataEventFunctions: {},
+
+    modelControllers: []
   };
   return sharedData;
 
@@ -1129,9 +1167,11 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     {route: '/analyse/:model/:reportSchemaName', state: 'analyse::model::report', templateUrl: 'partials/base-analysis.html'},
     {route: '/analyse/:model',                   state: 'analyse::model',         templateUrl: 'partials/base-analysis.html'},
     {route: '/:model/:id/edit',                  state: 'model::edit',            templateUrl: 'partials/base-edit.html'},
+    {route: '/:model/:id/edit/:tab',             state: 'model::edit::tab',       templateUrl: 'partials/base-edit.html'},
     {route: '/:model/new',                       state: 'model::new',             templateUrl: 'partials/base-edit.html'},
     {route: '/:model',                           state: 'model::list',            templateUrl: 'partials/base-list.html'},
     {route: '/:model/:form/:id/edit',            state: 'model::form::edit',      templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
+    {route: '/:model/:form/:id/edit/:tab',       state: 'model::form::edit::tab', templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
     {route: '/:model/:form/new',                 state: 'model::form::new',       templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
     {route: '/:model/:form',                     state: 'model::form::list',      templateUrl: 'partials/base-list.html'}        // list page with links to non default form
   ];
@@ -1218,15 +1258,24 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
               if (locationSplit[1] === 'analyse') {
                 lastObject.analyse = true;
                 lastObject.modelName = locationSplit[2];
+                lastObject.reportSchemaName = locationParts >= 4 ? locationSplit[3] : null;
               } else {
                 lastObject.modelName = locationSplit[1];
-                var lastPart = locationSplit[locationParts - 1];
-                if (lastPart === 'new') {
+                var lastParts = [locationSplit[locationParts - 1], locationSplit[locationParts - 2]];
+                var newPos = lastParts.indexOf('new');
+                var editPos;
+                if (newPos === -1) {
+                  editPos = lastParts.indexOf('edit');
+                  if (editPos !== -1) {
+                    locationParts -= (2 + editPos);
+                    lastObject.id = locationSplit[locationParts];
+                  }
+                } else {
                   lastObject.newRecord = true;
-                  locationParts--;
-                } else if (lastPart === 'edit') {
-                  locationParts = locationParts - 2;
-                  lastObject.id = locationSplit[locationParts];
+                  locationParts -= (1 + newPos);
+                }
+                if (editPos === 1 || newPos === 1) {
+                  lastObject.tab = lastParts[0];
                 }
                 if (locationParts > 2) {
                   lastObject.formName = locationSplit[2];
@@ -1326,7 +1375,6 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
   };
 }]);
 
-
 'use strict';
 
 /**
@@ -1342,8 +1390,8 @@ formsAngular.factory('formGenerator', function (
     SubmissionsService, routingService, recordHandler) {
     var exports = {};
 
+    // utility for apps that use forms-angular
     exports.generateEditUrl = function (obj, $scope) {
-        // FIXME: this method seems to be not used anymore
         return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
     };
 
@@ -1373,14 +1421,14 @@ formsAngular.factory('formGenerator', function (
             if (!tab) {
                 if ($scope.tabs.length === 0) {
                     if ($scope.formSchema.length > 0) {
-                        $scope.tabs.push({title: 'Main', content: []});
+                        $scope.tabs.push({title: 'Main', content: [], active: ($scope.tab==='Main' || !$scope.tab)});
                         tab = $scope.tabs[0];
                         for (var i = 0; i < $scope.formSchema.length; i++) {
                             tab.content.push($scope.formSchema[i]);
                         }
                     }
                 }
-                tab = $scope.tabs[$scope.tabs.push({title: tabTitle, containerType: 'tab', content: []}) - 1];
+              tab = $scope.tabs[$scope.tabs.push({title: tabTitle, containerType: 'tab', content: [], active: (tabTitle===$scope.tab)}) - 1];
             }
             tab.content.push(thisInst);
         }
@@ -1820,7 +1868,6 @@ formsAngular.factory('formGenerator', function (
         return display;
     };
 
-
     // Conventional view is that this should go in a directive.  I reckon it is quicker here.
     exports.updateDataDependentDisplay = function (curValue, oldValue, force, $scope) {
         var depends, i, j, k, element;
@@ -1897,22 +1944,32 @@ formsAngular.factory('formGenerator', function (
         return forceNextTime;
     };
 
-    exports.add = function (fieldName, $event, $scope) {
-        var arrayField;
-        var fieldParts = fieldName.split('.');
-        arrayField = $scope.record;
-        for (var i = 0, l = fieldParts.length; i < l; i++) {
-            if (!arrayField[fieldParts[i]]) {
-                if (i === l - 1) {
-                    arrayField[fieldParts[i]] = [];
-                } else {
-                    arrayField[fieldParts[i]] = {};
-                }
-            }
-            arrayField = arrayField[fieldParts[i]];
+    function getArrayFieldToExtend(fieldName, $scope) {
+      var fieldParts = fieldName.split('.');
+      var arrayField = $scope.record;
+      for (var i = 0, l = fieldParts.length; i < l; i++) {
+        if (!arrayField[fieldParts[i]]) {
+          if (i === l - 1) {
+            arrayField[fieldParts[i]] = [];
+          } else {
+            arrayField[fieldParts[i]] = {};
+          }
         }
+        arrayField = arrayField[fieldParts[i]];
+      }
+      return arrayField;
+    }
+
+    exports.add = function (fieldName, $event, $scope) {
+        var arrayField = getArrayFieldToExtend(fieldName, $scope);
         arrayField.push({});
         $scope.setFormDirty($event);
+    };
+
+    exports.unshift = function (fieldName, $event, $scope) {
+      var arrayField = getArrayFieldToExtend(fieldName, $scope);
+      arrayField.unshift({});
+      $scope.setFormDirty($event);
     };
 
     exports.remove = function (fieldName, value, $event, $scope) {
@@ -1927,7 +1984,6 @@ formsAngular.factory('formGenerator', function (
     };
 
     exports.decorateScope = function($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
-        sharedStuff.baseScope = $scope;
         $scope.record = sharedStuff.record;
         $scope.phase = 'init';
         $scope.disableFunctions = sharedStuff.disableFunctions;
@@ -1941,6 +1997,14 @@ formsAngular.factory('formGenerator', function (
         $scope.select2List = [];
         $scope.pageSize = 60;
         $scope.pagesLoaded = 0;
+
+      sharedStuff.baseScope = $scope;
+      // Tell the 'model controllers' that they can start fiddling with basescope
+      for (var i = 0 ; i < sharedStuff.modelControllers.length ; i++) {
+        if (sharedStuff.modelControllers[i].modifyBaseCtrl) {
+          sharedStuff.modelControllers[i].modifyBaseCtrl($scope);
+        }
+      }
 
         $scope.generateEditUrl = function (obj) {
             return formGeneratorInstance.generateEditUrl(obj, $scope);
@@ -1982,6 +2046,10 @@ formsAngular.factory('formGenerator', function (
             return formGeneratorInstance.add(fieldName, $event, $scope);
         };
 
+        $scope.unshift = function (fieldName, $event) {
+          return formGeneratorInstance.unshift(fieldName, $event, $scope);
+        };
+
         $scope.remove = function (fieldName, value, $event) {
             return formGeneratorInstance.remove(fieldName, value, $event, $scope);
         };
@@ -1991,7 +2059,7 @@ formsAngular.factory('formGenerator', function (
             $('#' + $(ev.currentTarget).data('select2-open')).select2('open');
         };
 
-        // FIXME: still used?
+        // Useful utility when debugging
         $scope.toJSON = function (obj) {
             return JSON.stringify(obj, null, 2);
         };
@@ -2000,12 +2068,11 @@ formsAngular.factory('formGenerator', function (
             return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
         };
 
-
     };
-
 
     return exports;
 });
+
 
 
 'use strict';
