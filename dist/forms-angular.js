@@ -1,4 +1,4 @@
-/*! forms-angular 2014-10-30 */
+/*! forms-angular 2014-10-31 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -34,6 +34,12 @@ formsAngular.controller('BaseCtrl', [
 
         recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState, recordHandler.handleError($scope));
 
+        // Tell the 'model controllers' that they can start fiddling with basescope
+        for (var i = 0 ; i < sharedStuff.modelControllers.length ; i++) {
+          if (sharedStuff.modelControllers[i].onBaseCtrlReady) {
+            sharedStuff.modelControllers[i].onBaseCtrlReady($scope);
+          }
+        }
     }
 ])
     .controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
@@ -47,6 +53,7 @@ formsAngular.controller('BaseCtrl', [
             $modalInstance.dismiss('cancel');
         };
     }]);
+
 'use strict';
 
 formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'routingService', function ($scope, $http, $location, routingService) {
@@ -1999,12 +2006,6 @@ formsAngular.factory('formGenerator', function (
         $scope.pagesLoaded = 0;
 
       sharedStuff.baseScope = $scope;
-      // Tell the 'model controllers' that they can start fiddling with basescope
-      for (var i = 0 ; i < sharedStuff.modelControllers.length ; i++) {
-        if (sharedStuff.modelControllers[i].modifyBaseCtrl) {
-          sharedStuff.modelControllers[i].modifyBaseCtrl($scope);
-        }
-      }
 
         $scope.generateEditUrl = function (obj) {
             return formGeneratorInstance.generateEditUrl(obj, $scope);
