@@ -111,8 +111,8 @@ formsAngular
               } else {
                 modelString += root;
                 if (options.subkey) {
+                  idString = modelString.slice(modelBase.length).replace(/\./g, '-')+'-subkey'+options.subkeyno + '-' + lastPart;
                   modelString += '[' + '$_arrayOffset_' + root.replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
-                  idString = modelString.slice(modelBase.length);
                 } else {
                   modelString += '[$index].' + lastPart;
                   idString = null;
