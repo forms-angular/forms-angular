@@ -163,7 +163,7 @@ formsAngular.factory('formGenerator', function (
                                         } else {
                                             if (angular.isArray(dataVal)) {
                                                 // extract the array offset of the subkey from the element id
-                                                var workString = element.context.id;
+                                                var workString = element.context.getAttribute('ng-model');
                                                 var pos = workString.indexOf('.'+parts[0]);
                                                 workString = workString.slice(0,pos);
                                                 pos = workString.lastIndexOf('.');
