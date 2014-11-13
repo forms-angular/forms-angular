@@ -325,11 +325,14 @@ describe('formInput', function () {
       elm = angular.element('<div><form-input schema="schema"></form-input></div>');
       scope = $rootScope;
       scope.fEyeColourOptions = ['Blue', 'Brown', 'Green', 'Hazel'];
+      scope.fSexOptions = ['Male', 'Female'];
       scope.schema = [
         {name: 'name', id: '1', label: 'Name', type: 'text', readonly: true},
         {name: 'description', id: '2', label: 'Desc', type: 'textarea', rows: 10, readonly: true},
-        {'name': 'eyeColour', 'id': 'f_eyeColour', 'label': 'Eye Colour', 'type': 'select', 'options': 'fEyeColourOptions', readonly: true},
-        {'name': 'eyeColour2', 'id': 'f_eyeColour2', 'label': 'Eye Colour2', 'type': 'select', 'options': 'fEyeColourOptions', readonly: true, form: {'select2': {}}}
+        {name: 'eyeColour', 'id': 'f_eyeColour', 'label': 'Eye Colour', 'type': 'select', 'options': 'fEyeColourOptions', readonly: true},
+        {name: 'eyeColour2', 'id': 'f_eyeColour2', 'label': 'Eye Colour2', 'type': 'select', 'options': 'fEyeColourOptions', readonly: true, 'select2': { 's2query': 'select2eyeColour' }},
+        {name: 'accepted', 'helpInline': 'Did we take them?','type': 'checkbox', readonly: true, 'id': 'f_accepted', 'label': 'Accepted'},
+        {name: 'sex', type: 'radio', 'inlineRadio': true, 'options': 'fSexOptions', 'id': 'f_sex', 'label': 'Sex', readonly: true}
       ];
       $compile(elm)(scope);
       scope.$digest();
@@ -348,9 +351,69 @@ describe('formInput', function () {
     });
 
     it('select2', function () {
-      var input = angular.element(elm.find('select')[1]);
+      var input = angular.element(elm.find('input')[1]);
+      expect(input.attr('readonly')).toBe('readonly');
+    });
+
+    it('checkbox', function () {
+      var input = angular.element(elm.find('input')[2]);
       expect(input.attr('disabled')).toBe('disabled');
     });
+
+    it('radio button', function () {
+      var input = angular.element(elm.find('input')[3]);
+      expect(input.attr('disabled')).toBe('disabled');
+    });
+
+  });
+
+  describe('generates required inputs', function () {
+
+    beforeEach(inject(function ($rootScope, $compile) {
+
+      elm = angular.element('<div><form-input schema="schema"></form-input></div>');
+      scope = $rootScope;
+      scope.fEyeColourOptions = ['Blue', 'Brown', 'Green', 'Hazel'];
+      scope.fSexOptions = ['Male', 'Female'];
+      scope.schema = [
+        {name: 'name', id: '1', label: 'Name', type: 'text', required: true},
+        {name: 'description', id: '2', label: 'Desc', type: 'textarea', rows: 10, required: true},
+        {'name': 'eyeColour', 'id': 'f_eyeColour', 'label': 'Eye Colour', 'type': 'select', 'options': 'fEyeColourOptions', required: true},
+        {'name': 'eyeColour2', 'id': 'f_eyeColour2', 'label': 'Eye Colour2', 'type': 'select', 'options': 'fEyeColourOptions', required: true, 'select2': { 's2query': 'select2eyeColour' }},
+        {name: 'accepted', 'helpInline': 'Did we take them?','type': 'checkbox', required: true, 'id': 'f_accepted', 'label': 'Accepted'},
+        {name: 'sex', type: 'radio', 'inlineRadio': true, 'options': 'fSexOptions', 'id': 'f_sex', 'label': 'Sex', required: true}
+      ];
+      $compile(elm)(scope);
+      scope.$digest();
+    }));
+
+    it('text and textarea', function () {
+      var input = angular.element(elm.find('input')[0]);
+      expect(input.attr('required')).toBe('required');
+      input = elm.find('textarea');
+      expect(input.attr('required')).toBe('required');
+    });
+
+    it('select', function () {
+      var input = angular.element(elm.find('select')[0]);
+      expect(input.attr('required')).toBe('required');
+    });
+
+    it('select2', function () {
+      var input = angular.element(elm.find('input')[1]);
+      expect(input.attr('required')).toBe('required');
+    });
+
+    it('checkbox', function () {
+      var input = angular.element(elm.find('input')[2]);
+      expect(input.attr('required')).toBe('required');
+    });
+
+    it('radio button', function () {
+      var input = angular.element(elm.find('input')[3]);
+      expect(input.attr('required')).toBe('required');
+    });
+
 
   });
 

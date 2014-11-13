@@ -1,4 +1,4 @@
-/*! forms-angular 2014-10-31 */
+/*! forms-angular 2014-11-13 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -330,8 +330,8 @@ formsAngular
               } else {
                 modelString += root;
                 if (options.subkey) {
+                  idString = modelString.slice(modelBase.length).replace(/\./g, '-')+'-subkey'+options.subkeyno + '-' + lastPart;
                   modelString += '[' + '$_arrayOffset_' + root.replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
-                  idString = modelString.slice(modelBase.length);
                 } else {
                   modelString += '[$index].' + lastPart;
                   idString = null;
@@ -344,7 +344,6 @@ formsAngular
           }
           var value,
             requiredStr = (isRequired || fieldInfo.required) ? ' required' : '',
-            readonlyStr = fieldInfo.readonly ? ' readonly' : '',
             placeHolder = fieldInfo.placeHolder,
             compactClass = '',
             sizeClassBS3 = '',
@@ -368,9 +367,10 @@ formsAngular
           common += addAll('Field', null, options);
           switch (fieldInfo.type) {
             case 'select' :
-              common += (fieldInfo.readonly ? 'disabled ' : '');
               if (fieldInfo.select2) {
                 common += 'class="fng-select2' + formControl + compactClass + sizeClassBS2 + '"';
+                common += (fieldInfo.readonly ? ' readonly' : '');
+                common += (fieldInfo.required ? ' ng-required="true"' : '');
                 if (fieldInfo.select2.fngAjax) {
                   if (cssFrameworkService.framework() === 'bs2') {
                     value = '<div class="input-append">';
@@ -385,10 +385,11 @@ formsAngular
                     value += '</div>';
                   }
                 } else if (fieldInfo.select2) {
-                  value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + (fieldInfo.readonly ? 'disabled ' : '') + common + '>';
+                  value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + common + '>';
                 }
               } else {
-                value = '<select ' + common + 'class="' + formControl.trim() + compactClass + sizeClassBS2 + '">';
+                common += (fieldInfo.readonly ? 'disabled ' : '');
+                value = '<select ' + common + 'class="' + formControl.trim() + compactClass + sizeClassBS2 + '" ' + requiredStr +'>';
                 if (!isRequired) {
                   value += '<option></option>';
                 }
@@ -411,6 +412,7 @@ formsAngular
               break;
             case 'radio' :
               value = '';
+              common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
               var separateLines = (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
               if (angular.isArray(fieldInfo.options)) {
@@ -427,6 +429,7 @@ formsAngular
               }
               break;
             case 'checkbox' :
+              common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
               if (cssFrameworkService.framework() === 'bs3') {
                 value = '<div class="checkbox"><input ' + common + 'type="checkbox"></div>';
               } else {
@@ -437,7 +440,7 @@ formsAngular
               var setClass = formControl.trim() + compactClass + sizeClassBS2 + (fieldInfo.class ? ' ' + fieldInfo.class : '');
               if (setClass.length !== 0) { common += 'class="' + setClass + '"' ; }
               if (fieldInfo.add) { common += ' ' + fieldInfo.add + ' '; }
-              common += 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
+              common += 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + (fieldInfo.readonly ? ' readonly' : '') + ' ';
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
                   if (fieldInfo.rows === 'auto') {
@@ -1520,7 +1523,8 @@ formsAngular.factory('formGenerator', function (
         if (mongooseType.instance === 'String') {
             if (mongooseOptions.enum) {
                 formInstructions.type = formInstructions.type || 'select';
-                // Hacky way to get required styling working on select controls
+                if (formInstructions.select2) {
+                    // Hacky way to get required styling working on select2 controls
                 if (mongooseOptions.required) {
 
                     $scope.$watch('record.' + formInstructions.name, function (newValue) {
@@ -1531,7 +1535,6 @@ formsAngular.factory('formGenerator', function (
                         updateInvalidClasses($scope.record[formInstructions.name], formInstructions.id, formInstructions.select2, ctrlState);
                     }, 0);
                 }
-                if (formInstructions.select2) {
                     if (formInstructions.select2 === true) {formInstructions.select2 = {}; }
                     formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
                     $scope[formInstructions.select2.s2query] = {
@@ -1547,7 +1550,7 @@ formsAngular.factory('formGenerator', function (
                                         } else {
                                             if (angular.isArray(dataVal)) {
                                                 // extract the array offset of the subkey from the element id
-                                                var workString = element.context.id;
+                                                var workString = element.context.getAttribute('ng-model');
                                                 var pos = workString.indexOf('.'+parts[0]);
                                                 workString = workString.slice(0,pos);
                                                 pos = workString.lastIndexOf('.');

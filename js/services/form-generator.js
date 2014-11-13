@@ -136,7 +136,8 @@ formsAngular.factory('formGenerator', function (
         if (mongooseType.instance === 'String') {
             if (mongooseOptions.enum) {
                 formInstructions.type = formInstructions.type || 'select';
-                // Hacky way to get required styling working on select controls
+                if (formInstructions.select2) {
+                    // Hacky way to get required styling working on select2 controls
                 if (mongooseOptions.required) {
 
                     $scope.$watch('record.' + formInstructions.name, function (newValue) {
@@ -147,7 +148,6 @@ formsAngular.factory('formGenerator', function (
                         updateInvalidClasses($scope.record[formInstructions.name], formInstructions.id, formInstructions.select2, ctrlState);
                     }, 0);
                 }
-                if (formInstructions.select2) {
                     if (formInstructions.select2 === true) {formInstructions.select2 = {}; }
                     formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
                     $scope[formInstructions.select2.s2query] = {
