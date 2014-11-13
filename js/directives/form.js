@@ -125,7 +125,6 @@ formsAngular
           }
           var value,
             requiredStr = (isRequired || fieldInfo.required) ? ' required' : '',
-            readonlyStr = fieldInfo.readonly ? ' readonly' : '',
             placeHolder = fieldInfo.placeHolder,
             compactClass = '',
             sizeClassBS3 = '',
@@ -149,9 +148,10 @@ formsAngular
           common += addAll('Field', null, options);
           switch (fieldInfo.type) {
             case 'select' :
-              common += (fieldInfo.readonly ? 'disabled ' : '');
               if (fieldInfo.select2) {
                 common += 'class="fng-select2' + formControl + compactClass + sizeClassBS2 + '"';
+                common += (fieldInfo.readonly ? ' readonly' : '');
+                common += (fieldInfo.required ? ' ng-required="true"' : '');
                 if (fieldInfo.select2.fngAjax) {
                   if (cssFrameworkService.framework() === 'bs2') {
                     value = '<div class="input-append">';
@@ -166,10 +166,11 @@ formsAngular
                     value += '</div>';
                   }
                 } else if (fieldInfo.select2) {
-                  value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + (fieldInfo.readonly ? 'disabled ' : '') + common + '>';
+                  value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + common + '>';
                 }
               } else {
-                value = '<select ' + common + 'class="' + formControl.trim() + compactClass + sizeClassBS2 + '">';
+                common += (fieldInfo.readonly ? 'disabled ' : '');
+                value = '<select ' + common + 'class="' + formControl.trim() + compactClass + sizeClassBS2 + '" ' + requiredStr +'>';
                 if (!isRequired) {
                   value += '<option></option>';
                 }
@@ -192,6 +193,7 @@ formsAngular
               break;
             case 'radio' :
               value = '';
+              common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
               var separateLines = (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
               if (angular.isArray(fieldInfo.options)) {
@@ -208,6 +210,7 @@ formsAngular
               }
               break;
             case 'checkbox' :
+              common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
               if (cssFrameworkService.framework() === 'bs3') {
                 value = '<div class="checkbox"><input ' + common + 'type="checkbox"></div>';
               } else {
@@ -218,7 +221,7 @@ formsAngular
               var setClass = formControl.trim() + compactClass + sizeClassBS2 + (fieldInfo.class ? ' ' + fieldInfo.class : '');
               if (setClass.length !== 0) { common += 'class="' + setClass + '"' ; }
               if (fieldInfo.add) { common += ' ' + fieldInfo.add + ' '; }
-              common += 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + readonlyStr + ' ';
+              common += 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + (fieldInfo.readonly ? ' readonly' : '') + ' ';
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
                   if (fieldInfo.rows === 'auto') {

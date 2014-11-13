@@ -74,14 +74,17 @@ describe('directive with form', function () {
       expect(elem.text()).toMatch(/colleague/);
     });
 
-    it('shows the friend name', function () {
+    iit('shows the friend name', function () {
       $httpBackend.whenGET('/api/a_unadorned_mongoose/666a6075b320153869b17599').respond(
         {'_id': '666a6075b320153869b17599', 'surname': 'TestPerson2', 'forename': 'Andrew', 'weight': 142, 'eyeColour': 'Brown', 'accepted': true}
       );
       var friend = scope.record.friendList[0];
       scope.frdShowDetails(friend);
       $httpBackend.flush();
-      var elem = angular.element(elm.find('div')[17]);
+      var elem = angular.element(elm.find('form'));
+      elem = angular.element(angular.element(elem.children())[2]);
+      elem = angular.element(angular.element(elem.children())[1]);
+      elem = angular.element(angular.element(elem.children())[1]);
       expect(elem).toHaveClass('friends-head');
       expect(elem.text()).toMatch(/Andrew/);
       expect(elem.text()).toMatch(/TestPerson2/);
