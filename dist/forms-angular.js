@@ -1,4 +1,4 @@
-/*! forms-angular 2014-11-13 */
+/*! forms-angular 2014-11-18 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -171,8 +171,11 @@ formsAngular.controller('NavCtrl',
     }
   });
 
-  $scope.doClick = function (index) {
-    if ($scope.items[index].broadcast) {
+  $scope.doClick = function (index, event) {
+    var option = angular.element(event.target);
+    if (option.parent().hasClass('disabled')) {
+      event.preventDefault();
+    } else if ($scope.items[index].broadcast) {
       $scope.$broadcast($scope.items[index].broadcast);
     } else {
       // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
@@ -201,6 +204,12 @@ formsAngular.controller('NavCtrl',
   $scope.isHidden = function (index) {
     return $scope.items[index].isHidden ? $scope.items[index].isHidden() : false;
   };
+
+
+  $scope.isDisabled = function (index) {
+    return $scope.items[index].isDisabled ? $scope.items[index].isDisabled() : false;
+  };
+
 
   $scope.buildUrl = function (path) {
     return routingService.buildUrl(path);
