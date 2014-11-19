@@ -74,7 +74,7 @@ describe('directive with form', function () {
       expect(elem.text()).toMatch(/colleague/);
     });
 
-    iit('shows the friend name', function () {
+    it('shows the friend name', function () {
       $httpBackend.whenGET('/api/a_unadorned_mongoose/666a6075b320153869b17599').respond(
         {'_id': '666a6075b320153869b17599', 'surname': 'TestPerson2', 'forename': 'Andrew', 'weight': 142, 'eyeColour': 'Brown', 'accepted': true}
       );
