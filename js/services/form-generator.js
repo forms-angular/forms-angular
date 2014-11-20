@@ -124,6 +124,19 @@ formsAngular.factory('formGenerator', function (
         }
     };
 
+  function preservePristine(element, fn) {
+    // stop the form being set to dirty when the fn is called
+    var modelController = element.inheritedData('$ngModelController');
+    var isClean = modelController.$pristine;
+    if (isClean) {
+      // fake it to dirty here and reset after call to fn
+      modelController.$pristine = false;
+    }
+    fn();
+    if (isClean) {
+      modelController.$pristine = true;
+    }
+  }
 
     exports.handleFieldType = function (formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError) {
 
@@ -186,10 +199,10 @@ formsAngular.factory('formGenerator', function (
                                             if (formInstructions.array) {
                                                 var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
                                                 if (leafVal[offset].x) {
-                                                    callback(leafVal[offset].x);
+                                                    preservePristine(element, function() { callback(leafVal[offset].x);});
                                                 }
                                             } else {
-                                                callback(leafVal);
+                                                preservePristine(element, function() { callback(leafVal);});
                                             }
                                         }
                                     });
@@ -253,29 +266,24 @@ formsAngular.factory('formGenerator', function (
                             allowClear: !mongooseOptions.required,
                             minimumInputLength: 2,
                             initSelection: function (element, callback) {
-                                var theId = element.val();
-                                if (theId && theId !== '') {
+                                if (!angular.element(element).attr('sel2init')) {
+                                  var theId = element.val();
+                                  if (theId && theId !== '') {
                                     SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
-                                        .success(function (data) {
-                                            if (data.success === false) {
-                                                $location.path('/404');
-                                            }
-                                            var display = {id: theId, text: data.list};
-                                            recordHandler.setData(ctrlState.master, formInstructions.name, element, display);
-                                            // stop the form being set to dirty
-                                            var modelController = element.inheritedData('$ngModelController'),
-                                                isClean = modelController.$pristine;
-                                            if (isClean) {
-                                                // fake it to dirty here and reset after callback()
-                                                modelController.$pristine = false;
-                                            }
-                                            callback(display);
-                                            if (isClean) {
-                                                modelController.$pristine = true;
-                                            }
-                                        }).error(handleError);
-//                                } else {
-//                                    throw new Error('select2 initSelection called without a value');
+                                      .success(function (data) {
+                                        if (data.success === false) {
+                                          $location.path('/404');
+                                        }
+                                        var display = {id: theId, text: data.list};
+                                        recordHandler.setData(ctrlState.master, formInstructions.name, element, display);
+                                        preservePristine(element, function () {
+                                          callback(display);
+                                        });
+                                      }).error(handleError);
+                                    //                                } else {
+                                    //                                    throw new Error('select2 initSelection called without a value');
+                                    angular.element(element).attr('sel2init', 'true');
+                                  }
                                 }
                             },
                             ajax: {

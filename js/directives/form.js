@@ -551,7 +551,7 @@ formsAngular
                   var thisAttr = thisElement.attributes[i];
                   switch (thisAttr.nodeName) {
                     case 'class' :
-                      var classes = thisAttr.nodeValue.replace('ng-scope', '');
+                      var classes = thisAttr.value.replace('ng-scope', '');
                       if (classes.length > 0) {
                         newElement += ' class="' + classes + '"';
                       }
@@ -563,7 +563,7 @@ formsAngular
                       newElement += ' schema="' + bespokeSchemaDefName + '"';
                       break;
                     default :
-                      newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.nodeValue + '"';
+                      newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.value + '"';
                   }
                 }
                 if (info.add) {

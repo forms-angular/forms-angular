@@ -12,6 +12,7 @@ build.xml
 .tmp
 generated
 bower_components
+working_bower_components_20141119
 node_modules
 .idea
 
