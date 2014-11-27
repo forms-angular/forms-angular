@@ -1,9 +1,9 @@
 'use strict';
 
 formsAngular
-  .directive('formInput', ['$compile', '$rootScope', 'utils', '$filter', '$data',
-        'routingService', 'cssFrameworkService', 'formGenerator',
-        function ($compile, $rootScope, utils, $filter, $data, routingService, cssFrameworkService, formGenerator) {
+  .directive('formInput', ['$compile', '$rootScope', '$filter', '$data',
+        'routingService', 'cssFrameworkService', 'formGenerator', 'formMarkupHelper',
+        function ($compile, $rootScope, $filter, $data, routingService, cssFrameworkService, formGenerator, formMarkupHelper) {
     return {
       restrict: 'EA',
       link: function (scope, element, attrs) {
@@ -47,15 +47,8 @@ formsAngular
 //                Inline
 //                <input type="text" class="input-small" placeholder="Email">
 
-        var sizeMapping = [1, 2, 4, 6, 8, 10, 12],
-          sizeDescriptions = ['mini', 'small', 'medium', 'large', 'xlarge', 'xxlarge', 'block-level'],
-          defaultSizeOffset = 2, // medium, which was the default for Twitter Bootstrap 2
-          subkeys = [],
-          tabsSetup = false;
-
-        var isHorizontalStyle = function (formStyle) {
-          return (!formStyle || formStyle === 'undefined' || ['vertical', 'inline'].indexOf(formStyle) === -1);
-        };
+        var subkeys = [];
+        var tabsSetup = false;
 
         var generateNgShow = function (showWhen, model) {
 
@@ -86,15 +79,6 @@ formsAngular
           return evaluateSide(showWhen.lhs) + conditionSymbols[conditionPos] + evaluateSide(showWhen.rhs);
         };
 
-        var generateDefault = function (common, options, fieldInfo) {
-          var result = '<input ' + common + 'type="' + fieldInfo.type + '"';
-          if (options.formstyle === 'inline' && cssFrameworkService.framework() === 'bs2' && !fieldInfo.size) {
-            result += 'class="input-small"';
-          }
-          result += ' />';
-          return result;
-        };
-
         var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
           var nameString;
           if (!modelString) {
@@ -123,33 +107,16 @@ formsAngular
               modelString += fieldInfo.name;
             }
           }
-          var value,
-            requiredStr = (isRequired || fieldInfo.required) ? ' required' : '',
-            placeHolder = fieldInfo.placeHolder,
-            compactClass = '',
-            sizeClassBS3 = '',
-            sizeClassBS2 = '',
-            formControl = '';
 
-          if (cssFrameworkService.framework() === 'bs3') {
-            compactClass = (['horizontal', 'vertical', 'inline'].indexOf(options.formstyle) === -1) ? ' input-sm' : '';
-            sizeClassBS3 = 'col-sm-' + sizeMapping[fieldInfo.size ? sizeDescriptions.indexOf(fieldInfo.size) : defaultSizeOffset];
-            formControl = ' form-control';
-          } else {
-            sizeClassBS2 = (fieldInfo.size ? ' input-' + fieldInfo.size : '');
-          }
+          var allInputsVars = formMarkupHelper.allInputsVars(scope, fieldInfo, options, modelString, idString, nameString);
+          var common = allInputsVars.common;
+          var value;
+          var requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
 
-          if (options.formstyle === 'inline') { placeHolder = placeHolder || fieldInfo.label; }
-          var common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' name="' + nameString + '" ');
-          common += (placeHolder ? ('placeholder="' + placeHolder + '" ') : '');
-          if (fieldInfo.popup) {
-            common += 'title="' + fieldInfo.popup + '" ';
-          }
-          common += addAll('Field', null, options);
           switch (fieldInfo.type) {
             case 'select' :
               if (fieldInfo.select2) {
-                common += 'class="fng-select2' + formControl + compactClass + sizeClassBS2 + '"';
+                common += 'class="fng-select2' + allInputsVars.formControl + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '"';
                 common += (fieldInfo.readonly ? ' readonly' : '');
                 common += (fieldInfo.required ? ' ng-required="true"' : '');
                 if (fieldInfo.select2.fngAjax) {
@@ -161,7 +128,7 @@ formsAngular
                   } else {
                     value = '<div class="input-group">';
                     value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
-                    value += '<span class="input-group-addon' + compactClass + '" data-select2-open="' + idString + '" ';
+                    value += '<span class="input-group-addon' + allInputsVars.compactClass + '" data-select2-open="' + idString + '" ';
                     value += '    ng-click="openSelect2($event)"><i class="glyphicon glyphicon-search"></i></span>';
                     value += '</div>';
                   }
@@ -170,7 +137,7 @@ formsAngular
                 }
               } else {
                 common += (fieldInfo.readonly ? 'disabled ' : '');
-                value = '<select ' + common + 'class="' + formControl.trim() + compactClass + sizeClassBS2 + '" ' + requiredStr +'>';
+                value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr +'>';
                 if (!isRequired) {
                   value += '<option></option>';
                 }
@@ -214,14 +181,11 @@ formsAngular
               if (cssFrameworkService.framework() === 'bs3') {
                 value = '<div class="checkbox"><input ' + common + 'type="checkbox"></div>';
               } else {
-                value = generateDefault(common, options, fieldInfo);
+                value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
               }
               break;
             default:
-              var setClass = formControl.trim() + compactClass + sizeClassBS2 + (fieldInfo.class ? ' ' + fieldInfo.class : '');
-              if (setClass.length !== 0) { common += 'class="' + setClass + '"' ; }
-              if (fieldInfo.add) { common += ' ' + fieldInfo.add + ' '; }
-              common += 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '"' : '') + requiredStr + (fieldInfo.readonly ? ' readonly' : '') + ' ';
+              common += formMarkupHelper.addTextInputMarkup(allInputsVars, fieldInfo, requiredStr);
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
                   if (fieldInfo.rows === 'auto') {
@@ -232,23 +196,14 @@ formsAngular
                 }
                 if (fieldInfo.editor === 'ckEditor') {
                   common += 'ckeditor = "" ';
-                  if (cssFrameworkService.framework() === 'bs3') { sizeClassBS3 = 'col-xs-12'; }
+                  if (cssFrameworkService.framework() === 'bs3') { allInputsVars.sizeClassBS3 = 'col-xs-12'; }
                 }
                 value = '<textarea ' + common + ' />';
               } else {
-                value = generateDefault(common, options, fieldInfo);
+                value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
               }
           }
-          if (cssFrameworkService.framework() === 'bs3' && isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
-            value = '<div class="' + sizeClassBS3 + '">' + value + '</div>';
-          }
-          if (fieldInfo.helpInline && fieldInfo.type !== 'checkbox') {
-            value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
-          }
-          if (fieldInfo.help) {
-            value += '<span class="help-block ' + sizeClassBS3 + '">' + fieldInfo.help + '</span>';
-          }
-          return value;
+          return formMarkupHelper.inputChrome(value, fieldInfo, options, allInputsVars);
         };
 
         var convertFormStyleToClass = function (aFormStyle) {
@@ -344,56 +299,9 @@ formsAngular
           return result;
         };
 
-        var generateLabel = function (fieldInfo, addButtonMarkup, options) {
-          var labelHTML = '';
-          if ((cssFrameworkService.framework() === 'bs3' || (options.formstyle !== 'inline' && fieldInfo.label !== '')) || addButtonMarkup) {
-            labelHTML = '<label';
-            var classes = 'control-label';
-            if (isHorizontalStyle(options.formstyle)) {
-              labelHTML += ' for="' + fieldInfo.id + '"';
-              if (typeof fieldInfo.labelDefaultClass !== 'undefined') {
-                // Override default label class (can be empty)
-                classes += ' ' + fieldInfo.labelDefaultClass;
-              } else if (cssFrameworkService.framework() === 'bs3') {
-                classes += ' col-sm-2';
-              }
-            } else if (options.formstyle === 'inline') {
-              labelHTML += ' for="' + fieldInfo.id + '"';
-              classes += ' sr-only';
-            }
-            labelHTML += addAll('Label', null, options) + ' class="' + classes + '">' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
-          }
-          return labelHTML;
-        };
-
         var handleField = function (info, options) {
-
-          info.type = info.type || 'text';
-          info.id = info.id || 'f_' + info.name.replace(/\./g, '_');
-          info.label = (info.label !== undefined) ? (info.label === null ? '' : info.label) : $filter('titleCase')(info.name.split('.').slice(-1)[0]);
-
-          var template = '', closeTag = '';
-          var classes = '';
-          if (cssFrameworkService.framework() === 'bs3') {
-            classes = 'form-group';
-            if (options.formstyle === 'vertical' && info.size !== 'block-level') {
-              template += '<div class="row">';
-              classes += ' col-sm-' + sizeMapping[info.size ? sizeDescriptions.indexOf(info.size) : defaultSizeOffset];
-              closeTag += '</div>';
-            }
-            template += '<div' + addAll('Group', classes, options);
-            closeTag += '</div>';
-          } else {
-            if (isHorizontalStyle(options.formstyle)) {
-              template += '<div' + addAll('Group', 'control-group', options);
-              closeTag = '</div>';
-            } else {
-              template += '<span ';
-              closeTag = '</span>';
-            }
-          }
-
           var includeIndex = false;
+          var insert = '';
           if (options.index) {
             try {
               parseInt(options.index);
@@ -404,16 +312,19 @@ formsAngular
           }
           if (info.showWhen) {
             if (typeof info.showWhen === 'string') {
-              template += 'ng-show="' + info.showWhen + '"';
+              insert += 'ng-show="' + info.showWhen + '"';
             } else {
-              template += 'ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
+              insert += 'ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
             }
           }
           if (includeIndex) {
-            template += ' id="cg_' + info.id.replace('_', '-' + attrs.index + '-') + '">';
+            insert += ' id="cg_' + info.id.replace('_', '-' + attrs.index + '-') + '"';
           } else {
-            template += ' id="cg_' + info.id.replace(/\./g, '-') + '">';
+            insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
           }
+
+          var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options, insert);
+          var template = fieldChrome.template;
 
           if (info.schema) {
             var niceName = info.name.replace(/\./g, '_');
@@ -498,12 +409,9 @@ formsAngular
           }
           else {
             // Handle arrays here
-            var controlClass = [];
-            if (isHorizontalStyle(options.formstyle)) {
-              controlClass.push(cssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-10');
-            }
+            var controlDivClasses = formMarkupHelper.controlDivClasses(options);
             if (info.array) {
-              controlClass.push('fng-array');
+              controlDivClasses.push('fng-array');
               if (options.formstyle === 'inline') { throw 'Cannot use arrays in an inline form'; }
               var glyphClass, ngClassString;
               if (cssFrameworkService.framework() === 'bs2') {
@@ -513,20 +421,28 @@ formsAngular
                 glyphClass = 'glyphicon glyphicon';
                 ngClassString = 'ng-class="skipCols($index)" ';
               }
-              template += generateLabel(info, ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="' + glyphClass + '-plus-sign">' +
-                '</i>', options) + '<div ' + ngClassString + 'class="' + controlClass.join(' ') + '" id="' + info.id + 'List" ng-repeat="arrayItem in ' +
-                (options.model || 'record') + '.' + info.name + '">' + generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options) +
-                '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass + '-minus-sign"></i></div>';
+              var addButtonMarkup = ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="' + glyphClass + '-plus-sign"></i>';
+              template += formMarkupHelper.label(scope, info, addButtonMarkup, options);
+              template += '<div ' + ngClassString + 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ' +
+                'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">';
+              template +=    generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options);
+              template += '  <i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass + '-minus-sign"></i>';
+              template += '</div>';
             } else {
               // Single fields here
-              template += generateLabel(info, null, options);
-              if (controlClass.length > 0) { template += '<div class="' + controlClass.join(' ') + '">'; }
-              template += generateInput(info, null, options.required, info.id, options);
-              if (controlClass.length > 0) { template += '</div>'; }
+              template += formMarkupHelper.label(scope, info, null, options);
+              template += formMarkupHelper.handleInputAndControlDiv(generateInput(info, null, options.required, info.id, options), controlDivClasses);
             }
           }
-          template += closeTag;
+          template += fieldChrome.closeTag;
           return template;
+        };
+
+        var inferMissingProperties = function(info) {
+          // infer missing values
+          info.type = info.type || 'text';
+          info.id = info.id || 'f_' + info.name.replace(/\./g, '_');
+          info.label = (info.label !== undefined) ? (info.label === null ? '' : info.label) : $filter('titleCase')(info.name.split('.').slice(-1)[0]);
         };
 
 //              var processInstructions = function (instructionsArray, topLevel, groupId) {
@@ -542,11 +458,13 @@ formsAngular
                   info.add = info.add + 'autofocus ';
                 }
               }
+
               var callHandleField = true;
               if (info.directive) {
                 var directiveName = info.directive;
                 var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
                 var thisElement = element[0];
+                inferMissingProperties(info);
                 for (var i = 0; i < thisElement.attributes.length; i++) {
                   var thisAttr = thisElement.attributes[i];
                   switch (thisAttr.nodeName) {
@@ -566,8 +484,14 @@ formsAngular
                       newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.value + '"';
                   }
                 }
-                if (info.add) {
-                  newElement += ' ' + info.add;
+                for (var prop in info) {
+                  if (info.hasOwnProperty(prop)) {
+                    switch (prop) {
+                      case 'directive' : break;
+                      case 'add' : newElement += ' ' + info.add; break;
+                      default: newElement += ' fng-fld-' + prop + '="' + info[prop] + '"'; break;
+                    }
+                  }
                 }
                 newElement += '></' + directiveName + '>';
                 result += newElement;
@@ -613,6 +537,7 @@ formsAngular
                 //                            if (groupId) {
                 //                                scope['showHide' + groupId] = true;
                 //                            }
+                inferMissingProperties(info);
                 result += handleField(info, options);
               }
             }
@@ -737,10 +662,6 @@ formsAngular
 
         }, true);
 
-        function addAll(type, additionalClasses, options) {
-          var action = 'getAddAll' + type + 'Options';
-          return utils[action](scope, options, additionalClasses) || [];
-        }
       }
     };
   }])
