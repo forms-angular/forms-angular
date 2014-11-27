@@ -373,7 +373,7 @@ formsAngular.factory('formGenerator', function (
                 formInstructions.add = 'step="' + formInstructions.step + '" ' + (formInstructions.add || '');
             }
         } else {
-            throw new Error('Field ' + formInstructions.name + ' is of unsupported type ' + mongooseType.instance);
+            throw new Error('Field ' + formInstructions.name + ' is of unsupported type ' + mongooseType.instance, formInstructions, mongooseType);
         }
         if (mongooseOptions.required) {
             formInstructions.required = true;

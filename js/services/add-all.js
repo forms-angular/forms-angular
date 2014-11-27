@@ -1,15 +1,22 @@
-formsAngular.service('utils', function () {
+'use strict';
+
+formsAngular.service('addAllService', function () {
 
   this.getAddAllGroupOptions = function (scope, attrs, classes) {
-    return getAddAllOptions(scope, attrs, "Group", classes);
+    return getAddAllOptions(scope, attrs, 'Group', classes);
   };
 
   this.getAddAllFieldOptions = function (scope, attrs, classes) {
-    return getAddAllOptions(scope, attrs, "Field", classes);
+    return getAddAllOptions(scope, attrs, 'Field', classes);
   };
 
   this.getAddAllLabelOptions = function (scope, attrs, classes) {
-    return getAddAllOptions(scope, attrs, "Label", classes);
+    return getAddAllOptions(scope, attrs, 'Label', classes);
+  };
+
+  this.addAll = function (scope, type, additionalClasses, options) {
+    var action = 'getAddAll' + type + 'Options';
+    return this[action](scope, options, additionalClasses) || [];
   };
 
   function getAddAllOptions(scope, attrs, type, classes) {
@@ -18,7 +25,7 @@ formsAngular.service('utils', function () {
       classList = [],
       tmp, i, options;
 
-    type = "addAll" + type;
+    type = 'addAll' + type;
 
     if (typeof(classes) === 'string') {
       tmp = classes.split(' ');
@@ -34,7 +41,7 @@ formsAngular.service('utils', function () {
           addAllOptions.push(obj[key]);
         }
 
-        if (key === "$parent") {
+        if (key === '$parent') {
           getAllOptions(obj[key]);
         }
       }
@@ -43,12 +50,8 @@ formsAngular.service('utils', function () {
     getAllOptions(scope);
 
     if (attrs[type] !== undefined) {
-
-      if (typeof(attrs[type]) === "object") {
-
-        //support objects...
-
-      } else if (typeof(attrs[type]) === "string") {
+      // TODO add support for objects and raise error on invalid types
+      if (typeof(attrs[type]) === 'string') {
 
         tmp = attrs[type].split(' ');
 
@@ -59,21 +62,19 @@ formsAngular.service('utils', function () {
             addAllOptions.push(tmp[i]);
           }
         }
-      } else {
-        // return false; //error?
       }
     }
 
     if (classList.length > 0) {
-      classes = ' class="' + classList.join(" ") + '" ';
+      classes = ' class="' + classList.join(' ') + '" ';
     } else {
-      classes = " ";
+      classes = ' ';
     }
 
     if (addAllOptions.length > 0) {
-      options = addAllOptions.join(" ") + " ";
+      options = addAllOptions.join(' ') + ' ';
     } else {
-      options = "";
+      options = '';
     }
 
     return classes + options;
