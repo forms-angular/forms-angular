@@ -367,7 +367,7 @@ formsAngular.factory('recordHandler', function (
 
         function convertLookup(lookup, schemaElement) {
             var retVal;
-            if (schemaElement.select2.fngAjax) {
+            if ((schemaElement.select2 && schemaElement.select2.fngAjax) || ($scope.conversions[schemaElement.name] && $scope.conversions[schemaElement.name].fngajax)) {
                 if (lookup && lookup.id) {
                     retVal = lookup.id;
                 }
@@ -402,7 +402,7 @@ formsAngular.factory('recordHandler', function (
                     updateObject(fieldname, anObject, function (value) {
                         return convertToForeignKeys(schema[i], value, $scope[exports.suffixCleanId(schema[i], 'Options')], idList);
                     });
-                } else if (schema[i].select2) {
+                } else if ($scope.conversions[schema[i].name]) {
                     var lookup = getData(anObject, fieldname, null);
                     var newVal;
                     if (schema[i].array) {

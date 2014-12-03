@@ -150,6 +150,8 @@ formsAngular.factory('formGenerator', function (
             if (mongooseOptions.enum) {
                 formInstructions.type = formInstructions.type || 'select';
                 if (formInstructions.select2) {
+                    $scope.conversions[formInstructions.name] = formInstructions.select2;
+
                     // Hacky way to get required styling working on select2 controls
                 if (mongooseOptions.required) {
 
@@ -255,6 +257,7 @@ formsAngular.factory('formGenerator', function (
                     if (!formInstructions.select2) {formInstructions.select2 = mongooseOptions.form.select2;}
                     if (formInstructions.select2 === true) {formInstructions.select2 = {}; }
                     $scope.select2List.push(formInstructions.name);
+                    $scope.conversions[formInstructions.name] = formInstructions.select2;
                     if (formInstructions.select2.fngAjax) {
                         // create the instructions for select2
                         select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
@@ -339,12 +342,14 @@ formsAngular.factory('formGenerator', function (
                             }
                         };
                         _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
-                        $scope.select2List.push(formInstructions.name);
                         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                         formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
                         recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema, handleError);
                     }
-                } else {
+                } else if (!formInstructions.directive ||
+                  !formInstructions[$.camelCase(formInstructions.directive)] ||
+                  !formInstructions[$.camelCase(formInstructions.directive)].fngAjax
+                ) {
                     formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                     formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
                     recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema, handleError);
@@ -626,6 +631,7 @@ formsAngular.factory('formGenerator', function (
         $scope.recordList = [];
         $scope.dataDependencies = {};
         $scope.select2List = [];
+        $scope.conversions = {};
         $scope.pageSize = 60;
         $scope.pagesLoaded = 0;
 

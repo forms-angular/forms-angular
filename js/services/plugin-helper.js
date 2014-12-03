@@ -7,15 +7,21 @@
 formsAngular.factory('pluginHelper', ['formMarkupHelper',function (formMarkupHelper) {
   var exports = {};
 
-  exports.extractFromAttr = function (attr) {
+  exports.extractFromAttr = function (attr, directiveName) {
     var info = {};
+    var directiveOptions = {};
+    var directiveNameLength = directiveName.length;
     for (var prop in attr) {
-      if (attr.hasOwnProperty(prop) && prop.slice(0, 6) === 'fngFld') {
-        info[prop.slice(6).toLowerCase()] = attr[prop];
+      if (attr.hasOwnProperty(prop)) {
+        if (prop.slice(0, 6) === 'fngFld') {
+          info[prop.slice(6).toLowerCase()] = attr[prop];
+        } else  if (prop.slice(0,directiveNameLength) === directiveName) {
+          directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = attr[prop];
+        }
       }
     }
     var options = {formStyle: attr.formstyle};
-    return {info: info, options: options};
+    return {info: info, options: options, directiveOptions: directiveOptions};
   };
 
   exports.buildInputMarkup = function (scope, model, info, options, generateInputControl) {

@@ -484,11 +484,17 @@ formsAngular
                       newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.value + '"';
                   }
                 }
+                var directiveCamel = attrs.$normalize(info.directive);
                 for (var prop in info) {
                   if (info.hasOwnProperty(prop)) {
                     switch (prop) {
                       case 'directive' : break;
                       case 'add' : newElement += ' ' + info.add; break;
+                      case directiveCamel :
+                        for (var subProp in info[prop]) {
+                          newElement += info.directive + '-' + subProp + '="' + info[prop][subProp]+'"';
+                        }
+                        break;
                       default: newElement += ' fng-fld-' + prop + '="' + info[prop] + '"'; break;
                     }
                   }
