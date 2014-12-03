@@ -1,4 +1,4 @@
-/*! forms-angular 2014-11-27 */
+/*! forms-angular 2014-12-03 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -712,11 +712,17 @@ formsAngular
                       newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.value + '"';
                   }
                 }
+                var directiveCamel = attrs.$normalize(info.directive);
                 for (var prop in info) {
                   if (info.hasOwnProperty(prop)) {
                     switch (prop) {
                       case 'directive' : break;
                       case 'add' : newElement += ' ' + info.add; break;
+                      case directiveCamel :
+                        for (var subProp in info[prop]) {
+                          newElement += info.directive + '-' + subProp + '="' + info[prop][subProp]+'"';
+                        }
+                        break;
                       default: newElement += ' fng-fld-' + prop + '="' + info[prop] + '"'; break;
                     }
                   }
@@ -1552,6 +1558,8 @@ formsAngular.factory('formGenerator', function (
             if (mongooseOptions.enum) {
                 formInstructions.type = formInstructions.type || 'select';
                 if (formInstructions.select2) {
+                    $scope.conversions[formInstructions.name] = formInstructions.select2;
+
                     // Hacky way to get required styling working on select2 controls
                 if (mongooseOptions.required) {
 
@@ -1657,6 +1665,7 @@ formsAngular.factory('formGenerator', function (
                     if (!formInstructions.select2) {formInstructions.select2 = mongooseOptions.form.select2;}
                     if (formInstructions.select2 === true) {formInstructions.select2 = {}; }
                     $scope.select2List.push(formInstructions.name);
+                    $scope.conversions[formInstructions.name] = formInstructions.select2;
                     if (formInstructions.select2.fngAjax) {
                         // create the instructions for select2
                         select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
@@ -1741,12 +1750,14 @@ formsAngular.factory('formGenerator', function (
                             }
                         };
                         _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
-                        $scope.select2List.push(formInstructions.name);
                         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                         formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
                         recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema, handleError);
                     }
-                } else {
+                } else if (!formInstructions.directive ||
+                  !formInstructions[$.camelCase(formInstructions.directive)] ||
+                  !formInstructions[$.camelCase(formInstructions.directive)].fngAjax
+                ) {
                     formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                     formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
                     recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, exports.handleSchema, handleError);
@@ -2028,6 +2039,7 @@ formsAngular.factory('formGenerator', function (
         $scope.recordList = [];
         $scope.dataDependencies = {};
         $scope.select2List = [];
+        $scope.conversions = {};
         $scope.pageSize = 60;
         $scope.pagesLoaded = 0;
 
@@ -2275,15 +2287,21 @@ formsAngular.factory('inputSizeHelper', [function () {
 formsAngular.factory('pluginHelper', ['formMarkupHelper',function (formMarkupHelper) {
   var exports = {};
 
-  exports.extractFromAttr = function (attr) {
+  exports.extractFromAttr = function (attr, directiveName) {
     var info = {};
+    var directiveOptions = {};
+    var directiveNameLength = directiveName.length;
     for (var prop in attr) {
-      if (attr.hasOwnProperty(prop) && prop.slice(0, 6) === 'fngFld') {
-        info[prop.slice(6).toLowerCase()] = attr[prop];
+      if (attr.hasOwnProperty(prop)) {
+        if (prop.slice(0, 6) === 'fngFld') {
+          info[prop.slice(6).toLowerCase()] = attr[prop];
+        } else  if (prop.slice(0,directiveNameLength) === directiveName) {
+          directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = attr[prop];
+        }
       }
     }
     var options = {formStyle: attr.formstyle};
-    return {info: info, options: options};
+    return {info: info, options: options, directiveOptions: directiveOptions};
   };
 
   exports.buildInputMarkup = function (scope, model, info, options, generateInputControl) {
@@ -2674,7 +2692,7 @@ formsAngular.factory('recordHandler', function (
 
         function convertLookup(lookup, schemaElement) {
             var retVal;
-            if (schemaElement.select2.fngAjax) {
+            if ((schemaElement.select2 && schemaElement.select2.fngAjax) || ($scope.conversions[schemaElement.name] && $scope.conversions[schemaElement.name].fngajax)) {
                 if (lookup && lookup.id) {
                     retVal = lookup.id;
                 }
@@ -2709,7 +2727,7 @@ formsAngular.factory('recordHandler', function (
                     updateObject(fieldname, anObject, function (value) {
                         return convertToForeignKeys(schema[i], value, $scope[exports.suffixCleanId(schema[i], 'Options')], idList);
                     });
-                } else if (schema[i].select2) {
+                } else if ($scope.conversions[schema[i].name]) {
                     var lookup = getData(anObject, fieldname, null);
                     var newVal;
                     if (schema[i].array) {
