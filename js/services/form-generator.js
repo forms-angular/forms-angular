@@ -124,20 +124,6 @@ formsAngular.factory('formGenerator', function (
         }
     };
 
-  function preservePristine(element, fn) {
-    // stop the form being set to dirty when the fn is called
-    var modelController = element.inheritedData('$ngModelController');
-    var isClean = modelController.$pristine;
-    if (isClean) {
-      // fake it to dirty here and reset after call to fn
-      modelController.$pristine = false;
-    }
-    fn();
-    if (isClean) {
-      modelController.$pristine = true;
-    }
-  }
-
     exports.handleFieldType = function (formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError) {
 
         var select2ajaxName;
@@ -201,10 +187,10 @@ formsAngular.factory('formGenerator', function (
                                             if (formInstructions.array) {
                                                 var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
                                                 if (leafVal[offset].x) {
-                                                    preservePristine(element, function() { callback(leafVal[offset].x);});
+                                                    recordHandler.preservePristine(element, function() { callback(leafVal[offset].x);});
                                                 }
                                             } else {
-                                                preservePristine(element, function() { callback(leafVal);});
+                                              recordHandler.preservePristine(element, function() { callback(leafVal);});
                                             }
                                         }
                                     });
@@ -279,7 +265,7 @@ formsAngular.factory('formGenerator', function (
                                         }
                                         var display = {id: theId, text: data.list};
                                         recordHandler.setData(ctrlState.master, formInstructions.name, element, display);
-                                        preservePristine(element, function () {
+                                        recordHandler.preservePristine(element, function () {
                                           callback(display);
                                         });
                                       }).error(handleError);
