@@ -7,7 +7,6 @@ formsAngular.controller('BaseCtrl', [
               $data, SchemasService, routingService, formGenerator, recordHandler) {
 
         var sharedStuff = $data;
-
         var ctrlState = {
             master: {},
             fngInvalidRequired: 'fng-invalid-required',
