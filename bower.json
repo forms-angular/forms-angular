@@ -17,15 +17,12 @@
   "main": [
     "dist/forms-angular.js"
   ],
-  "comments": [
-    "Use SHA to get a version of ngInfiniteScroll that has no jQuery dependency"
-  ],
   "dependencies": {
     "angular": ">=1.3.0",
     "angular-sanitize": ">=1.3.0",
     "angular-ui-bootstrap-bower": ">=0.8.0",
     "underscore": "1.6",
-    "ngInfiniteScroll": "git://github.com/sroze/ngInfiniteScroll#564f3d15bbbc6ee9b7cf537ba33e79067553da03",
+    "ngInfiniteScroll": "^1.2",
     "angular-elastic": "~2"
   },
   "devDependencies": {
