@@ -1990,8 +1990,6 @@ formsAngular.factory('formGenerator', function (
         }
         arrayField = arrayField[fieldParts[i]];
       }
-console.log('getArrayFieldToExtend',$scope.record.evenMoreOptions);
-
       return arrayField;
     }
 
@@ -1999,14 +1997,12 @@ console.log('getArrayFieldToExtend',$scope.record.evenMoreOptions);
         var arrayField = getArrayFieldToExtend(fieldName, $scope);
         arrayField.push({});
         $scope.setFormDirty($event);
-      console.log('add',$scope.record.evenMoreOptions);
     };
 
     exports.unshift = function (fieldName, $event, $scope) {
       var arrayField = getArrayFieldToExtend(fieldName, $scope);
       arrayField.unshift({});
       $scope.setFormDirty($event);
-      console.log('unshift',$scope.record.evenMoreOptions);
     };
 
     exports.remove = function (fieldName, value, $event, $scope) {
@@ -2018,8 +2014,6 @@ console.log('getArrayFieldToExtend',$scope.record.evenMoreOptions);
         }
         arrayField.splice(value, 1);
         $scope.setFormDirty($event);
-      console.log('remove',$scope.record.evenMoreOptions);
-
     };
 
     exports.decorateScope = function($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
