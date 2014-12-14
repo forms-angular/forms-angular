@@ -1,4 +1,4 @@
-/*! forms-angular 2014-12-03 */
+/*! forms-angular 2014-12-14 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -639,22 +639,9 @@ formsAngular
             var controlDivClasses = formMarkupHelper.controlDivClasses(options);
             if (info.array) {
               controlDivClasses.push('fng-array');
-              if (options.formstyle === 'inline') { throw 'Cannot use arrays in an inline form'; }
-              var glyphClass, ngClassString;
-              if (cssFrameworkService.framework() === 'bs2') {
-                glyphClass = 'icon';
-                ngClassString = '';
-              } else {
-                glyphClass = 'glyphicon glyphicon';
-                ngClassString = 'ng-class="skipCols($index)" ';
-              }
-              var addButtonMarkup = ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="' + glyphClass + '-plus-sign"></i>';
-              template += formMarkupHelper.label(scope, info, addButtonMarkup, options);
-              template += '<div ' + ngClassString + 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ' +
-                'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">';
-              template +=    generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options);
-              template += '  <i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass + '-minus-sign"></i>';
-              template += '</div>';
+              if (options.formstyle === 'inline') { throw new Error('Cannot use arrays in an inline form'); }
+              template += formMarkupHelper.label(scope, info, true, options);
+              template += formMarkupHelper.handleArrayInputAndControlDiv(generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options), controlDivClasses, info, options);
             } else {
               // Single fields here
               template += formMarkupHelper.label(scope, info, null, options);
@@ -716,13 +703,27 @@ formsAngular
                   if (info.hasOwnProperty(prop)) {
                     switch (prop) {
                       case 'directive' : break;
-                      case 'add' : newElement += ' ' + info.add; break;
+                      case 'schema' : break;
+                      case 'add' :
+                        switch (typeof info.add) {
+                          case 'string' :
+                            newElement += ' ' + info.add;
+                            break;
+                          case 'object' :
+                            for (var subAdd in info.add) {
+                              newElement += ' ' + subAdd + '="' + info.add[subAdd].toString().replace(/"/g,'&quot;') +'"';
+                            }
+                            break;
+                          default:
+                            throw new Error('Invalid add property of type ' + typeof(info.add) + ' in directive ' + info.name);
+                        }
+                        break;
                       case directiveCamel :
                         for (var subProp in info[prop]) {
                           newElement += info.directive + '-' + subProp + '="' + info[prop][subProp]+'"';
                         }
                         break;
-                      default: newElement += ' fng-fld-' + prop + '="' + info[prop] + '"'; break;
+                      default: newElement += ' fng-fld-' + prop + '="' + info[prop].toString().replace(/"/g,'&quot;') + '"'; break;
                     }
                   }
                 }
@@ -1538,6 +1539,9 @@ formsAngular.factory('formGenerator', function (
             formInstructions.array = true;
             mongooseType = mongooseType.caster;
             angular.extend(mongooseOptions, mongooseType.options);
+            if (mongooseType.options && mongooseType.options.form) {
+              angular.extend(formInstructions, mongooseType.options.form);
+            }
         }
         if (mongooseType.instance === 'String') {
             if (mongooseOptions.enum) {
@@ -1986,6 +1990,8 @@ formsAngular.factory('formGenerator', function (
         }
         arrayField = arrayField[fieldParts[i]];
       }
+console.log('getArrayFieldToExtend',$scope.record.evenMoreOptions);
+
       return arrayField;
     }
 
@@ -1993,12 +1999,14 @@ formsAngular.factory('formGenerator', function (
         var arrayField = getArrayFieldToExtend(fieldName, $scope);
         arrayField.push({});
         $scope.setFormDirty($event);
+      console.log('add',$scope.record.evenMoreOptions);
     };
 
     exports.unshift = function (fieldName, $event, $scope) {
       var arrayField = getArrayFieldToExtend(fieldName, $scope);
       arrayField.unshift({});
       $scope.setFormDirty($event);
+      console.log('unshift',$scope.record.evenMoreOptions);
     };
 
     exports.remove = function (fieldName, value, $event, $scope) {
@@ -2010,6 +2018,8 @@ formsAngular.factory('formGenerator', function (
         }
         arrayField.splice(value, 1);
         $scope.setFormDirty($event);
+      console.log('remove',$scope.record.evenMoreOptions);
+
     };
 
     exports.decorateScope = function($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
@@ -2152,9 +2162,17 @@ formsAngular.factory('formMarkupHelper', [
           labelHTML += ' for="' + fieldInfo.id + '"';
           classes += ' sr-only';
         }
-        labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
+        labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
+        if (addButtonMarkup) {
+          labelHTML += ' <i id="add_' + fieldInfo.id + '" ng-click="add(\'' + fieldInfo.name + '\',$event)" class="' + exports.glyphClass() + '-plus-sign"></i>';
+        }
+        labelHTML += '</label>';
       }
       return labelHTML;
+    };
+
+    exports.glyphClass = function() {
+      return (cssFrameworkService.framework() === 'bs2') ? 'icon' : 'glyphicon glyphicon';
     };
 
     exports.allInputsVars = function (scope, fieldInfo, options, modelString, idString, nameString) {
@@ -2230,6 +2248,17 @@ formsAngular.factory('formMarkupHelper', [
       return inputMarkup;
     };
 
+    exports.handleArrayInputAndControlDiv = function(inputMarkup, controlDivClasses, info, options) {
+      var result = '<div ';
+      if (cssFrameworkService.framework() === 'bs3') { result += 'ng-class="skipCols($index)" '; }
+      result += 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ';
+      result += 'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + ' track by $index">';
+      result += inputMarkup;
+      result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + exports.glyphClass() + '-minus-sign"></i>';
+      result += '</div>';
+      return result;
+    };
+
     exports.addTextInputMarkup = function(allInputsVars, fieldInfo, requiredStr) {
       var result = '';
       var setClass = allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + (fieldInfo.class ? ' ' + fieldInfo.class : '');
@@ -2279,9 +2308,9 @@ formsAngular.factory('pluginHelper', ['formMarkupHelper',function (formMarkupHel
     for (var prop in attr) {
       if (attr.hasOwnProperty(prop)) {
         if (prop.slice(0, 6) === 'fngFld') {
-          info[prop.slice(6).toLowerCase()] = attr[prop];
+          info[prop.slice(6).toLowerCase()] = attr[prop].replace(/&quot;/g,'"');
         } else  if (prop.slice(0,directiveNameLength) === directiveName) {
-          directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = attr[prop];
+          directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = attr[prop].replace(/&quot;/g,'"');
         }
       }
     }
@@ -2289,20 +2318,47 @@ formsAngular.factory('pluginHelper', ['formMarkupHelper',function (formMarkupHel
     return {info: info, options: options, directiveOptions: directiveOptions};
   };
 
-  exports.buildInputMarkup = function (scope, model, info, options, generateInputControl) {
-    var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options);
+  exports.buildInputMarkup = function (scope, model, info, options, addButtons, needsX, generateInputControl) {
+    var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options,' id="cg_' + info.id + '"');
     var controlDivClasses = formMarkupHelper.controlDivClasses(options);
-    var elementHtml = fieldChrome.template + formMarkupHelper.label(scope, info, null, options);
-    var buildingBlocks = formMarkupHelper.allInputsVars(scope, info, options, model + '.' + info.name, info.id, info.name);
-    elementHtml += formMarkupHelper.handleInputAndControlDiv(
+    var elementHtml = fieldChrome.template + formMarkupHelper.label(scope, info, addButtons, options);
+    var buildingBlocks;
+    if (addButtons) {
+      buildingBlocks = formMarkupHelper.allInputsVars(scope, info, options, 'arrayItem' + (needsX ? '.x' : ''), info.id + '_{{$index}}', info.name + '_{{$index}}');
+    } else {
+      buildingBlocks = formMarkupHelper.allInputsVars(scope, info, options, model + '.' + info.name, info.id, info.name);
+    }
+    elementHtml += formMarkupHelper['handle' + (addButtons ? 'Array' : '') + 'InputAndControlDiv'](
       formMarkupHelper.inputChrome(
         generateInputControl(buildingBlocks),
         info,
         options,
         buildingBlocks),
-       controlDivClasses);
+        controlDivClasses,
+        info,
+        options);
     elementHtml += fieldChrome.closeTag;
     return elementHtml;
+  };
+
+  exports.findIdInSchemaAndFlagNeedX = function(scope, id) {
+    // Find the entry in the schema of scope for id and add a needsX property so string arrays are properly handled
+    var foundIt = false;
+
+    for (var i = 0; i < scope.length; i++) {
+      var element = scope[i];
+      if (element.id === id) {
+        element.needsX = true;
+        foundIt = true;
+        break;
+      } else if (element.schema) {
+        if (exports.findIdInSchemaAndFlagNeedX(element.schema, id)) {
+          foundIt = true;
+          break;
+        }
+      }
+    }
+    return foundIt;
   };
 
   return exports;
@@ -2318,7 +2374,7 @@ formsAngular.factory('pluginHelper', ['formMarkupHelper',function (formMarkupHel
  */
 
 formsAngular.factory('recordHandler', function (
-    $location, $window, $filter,
+    $location, $window, $filter, $timeout,
     routingService, SubmissionsService, SchemasService) {
     var exports = {};
 
@@ -2606,7 +2662,7 @@ formsAngular.factory('recordHandler', function (
         var result = false;
         if (aSchema.type === 'text') {
             result = true;
-        } else if ((aSchema.type === 'select') && !aSchema.ids) {
+        } else if (aSchema.needsX || ((aSchema.type === 'select') && !aSchema.ids && !aSchema.directive)) {
             result = true;
         }
         return result;
@@ -2673,11 +2729,11 @@ formsAngular.factory('recordHandler', function (
                   void(schemaEntry.select2);
                 } else if (anObject[fieldname] && $scope.conversions[schemaEntry.name] && $scope.conversions[schemaEntry.name].fngajax) {
                   var conversionEntry = schemaEntry;
-                  $scope.conversions[conversionEntry.name].fngajax(anObject[fieldname], conversionEntry, function(value) {
+                  $scope.conversions[conversionEntry.name].fngajax(anObject[fieldname], conversionEntry, function(updateEntry, value) {
                     // Update the master and (preserving pristine if appropriate) the record
-                    exports.setData(master, conversionEntry.name, undefined, value);
-                    exports.preservePristine(angular.element('#'+conversionEntry.id), function() {
-                      exports.setData($scope.record, conversionEntry.name, undefined, value);
+                    exports.setData(master, updateEntry.name, undefined, value);
+                    exports.preservePristine(angular.element('#'+updateEntry.id), function() {
+                      exports.setData($scope.record, updateEntry.name, undefined, value);
                     });
                   });
                 }
@@ -2690,7 +2746,7 @@ formsAngular.factory('recordHandler', function (
       // stop the form being set to dirty when a fn is called
       // Use when the record (and master) need to be updated by lookup values displayed asynchronously
       var modelController = element.inheritedData('$ngModelController');
-      var isClean = modelController.$pristine;
+      var isClean = (modelController && modelController.$pristine);
       if (isClean) {
         // fake it to dirty here and reset after call to fn
         modelController.$pristine = false;
@@ -2771,8 +2827,17 @@ formsAngular.factory('recordHandler', function (
     function convertForeignKeys(schemaElement, input, values, ids) {
         if (schemaElement.array) {
             var returnArray = [];
+            var needsX = !schemaElement.directive || simpleArrayNeedsX(schemaElement);
             for (var j = 0; j < input.length; j++) {
-                returnArray.push({x: exports.convertIdToListValue(input[j], ids, values, schemaElement.name)});
+              var val = input[j];
+              if (val && val.x) {
+                val = val.x;
+              }
+              var lookup = exports.convertIdToListValue(val, ids, values, schemaElement.name);
+              if (needsX) {
+                lookup = {x: lookup};
+              }
+              returnArray.push(lookup);
             }
             return returnArray;
         } else if (schemaElement.select2) {
@@ -2853,7 +2918,8 @@ formsAngular.factory('recordHandler', function (
 
         $scope.cancel = function () {
             angular.copy(ctrlState.master, $scope.record);
-            $scope.setPristine();
+          // Let call backs etc resolve in case they dirty form, then clean it
+            $timeout($scope.setPristine);
         };
 
         var handleError = exports.handleError($scope);

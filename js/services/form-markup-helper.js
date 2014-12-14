@@ -53,9 +53,17 @@ formsAngular.factory('formMarkupHelper', [
           labelHTML += ' for="' + fieldInfo.id + '"';
           classes += ' sr-only';
         }
-        labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label + (addButtonMarkup || '') + '</label>';
+        labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
+        if (addButtonMarkup) {
+          labelHTML += ' <i id="add_' + fieldInfo.id + '" ng-click="add(\'' + fieldInfo.name + '\',$event)" class="' + exports.glyphClass() + '-plus-sign"></i>';
+        }
+        labelHTML += '</label>';
       }
       return labelHTML;
+    };
+
+    exports.glyphClass = function() {
+      return (cssFrameworkService.framework() === 'bs2') ? 'icon' : 'glyphicon glyphicon';
     };
 
     exports.allInputsVars = function (scope, fieldInfo, options, modelString, idString, nameString) {
@@ -129,6 +137,17 @@ formsAngular.factory('formMarkupHelper', [
         inputMarkup = '<div class="' + controlDivClasses.join(' ') + '">' + inputMarkup + '</div>';
       }
       return inputMarkup;
+    };
+
+    exports.handleArrayInputAndControlDiv = function(inputMarkup, controlDivClasses, info, options) {
+      var result = '<div ';
+      if (cssFrameworkService.framework() === 'bs3') { result += 'ng-class="skipCols($index)" '; }
+      result += 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ';
+      result += 'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + ' track by $index">';
+      result += inputMarkup;
+      result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + exports.glyphClass() + '-minus-sign"></i>';
+      result += '</div>';
+      return result;
     };
 
     exports.addTextInputMarkup = function(allInputsVars, fieldInfo, requiredStr) {

@@ -412,22 +412,9 @@ formsAngular
             var controlDivClasses = formMarkupHelper.controlDivClasses(options);
             if (info.array) {
               controlDivClasses.push('fng-array');
-              if (options.formstyle === 'inline') { throw 'Cannot use arrays in an inline form'; }
-              var glyphClass, ngClassString;
-              if (cssFrameworkService.framework() === 'bs2') {
-                glyphClass = 'icon';
-                ngClassString = '';
-              } else {
-                glyphClass = 'glyphicon glyphicon';
-                ngClassString = 'ng-class="skipCols($index)" ';
-              }
-              var addButtonMarkup = ' <i id="add_' + info.id + '" ng-click="add(\'' + info.name + '\',$event)" class="' + glyphClass + '-plus-sign"></i>';
-              template += formMarkupHelper.label(scope, info, addButtonMarkup, options);
-              template += '<div ' + ngClassString + 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ' +
-                'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + '">';
-              template +=    generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options);
-              template += '  <i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass + '-minus-sign"></i>';
-              template += '</div>';
+              if (options.formstyle === 'inline') { throw new Error('Cannot use arrays in an inline form'); }
+              template += formMarkupHelper.label(scope, info, true, options);
+              template += formMarkupHelper.handleArrayInputAndControlDiv(generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options), controlDivClasses, info, options);
             } else {
               // Single fields here
               template += formMarkupHelper.label(scope, info, null, options);
@@ -489,13 +476,27 @@ formsAngular
                   if (info.hasOwnProperty(prop)) {
                     switch (prop) {
                       case 'directive' : break;
-                      case 'add' : newElement += ' ' + info.add; break;
+                      case 'schema' : break;
+                      case 'add' :
+                        switch (typeof info.add) {
+                          case 'string' :
+                            newElement += ' ' + info.add;
+                            break;
+                          case 'object' :
+                            for (var subAdd in info.add) {
+                              newElement += ' ' + subAdd + '="' + info.add[subAdd].toString().replace(/"/g,'&quot;') +'"';
+                            }
+                            break;
+                          default:
+                            throw new Error('Invalid add property of type ' + typeof(info.add) + ' in directive ' + info.name);
+                        }
+                        break;
                       case directiveCamel :
                         for (var subProp in info[prop]) {
                           newElement += info.directive + '-' + subProp + '="' + info[prop][subProp]+'"';
                         }
                         break;
-                      default: newElement += ' fng-fld-' + prop + '="' + info[prop] + '"'; break;
+                      default: newElement += ' fng-fld-' + prop + '="' + info[prop].toString().replace(/"/g,'&quot;') + '"'; break;
                     }
                   }
                 }

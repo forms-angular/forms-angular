@@ -8,7 +8,7 @@
  */
 
 formsAngular.factory('recordHandler', function (
-    $location, $window, $filter,
+    $location, $window, $filter, $timeout,
     routingService, SubmissionsService, SchemasService) {
     var exports = {};
 
@@ -296,7 +296,7 @@ formsAngular.factory('recordHandler', function (
         var result = false;
         if (aSchema.type === 'text') {
             result = true;
-        } else if ((aSchema.type === 'select') && !aSchema.ids) {
+        } else if (aSchema.needsX || ((aSchema.type === 'select') && !aSchema.ids && !aSchema.directive)) {
             result = true;
         }
         return result;
@@ -363,11 +363,11 @@ formsAngular.factory('recordHandler', function (
                   void(schemaEntry.select2);
                 } else if (anObject[fieldname] && $scope.conversions[schemaEntry.name] && $scope.conversions[schemaEntry.name].fngajax) {
                   var conversionEntry = schemaEntry;
-                  $scope.conversions[conversionEntry.name].fngajax(anObject[fieldname], conversionEntry, function(value) {
+                  $scope.conversions[conversionEntry.name].fngajax(anObject[fieldname], conversionEntry, function(updateEntry, value) {
                     // Update the master and (preserving pristine if appropriate) the record
-                    exports.setData(master, conversionEntry.name, undefined, value);
-                    exports.preservePristine(angular.element('#'+conversionEntry.id), function() {
-                      exports.setData($scope.record, conversionEntry.name, undefined, value);
+                    exports.setData(master, updateEntry.name, undefined, value);
+                    exports.preservePristine(angular.element('#'+updateEntry.id), function() {
+                      exports.setData($scope.record, updateEntry.name, undefined, value);
                     });
                   });
                 }
@@ -380,7 +380,7 @@ formsAngular.factory('recordHandler', function (
       // stop the form being set to dirty when a fn is called
       // Use when the record (and master) need to be updated by lookup values displayed asynchronously
       var modelController = element.inheritedData('$ngModelController');
-      var isClean = modelController.$pristine;
+      var isClean = (modelController && modelController.$pristine);
       if (isClean) {
         // fake it to dirty here and reset after call to fn
         modelController.$pristine = false;
@@ -461,8 +461,17 @@ formsAngular.factory('recordHandler', function (
     function convertForeignKeys(schemaElement, input, values, ids) {
         if (schemaElement.array) {
             var returnArray = [];
+            var needsX = !schemaElement.directive || simpleArrayNeedsX(schemaElement);
             for (var j = 0; j < input.length; j++) {
-                returnArray.push({x: exports.convertIdToListValue(input[j], ids, values, schemaElement.name)});
+              var val = input[j];
+              if (val && val.x) {
+                val = val.x;
+              }
+              var lookup = exports.convertIdToListValue(val, ids, values, schemaElement.name);
+              if (needsX) {
+                lookup = {x: lookup};
+              }
+              returnArray.push(lookup);
             }
             return returnArray;
         } else if (schemaElement.select2) {
@@ -543,7 +552,8 @@ formsAngular.factory('recordHandler', function (
 
         $scope.cancel = function () {
             angular.copy(ctrlState.master, $scope.record);
-            $scope.setPristine();
+          // Let call backs etc resolve in case they dirty form, then clean it
+            $timeout($scope.setPristine);
         };
 
         var handleError = exports.handleError($scope);
