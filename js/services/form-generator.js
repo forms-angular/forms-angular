@@ -131,6 +131,9 @@ formsAngular.factory('formGenerator', function (
             formInstructions.array = true;
             mongooseType = mongooseType.caster;
             angular.extend(mongooseOptions, mongooseType.options);
+            if (mongooseType.options && mongooseType.options.form) {
+              angular.extend(formInstructions, mongooseType.options.form);
+            }
         }
         if (mongooseType.instance === 'String') {
             if (mongooseOptions.enum) {
