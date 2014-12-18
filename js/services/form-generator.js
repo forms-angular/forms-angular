@@ -350,7 +350,7 @@ formsAngular.factory('formGenerator', function (
                     formInstructions.type = 'text';
                 } else {
                     formInstructions.type = 'text';
-                    formInstructions.add = 'ui-date ui-date-format ';
+                    formInstructions.add = 'ui-date ui-date-format datepicker-popup ';
                 }
             }
         } else if (mongooseType.instance === 'boolean') {
