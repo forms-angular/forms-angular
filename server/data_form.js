@@ -65,7 +65,9 @@ DataForm.prototype.getListFields = function (resource, doc) {
 
   if (listFields) {
     for (; listElement < listFields.length; listElement++) {
-      display += doc[listFields[listElement].field] + ' ';
+        if (typeof doc[listFields[listElement].field] !== 'undefined') {
+            display += doc[listFields[listElement].field] + ' ';
+        }
     }
   } else {
     var keyList = Object.keys(resource.model.schema.tree);
