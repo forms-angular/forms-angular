@@ -1,4 +1,4 @@
-/*! forms-angular 2014-12-14 */
+/*! forms-angular 2014-12-30 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -1666,24 +1666,21 @@ formsAngular.factory('formGenerator', function (
                             allowClear: !mongooseOptions.required,
                             minimumInputLength: 2,
                             initSelection: function (element, callback) {
-                                if (!angular.element(element).attr('sel2init')) {
-                                  var theId = element.val();
-                                  if (theId && theId !== '') {
-                                    SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
-                                      .success(function (data) {
-                                        if (data.success === false) {
-                                          $location.path('/404');
-                                        }
-                                        var display = {id: theId, text: data.list};
-                                        recordHandler.setData(ctrlState.master, formInstructions.name, element, display);
-                                        recordHandler.preservePristine(element, function () {
-                                          callback(display);
-                                        });
-                                      }).error(handleError);
-                                    //                                } else {
-                                    //                                    throw new Error('select2 initSelection called without a value');
-                                    angular.element(element).attr('sel2init', 'true');
-                                  }
+                                var theId = element.val();
+                                if (theId && theId !== '') {
+                                  SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
+                                    .success(function (data) {
+                                      if (data.success === false) {
+                                        $location.path('/404');
+                                      }
+                                      var display = {id: theId, text: data.list};
+                                      recordHandler.setData(ctrlState.master, formInstructions.name, element, display);
+                                      recordHandler.preservePristine(element, function () {
+                                        callback(display);
+                                      });
+                                    }).error(handleError);
+                                  //                                } else {
+                                  //                                    throw new Error('select2 initSelection called without a value');
                                 }
                             },
                             ajax: {
@@ -1758,7 +1755,7 @@ formsAngular.factory('formGenerator', function (
                     formInstructions.type = 'text';
                 } else {
                     formInstructions.type = 'text';
-                    formInstructions.add = 'ui-date ui-date-format ';
+                    formInstructions.add = 'ui-date ui-date-format datepicker-popup ';
                 }
             }
         } else if (mongooseType.instance === 'boolean') {
@@ -3224,12 +3221,12 @@ angular.module('formsAngular').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('template/search-bs2.html',
-    "<form class=\"navbar-search pull-right\"><div id=search-cg class=control-group ng-class=errorClass><input id=searchinput ng-model=searchTarget class=search-query placeholder=\"Ctrl+Slash to Search\" ng-keyup=handleKey($event)></div></form><div class=results-container ng-show=\"results.length >= 1\"><div class=search-results><div ng-repeat=\"result in results\"><span ng-class=resultClass($index) ng-click=selectResult($index)>{{result.resourceText}} {{result.text}}</span></div><div ng-show=\"moreCount > 0\">(plus more - continue typing to narrow down search...)</div></div></div>"
+    "<form class=\"navbar-search pull-right\"><div id=search-cg class=control-group ng-class=errorClass><input id=searchinput ng-model=searchTarget class=search-query placeholder=\"Ctrl + / to Search\" ng-keyup=handleKey($event)></div></form><div class=results-container ng-show=\"results.length >= 1\"><div class=search-results><div ng-repeat=\"result in results\"><span ng-class=resultClass($index) ng-click=selectResult($index)>{{result.resourceText}} {{result.text}}</span></div><div ng-show=\"moreCount > 0\">(plus more - continue typing to narrow down search...)</div></div></div>"
   );
 
 
   $templateCache.put('template/search-bs3.html',
-    "<form class=\"pull-right navbar-form\"><div id=search-cg class=form-group ng-class=errorClass><input id=searchinput ng-model=searchTarget class=\"search-query form-control\" placeholder=\"Ctrl+Slash to Search\" ng-keyup=handleKey($event)></div></form><div class=results-container ng-show=\"results.length >= 1\"><div class=search-results><div ng-repeat=\"result in results\"><span ng-class=resultClass($index) ng-click=selectResult($index)>{{result.resourceText}} {{result.text}}</span></div><div ng-show=\"moreCount > 0\">(plus more - continue typing to narrow down search...)</div></div></div>"
+    "<form class=\"pull-right navbar-form\"><div id=search-cg class=form-group ng-class=errorClass><input id=searchinput ng-model=searchTarget class=\"search-query form-control\" placeholder=\"Ctrl + / to Search\" ng-keyup=handleKey($event)></div></form><div class=results-container ng-show=\"results.length >= 1\"><div class=search-results><div ng-repeat=\"result in results\"><span ng-class=resultClass($index) ng-click=selectResult($index)>{{result.resourceText}} {{result.text}}</span></div><div ng-show=\"moreCount > 0\">(plus more - continue typing to narrow down search...)</div></div></div>"
   );
 
 }]);
