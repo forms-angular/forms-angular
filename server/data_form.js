@@ -20,7 +20,10 @@ function logTheAPICalls(req, res, next) {
 
 function processArgs(options, array) {
   if (options.authentication) {
-    array.splice(1, 0, options.authentication);
+    var authArray = _.isArray(options.authentication) ? options.authentication : [options.authentication];
+    for (var i = authArray.length - 1; i >= 0; i--) {
+      array.splice(1, 0, authArray[i]);
+    }
   }
   if (debug) {
     array.splice(1, 0, logTheAPICalls);
