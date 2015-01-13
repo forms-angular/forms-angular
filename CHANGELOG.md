@@ -8,6 +8,7 @@
 ### BREAKING CHANGES
 * Changed id generation to remove . characters.  This may break some tests (but the . characters themselves were upsetting 
 some testing software).
+* Removed body padding from styling.  If you use a navbar you should put body {padding-top: 40px} (or required navbar height) in your styling. 
 
 ## 0.3 to 0.4
 ### Summary
