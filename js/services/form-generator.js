@@ -266,7 +266,6 @@ formsAngular.factory('formGenerator', function (
                                         $location.path('/404');
                                       }
                                       var display = {id: theId, text: data.list};
-                                      recordHandler.setData(ctrlState.master, formInstructions.name, element, display);
                                       recordHandler.preservePristine(element, function () {
                                         callback(display);
                                       });
