@@ -1,4 +1,4 @@
-/*! forms-angular 2014-12-30 */
+/*! forms-angular 2015-01-14 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -1674,7 +1674,6 @@ formsAngular.factory('formGenerator', function (
                                         $location.path('/404');
                                       }
                                       var display = {id: theId, text: data.list};
-                                      recordHandler.setData(ctrlState.master, formInstructions.name, element, display);
                                       recordHandler.preservePristine(element, function () {
                                         callback(display);
                                       });
@@ -1755,7 +1754,7 @@ formsAngular.factory('formGenerator', function (
                     formInstructions.type = 'text';
                 } else {
                     formInstructions.type = 'text';
-                    formInstructions.add = 'ui-date ui-date-format datepicker-popup ';
+                    formInstructions.add = 'ui-date ui-date-format datepicker-popup-fix ';
                 }
             }
         } else if (mongooseType.instance === 'boolean') {
