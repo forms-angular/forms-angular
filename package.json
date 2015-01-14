@@ -6,7 +6,7 @@
   "version": "0.4.0",
   "engines": {
     "node": "0.10.x",
-    "npm": "1.x"
+    "npm": ">=1.x"
   },
   "dependencies": {
     "bower": ">= 1.x",
