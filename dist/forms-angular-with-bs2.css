@@ -5233,10 +5233,6 @@ a.badge:focus {
 .affix {
   position: fixed;
 }
-body {
-  position: relative;
-  padding-top: 40px;
-}
 .list-item {
   min-height: 20px;
   padding: 19px;
