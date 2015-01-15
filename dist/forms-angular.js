@@ -2694,7 +2694,7 @@ formsAngular.factory('recordHandler', function (
                                     term: fieldValue[n].x.text || fieldValue[n].text || fieldValue[n].x || fieldValue[n],
                                     callback: function (array) {
                                         if (array.results.length > 0) {
-                                            if (fieldValue.x) {
+                                            if (fieldValue[n].x) {
                                                 if (fieldName.indexOf('.') !== -1) {throw new Error('Trying to directly assign to a nested field 342');}
                                                 anObject[fieldName][n].x = array.results[0];
                                             } else {
