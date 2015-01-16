@@ -1,4 +1,4 @@
-/*! forms-angular 2015-01-15 */
+/*! forms-angular 2015-01-16 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -356,7 +356,7 @@ formsAngular
                     value = '<div class="input-group">';
                     value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
                     value += '<span class="input-group-addon' + allInputsVars.compactClass + '" data-select2-open="' + idString + '" ';
-                    value += '    ng-click="openSelect2($event)"><i class="glyphicon glyphicon-search"></i></span>';
+                    value += '    ng-click="openSelect2($event)"><i class="' + formMarkupHelper.glyphClassForShape('search') + '"></i></span>';
                     value += '</div>';
                   }
                 } else if (fieldInfo.select2) {
@@ -580,7 +580,7 @@ formsAngular
                     '        <i class="icon-plus"></i> Add';
                   } else {
                     template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
-                    '        <i class="glyphicon glyphicon-plus"></i> Add';
+                    '        <i class="' + formMarkupHelper.glyphClassForShape('plus') + '"></i> Add';
                   }
                   template += '    </button>';
                 }
@@ -605,7 +605,7 @@ formsAngular
 
                     } else {
                       template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                        '          <i class="glyphicon glyphicon-minus">';
+                        '          <i class="' + formMarkupHelper.glyphClassForShape('minus') + '">';
                     }
                     template += '          </i> Remove' +
                       '      </button>';
@@ -625,7 +625,7 @@ formsAngular
                     '        <i class="icon-plus"></i> Add';
                   } else {
                     template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                    '        <i class="glyphicon glyphicon-plus"></i> Add';
+                    '        <i class="' + formMarkupHelper.glyphClassForShape('plus') + '"></i> Add';
                   }
                   template += '    </button>';
                 }
@@ -2154,14 +2154,21 @@ formsAngular.factory('formMarkupHelper', [
         }
         labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
         if (addButtonMarkup) {
-          labelHTML += ' <i id="add_' + fieldInfo.id + '" ng-click="add(\'' + fieldInfo.name + '\',$event)" class="' + exports.glyphClass() + '-plus-sign"></i>';
+          labelHTML += ' <i id="add_' + fieldInfo.id + '" ng-click="add(\'' + fieldInfo.name + '\',$event)" class="' + exports.glyphClassForShape('plus-sign','plus-circle') + '"></i>';
         }
         labelHTML += '</label>';
       }
       return labelHTML;
     };
 
+    exports.glyphClassForShape = function(iconShape, faShape) {
+      faShape = faShape || iconShape;
+      return (cssFrameworkService.framework() === 'bs2') ? 'icon-'+iconShape : 'glyphicon glyphicon-' + iconShape + ' fa fa-' + faShape;
+    };
+
+    // Deprecated
     exports.glyphClass = function() {
+      console.log('formMarkupHelper.glyphClass is deprecated');
       return (cssFrameworkService.framework() === 'bs2') ? 'icon' : 'glyphicon glyphicon';
     };
 
@@ -2244,7 +2251,7 @@ formsAngular.factory('formMarkupHelper', [
       result += 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ';
       result += 'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + ' track by $index">';
       result += inputMarkup;
-      result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + exports.glyphClass() + '-minus-sign"></i>';
+      result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + exports.glyphClassForShape('minus-sign','minus-circle') + '"></i>';
       result += '</div>';
       return result;
     };
@@ -3218,7 +3225,7 @@ angular.module('formsAngular').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('template/form-button-bs3.html',
-    "<div class=\"btn-group pull-right\"><button id=saveButton class=\"btn btn-primary form-btn btn-xs\" ng-click=save() ng-disabled=isSaveDisabled()><i class=\"glyphicon glyphicon-ok\"></i> Save</button> <button id=cancelButton class=\"btn btn-warning form-btn btn-xs\" ng-click=cancel() ng-disabled=isCancelDisabled()><i class=\"glyphicon glyphicon-remove\"></i> Cancel</button></div><div class=\"btn-group pull-right\"><button id=newButton class=\"btn btn-success form-btn btn-xs\" ng-click=newClick() ng-disabled=isNewDisabled()><i class=\"glyphicon glyphicon-plus\"></i> New</button> <button id=deleteButton class=\"btn btn-danger form-btn btn-xs\" ng-click=deleteClick() ng-disabled=isDeleteDisabled()><i class=\"glyphicon glyphicon-minus\"></i> Delete</button></div>"
+    "<div class=\"btn-group pull-right\"><button id=saveButton class=\"btn btn-primary form-btn btn-xs\" ng-click=save() ng-disabled=isSaveDisabled()><i class=\"fa fa-check glyphicon glyphicon-ok\"></i> Save</button> <button id=cancelButton class=\"btn btn-warning form-btn btn-xs\" ng-click=cancel() ng-disabled=isCancelDisabled()><i class=\"fa fa-remove glyphicon glyphicon-remove\"></i> Cancel</button></div><div class=\"btn-group pull-right\"><button id=newButton class=\"btn btn-success form-btn btn-xs\" ng-click=newClick() ng-disabled=isNewDisabled()><i class=\"fa fa-plus glyphicon glyphicon-plus\"></i> New</button> <button id=deleteButton class=\"btn btn-danger form-btn btn-xs\" ng-click=deleteClick() ng-disabled=isDeleteDisabled()><i class=\"fa fa-minus glyphicon glyphicon-minus\"></i> Delete</button></div>"
   );
 
 
