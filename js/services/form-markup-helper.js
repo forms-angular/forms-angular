@@ -55,21 +55,14 @@ formsAngular.factory('formMarkupHelper', [
         }
         labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
         if (addButtonMarkup) {
-          labelHTML += ' <i id="add_' + fieldInfo.id + '" ng-click="add(\'' + fieldInfo.name + '\',$event)" class="' + exports.glyphClassForShape('plus-sign','plus-circle') + '"></i>';
+          labelHTML += ' <i id="add_' + fieldInfo.id + '" ng-click="add(\'' + fieldInfo.name + '\',$event)" class="' + exports.glyphClass() + '-plus-sign"></i>';
         }
         labelHTML += '</label>';
       }
       return labelHTML;
     };
 
-    exports.glyphClassForShape = function(iconShape, faShape) {
-      faShape = faShape || iconShape;
-      return (cssFrameworkService.framework() === 'bs2') ? 'icon-'+iconShape : 'glyphicon glyphicon-' + iconShape + ' fa fa-' + faShape;
-    };
-
-    // Deprecated
     exports.glyphClass = function() {
-      console.log('formMarkupHelper.glyphClass is deprecated');
       return (cssFrameworkService.framework() === 'bs2') ? 'icon' : 'glyphicon glyphicon';
     };
 
@@ -152,7 +145,7 @@ formsAngular.factory('formMarkupHelper', [
       result += 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ';
       result += 'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + ' track by $index">';
       result += inputMarkup;
-      result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + exports.glyphClassForShape('minus-sign','minus-circle') + '"></i>';
+      result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + exports.glyphClass() + '-minus-sign"></i>';
       result += '</div>';
       return result;
     };
