@@ -129,7 +129,7 @@ formsAngular
                     value = '<div class="input-group">';
                     value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
                     value += '<span class="input-group-addon' + allInputsVars.compactClass + '" data-select2-open="' + idString + '" ';
-                    value += '    ng-click="openSelect2($event)"><i class="' + formMarkupHelper.glyphClassForShape('search') + '"></i></span>';
+                    value += '    ng-click="openSelect2($event)"><i class="glyphicon glyphicon-search"></i></span>';
                     value += '</div>';
                   }
                 } else if (fieldInfo.select2) {
@@ -353,7 +353,7 @@ formsAngular
                     '        <i class="icon-plus"></i> Add';
                   } else {
                     template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
-                    '        <i class="' + formMarkupHelper.glyphClassForShape('plus') + '"></i> Add';
+                    '        <i class="glyphicon glyphicon-plus"></i> Add';
                   }
                   template += '    </button>';
                 }
@@ -378,7 +378,7 @@ formsAngular
 
                     } else {
                       template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                        '          <i class="' + formMarkupHelper.glyphClassForShape('minus') + '">';
+                      '          <i class="glyphicon glyphicon-minus">';
                     }
                     template += '          </i> Remove' +
                       '      </button>';
@@ -398,7 +398,7 @@ formsAngular
                     '        <i class="icon-plus"></i> Add';
                   } else {
                     template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                    '        <i class="' + formMarkupHelper.glyphClassForShape('plus') + '"></i> Add';
+                    '        <i class="glyphicon glyphicon-plus"></i> Add';
                   }
                   template += '    </button>';
                 }
