@@ -31,6 +31,14 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     angular.forEach(routes, function (routeSpec) {
       _routeProvider.when(config.prefix + routeSpec.route, routeSpec.options || {templateUrl: routeSpec.templateUrl});
     });
+    // This next bit is just for the demo website to allow demonstrating multiple frameworks - not available with other routers
+    if (config.variantsForDemoWebsite) {
+      angular.forEach(config.variantsForDemoWebsite, function(variant) {
+        angular.forEach(routes, function (routeSpec) {
+          _routeProvider.when(config.prefix + variant + routeSpec.route, routeSpec.options || {templateUrl: routeSpec.templateUrl});
+        });
+      });
+    }
   }
 
   function _setUpUIRoutes(routes) {
@@ -101,6 +109,15 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
               }
 
               var locationSplit = location.split('/');
+
+              // get rid of variant if present - just used for demo website
+              if (config.variants) {
+                if (config.variants.indexOf('/'+locationSplit[1]) !== -1) {
+                  lastObject.variant = locationSplit[1];
+                  locationSplit.shift();
+                }
+              }
+
               var locationParts = locationSplit.length;
               if (locationSplit[1] === 'analyse') {
                 lastObject.analyse = true;

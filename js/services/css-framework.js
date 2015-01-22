@@ -17,6 +17,10 @@ formsAngular.provider('cssFrameworkService', [function () {
         framework: function () {
           return config.framework;
         },
+        // This next function is just for the demo website - don't use it
+        setFrameworkForDemoWebsite: function (framework) {
+          config.framework = framework;
+        },
         span: function (cols) {
           var result;
           switch (config.framework) {
