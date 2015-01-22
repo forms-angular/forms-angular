@@ -1,9 +1,9 @@
 'use strict';
 
 formsAngular.controller('BaseCtrl', [
-    '$scope', '$location', '$filter', '$modal', '$window',
+    '$scope', '$rootScope', '$location', '$filter', '$modal', '$window',
     '$data', 'SchemasService', 'routingService', 'formGenerator', 'recordHandler',
-    function ($scope, $location, $filter, $modal, $window,
+    function ($scope, $rootScope, $location, $filter, $modal, $window,
               $data, SchemasService, routingService, formGenerator, recordHandler) {
 
         var sharedStuff = $data;
@@ -16,6 +16,8 @@ formsAngular.controller('BaseCtrl', [
         angular.extend($scope, routingService.parsePathFunc()($location.$$path));
 
         $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
+
+        $rootScope.$broadcast('fngFormLoadStart', $scope);
 
         formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
         recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
