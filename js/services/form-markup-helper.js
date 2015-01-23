@@ -104,13 +104,13 @@ formsAngular.factory('formMarkupHelper', [
 
     exports.inputChrome = function (value, fieldInfo, options, markupVars) {
       if (cssFrameworkService.framework() === 'bs3' && exports.isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
-        value = '<div class="' + markupVars.sizeClassBS3 + '">' + value + '</div>';
+        value = '<div class="bs3-input ' + markupVars.sizeClassBS3 + '">' + value + '</div>';
       }
       if (fieldInfo.helpInline && fieldInfo.type !== 'checkbox') {
         value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
       }
       if (fieldInfo.help) {
-        value += '<span class="help-block ' + markupVars.sizeClassBS3 + '">' + fieldInfo.help + '</span>';
+        value += '<p class="help-block">' + fieldInfo.help + '</p>';
       }
       return value;
     };
