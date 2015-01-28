@@ -1,4 +1,4 @@
-/*! forms-angular 2015-01-22 */
+/*! forms-angular 2015-01-28 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -1302,7 +1302,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
 
               // get rid of variant if present - just used for demo website
               if (config.variants) {
-                if (config.variants.indexOf('/'+locationSplit[1]) !== -1) {
+                if (config.variants.indexOf(locationSplit[1]) !== -1) {
                   lastObject.variant = locationSplit[1];
                   locationSplit.shift();
                 }
@@ -2108,7 +2108,7 @@ formsAngular.factory('formGenerator', function (
 
         // Useful utility when debugging
         $scope.toJSON = function (obj) {
-            return JSON.stringify(obj, null, 2);
+            return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2);
         };
 
         $scope.baseSchema = function () {
@@ -2226,13 +2226,13 @@ formsAngular.factory('formMarkupHelper', [
 
     exports.inputChrome = function (value, fieldInfo, options, markupVars) {
       if (cssFrameworkService.framework() === 'bs3' && exports.isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
-        value = '<div class="' + markupVars.sizeClassBS3 + '">' + value + '</div>';
+        value = '<div class="bs3-input ' + markupVars.sizeClassBS3 + '">' + value + '</div>';
       }
-      if (fieldInfo.helpInline && fieldInfo.type !== 'checkbox') {
-        value += '<span class="help-inline">' + fieldInfo.helpInline + '</span>';
+      if (fieldInfo.helpInline) {
+        value += '<span class="' + (cssFrameworkService.framework() === 'bs2' ? 'help-inline' : 'help-block') + '">' + fieldInfo.helpInline + '</span>';
       }
       if (fieldInfo.help) {
-        value += '<span class="help-block ' + markupVars.sizeClassBS3 + '">' + fieldInfo.help + '</span>';
+        value += '<span class="help-block">' + fieldInfo.help + '</span>';
       }
       return value;
     };
