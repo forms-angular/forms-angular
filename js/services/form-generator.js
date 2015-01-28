@@ -677,7 +677,7 @@ formsAngular.factory('formGenerator', function (
 
         // Useful utility when debugging
         $scope.toJSON = function (obj) {
-            return JSON.stringify(obj, null, 2);
+            return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2);
         };
 
         $scope.baseSchema = function () {

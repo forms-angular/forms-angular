@@ -273,6 +273,7 @@ describe('formInput', function () {
     }));
 
     it('should have correct help blocks', function () {
+      dump(elm);
       var help = elm.find('span');
       expect(help.length).toBe(2);
 

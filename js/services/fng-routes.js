@@ -112,7 +112,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
 
               // get rid of variant if present - just used for demo website
               if (config.variants) {
-                if (config.variants.indexOf('/'+locationSplit[1]) !== -1) {
+                if (config.variants.indexOf(locationSplit[1]) !== -1) {
                   lastObject.variant = locationSplit[1];
                   locationSplit.shift();
                 }

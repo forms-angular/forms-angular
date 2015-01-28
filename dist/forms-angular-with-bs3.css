@@ -5980,12 +5980,31 @@ button.form-btn {
   font-size: 60%;
   padding-top: 0.25em;
 }
-input.input-sm {
+.form-horizontal input.input-sm,
+.form-horizontal textarea.input-sm {
   font-size: 14px;
   padding: 2px 6px;
 }
+.form-horizontal select.input-sm {
+  font-size: 14px;
+  padding-left: 5px;
+}
+.form-horizontal .checkbox {
+  float: left;
+  padding: 5px 10px 0 6px;
+}
 .form-horizontal .control-label {
   padding-top: 6px;
+}
+.form-horizontal .bs3-input {
+  padding-left: 0;
+}
+.form-horizontal .help-block {
+  clear: left;
+  bottom-margin: 4px;
+}
+textarea[msd-elastic] {
+  min-height: 25px;
 }
 .fileupload-buttonbar .btn {
   padding: 5px 8px;
