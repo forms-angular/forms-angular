@@ -27,26 +27,27 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
   var lastRoute = null,
     lastObject = {};
 
-  function _setUpNgRoutes(routes) {
+  function _setUpNgRoutes(routes, additional) {
     angular.forEach(routes, function (routeSpec) {
-      _routeProvider.when(config.prefix + routeSpec.route, routeSpec.options || {templateUrl: routeSpec.templateUrl});
+      _routeProvider.when(config.prefix + routeSpec.route, angular.extend(routeSpec.options || {templateUrl: routeSpec.templateUrl}, additional));
     });
     // This next bit is just for the demo website to allow demonstrating multiple frameworks - not available with other routers
     if (config.variantsForDemoWebsite) {
       angular.forEach(config.variantsForDemoWebsite, function(variant) {
         angular.forEach(routes, function (routeSpec) {
-          _routeProvider.when(config.prefix + variant + routeSpec.route, routeSpec.options || {templateUrl: routeSpec.templateUrl});
+          _routeProvider.when(config.prefix + variant + routeSpec.route, angular.extend(routeSpec.options || {templateUrl: routeSpec.templateUrl}, additional));
         });
       });
     }
   }
 
-  function _setUpUIRoutes(routes) {
+  function _setUpUIRoutes(routes, additional) {
     angular.forEach(routes, function (routeSpec) {
-      _stateProvider.state(routeSpec.state, routeSpec.options || {
+      _stateProvider.state(routeSpec.state, angular.extend(routeSpec.options || {
         url: routeSpec.route,
         templateUrl: routeSpec.templateUrl
-      });
+        }, additional)
+      );
     });
   }
 
@@ -80,13 +81,13 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
         case 'ngroute' :
           _routeProvider = $injector.get('$routeProvider');
           if (config.fixedRoutes) { _setUpNgRoutes(config.fixedRoutes); }
-          _setUpNgRoutes(builtInRoutes);
+          _setUpNgRoutes(builtInRoutes, options.add2fngRoutes);
           break;
         case 'uirouter' :
           _stateProvider = $injector.get('$stateProvider');
           if (config.fixedRoutes) { _setUpUIRoutes(config.fixedRoutes); }
           setTimeout(function () {
-            _setUpUIRoutes(builtInRoutes);
+            _setUpUIRoutes(builtInRoutes, options.add2fngRoutes);
           });
           break;
       }
