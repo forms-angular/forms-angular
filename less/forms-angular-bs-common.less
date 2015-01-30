@@ -110,15 +110,16 @@ form {
     padding: 0 5px 0 0;
     width: 97%;   // which will get rid of scroll bar under most circumstances
     margin-bottom: 3px;
+    position: relative;
   }
   .sub-doc-btns {
-    margin-left: 15px;
+    position: absolute;
+    right: 8px;
   }
   .schema-foot {
     padding: 5px 180px;
     margin: 5px 0;
   }
-
   input[type="checkbox"].ng-invalid-required:after {
     content:"*";
     font-weight: bold;
