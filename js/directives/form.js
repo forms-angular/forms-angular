@@ -362,29 +362,31 @@ formsAngular
                   '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
                   convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
                   ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
-                  '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">' +
-                  '      <div class="pull-left">' + processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaRoot: info.name}) +
-                  '      </div>';
-
+                  '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">';
                 if (!info.noRemove || info.customSubDoc) {
-                  template += '   <div class="pull-left sub-doc-btns">';
+                  template += '   <div class="sub-doc-btns">';
                   if (info.customSubDoc) {
                     template += info.customSubDoc;
                   }
                   if (!info.noRemove) {
                     if (cssFrameworkService.framework() === 'bs2') {
                       template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                        '          <i class="icon-minus">';
+                      '          <i class="icon-minus">';
 
                     } else {
                       template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
                       '          <i class="glyphicon glyphicon-minus">';
                     }
                     template += '          </i> Remove' +
-                      '      </button>';
+                    '      </button>';
                   }
                   template += '  </div> ';
                 }
+
+                template += '<div class="pull-left">' +
+                              processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaRoot: info.name}) +
+                            '</div>';
+
                 template += '   </div>' +
                   '</div>';
                 if (!info.noAdd || info.customFooter) {
