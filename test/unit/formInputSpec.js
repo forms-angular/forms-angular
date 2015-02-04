@@ -111,7 +111,7 @@ describe('formInput', function () {
         expect(thisElm).toHaveClass('schema-head');
         expect(thisElm.text()).toBe('Exams');
 
-        thisElm = angular.element(elm.find('div')[22]);
+        thisElm = angular.element(elm.find('div')[20]);
         expect(thisElm).toHaveClass('schema-foot');
 
         thisElm = thisElm.find('button');
@@ -122,7 +122,7 @@ describe('formInput', function () {
 
         thisElm = angular.element(elm.find('div')[6]);
         expect(thisElm.attr('id')).toBe('f_examsList_0');
-        thisElm = angular.element(elm.find('div')[14]);
+        thisElm = angular.element(elm.find('div')[13]);
         expect(thisElm.attr('id')).toBe('f_examsList_1');
 
         thisElm = elm.find('input');
@@ -273,7 +273,6 @@ describe('formInput', function () {
     }));
 
     it('should have correct help blocks', function () {
-      dump(elm);
       var help = elm.find('span');
       expect(help.length).toBe(2);
 
