@@ -383,9 +383,7 @@ formsAngular
                   template += '  </div> ';
                 }
 
-                template += '<div class="pull-left">' +
-                              processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaRoot: info.name}) +
-                            '</div>';
+                template += processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaRoot: info.name});
 
                 template += '   </div>' +
                   '</div>';
@@ -502,6 +500,12 @@ formsAngular
                     }
                   }
                 }
+                for (prop in options) {
+                  if (options.hasOwnProperty(prop) && prop[0] !== '$') {
+                    newElement += ' fng-opt-' + prop + '="' + options[prop].toString().replace(/"/g,'&quot;') + '"'; break;
+                  }
+                }
+
                 newElement += '></' + directiveName + '>';
                 result += newElement;
                 callHandleField = false;
