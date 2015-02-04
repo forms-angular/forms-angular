@@ -502,7 +502,7 @@ formsAngular
                 }
                 for (prop in options) {
                   if (options.hasOwnProperty(prop) && prop[0] !== '$') {
-                    newElement += ' fng-opt-' + prop + '="' + options[prop].toString().replace(/"/g,'&quot;') + '"'; break;
+                    newElement += ' fng-opt-' + prop + '="' + options[prop].toString().replace(/"/g,'&quot;') + '"';
                   }
                 }
 
