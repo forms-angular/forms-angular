@@ -501,7 +501,7 @@ formsAngular
                   }
                 }
                 for (prop in options) {
-                  if (options.hasOwnProperty(prop) && prop[0] !== '$') {
+                  if (options.hasOwnProperty(prop) && prop[0] !== '$' && typeof options[prop] !== 'undefined') {
                     newElement += ' fng-opt-' + prop + '="' + options[prop].toString().replace(/"/g,'&quot;') + '"';
                   }
                 }
