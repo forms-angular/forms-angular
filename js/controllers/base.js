@@ -32,14 +32,14 @@ formsAngular.controller('BaseCtrl', [
         }
     }
 ])
-    .controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
-        $scope.yes = function () {
-            $modalInstance.close(true);
-        };
-        $scope.no = function () {
-            $modalInstance.close(false);
-        };
-        $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
-        };
-    }]);
+.controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+  $scope.yes = function () {
+    $modalInstance.close(true);
+  };
+  $scope.no = function () {
+    $modalInstance.close(false);
+  };
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+}]);
