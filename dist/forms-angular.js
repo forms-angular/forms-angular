@@ -1,4 +1,4 @@
-/*! forms-angular 2015-02-05 */
+/*! forms-angular 2015-02-10 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -43,17 +43,17 @@ formsAngular.controller('BaseCtrl', [
         }
     }
 ])
-    .controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
-        $scope.yes = function () {
-            $modalInstance.close(true);
-        };
-        $scope.no = function () {
-            $modalInstance.close(false);
-        };
-        $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
-        };
-    }]);
+.controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+  $scope.yes = function () {
+    $modalInstance.close(true);
+  };
+  $scope.no = function () {
+    $modalInstance.close(false);
+  };
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+}]);
 
 'use strict';
 
@@ -279,35 +279,6 @@ formsAngular
         var subkeys = [];
         var tabsSetup = false;
 
-        var generateNgShow = function (showWhen, model) {
-
-          function evaluateSide(side) {
-            var result = side;
-            if (typeof side === 'string') {
-              if (side.slice(0, 1) === '$') {
-                result = (model || 'record') + '.';
-                var parts = side.slice(1).split('.');
-                if (parts.length > 1) {
-                  var lastBit = parts.pop();
-                  result += parts.join('.') + '[$index].' + lastBit;
-                } else {
-                  result += side.slice(1);
-                }
-              } else {
-                result = '\'' + side + '\'';
-              }
-            }
-            return result;
-          }
-
-          var conditionText = ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
-            conditionSymbols = ['===', '!==', '>', '>=', '<', '<='],
-            conditionPos = conditionText.indexOf(showWhen.comp);
-
-          if (conditionPos === -1) { throw new Error('Invalid comparison in showWhen'); }
-          return evaluateSide(showWhen.lhs) + conditionSymbols[conditionPos] + evaluateSide(showWhen.rhs);
-        };
-
         var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
           var nameString;
           if (!modelString) {
@@ -529,30 +500,7 @@ formsAngular
         };
 
         var handleField = function (info, options) {
-          var includeIndex = false;
-          var insert = '';
-          if (options.index) {
-            try {
-              parseInt(options.index);
-              includeIndex = true;
-            } catch (err) {
-              // Nothing to do
-            }
-          }
-          if (info.showWhen) {
-            if (typeof info.showWhen === 'string') {
-              insert += 'ng-show="' + info.showWhen + '"';
-            } else {
-              insert += 'ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
-            }
-          }
-          if (includeIndex) {
-            insert += ' id="cg_' + info.id.replace('_', '-' + attrs.index + '-') + '"';
-          } else {
-            insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
-          }
-
-          var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options, insert);
+          var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options);
           var template = fieldChrome.template;
 
           if (info.schema) {
@@ -664,6 +612,10 @@ formsAngular
 //              var processInstructions = function (instructionsArray, topLevel, groupId) {
 //  removing groupId as it was only used when called by containerType container, which is removed for now
         var processInstructions = function (instructionsArray, topLevel, options) {
+          if (options.index) {
+            alert('Found where options index is used');                // This is tested for shen generating field chrome, but cannot see how it is ever generated.  Redundant?  AM removing 9/2/15
+            throw new Error('Found where options index is used');
+          }
           var result = '';
           if (instructionsArray) {
             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
@@ -2148,14 +2100,57 @@ formsAngular.factory('formMarkupHelper', [
   function (cssFrameworkService, inputSizeHelper, addAllService) {
     var exports = {};
 
+    function generateNgShow(showWhen, model) {
+
+      function evaluateSide(side) {
+        var result = side;
+        if (typeof side === 'string') {
+          if (side.slice(0, 1) === '$') {
+            result = (model || 'record') + '.';
+            var parts = side.slice(1).split('.');
+            if (parts.length > 1) {
+              var lastBit = parts.pop();
+              result += parts.join('.') + '[$index].' + lastBit;
+            } else {
+              result += side.slice(1);
+            }
+          } else {
+            result = '\'' + side + '\'';
+          }
+        }
+        return result;
+      }
+
+      var conditionText = ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
+        conditionSymbols = ['===', '!==', '>', '>=', '<', '<='],
+        conditionPos = conditionText.indexOf(showWhen.comp);
+
+      if (conditionPos === -1) { throw new Error('Invalid comparison in showWhen'); }
+      return evaluateSide(showWhen.lhs) + conditionSymbols[conditionPos] + evaluateSide(showWhen.rhs);
+    }
+
+
     exports.isHorizontalStyle = function (formStyle) {
       return (!formStyle || formStyle === 'undefined' || ['vertical', 'inline'].indexOf(formStyle) === -1);
     };
 
-    exports.fieldChrome = function (scope, info, options, insert) {
+    exports.fieldChrome = function (scope, info, options) {
       var classes = '';
       var template = '';
       var closeTag = '';
+      var insert = '';
+
+      info.showWhen = info.showWhen || info.showwhen;  //  deal with use within a directive
+
+      if (info.showWhen) {
+        if (typeof info.showWhen === 'string') {
+          insert += 'ng-show="' + info.showWhen + '"';
+        } else {
+          insert += 'ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
+        }
+      }
+      insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
+
 
       if (cssFrameworkService.framework() === 'bs3') {
         classes = 'form-group';
