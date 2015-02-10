@@ -5,14 +5,57 @@ formsAngular.factory('formMarkupHelper', [
   function (cssFrameworkService, inputSizeHelper, addAllService) {
     var exports = {};
 
+    function generateNgShow(showWhen, model) {
+
+      function evaluateSide(side) {
+        var result = side;
+        if (typeof side === 'string') {
+          if (side.slice(0, 1) === '$') {
+            result = (model || 'record') + '.';
+            var parts = side.slice(1).split('.');
+            if (parts.length > 1) {
+              var lastBit = parts.pop();
+              result += parts.join('.') + '[$index].' + lastBit;
+            } else {
+              result += side.slice(1);
+            }
+          } else {
+            result = '\'' + side + '\'';
+          }
+        }
+        return result;
+      }
+
+      var conditionText = ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
+        conditionSymbols = ['===', '!==', '>', '>=', '<', '<='],
+        conditionPos = conditionText.indexOf(showWhen.comp);
+
+      if (conditionPos === -1) { throw new Error('Invalid comparison in showWhen'); }
+      return evaluateSide(showWhen.lhs) + conditionSymbols[conditionPos] + evaluateSide(showWhen.rhs);
+    }
+
+
     exports.isHorizontalStyle = function (formStyle) {
       return (!formStyle || formStyle === 'undefined' || ['vertical', 'inline'].indexOf(formStyle) === -1);
     };
 
-    exports.fieldChrome = function (scope, info, options, insert) {
+    exports.fieldChrome = function (scope, info, options) {
       var classes = '';
       var template = '';
       var closeTag = '';
+      var insert = '';
+
+      info.showWhen = info.showWhen || info.showwhen;  //  deal with use within a directive
+
+      if (info.showWhen) {
+        if (typeof info.showWhen === 'string') {
+          insert += 'ng-show="' + info.showWhen + '"';
+        } else {
+          insert += 'ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
+        }
+      }
+      insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
+
 
       if (cssFrameworkService.framework() === 'bs3') {
         classes = 'form-group';
