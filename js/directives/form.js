@@ -383,10 +383,6 @@ formsAngular
 //              var processInstructions = function (instructionsArray, topLevel, groupId) {
 //  removing groupId as it was only used when called by containerType container, which is removed for now
         var processInstructions = function (instructionsArray, topLevel, options) {
-          if (options.index) {
-            alert('Found where options index is used');                // This is tested for shen generating field chrome, but cannot see how it is ever generated.  Redundant?  AM removing 9/2/15
-            throw new Error('Found where options index is used');
-          }
           var result = '';
           if (instructionsArray) {
             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
