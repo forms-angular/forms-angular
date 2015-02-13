@@ -740,7 +740,7 @@ DataForm.prototype.saveAndRespond = function (req, res, hiddenFields) {
       } else {
         doc2 = doc2.toObject();
         for (var hiddenField in hiddenFields) {
-          if (hiddenFields.hasOwnProperty(hiddenField)) {
+          if (hiddenFields.hasOwnProperty(hiddenField) && hiddenFields[hiddenField]) {
             if (doc2.hasOwnProperty(hiddenField)) {
               delete doc2[hiddenField];
             }
