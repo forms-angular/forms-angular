@@ -6050,6 +6050,9 @@ form .schema-foot {
 form .sub-doc {
   margin-left: 12px;
 }
+form .sub-doc-btns {
+  z-index: 1;
+}
 form .checkbox input[type="checkbox"] {
   margin-left: -5px;
 }

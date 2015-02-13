@@ -1,4 +1,4 @@
-/*! forms-angular 2015-02-10 */
+/*! forms-angular 2015-02-13 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -525,14 +525,8 @@ formsAngular
               } else {
                 template += '<div class="schema-head">' + info.label;
                 if (info.unshift) {
-                  if (cssFrameworkService.framework() === 'bs2') {
-                    template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
-                    '        <i class="icon-plus"></i> Add';
-                  } else {
-                    template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
-                    '        <i class="glyphicon glyphicon-plus"></i> Add';
-                  }
-                  template += '    </button>';
+                    template += '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">'+
+                    '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                 }
 
                 template +=  '</div>' +
@@ -546,16 +540,8 @@ formsAngular
                     template += info.customSubDoc;
                   }
                   if (!info.noRemove) {
-                    if (cssFrameworkService.framework() === 'bs2') {
-                      template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                      '          <i class="icon-minus">';
-
-                    } else {
-                      template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                      '          <i class="glyphicon glyphicon-minus">';
-                    }
-                    template += '          </i> Remove' +
-                    '      </button>';
+                      template += '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
+                                  '<i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove</button>';
                   }
                   template += '  </div> ';
                 }
@@ -570,15 +556,9 @@ formsAngular
                     template += info.customFooter;
                   }
                   if (!info.noAdd) {
-                    if (cssFrameworkService.framework() === 'bs2') {
-                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                    '        <i class="icon-plus"></i> Add';
-                  } else {
-                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                    '        <i class="glyphicon glyphicon-plus"></i> Add';
+                    template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                                '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                   }
-                  template += '    </button>';
-                }
                   template += '</div>';
                 }
               }
@@ -612,10 +592,6 @@ formsAngular
 //              var processInstructions = function (instructionsArray, topLevel, groupId) {
 //  removing groupId as it was only used when called by containerType container, which is removed for now
         var processInstructions = function (instructionsArray, topLevel, options) {
-          if (options.index) {
-            alert('Found where options index is used');                // This is tested for shen generating field chrome, but cannot see how it is ever generated.  Redundant?  AM removing 9/2/15
-            throw new Error('Found where options index is used');
-          }
           var result = '';
           if (instructionsArray) {
             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
