@@ -296,14 +296,8 @@ formsAngular
               } else {
                 template += '<div class="schema-head">' + info.label;
                 if (info.unshift) {
-                  if (cssFrameworkService.framework() === 'bs2') {
-                    template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
-                    '        <i class="icon-plus"></i> Add';
-                  } else {
-                    template += '    <button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
-                    '        <i class="glyphicon glyphicon-plus"></i> Add';
-                  }
-                  template += '    </button>';
+                    template += '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">'+
+                    '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                 }
 
                 template +=  '</div>' +
@@ -317,16 +311,8 @@ formsAngular
                     template += info.customSubDoc;
                   }
                   if (!info.noRemove) {
-                    if (cssFrameworkService.framework() === 'bs2') {
-                      template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                      '          <i class="icon-minus">';
-
-                    } else {
-                      template += '      <button name="remove_' + info.id + '_btn" class="remove-btn btn btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                      '          <i class="glyphicon glyphicon-minus">';
-                    }
-                    template += '          </i> Remove' +
-                    '      </button>';
+                      template += '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
+                                  '<i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove</button>';
                   }
                   template += '  </div> ';
                 }
@@ -341,15 +327,9 @@ formsAngular
                     template += info.customFooter;
                   }
                   if (!info.noAdd) {
-                    if (cssFrameworkService.framework() === 'bs2') {
-                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                    '        <i class="icon-plus"></i> Add';
-                  } else {
-                    template += '    <button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                    '        <i class="glyphicon glyphicon-plus"></i> Add';
+                    template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                                '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                   }
-                  template += '    </button>';
-                }
                   template += '</div>';
                 }
               }
