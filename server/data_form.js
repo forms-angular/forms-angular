@@ -309,6 +309,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
               if (item.resource.options.localisationData) {
                 resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, 'resource');
                 resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
+                resultObject.resourceTab = translate(resultObject.resourceTab, item.resource.options.localisationData, 'resourceTab');
               }
               results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
             }

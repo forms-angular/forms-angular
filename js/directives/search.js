@@ -41,7 +41,11 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', 'routingS
 
   $scope.selectResult = function (resultNo) {
     var result = $scope.results[resultNo];
-    $location.path(routingService.prefix() + '/' + result.resource + '/' + result.id + '/edit');
+    var newURL = routingService.prefix() + '/' + result.resource + '/' + result.id + '/edit';
+    if (result.resourceTab) {
+      newURL += '/' + result.resourceTab;
+    }
+    $location.url(newURL);
   };
 
   $scope.resultClass = function (index) {
