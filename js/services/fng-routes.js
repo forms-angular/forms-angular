@@ -53,19 +53,20 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     });
   }
 
-  function _buildOperationUrl(prefix, operation, modelName, formName, id) {
+  function _buildOperationUrl(prefix, operation, modelName, formName, id, tabName) {
       var formString = formName ? ('/' + formName) : '';
       var modelString = prefix + '/' + modelName;
+      var tabString = tabName ? ('/' + tabName) : '';
       var urlStr;
       switch (operation) {
           case 'list' :
               urlStr = modelString + formString;
               break;
           case 'edit' :
-              urlStr = modelString + formString + '/' + id + '/edit';
+              urlStr = modelString + formString + '/' + id + '/edit' + tabString;
               break;
           case 'new' :
-              urlStr = modelString + formString + '/new';
+              urlStr = modelString + formString + '/new' + tabString;
               break;
       }
       return urlStr;
@@ -200,18 +201,18 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
           url += (path[0] === '/' ? path.slice(1) : path);
           return url;
         },
-        buildOperationUrl: function(operation, modelName, formName, id) {
-            return _buildOperationUrl(config.prefix, operation, modelName, formName, id);
+        buildOperationUrl: function(operation, modelName, formName, id, tab) {
+            return _buildOperationUrl(config.prefix, operation, modelName, formName, id, tab);
         },
         redirectTo: function () {
-          return function (operation, scope, location, id) {
+          return function (operation, scope, location, id, tab) {
 //            switch (config.routing) {
 //              case 'ngroute' :
                 if (location.search()) {
                   location.url(location.path());
                 }
 
-              var urlStr = _buildOperationUrl(config.prefix, operation, scope.modelName, scope.formName, id);
+              var urlStr = _buildOperationUrl(config.prefix, operation, scope.modelName, scope.formName, id, tab);
               location.path(urlStr);
 
 //                break;
