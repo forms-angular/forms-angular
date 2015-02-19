@@ -496,7 +496,8 @@ formsAngular
             if (newValue.length > 0) {
               unwatch();
               var elementHtml = '';
-              var theRecord = scope[attrs.model || 'record'];      // By default data comes from scope.record
+              var recordAttribute = attrs.model || 'record';      // By default data comes from scope.record
+              var theRecord = scope[recordAttribute];
               theRecord = theRecord || {};
               if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                 elementHtml = '';
@@ -522,19 +523,20 @@ formsAngular
               element.replaceWith($compile(elementHtml)(scope));
               // If there are subkeys we need to fix up ng-model references when record is read
               // If we have modelControllers we need to let them know when we have form + data
-              if (subkeys.length > 0 || $data.modelControllers.length > 0) {
+              // If BS3 we need to set up validation styling watch
+              if (subkeys.length > 0 || $data.modelControllers.length > 0 || cssFrameworkService.framework() === 'bs3') {
                 var unwatch2 = scope.$watch('phase', function (newValue) {
                   if (newValue === 'ready') {
                     unwatch2();
 
                     // Tell the 'model controllers' that the form and data are there
-                    for (var i = 0 ; i < $data.modelControllers.length ; i++) {
+                    for (var i = 0; i < $data.modelControllers.length; i++) {
                       if ($data.modelControllers[i].onAllReady) {
                         $data.modelControllers[i].onAllReady(scope);
                       }
                     }
 
-                    // For each one of the subkeys sets in the form
+                    // For each one of the subkeys sets in the form we need to fix up ng-model references
                     for (var subkeyCtr = 0; subkeyCtr < subkeys.length; subkeyCtr++) {
                       var info = subkeys[subkeyCtr];
                       var arrayOffset;
@@ -587,6 +589,27 @@ formsAngular
                         }
                         scope['$_arrayOffset_' + info.name.replace(/\./g, '_') + '_' + thisOffset] = arrayOffset;
                       }
+                    }
+
+                    // If BS3, set up a watch on the record, so we can set has-error class etc
+                    if (cssFrameworkService.framework() === 'bs3') {
+
+                      // create the function that will do the checking / updating
+                      scope.bs3ValidationStyling = function() {
+                        angular.forEach(scope[scope.topLevelFormName], function (value, key) {
+                          if (typeof value === 'object' && value.hasOwnProperty('$modelValue')) {
+                            var element = angular.element('#cg_' + key);
+                            if (value.$valid) {
+                              element.removeClass('has-error');
+                            } else {
+                              element.addClass('has-error');
+                            }
+                          }
+                        });
+                      };
+
+                      scope.$watch(recordAttribute, scope.bs3ValidationStyling, true);
+                      scope.bs3ValidationStyling();   // Initialise the styling
                     }
                   }
                 });
