@@ -1,4 +1,4 @@
-/*! forms-angular 2015-02-16 */
+/*! forms-angular 2015-02-20 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -29,6 +29,22 @@ formsAngular.controller('BaseCtrl', [
         $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
 
         $rootScope.$broadcast('fngFormLoadStart', $scope);
+
+        // Invalid field styling for BS3 - only works for one level of nesting
+        $scope.hasError = function(name, index) {
+          var form = $scope[$scope.topLevelFormName];
+          var field;
+          if (typeof index === 'undefined') {
+            field = form['f_' + name.replace(/\./g,'_')];
+          } else {
+            var parts = name.split('.');
+            form = form['form_' + parts[0] + index];
+            field = form[name.replace(/\./g,'-')];
+          }
+          if (field && field.$invalid) {
+            return true;
+          }
+        };
 
         formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
         recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
@@ -725,7 +741,8 @@ formsAngular
             if (newValue.length > 0) {
               unwatch();
               var elementHtml = '';
-              var theRecord = scope[attrs.model || 'record'];      // By default data comes from scope.record
+              var recordAttribute = attrs.model || 'record';      // By default data comes from scope.record
+              var theRecord = scope[recordAttribute];
               theRecord = theRecord || {};
               if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                 elementHtml = '';
@@ -757,13 +774,13 @@ formsAngular
                     unwatch2();
 
                     // Tell the 'model controllers' that the form and data are there
-                    for (var i = 0 ; i < $data.modelControllers.length ; i++) {
+                    for (var i = 0; i < $data.modelControllers.length; i++) {
                       if ($data.modelControllers[i].onAllReady) {
                         $data.modelControllers[i].onAllReady(scope);
                       }
                     }
 
-                    // For each one of the subkeys sets in the form
+                    // For each one of the subkeys sets in the form we need to fix up ng-model references
                     for (var subkeyCtr = 0; subkeyCtr < subkeys.length; subkeyCtr++) {
                       var info = subkeys[subkeyCtr];
                       var arrayOffset;
@@ -2140,7 +2157,7 @@ formsAngular.factory('formMarkupHelper', [
           classes += ' col-sm-' + inputSizeHelper.sizeAsNumber(info.size);
           closeTag += '</div>';
         }
-        template += '<div' + addAllService.addAll(scope, 'Group', classes, options);
+        template += '<div' + addAllService.addAll(scope, 'Group', classes, options)+' ng-class="{\'has-error\': hasError(\'' + info.name + '\', $index)}"';
         closeTag += '</div>';
       } else {
         if (exports.isHorizontalStyle(options.formstyle)) {

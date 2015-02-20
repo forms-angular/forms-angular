@@ -31,7 +31,7 @@ formsAngular.controller('BaseCtrl', [
             field = form[name.replace(/\./g,'-')];
           }
           if (field && field.$invalid) {
-            return true
+            return true;
           }
         };
 
