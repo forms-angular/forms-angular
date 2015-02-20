@@ -523,8 +523,7 @@ formsAngular
               element.replaceWith($compile(elementHtml)(scope));
               // If there are subkeys we need to fix up ng-model references when record is read
               // If we have modelControllers we need to let them know when we have form + data
-              // If BS3 we need to set up validation styling watch
-              if (subkeys.length > 0 || $data.modelControllers.length > 0 || cssFrameworkService.framework() === 'bs3') {
+              if (subkeys.length > 0 || $data.modelControllers.length > 0) {
                 var unwatch2 = scope.$watch('phase', function (newValue) {
                   if (newValue === 'ready') {
                     unwatch2();
@@ -589,27 +588,6 @@ formsAngular
                         }
                         scope['$_arrayOffset_' + info.name.replace(/\./g, '_') + '_' + thisOffset] = arrayOffset;
                       }
-                    }
-
-                    // If BS3, set up a watch on the record, so we can set has-error class etc
-                    if (cssFrameworkService.framework() === 'bs3') {
-
-                      // create the function that will do the checking / updating
-                      scope.bs3ValidationStyling = function() {
-                        angular.forEach(scope[scope.topLevelFormName], function (value, key) {
-                          if (typeof value === 'object' && value.hasOwnProperty('$modelValue')) {
-                            var element = angular.element('#cg_' + key);
-                            if (value.$valid) {
-                              element.removeClass('has-error');
-                            } else {
-                              element.addClass('has-error');
-                            }
-                          }
-                        });
-                      };
-
-                      scope.$watch(recordAttribute, scope.bs3ValidationStyling, true);
-                      scope.bs3ValidationStyling();   // Initialise the styling
                     }
                   }
                 });
