@@ -64,7 +64,7 @@ formsAngular.factory('formMarkupHelper', [
           classes += ' col-sm-' + inputSizeHelper.sizeAsNumber(info.size);
           closeTag += '</div>';
         }
-        template += '<div' + addAllService.addAll(scope, 'Group', classes, options);
+        template += '<div' + addAllService.addAll(scope, 'Group', classes, options)+' ng-class="{\'has-error\': hasError(\'' + info.name + '\', $index)}"';
         closeTag += '</div>';
       } else {
         if (exports.isHorizontalStyle(options.formstyle)) {
