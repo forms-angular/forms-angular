@@ -19,6 +19,22 @@ formsAngular.controller('BaseCtrl', [
 
         $rootScope.$broadcast('fngFormLoadStart', $scope);
 
+        // Invalid field styling for BS3 - only works for one level of nesting
+        $scope.hasError = function(name, index) {
+          var form = $scope[$scope.topLevelFormName];
+          var field;
+          if (typeof index === 'undefined') {
+            field = form['f_' + name.replace(/\./g,'_')];
+          } else {
+            var parts = name.split('.');
+            form = form['form_' + parts[0] + index];
+            field = form[name.replace(/\./g,'-')];
+          }
+          if (field && field.$invalid) {
+            return true
+          }
+        };
+
         formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
         recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
 
