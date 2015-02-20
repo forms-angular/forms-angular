@@ -69,7 +69,7 @@ describe('search', function () {
       var results = elm.find('span');
       expect(results.length).toBe(0);
       var div = angular.element(elm.find('div')[0]);
-      expect(div.attr('class')).toBe('control-group error');
+      expect(div.attr('class')).toBe('control-group error has-error');
       scope.searchTarget = '';
       scope.$digest();
       expect(div.attr('class')).toBe('control-group');

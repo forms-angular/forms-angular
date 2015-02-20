@@ -931,7 +931,7 @@ formsAngular.controller('SearchCtrl', ['$scope', '$http', '$location', 'routingS
               $scope.errorClass = '';
               $scope.setFocus(0);
             }
-            $scope.errorClass = $scope.results.length === 0 ? 'error' : '';
+            $scope.errorClass = $scope.results.length === 0 ? 'error has-error' : '';
           } else {
             clearSearchResults();
           }
