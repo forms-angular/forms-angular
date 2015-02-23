@@ -1,4 +1,4 @@
-/*! forms-angular 2015-02-20 */
+/*! forms-angular 2015-02-23 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -29,22 +29,6 @@ formsAngular.controller('BaseCtrl', [
         $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
 
         $rootScope.$broadcast('fngFormLoadStart', $scope);
-
-        // Invalid field styling for BS3 - only works for one level of nesting
-        $scope.hasError = function(name, index) {
-          var form = $scope[$scope.topLevelFormName];
-          var field;
-          if (typeof index === 'undefined') {
-            field = form['f_' + name.replace(/\./g,'_')];
-          } else {
-            var parts = name.split('.');
-            form = form['form_' + parts[0] + index];
-            field = form[name.replace(/\./g,'-')];
-          }
-          if (field && field.$invalid) {
-            return true;
-          }
-        };
 
         formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
         recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
@@ -303,7 +287,7 @@ formsAngular
             if (options.subschema && fieldInfo.name.indexOf('.') !== -1) {
               // Schema handling - need to massage the ngModel and the id
               var compoundName = fieldInfo.name;
-              var root = options.subschemaRoot;
+              var root = options.subschemaroot;
               var lastPart = compoundName.slice(root.length+1);
               if (options.index) {
                 modelString += root + '[' + options.index + '].' + lastPart;
@@ -534,7 +518,7 @@ formsAngular
                 for (var arraySel = 0; arraySel < subKeyArray.length; arraySel++) {
                   var topAndTail = containerInstructions(subKeyArray[arraySel]);
                   template += topAndTail.before;
-                  template += processInstructions(info.schema, null, {subschema: true, formStyle: options.formstyle, subkey: schemaDefName + '_subkey', subkeyno: arraySel, subschemaRoot: info.name});
+                  template += processInstructions(info.schema, null, {subschema: true, formStyle: options.formstyle, subkey: schemaDefName + '_subkey', subkeyno: arraySel, subschemaroot: info.name});
                   template += topAndTail.after;
                 }
                 subkeys.push(info);
@@ -562,7 +546,7 @@ formsAngular
                   template += '  </div> ';
                 }
 
-                template += processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaRoot: info.name});
+                template += processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaroot: info.name});
 
                 template += '   </div>' +
                   '</div>';
@@ -814,7 +798,7 @@ formsAngular
                               if (thisSubkeyList.hasOwnProperty(keyField)) {
                                 // Not (currently) concerned with objects here - just simple types and lookups
                                 if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField] &&
-                                  (!dataVal[arrayOffset][keyField].text || dataVal[arrayOffset][keyField].text !== thisSubkeyList[keyField])) {
+                                  (typeof dataVal[arrayOffset][keyField] === 'undefined' || !dataVal[arrayOffset][keyField].text || dataVal[arrayOffset][keyField].text !== thisSubkeyList[keyField])) {
                                   matching = false;
                                   break;
                                 }
@@ -2006,7 +1990,19 @@ formsAngular.factory('formGenerator', function (
         $scope.setFormDirty($event);
     };
 
-    exports.decorateScope = function($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
+    exports.hasError = function(formName, name, index, $scope) {
+      var form = $scope[$scope.topLevelFormName];
+      if (formName !== 'null') {
+        form = form[formName.replace('$index', index)];
+      }
+      var field = form[name];
+      if (field && field.$invalid) {   // am in two minds about adding  && field.$dirty
+        return true;
+      }
+    };
+
+
+  exports.decorateScope = function($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
         $scope.record = sharedStuff.record;
         $scope.phase = 'init';
         $scope.disableFunctions = sharedStuff.disableFunctions;
@@ -2062,6 +2058,10 @@ formsAngular.factory('formGenerator', function (
 
         $scope.add = function (fieldName, $event) {
             return formGeneratorInstance.add(fieldName, $event, $scope);
+        };
+
+        $scope.hasError = function(form, name, index) {
+          return formGeneratorInstance.hasError(form, name, index, $scope);
         };
 
         $scope.unshift = function (fieldName, $event) {
@@ -2157,7 +2157,21 @@ formsAngular.factory('formMarkupHelper', [
           classes += ' col-sm-' + inputSizeHelper.sizeAsNumber(info.size);
           closeTag += '</div>';
         }
-        template += '<div' + addAllService.addAll(scope, 'Group', classes, options)+' ng-class="{\'has-error\': hasError(\'' + info.name + '\', $index)}"';
+
+        var modelControllerName;
+        var formName = null;
+        var parts = info.name.split('.');
+
+        if (options && typeof options.subkeyno !== 'undefined') {
+          modelControllerName = options.subschemaroot.replace(/\./g, '-') + '-subkey' + options.subkeyno + '-' + parts[parts.length-1];
+        } else if (options.subschema) {
+          formName = 'form_' + parts[0] + '$index';
+          modelControllerName = info.name.replace(/\./g, '-');
+        } else {
+          modelControllerName = 'f_' + info.name.replace(/\./g,'_');
+        }
+
+        template += '<div' + addAllService.addAll(scope, 'Group', classes, options)+' ng-class="{\'has-error\': hasError(\'' + formName + '\',\'' + modelControllerName + '\', $index)}"';
         closeTag += '</div>';
       } else {
         if (exports.isHorizontalStyle(options.formstyle)) {

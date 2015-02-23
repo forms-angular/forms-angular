@@ -58,7 +58,7 @@ formsAngular
             if (options.subschema && fieldInfo.name.indexOf('.') !== -1) {
               // Schema handling - need to massage the ngModel and the id
               var compoundName = fieldInfo.name;
-              var root = options.subschemaRoot;
+              var root = options.subschemaroot;
               var lastPart = compoundName.slice(root.length+1);
               if (options.index) {
                 modelString += root + '[' + options.index + '].' + lastPart;
@@ -289,7 +289,7 @@ formsAngular
                 for (var arraySel = 0; arraySel < subKeyArray.length; arraySel++) {
                   var topAndTail = containerInstructions(subKeyArray[arraySel]);
                   template += topAndTail.before;
-                  template += processInstructions(info.schema, null, {subschema: true, formStyle: options.formstyle, subkey: schemaDefName + '_subkey', subkeyno: arraySel, subschemaRoot: info.name});
+                  template += processInstructions(info.schema, null, {subschema: true, formStyle: options.formstyle, subkey: schemaDefName + '_subkey', subkeyno: arraySel, subschemaroot: info.name});
                   template += topAndTail.after;
                 }
                 subkeys.push(info);
@@ -317,7 +317,7 @@ formsAngular
                   template += '  </div> ';
                 }
 
-                template += processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaRoot: info.name});
+                template += processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaroot: info.name});
 
                 template += '   </div>' +
                   '</div>';
@@ -569,7 +569,7 @@ formsAngular
                               if (thisSubkeyList.hasOwnProperty(keyField)) {
                                 // Not (currently) concerned with objects here - just simple types and lookups
                                 if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField] &&
-                                  (!dataVal[arrayOffset][keyField].text || dataVal[arrayOffset][keyField].text !== thisSubkeyList[keyField])) {
+                                  (typeof dataVal[arrayOffset][keyField] === 'undefined' || !dataVal[arrayOffset][keyField].text || dataVal[arrayOffset][keyField].text !== thisSubkeyList[keyField])) {
                                   matching = false;
                                   break;
                                 }
