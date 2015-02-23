@@ -64,7 +64,21 @@ formsAngular.factory('formMarkupHelper', [
           classes += ' col-sm-' + inputSizeHelper.sizeAsNumber(info.size);
           closeTag += '</div>';
         }
-        template += '<div' + addAllService.addAll(scope, 'Group', classes, options)+' ng-class="{\'has-error\': hasError(\'' + info.name + '\', $index)}"';
+
+        var modelControllerName;
+        var formName = null;
+        var parts = info.name.split('.');
+
+        if (options && typeof options.subkeyno !== 'undefined') {
+          modelControllerName = options.subschemaroot.replace(/\./g, '-') + '-subkey' + options.subkeyno + '-' + parts[parts.length-1];
+        } else if (options.subschema) {
+          formName = 'form_' + parts[0] + '$index';
+          modelControllerName = info.name.replace(/\./g, '-');
+        } else {
+          modelControllerName = 'f_' + info.name.replace(/\./g,'_');
+        }
+
+        template += '<div' + addAllService.addAll(scope, 'Group', classes, options)+' ng-class="{\'has-error\': hasError(\'' + formName + '\',\'' + modelControllerName + '\', $index)}"';
         closeTag += '</div>';
       } else {
         if (exports.isHorizontalStyle(options.formstyle)) {

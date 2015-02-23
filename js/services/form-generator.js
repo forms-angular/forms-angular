@@ -604,7 +604,19 @@ formsAngular.factory('formGenerator', function (
         $scope.setFormDirty($event);
     };
 
-    exports.decorateScope = function($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
+    exports.hasError = function(formName, name, index, $scope) {
+      var form = $scope[$scope.topLevelFormName];
+      if (formName !== 'null') {
+        form = form[formName.replace('$index', index)];
+      }
+      var field = form[name];
+      if (field && field.$invalid) {   // am in two minds about adding  && field.$dirty
+        return true;
+      }
+    };
+
+
+  exports.decorateScope = function($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
         $scope.record = sharedStuff.record;
         $scope.phase = 'init';
         $scope.disableFunctions = sharedStuff.disableFunctions;
@@ -660,6 +672,10 @@ formsAngular.factory('formGenerator', function (
 
         $scope.add = function (fieldName, $event) {
             return formGeneratorInstance.add(fieldName, $event, $scope);
+        };
+
+        $scope.hasError = function(form, name, index) {
+          return formGeneratorInstance.hasError(form, name, index, $scope);
         };
 
         $scope.unshift = function (fieldName, $event) {
