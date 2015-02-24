@@ -1,4 +1,4 @@
-/*! forms-angular 2015-02-23 */
+/*! forms-angular 2015-02-24 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -3165,6 +3165,15 @@ formsAngular.factory('recordHandler', function (
             }
             return text;
         };
+
+      $scope.getVal = function(expression, index) {
+        if (expression.indexOf('$index') === -1 || typeof index !== 'undefined') {
+          expression = expression.replace(/\$index/g, index);
+          return $scope.$eval('record.' + expression);
+        } else {
+          throw new Error('Invalid expression in getVal(): ', expression);
+        }
+      };
 
 
     };
