@@ -725,6 +725,15 @@ formsAngular.factory('recordHandler', function (
             return text;
         };
 
+      $scope.getVal = function(expression, index) {
+        if (expression.indexOf('$index') === -1 || typeof index !== 'undefined') {
+          expression = expression.replace(/\$index/g, index);
+          return $scope.$eval('record.' + expression);
+        } else {
+          throw new Error('Invalid expression in getVal(): ', expression);
+        }
+      };
+
 
     };
 
