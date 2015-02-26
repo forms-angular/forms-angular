@@ -609,9 +609,12 @@ formsAngular.factory('formGenerator', function (
       if (formName !== 'null') {
         form = form[formName.replace('$index', index)];
       }
-      var field = form[name];
-      if (field && field.$invalid) {   // am in two minds about adding  && field.$dirty
-        return true;
+      // Cannot assume that directives will use the same methods
+      if (form) {
+        var field = form[name];
+        if (field && field.$invalid) {   // am in two minds about adding  && field.$dirty
+          return true;
+        }
       }
     };
 
