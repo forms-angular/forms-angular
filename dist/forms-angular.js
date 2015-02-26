@@ -1,4 +1,4 @@
-/*! forms-angular 2015-02-24 */
+/*! forms-angular 2015-02-26 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -2044,7 +2044,7 @@ formsAngular.factory('formGenerator', function (
         };
 
         $scope.skipCols = function (index) {
-            return index > 0 ? 'col-md-offset-2' : '';
+            return index > 0 ? 'col-md-offset-3' : '';
         };
 
         $scope.setFormDirty = function (event) {
@@ -2197,7 +2197,7 @@ formsAngular.factory('formMarkupHelper', [
             // Override default label class (can be empty)
             classes += ' ' + fieldInfo.labelDefaultClass;
           } else if (cssFrameworkService.framework() === 'bs3') {
-            classes += ' col-sm-2';
+            classes += ' col-sm-3';
           }
         } else if (options.formstyle === 'inline') {
           labelHTML += ' for="' + fieldInfo.id + '"';
@@ -2277,7 +2277,7 @@ formsAngular.factory('formMarkupHelper', [
     exports.controlDivClasses = function (options) {
       var result = [];
       if (exports.isHorizontalStyle(options.formstyle)) {
-        result.push(cssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-10');
+        result.push(cssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-9');
       }
       return result;
     };
@@ -2474,19 +2474,24 @@ formsAngular.factory('recordHandler', function (
             }).error(handleError);
     };
 
-    // FIXME: this method seems to be not used anymore
     exports.scrollTheList = function ($scope, handleError) {
+        var pagesLoaded = $scope.pagesLoaded;
         SubmissionsService.getPagedAndFilteredList($scope.modelName, {
             aggregate: $location.$$search.a,
             find: $location.$$search.f,
             limit: $scope.pageSize,
-            skip: $scope.pagesLoaded * $scope.pageSize,
+            skip: pagesLoaded * $scope.pageSize,
             order: $location.$$search.o
         })
             .success(function (data) {
                 if (angular.isArray(data)) {
-                    $scope.pagesLoaded++;
-                    $scope.recordList = $scope.recordList.concat(data);
+                    //  I have seen an intermittent problem where a page is requested twice
+                    if (pagesLoaded === $scope.pagesLoaded) {
+                      $scope.pagesLoaded++;
+                      $scope.recordList = $scope.recordList.concat(data);
+                    } else {
+                      console.log('DEBUG: infinite scroll component asked for a page twice');
+                    }
                 } else {
                     $scope.showError(data, 'Invalid query');
                 }
