@@ -658,7 +658,7 @@ formsAngular.factory('formGenerator', function (
         };
 
         $scope.skipCols = function (index) {
-            return index > 0 ? 'col-md-offset-2' : '';
+            return index > 0 ? 'col-md-offset-3' : '';
         };
 
         $scope.setFormDirty = function (event) {

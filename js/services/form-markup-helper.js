@@ -104,7 +104,7 @@ formsAngular.factory('formMarkupHelper', [
             // Override default label class (can be empty)
             classes += ' ' + fieldInfo.labelDefaultClass;
           } else if (cssFrameworkService.framework() === 'bs3') {
-            classes += ' col-sm-2';
+            classes += ' col-sm-3';
           }
         } else if (options.formstyle === 'inline') {
           labelHTML += ' for="' + fieldInfo.id + '"';
@@ -184,7 +184,7 @@ formsAngular.factory('formMarkupHelper', [
     exports.controlDivClasses = function (options) {
       var result = [];
       if (exports.isHorizontalStyle(options.formstyle)) {
-        result.push(cssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-10');
+        result.push(cssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-9');
       }
       return result;
     };
