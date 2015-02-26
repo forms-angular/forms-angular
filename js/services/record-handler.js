@@ -33,19 +33,24 @@ formsAngular.factory('recordHandler', function (
             }).error(handleError);
     };
 
-    // FIXME: this method seems to be not used anymore
     exports.scrollTheList = function ($scope, handleError) {
+        var pagesLoaded = $scope.pagesLoaded;
         SubmissionsService.getPagedAndFilteredList($scope.modelName, {
             aggregate: $location.$$search.a,
             find: $location.$$search.f,
             limit: $scope.pageSize,
-            skip: $scope.pagesLoaded * $scope.pageSize,
+            skip: pagesLoaded * $scope.pageSize,
             order: $location.$$search.o
         })
             .success(function (data) {
                 if (angular.isArray(data)) {
-                    $scope.pagesLoaded++;
-                    $scope.recordList = $scope.recordList.concat(data);
+                    //  I have seen an intermittent problem where a page is requested twice
+                    if (pagesLoaded === $scope.pagesLoaded) {
+                      $scope.pagesLoaded++;
+                      $scope.recordList = $scope.recordList.concat(data);
+                    } else {
+                      console.log('DEBUG: infinite scroll component asked for a page twice');
+                    }
                 } else {
                     $scope.showError(data, 'Invalid query');
                 }
