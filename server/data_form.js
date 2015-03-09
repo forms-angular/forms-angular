@@ -359,7 +359,9 @@ DataForm.prototype.models = function () {
 
   return function (req, res) {
 //    TODO: Make this less wasteful - we only need to send the resourceNames of the resources
-    res.send(that.resources);
+    // Check for optional modelFilter and call it with the request and current list.  Otherwise just return the list.
+    res.send(that.options.modelFilter ? that.options.modelFilter.call(null, req, that.resources) : that.resources);
+
   };
 };
 
