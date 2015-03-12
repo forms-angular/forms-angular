@@ -5860,6 +5860,9 @@ button.form-btn {
   width: 8em;
   height: 2em;
 }
+.form-btn-grp {
+  max-width: 17em;
+}
 form.form-horizontal.compact input + .help-block,
 form.form-horizontal.compact select + .help-block,
 form.form-horizontal.compact textarea + .help-block,
@@ -5940,7 +5943,6 @@ form .form-inline > .sub-doc {
 .global-search {
   position: relative;
   float: right;
-  width: 236px;
 }
 .results-container {
   width: 6000px;
