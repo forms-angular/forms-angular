@@ -5314,6 +5314,9 @@ button.form-btn {
   width: 8em;
   height: 2em;
 }
+.form-btn-grp {
+  max-width: 17em;
+}
 form.form-horizontal.compact input + .help-block,
 form.form-horizontal.compact select + .help-block,
 form.form-horizontal.compact textarea + .help-block,
@@ -5395,7 +5398,6 @@ form .form-inline > .sub-doc {
 .global-search {
   position: relative;
   float: right;
-  width: 236px;
 }
 .results-container {
   width: 6000px;
@@ -6511,6 +6513,9 @@ form .form-inline > .sub-doc {
   .global-search {
     padding-right: 1em;
   }
+  .global-search input {
+    width: 12em;
+  }
 }
 form.form-horizontal.compact .control-group {
   margin-bottom: 2px;
@@ -6532,11 +6537,6 @@ form .form-inline > .sub-doc {
 }
 .search-results .search-result.focus {
   background-color: #005580;
-}
-@media (max-width: 979px) {
-  .global-search {
-    padding-right: 1em;
-  }
 }
 .fileupload-form {
   position: relative;

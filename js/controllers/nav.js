@@ -5,6 +5,7 @@ formsAngular.controller('NavCtrl',
     function ($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
 
   $scope.items = [];
+  $scope.isCollapsed = true;
 
   $scope.globalShortcuts = function (event) {
     if (event.keyCode === 191 && event.ctrlKey) {
