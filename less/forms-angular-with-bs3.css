@@ -6028,7 +6028,7 @@ textarea[msd-elastic] {
     position: static;
   }
   .global-search {
-    padding-right: 1em;
+    padding-right: 7px;
   }
 }
 form.form-horizontal .form-group {
@@ -6082,8 +6082,7 @@ form .tab-content {
     border: 0;
     margin-left: 0;
     margin-right: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0;
     -webkit-box-shadow: none;
     box-shadow: none;
   }
