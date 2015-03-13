@@ -3,7 +3,9 @@
 ## 0.4 to 0.5
 ### Summary
 * Required and readonly now work consistently across input types
-* Some styling improvements for required fields
+* Some styling improvements for required fields and mobile
+* Added support for ui-select plugin, and in so doing added new services (formMarkupHelper, pluginHelper) that make it
+much easier to add new plugins.
 
 ### BREAKING CHANGES
 * Changed id generation to remove . characters.  This may break some tests (but the . characters themselves were upsetting 
