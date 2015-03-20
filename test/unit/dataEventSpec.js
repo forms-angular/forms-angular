@@ -167,12 +167,12 @@ describe('Data Events', function () {
             cb();
           };
 
-          spyOn(scope.dataEventFunctions, 'onBeforeDelete').andCallThrough();
+          spyOn(scope.dataEventFunctions, 'onBeforeDelete').and.callThrough();
 
           var deferred = $q.defer();
           var fakeModal = {result: deferred.promise};
           deferred.resolve(true);    // Same as clicking on Yes
-          spyOn($modal, 'open').andReturn(fakeModal);
+          spyOn($modal, 'open').and.returnValue(fakeModal);
 
           $httpBackend.when('DELETE', '/api/collection/125').respond(200, 'SUCCESS');
 
@@ -200,12 +200,12 @@ describe('Data Events', function () {
             cb(new Error('Something wrong'));
           };
 
-          spyOn(scope.dataEventFunctions, 'onBeforeDelete').andCallThrough();
+          spyOn(scope.dataEventFunctions, 'onBeforeDelete').and.callThrough();
 
           var deferred = $q.defer();
           var fakeModal = {result: deferred.promise};
           deferred.resolve(true);    // Same as clicking on Yes
-          spyOn($modal, 'open').andReturn(fakeModal);
+          spyOn($modal, 'open').and.returnValue(fakeModal);
 
           scope.record._id = 125;
           scope.record.name = 'John';
@@ -299,12 +299,12 @@ describe('Data Events', function () {
           var scope = $rootScope.$new();
           $controller('BaseCtrl', {$scope: scope, $modal: $modal});
           scope.dataEventFunctions.onAfterDelete = function () {};
-          spyOn(scope.dataEventFunctions, 'onAfterDelete').andCallThrough();
+          spyOn(scope.dataEventFunctions, 'onAfterDelete').and.callThrough();
 
           var deferred = $q.defer();
           var fakeModal = {result: deferred.promise};
           deferred.resolve(true);    // Same as clicking on Yes
-          spyOn($modal, 'open').andReturn(fakeModal);
+          spyOn($modal, 'open').and.returnValue(fakeModal);
 
           $httpBackend.when('DELETE', '/api/collection/125').respond(200, 'SUCCESS');
 
