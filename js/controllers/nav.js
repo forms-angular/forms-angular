@@ -25,7 +25,7 @@ formsAngular.controller('NavCtrl',
     return result;
   };
 
-  function loadControllerAndMenu(controllerName, level) {
+  function loadControllerAndMenu(controllerName, level, needDivider) {
     var locals = {}, addThis;
 
     controllerName += 'Ctrl';
@@ -41,7 +41,13 @@ formsAngular.controller('NavCtrl',
       }
       if (angular.isObject(locals.$scope.contextMenu)) {
         angular.forEach(locals.$scope.contextMenu, function (value) {
-          if (value[addThis]) {
+          if (value.divider) {
+            needDivider = true;
+          } else if (value[addThis]) {
+            if (needDivider) {
+              needDivider = false;
+              $scope.items.push({divider: true});
+            }
             $scope.items.push(value);
           }
         });
@@ -87,9 +93,10 @@ formsAngular.controller('NavCtrl',
       // Now load context menu.  For /person/client/:id/edit we need
       // to load PersonCtrl and PersonClientCtrl
       var modelName = $filter('titleCase')($scope.routing.modelName, true);
-      loadControllerAndMenu(modelName, 0);
+      var needDivider = false;
+      loadControllerAndMenu(modelName, 0, needDivider);
       if ($scope.routing.formName) {
-        loadControllerAndMenu(modelName + $filter('titleCase')($scope.routing.formName, true), 1);
+        loadControllerAndMenu(modelName + $filter('titleCase')($scope.routing.formName, true), 1, needDivider);
       }
       $scope.contextMenu = $data.dropDownDisplay || $data.modelNameDisplay || $filter('titleCase')($scope.routing.modelName, false);
     }
@@ -97,14 +104,15 @@ formsAngular.controller('NavCtrl',
 
   $scope.doClick = function (index, event) {
     var option = angular.element(event.target);
-    if (option.parent().hasClass('disabled')) {
+    var item = $scope.items[index];
+    if (item.divider || option.parent().hasClass('disabled')) {
       event.preventDefault();
-    } else if ($scope.items[index].broadcast) {
-      $scope.$broadcast($scope.items[index].broadcast);
+    } else if (item.broadcast) {
+      $scope.$broadcast(item.broadcast);
     } else {
       // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
-      var args = $scope.items[index].args || [],
-        fn = $scope.items[index].fn;
+      var args = item.args || [],
+        fn = item.fn;
       switch (args.length) {
         case  0:
           fn();
@@ -129,14 +137,23 @@ formsAngular.controller('NavCtrl',
     return $scope.items[index].isHidden ? $scope.items[index].isHidden() : false;
   };
 
-
   $scope.isDisabled = function (index) {
     return $scope.items[index].isDisabled ? $scope.items[index].isDisabled() : false;
   };
 
-
   $scope.buildUrl = function (path) {
     return routingService.buildUrl(path);
+  };
+
+  $scope.dropdownClass = function (index) {
+    var item =  $scope.items[index];
+    var thisClass = '';
+    if (item.divider) {
+      thisClass = 'divider';
+    } else if ($scope.isDisabled(index)) {
+      thisClass = 'disabled';
+    }
+  return thisClass;
   };
 
 }]);
