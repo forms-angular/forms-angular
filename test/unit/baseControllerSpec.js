@@ -792,7 +792,7 @@ describe('BaseCtrl', function () {
 
         deferred = $q.defer();
         var fakeModal = {result: deferred.promise};
-        spyOn($modal, 'open').andReturn(fakeModal);
+        spyOn($modal, 'open').and.returnValue(fakeModal);
 
         $scope.record._id = 1;
       });
