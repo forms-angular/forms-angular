@@ -5233,10 +5233,6 @@ a.badge:focus {
 .affix {
   position: fixed;
 }
-body {
-  position: relative;
-  padding-top: 40px;
-}
 .list-item {
   min-height: 20px;
   padding: 19px;
@@ -5275,9 +5271,11 @@ body {
   padding-left: 20px;
 }
 .header-rhs {
-  width: 226px;
-  padding-right: 60px;
+  min-width: 226px;
   min-height: 40px;
+  padding-right: 20px;
+  padding-bottom: 5px;
+  display: block;
 }
 .list-header .header-rhs {
   margin: 15px 0;
@@ -5287,12 +5285,6 @@ body {
   width: 100%;
   margin-top: 11px;
   z-index: 1;
-}
-.header-rhs {
-  width: inherited !important;
-  padding-right: 20px !important;
-  padding-bottom: 5px;
-  display: block;
 }
 .gridStyle {
   border: 1px solid #d4d4d4;
@@ -5322,6 +5314,9 @@ button.form-btn {
   width: 8em;
   height: 2em;
 }
+.form-btn-grp {
+  max-width: 17em;
+}
 form.form-horizontal.compact input + .help-block,
 form.form-horizontal.compact select + .help-block,
 form.form-horizontal.compact textarea + .help-block,
@@ -5350,18 +5345,20 @@ form .schema-foot blockquote {
   border-color: rgba(0, 0, 0, 0.15);
 }
 form .schema-head {
-  margin-top: 0;
+  margin-top: 8px;
   margin-bottom: 5px;
   border: 1px solid #ddd;
   padding: 4px 180px;
 }
 form .sub-doc {
-  padding: 0 5px 0 0;
+  padding: 5px 5px 2px 0;
   width: 97%;
   margin-bottom: 3px;
+  position: relative;
 }
 form .sub-doc-btns {
-  margin-left: 15px;
+  position: absolute;
+  right: 8px;
 }
 form .schema-foot {
   padding: 5px 180px;
@@ -5401,7 +5398,6 @@ form .form-inline > .sub-doc {
 .global-search {
   position: relative;
   float: right;
-  width: 236px;
 }
 .results-container {
   width: 6000px;
@@ -6517,6 +6513,9 @@ form .form-inline > .sub-doc {
   .global-search {
     padding-right: 1em;
   }
+  .global-search input {
+    width: 12em;
+  }
 }
 form.form-horizontal.compact .control-group {
   margin-bottom: 2px;
@@ -6538,11 +6537,6 @@ form .form-inline > .sub-doc {
 }
 .search-results .search-result.focus {
   background-color: #005580;
-}
-@media (max-width: 979px) {
-  .global-search {
-    padding-right: 1em;
-  }
 }
 .fileupload-form {
   position: relative;
