@@ -605,17 +605,32 @@ formsAngular.factory('formGenerator', function (
     };
 
     exports.hasError = function(formName, name, index, $scope) {
-      var form = $scope[$scope.topLevelFormName];
-      if (formName !== 'null') {
-        form = form[formName.replace('$index', index)];
-      }
-      // Cannot assume that directives will use the same methods
-      if (form) {
-        var field = form[name];
-        if (field && field.$invalid) {   // am in two minds about adding  && field.$dirty
-          return true;
+      var result = false;
+      if ($scope) {
+        var form = $scope[$scope.topLevelFormName];
+        if (formName !== 'null') {
+          form = form[formName.replace('$index', index)];
         }
+        // Cannot assume that directives will use the same methods
+        if (form) {
+          var field = form[name];
+          if (field && field.$invalid) {
+            if (field.$dirty) {
+              result = true;
+            } else {
+              // with pristine fields, they have to have some sort of invalidity other than ng-invalid-required
+              angular.forEach(field.$validators, function (obj, key) {
+                if (key !== 'required' && field.$error[key]) {
+                  result = true;
+                }
+              });
+            }
+          }
+        }
+      } else {
+        console.log('hasError called with no scope! ', formName, name, index);
       }
+      return result;
     };
 
 
