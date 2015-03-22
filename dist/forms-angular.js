@@ -2235,7 +2235,7 @@ formsAngular.factory('formMarkupHelper', [
         if (options && typeof options.subkeyno !== 'undefined') {
           modelControllerName = options.subschemaroot.replace(/\./g, '-') + '-subkey' + options.subkeyno + '-' + parts[parts.length-1];
         } else if (options.subschema) {
-          formName = 'form_' + parts[0] + '$index';
+          formName = 'form_' + parts.slice(0,-1).join('_') + '$index';
           modelControllerName = info.name.replace(/\./g, '-');
         } else {
           modelControllerName = 'f_' + info.name.replace(/\./g,'_');
