@@ -118,20 +118,14 @@ form {
     padding: 5px 180px;
     margin: 5px 0;
   }
-  input[type="checkbox"].ng-invalid-required:after {
+
+  input[type="checkbox"].ng-invalid-required:before, span:first-child input[type="radio"].ng-invalid-required:before {
     content:"*";
     font-weight: bold;
     color: red;
-    /* padding-left is too small at 12 if inline help is not used*/
-    padding-left: 12px
+    margin-left: -8px
   }
-  span:first-child input[type="radio"].ng-invalid-required:after {
-    content:"*";
-    font-weight: bold;
-    color: red;
-    /* padding-left is too small at 12 if inline help is not used*/
-    padding-left: 12px
-  }
+
   input.ng-invalid-required, select.fng-invalid-required,  select.ng-invalid-required, textarea.ng-invalid-required {
     background-color: rgba(255, 0, 0, 0.10);
   }
@@ -146,6 +140,11 @@ form {
     border: none;
     box-shadow: none;
   }
+}
+
+// Inline radio buttons need a bigger top margin
+span input[type="radio"] {
+  margin : 9px 0 0;
 }
 
 .global-search {

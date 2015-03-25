@@ -5909,19 +5909,12 @@ form .schema-foot {
   padding: 5px 180px;
   margin: 5px 0;
 }
-form input[type="checkbox"].ng-invalid-required:after {
+form input[type="checkbox"].ng-invalid-required:before,
+form span:first-child input[type="radio"].ng-invalid-required:before {
   content: "*";
   font-weight: bold;
   color: red;
-  /* padding-left is too small at 12 if inline help is not used*/
-  padding-left: 12px;
-}
-form span:first-child input[type="radio"].ng-invalid-required:after {
-  content: "*";
-  font-weight: bold;
-  color: red;
-  /* padding-left is too small at 12 if inline help is not used*/
-  padding-left: 12px;
+  margin-left: -8px;
 }
 form input.ng-invalid-required,
 form select.fng-invalid-required,
@@ -5939,6 +5932,9 @@ form .form-inline > .sub-doc {
   padding: 0 5px;
   border: none;
   box-shadow: none;
+}
+span input[type="radio"] {
+  margin: 9px 0 0;
 }
 .global-search {
   position: relative;

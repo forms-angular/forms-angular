@@ -1,4 +1,4 @@
-/*! forms-angular 2015-03-22 */
+/*! forms-angular 2015-03-24 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -400,7 +400,7 @@ formsAngular
             case 'radio' :
               value = '';
               common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
-              var separateLines = (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
+              var separateLines = options.formstyle === 'vertical' || (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
               if (angular.isArray(fieldInfo.options)) {
                 if (options.subschema) { common = common.replace('name="', 'name="{{$index}}-'); }
