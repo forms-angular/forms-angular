@@ -294,43 +294,52 @@ formsAngular
                 }
                 subkeys.push(info);
               } else {
-                template += '<div class="schema-head">' + info.label;
-                if (info.unshift) {
-                    template += '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">'+
-                    '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
-                }
+                if (options.subschema) {
+                  console.log('Attempts at supporting deep nesting have been removed - will hopefully be re-introduced at a later date');
+                } else {
+                  template += '<div class="schema-head">' + info.label;
+                  if (info.unshift) {
+                      template += '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">'+
+                      '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
+                  }
 
-                template +=  '</div>' +
-                  '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
-                  convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
-                  ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
-                  '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">';
-                if (!info.noRemove || info.customSubDoc) {
-                  template += '   <div class="sub-doc-btns">';
-                  if (info.customSubDoc) {
-                    template += info.customSubDoc;
+                  template +=  '</div>' +
+                    '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
+                    convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
+                    ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
+                    '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">';
+                  if (!info.noRemove || info.customSubDoc) {
+                    template += '   <div class="sub-doc-btns">';
+                    if (info.customSubDoc) {
+                      template += info.customSubDoc;
+                    }
+                    if (!info.noRemove) {
+                        template += '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
+                                    '<i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove</button>';
+                    }
+                    template += '  </div> ';
                   }
-                  if (!info.noRemove) {
-                      template += '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                                  '<i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove</button>';
-                  }
-                  template += '  </div> ';
-                }
 
-                template += processInstructions(info.schema, false, {subschema: true, formstyle: info.formStyle, model: options.model, subschemaroot: info.name});
+                  template += processInstructions(info.schema, false, {
+                    subschema: true,
+                    formstyle: info.formStyle,
+                    model: options.model,
+                    subschemaroot: info.name
+                  });
 
-                template += '   </div>' +
-                  '</div>';
-                if (!info.noAdd || info.customFooter) {
-                  template += '<div class = "schema-foot">';
-                  if (info.customFooter) {
-                    template += info.customFooter;
+                  template += '   </div>' +
+                    '</div>';
+                  if (!info.noAdd || info.customFooter) {
+                    template += '<div class = "schema-foot">';
+                    if (info.customFooter) {
+                      template += info.customFooter;
+                    }
+                    if (!info.noAdd) {
+                      template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                      '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
+                    }
+                    template += '</div>';
                   }
-                  if (!info.noAdd) {
-                    template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                                '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
-                  }
-                  template += '</div>';
                 }
               }
             }
