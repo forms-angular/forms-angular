@@ -132,7 +132,7 @@ formsAngular
             case 'radio' :
               value = '';
               common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
-              var separateLines = (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
+              var separateLines = options.formstyle === 'vertical' || (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
               if (angular.isArray(fieldInfo.options)) {
                 if (options.subschema) { common = common.replace('name="', 'name="{{$index}}-'); }
