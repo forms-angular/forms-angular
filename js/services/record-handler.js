@@ -584,6 +584,9 @@ formsAngular.factory('recordHandler', function (
             delete $scope.errorMessage;
         };
 
+        $scope.handleError = function(aScope) {
+           return exports.handleError(aScope)
+        };
 
         $scope.save = function (options) {
             options = options || {};
@@ -734,11 +737,10 @@ formsAngular.factory('recordHandler', function (
         if (expression.indexOf('$index') === -1 || typeof index !== 'undefined') {
           expression = expression.replace(/\$index/g, index);
           return $scope.$eval('record.' + expression);
-        } else {
-          throw new Error('Invalid expression in getVal(): ', expression);
         }
+// Used to show error here, but angular seems to call before record is populated sometimes
+//      throw new Error('Invalid expression in getVal(): ' + expression);
       };
-
 
     };
 
