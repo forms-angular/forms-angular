@@ -1,4 +1,4 @@
-/*! forms-angular 2015-03-25 */
+/*! forms-angular 2015-03-28 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -395,7 +395,8 @@ formsAngular
               }
               break;
             case 'link' :
-              value = '<a ng-href="/' + routingService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
+              value = '<a ng-href="/' + routingService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit" class="fng-link">'
+                + fieldInfo.linkText + '</a>';
               break;
             case 'radio' :
               value = '';
@@ -2165,6 +2166,24 @@ formsAngular.factory('formGenerator', function (
             return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
         };
 
+        $scope.listFieldValues = function (field) {
+          if ($scope.record[field]) {
+            var instructions = _.find($scope.baseSchema(), function (obj) {
+              return obj.name === field;
+            });
+            if (!instructions.promise) {
+              instructions.promise = {};
+              SubmissionsService.getListAttributes(instructions.ref, $scope.record[field]).success(function (data) {
+                if (data.success === false) {
+                  console.log(data.err);   // because the error doesn't often display because of digest issues that I don't understand
+                  $scope.showError(data.err);
+                }
+                instructions.promise.val = data.list;
+              }).error($scope.handleError($scope));
+            }
+            return instructions.promise.val;
+          }
+        };
     };
 
     return exports;
@@ -2539,6 +2558,7 @@ formsAngular.factory('recordHandler', function (
     };
 
     exports.readRecord = function ($scope, ctrlState, handleError) {
+      // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
         SubmissionsService.readRecord($scope.modelName, $scope.id)
             .success(function (data) {
                 if (data.success === false) {
@@ -3104,6 +3124,9 @@ formsAngular.factory('recordHandler', function (
             delete $scope.errorMessage;
         };
 
+        $scope.handleError = function(aScope) {
+           return exports.handleError(aScope);
+        };
 
         $scope.save = function (options) {
             options = options || {};
@@ -3254,11 +3277,10 @@ formsAngular.factory('recordHandler', function (
         if (expression.indexOf('$index') === -1 || typeof index !== 'undefined') {
           expression = expression.replace(/\$index/g, index);
           return $scope.$eval('record.' + expression);
-        } else {
-          throw new Error('Invalid expression in getVal(): ', expression);
         }
+// Used to show error here, but angular seems to call before record is populated sometimes
+//      throw new Error('Invalid expression in getVal(): ' + expression);
       };
-
 
     };
 
