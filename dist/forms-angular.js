@@ -259,6 +259,41 @@ formsAngular
 
 'use strict';
 formsAngular
+  .directive('fngLink', function (routingService, SubmissionsService) {
+    return {
+      restrict: 'E',
+      scope: {dataSrc: '&model'},
+      link: function (scope, element, attrs) {
+        var ref = attrs.ref;
+        var form = attrs.form;
+        form = form ? form + '/' : '';
+        if (attrs.text && attrs.text.length > 0) {
+          scope.text = attrs.text;
+        }
+        scope.$watch('dataSrc()', function (newVal) {
+          if (newVal) {
+            scope.link = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
+            if (!scope.text) {
+              SubmissionsService.getListAttributes(ref, newVal).success(function (data) {
+                if (data.success === false) {
+                  console.log(data.err);
+                  scope.text = data.err;
+                } else {
+                  scope.text = data.list;
+                }
+              }).error(function (status, err) {
+                scope.text = 'Error ' + status + ': ' + err;
+              });
+            }
+          }
+        }, true);
+      },
+      template: '<a href="{{ link }}" class="fng-link">{{text}}</a>'
+    };
+  });
+
+'use strict';
+formsAngular
   .directive('formButtons', ['cssFrameworkService', function (cssFrameworkService) {
     return {
       restrict: 'A',
@@ -395,8 +430,10 @@ formsAngular
               }
               break;
             case 'link' :
-              value = '<a ng-href="/' + routingService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit" class="fng-link">'
-                + fieldInfo.linkText + '</a>';
+              value = '<fng-link model="' + modelString + '" ref="' + fieldInfo.ref + '"';
+              if (fieldInfo.form) { value += ' form="' + fieldInfo.form + '"';}
+              if (fieldInfo.linkText) { value += ' text="' + fieldInfo.linkText + '"' ; }
+              value += '></fng-link>';
               break;
             case 'radio' :
               value = '';
@@ -2166,24 +2203,6 @@ formsAngular.factory('formGenerator', function (
             return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
         };
 
-        $scope.listFieldValues = function (field) {
-          if ($scope.record[field]) {
-            var instructions = _.find($scope.baseSchema(), function (obj) {
-              return obj.name === field;
-            });
-            if (!instructions.promise) {
-              instructions.promise = {};
-              SubmissionsService.getListAttributes(instructions.ref, $scope.record[field]).success(function (data) {
-                if (data.success === false) {
-                  console.log(data.err);   // because the error doesn't often display because of digest issues that I don't understand
-                  $scope.showError(data.err);
-                }
-                instructions.promise.val = data.list;
-              }).error($scope.handleError($scope));
-            }
-            return instructions.promise.val;
-          }
-        };
     };
 
     return exports;
