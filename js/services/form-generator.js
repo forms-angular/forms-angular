@@ -718,6 +718,24 @@ formsAngular.factory('formGenerator', function (
             return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
         };
 
+        $scope.listFieldValues = function (field) {
+          if ($scope.record[field]) {
+            var instructions = _.find($scope.baseSchema(), function (obj) {
+              return obj.name === field;
+            });
+            if (!instructions.promise) {
+              instructions.promise = {};
+              SubmissionsService.getListAttributes(instructions.ref, $scope.record[field]).success(function (data) {
+                if (data.success === false) {
+                  console.log(data.err);   // because the error doesn't often display because of digest issues that I don't understand
+                  $scope.showError(data.err);
+                }
+                instructions.promise.val = data.list;
+              }).error($scope.handleError($scope));
+            }
+            return instructions.promise.val;
+          }
+        };
     };
 
     return exports;

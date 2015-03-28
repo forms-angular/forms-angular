@@ -127,7 +127,8 @@ formsAngular
               }
               break;
             case 'link' :
-              value = '<a ng-href="/' + routingService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit">' + fieldInfo.linkText + '</a>';
+              value = '<a ng-href="/' + routingService.buildUrl('') + fieldInfo.ref + (fieldInfo.form ? '/' + fieldInfo.form : '') + '/{{ ' + modelString + '}}/edit" class="fng-link">'
+                + fieldInfo.linkText + '</a>';
               break;
             case 'radio' :
               value = '';

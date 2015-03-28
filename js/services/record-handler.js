@@ -19,6 +19,7 @@ formsAngular.factory('recordHandler', function (
     };
 
     exports.readRecord = function ($scope, ctrlState, handleError) {
+      // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
         SubmissionsService.readRecord($scope.modelName, $scope.id)
             .success(function (data) {
                 if (data.success === false) {
@@ -585,7 +586,7 @@ formsAngular.factory('recordHandler', function (
         };
 
         $scope.handleError = function(aScope) {
-           return exports.handleError(aScope)
+           return exports.handleError(aScope);
         };
 
         $scope.save = function (options) {
