@@ -7,6 +7,7 @@ formsAngular
       link: function (scope, element, attrs) {
         var ref = attrs.ref;
         var form = attrs.form;
+        scope.readonly = attrs.readonly;
         form = form ? form + '/' : '';
         if (attrs.text && attrs.text.length > 0) {
           scope.text = attrs.text;
@@ -29,6 +30,8 @@ formsAngular
           }
         }, true);
       },
-      template: '<a href="{{ link }}" class="fng-link">{{text}}</a>'
+      template: function(element,attrs) {
+        return attrs.readonly ? '<span class="fng-link">{{text}}</span>' : '<a href="{{ link }}" class="fng-link">{{text}}</a>';
+      }
     };
   });

@@ -130,6 +130,7 @@ formsAngular
               value = '<fng-link model="' + modelString + '" ref="' + fieldInfo.ref + '"';
               if (fieldInfo.form) { value += ' form="' + fieldInfo.form + '"';}
               if (fieldInfo.linkText) { value += ' text="' + fieldInfo.linkText + '"' ; }
+              if (fieldInfo.readonly) { value += ' readonly="true"'; }
               value += '></fng-link>';
               break;
             case 'radio' :

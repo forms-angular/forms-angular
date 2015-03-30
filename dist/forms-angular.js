@@ -1,4 +1,4 @@
-/*! forms-angular 2015-03-28 */
+/*! forms-angular 2015-03-30 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -282,6 +282,7 @@ formsAngular
       link: function (scope, element, attrs) {
         var ref = attrs.ref;
         var form = attrs.form;
+        scope.readonly = attrs.readonly;
         form = form ? form + '/' : '';
         if (attrs.text && attrs.text.length > 0) {
           scope.text = attrs.text;
@@ -304,7 +305,9 @@ formsAngular
           }
         }, true);
       },
-      template: '<a href="{{ link }}" class="fng-link">{{text}}</a>'
+      template: function(element,attrs) {
+        return attrs.readonly ? '<span class="fng-link">{{text}}</span>' : '<a href="{{ link }}" class="fng-link">{{text}}</a>';
+      }
     };
   });
 
@@ -449,6 +452,7 @@ formsAngular
               value = '<fng-link model="' + modelString + '" ref="' + fieldInfo.ref + '"';
               if (fieldInfo.form) { value += ' form="' + fieldInfo.form + '"';}
               if (fieldInfo.linkText) { value += ' text="' + fieldInfo.linkText + '"' ; }
+              if (fieldInfo.readonly) { value += ' readonly="true"'; }
               value += '></fng-link>';
               break;
             case 'radio' :
