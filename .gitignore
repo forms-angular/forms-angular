@@ -15,6 +15,12 @@ bower_components
 working_bower_components_20141119
 node_modules
 .idea
+typings
+js/**/*.js
+js/**/*.map
+server/**/*.js
+server/**/*.map
+
 
 test_out/*
 
