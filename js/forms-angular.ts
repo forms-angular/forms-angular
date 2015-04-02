@@ -1,3 +1,4 @@
+/// <reference path="../typings/angularjs/angular.d.ts" />
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [

@@ -1,3 +1,6 @@
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../forms-angular.d.ts" />
+
 'use strict';
 
 formsAngular.controller('NavCtrl',
@@ -26,7 +29,7 @@ formsAngular.controller('NavCtrl',
   };
 
   function loadControllerAndMenu(controllerName, level, needDivider) {
-    var locals = {}, addThis;
+    var locals : any = {}, addThis;
 
     controllerName += 'Ctrl';
     locals.$scope = $data.modelControllers[level] = $scope.$new();

@@ -1,8 +1,46 @@
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../forms-angular.d.ts" />
+
 'use strict';
+
+interface BuiltInRoute {
+  route: string;
+  state: string;
+  templateUrl: string;
+  options? : any;
+}
+
+interface RoutingConfig {
+  hashPrefix: string;
+  html5Mode: Boolean;
+  routing: string;                // What sort of routing do we want?  ngroute or uirouter.
+                                  // TODO Should be enum
+  prefix: string;                 // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
+                                  // for example '/db' that gets prepended to all the generated routes.  This can be used to
+                                  // prevent generated routes (which have a lot of parameters) from clashing with other routes in
+                                  // the web app that have nothing to do with CRUD forms
+  fixedRoutes?: Array<BuiltInRoute>;
+  add2fngRoutes?: any;            // An object to add to the generated routes.  One user case would be to add {authenticate: true}
+                                  // so that the client authenticates for certain routes
+
+  variantsForDemoWebsite? : any;  // Just for demo website
+  variants?: any;                 // Just for demo website
+}
+
+interface FngRoute {
+  newRecord?:           Boolean;
+  analyse?:             Boolean;
+  modelName?:           string;
+  reportSchemaName? :   string;
+  id? :                 string;
+  formName? :           string;
+  tab? :                string;
+  variant? :            string;    // TODO should be enum of supported frameworks
+}
 
 formsAngular.provider('routingService', [ '$injector', '$locationProvider', function ($injector, $locationProvider) {
 
-  var config = {
+  var config: RoutingConfig = {
 //  fixedRoutes: [] an array in the same format as builtInRoutes that is matched before the generic routes.  Can be omitted
     hashPrefix: '',
     html5Mode: false,
@@ -10,7 +48,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     prefix: ''        // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
   };
 
-  var builtInRoutes = [
+  var builtInRoutes: Array<BuiltInRoute> = [
     {route: '/analyse/:model/:reportSchemaName', state: 'analyse::model::report', templateUrl: 'partials/base-analysis.html'},
     {route: '/analyse/:model',                   state: 'analyse::model',         templateUrl: 'partials/base-analysis.html'},
     {route: '/:model/:id/edit',                  state: 'model::edit',            templateUrl: 'partials/base-edit.html'},
@@ -24,10 +62,10 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
   ];
 
   var _routeProvider, _stateProvider;
-  var lastRoute = null,
-    lastObject = {};
+  var lastRoute = null;
+  var lastObject: FngRoute = {};
 
-  function _setUpNgRoutes(routes, prefix, additional) {
+  function _setUpNgRoutes(routes: Array<BuiltInRoute>, prefix: string = '', additional?: any) : void {
     prefix = prefix || '';
     angular.forEach(routes, function (routeSpec) {
       _routeProvider.when(prefix + routeSpec.route, angular.extend(routeSpec.options || {templateUrl: routeSpec.templateUrl}, additional));
@@ -42,7 +80,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
     }
   }
 
-  function _setUpUIRoutes(routes, prefix, additional) {
+  function _setUpUIRoutes(routes: Array<BuiltInRoute>, prefix: string = '', additional?: any) : void {
     prefix = prefix || '';
     angular.forEach(routes, function (routeSpec) {
       _stateProvider.state(routeSpec.state, angular.extend(routeSpec.options || {
@@ -73,19 +111,7 @@ formsAngular.provider('routingService', [ '$injector', '$locationProvider', func
   }
 
   return {
-    /*
-        options:
-           prefix:        A string (such as '/db') that gets prepended to all the generated routes.  This can be used to
-                          prevent generated routes (which have a lot of parameters) from clashing with other routes in
-                          the web app that have nothing to do with CRUD forms
-           add2fngRoutes: An object to add to the generated routes.  One user case would be to add {authenticate: true}
-                          so that the client authenticates for certain routes
-           html5Mode:     boolean
-           routing:       Must be 'ngroute' or 'uirouter'
-
-
-     */
-    start: function (options) {
+    start: function (options: RoutingConfig) {
       angular.extend(config, options);
       if (config.prefix[0] && config.prefix[0] !== '/') { config.prefix = '/' + config.prefix; }
       $locationProvider.html5Mode(config.html5Mode);

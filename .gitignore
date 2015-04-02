@@ -17,10 +17,10 @@ node_modules
 .idea
 typings
 js/**/*.js
+js/**/*.d.ts
 js/**/*.map
 server/**/*.js
 server/**/*.map
-
 
 test_out/*
 
