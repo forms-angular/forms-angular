@@ -1,14 +1,24 @@
+/// <reference path="../typings/node/node.d.ts" />
+/// <reference path="../typings/mongoose/mongoose.d.ts" />
+
 'use strict';
+
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
 
-var _ = require('underscore'),
-  util = require('util'),
-  extend = require('node.extend'),// needed for deep copy even though underscore has an extend
-  async = require('async'),
-  url = require('url'),
-  mongoose = require('mongoose'),
-  debug = false;
+var _ = require('underscore');
+var util = require('util');
+var extend = require('node.extend');
+var async = require('async');
+var url = require('url');
+import mongoose = require('mongoose');
+var debug = false;
+
+interface Resource {
+  resourceName: string;
+  model?: mongoose.Model<any>;            // TODO TS Get rid of the ? here
+  options?: any;
+}
 
 mongoose.set('debug', debug);
 
@@ -52,7 +62,7 @@ module.exports = exports = DataForm;
 
 DataForm.prototype.getListFields = function (resource, doc) {
 
-  function getFirstMatchingField(keyList, type) {
+  function getFirstMatchingField(keyList, type?) {
     for (var i = 0; i < keyList.length; i++) {
       var fieldDetails = resource.model.schema.tree[keyList[i]];
       if (fieldDetails.type && (!type || fieldDetails.type.name === type) && keyList[i] !== '_id') {
@@ -126,7 +136,7 @@ DataForm.prototype.newResource = function (model, options) {
 //    Add a resource, specifying the model and any options.
 //    Models may include their own options, which means they can be passed through from the model file
 DataForm.prototype.addResource = function (resourceName, model, options) {
-  var resource = {
+  var resource : Resource = {
     resourceName: resourceName,
     options: options || {}
   };
@@ -185,8 +195,8 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
   // return a string that determines the sort order of the resultObject
   function calcResultValue(obj) {
 
-    function padLeft(number, reqLength, str) {
-      return new Array(reqLength - String(number).length + 1).join(str || '0') + number;
+    function padLeft(score: number, reqLength: number, str = '0') {
+      return new Array(1 + reqLength - String(score).length).join(str) + score;
     }
 
     var sortString = '';
@@ -452,7 +462,7 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
     }
   }
   outPath = this.applySchemaSubset(outPath, formSchema);
-  var returnObj = {paths: outPath};
+  var returnObj : any = {paths: outPath};
   if (hiddenFields.length > 0) {
     returnObj.hide = hiddenFields;
   }
@@ -516,7 +526,7 @@ DataForm.prototype.report = function () {
     }
 
     // Replace parameters in pipeline
-    var schemaCopy = {};
+    var schemaCopy : any = {};
     extend(schemaCopy, reportSchema);
     schemaCopy.params = schemaCopy.params || [];
 
@@ -588,7 +598,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
               if (dateTest) {
                 obj[prop] = new Date(dateTest[1] + 'Z');
               } else {
-                var objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
+                var objectIdTest : Array<string> = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
                 if (objectIdTest) {
                   obj[prop] = new mongoose.Types.ObjectId(objectIdTest[1]);
                 }
@@ -611,7 +621,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
         runPipeline.unshift({$match: queryObj});
       }
 
-      var toDo = {
+      var toDo : any = {
         runAggregation: function (cb) {
           resource.model.aggregate(runPipeline, cb);
         }
@@ -730,7 +740,7 @@ DataForm.prototype.saveAndRespond = function (req, res, hiddenFields) {
   function internalSave(doc) {
     doc.save(function (err, doc2) {
       if (err) {
-        var err2 = {status: 'err'};
+        var err2 : any = {status: 'err'};
         if (!err.errors) {
           err2.message = err.message;
         } else {

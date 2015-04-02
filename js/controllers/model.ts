@@ -1,3 +1,6 @@
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../forms-angular.d.ts" />
+
 'use strict';
 
 formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'routingService', function ($scope, $http, $location, routingService) {

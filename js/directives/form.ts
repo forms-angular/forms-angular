@@ -1,4 +1,9 @@
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../forms-angular.d.ts" />
+
 'use strict';
+enum tabsSetupState {Y, N, Forced};
 
 formsAngular
   .directive('formInput', ['$compile', '$rootScope', '$filter', '$data',
@@ -48,7 +53,7 @@ formsAngular
 //                <input type="text" class="input-small" placeholder="Email">
 
         var subkeys = [];
-        var tabsSetup = false;
+        var tabsSetup: tabsSetupState = tabsSetupState.N;
 
         var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
           var nameString;
@@ -451,8 +456,8 @@ formsAngular
                 switch (info.containerType) {
                   case 'tab' :
                     // maintain support for simplified tabset syntax for now
-                    if (!tabsSetup) {
-                      tabsSetup = 'forced';
+                    if (tabsSetup === tabsSetupState.N) {
+                      tabsSetup = tabsSetupState.Forced;
                       result += '<tabset>';
                     }
 
@@ -461,7 +466,7 @@ formsAngular
                     result += parts.after;
                     break;
                   case 'tabset' :
-                    tabsSetup = true;
+                    tabsSetup = tabsSetupState.Y;
                     result += parts.before;
                     result += processInstructions(info.content, null, options);
                     result += parts.after;
@@ -525,7 +530,7 @@ formsAngular
               }
               if (theRecord === scope.topLevelFormName) { throw new Error('Model and Name must be distinct - they are both ' + theRecord); }
               elementHtml += processInstructions(newValue, true, attrs);
-              if (tabsSetup === 'forced') {
+              if (tabsSetup === tabsSetupState.Forced) {
                 elementHtml += '</tabset>';
               }
               elementHtml += attrs.subschema ? '' : '</form>';
