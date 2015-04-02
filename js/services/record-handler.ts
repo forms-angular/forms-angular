@@ -407,6 +407,7 @@ formsAngular.factory('recordHandler', function ($location, $window, $filter, $ti
 
   return {
     readRecord: function readRecord($scope, ctrlState, handleError) {
+      // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
       SubmissionsService.readRecord($scope.modelName, $scope.id)
         .success(function (data) {
           if (data.success === false) {
@@ -792,9 +793,11 @@ formsAngular.factory('recordHandler', function ($location, $window, $filter, $ti
         if (expression.indexOf('$index') === -1 || typeof index !== 'undefined') {
           expression = expression.replace(/\$index/g, index);
           return $scope.$eval('record.' + expression);
-        } else {
-          throw new Error('Invalid expression in getVal(): ' + expression);
         }
+        //else {
+// Used to show error here, but angular seems to call before record is populated sometimes
+//      throw new Error('Invalid expression in getVal(): ' + expression);
+        //}
       };
 
     },

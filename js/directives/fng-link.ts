@@ -1,30 +1,34 @@
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../forms-angular.d.ts" />
+
 'use strict';
+
 formsAngular
   .directive('fngLink', function (routingService, SubmissionsService) {
     return {
       restrict: 'E',
       scope: {dataSrc: '&model'},
       link: function (scope, element, attrs) {
-        var ref = attrs.ref;
-        var form = attrs.form;
-        scope.readonly = attrs.readonly;
+        var ref : string = attrs['ref'];
+        var form : string = attrs['form'];
+        scope['readonly'] = attrs['readonly'];
         form = form ? form + '/' : '';
-        if (attrs.text && attrs.text.length > 0) {
-          scope.text = attrs.text;
+        if (attrs['text'] && attrs['text'].length > 0) {
+          scope['text'] = attrs['text'];
         }
         scope.$watch('dataSrc()', function (newVal) {
           if (newVal) {
-            scope.link = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
-            if (!scope.text) {
+            scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
+            if (!scope['text']) {
               SubmissionsService.getListAttributes(ref, newVal).success(function (data) {
                 if (data.success === false) {
                   console.log(data.err);
-                  scope.text = data.err;
+                  scope['text'] = data.err;
                 } else {
-                  scope.text = data.list;
+                  scope['text'] = data.list;
                 }
               }).error(function (status, err) {
-                scope.text = 'Error ' + status + ': ' + err;
+                scope['text'] = 'Error ' + status + ': ' + err;
               });
             }
           }
