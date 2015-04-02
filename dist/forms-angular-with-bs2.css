@@ -5388,6 +5388,10 @@ form .form-inline > .sub-doc {
   border: none;
   box-shadow: none;
 }
+a.fng-link,
+span.fng-link {
+  line-height: 30px;
+}
 span input[type="radio"] {
   margin: 9px 0 0;
 }
