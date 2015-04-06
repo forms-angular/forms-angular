@@ -1,19 +1,19 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.d.ts" />
+/// <reference path="../forms-angular.ts" />
 
-'use strict';
+module fng {
+  formsAngular.factory('$data', [function () {
 
-formsAngular.factory('$data', [function () {
+    var sharedData = {
 
-  var sharedData = {
+      // The record from BaseCtrl
+      record: {},
+      disableFunctions: {},
+      dataEventFunctions: {},
 
-    // The record from BaseCtrl
-    record: {},
-    disableFunctions: {},
-    dataEventFunctions: {},
+      modelControllers: []
+    };
+    return sharedData;
 
-    modelControllers: []
-  };
-  return sharedData;
-
-}]);
+  }]);
+}

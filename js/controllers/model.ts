@@ -1,23 +1,25 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.d.ts" />
+/// <reference path="../forms-angular.ts" />
 
-'use strict';
+module fng {
 
-formsAngular.controller('ModelCtrl', [ '$scope', '$http', '$location', 'routingService', function ($scope, $http, $location, routingService) {
+  formsAngular.controller('ModelCtrl', ['$scope', '$http', '$location', 'routingService', function ($scope, $http, $location, routingService) {
 
-  $scope.models = [];
-  $http.get('/api/models').success(function (data) {
-    $scope.models = data;
-  }).error(function () {
-    $location.path('/404');
-  });
+    $scope.models = [];
+    $http.get('/api/models').success(function (data) {
+      $scope.models = data;
+    }).error(function () {
+      $location.path('/404');
+    });
 
-  $scope.newUrl = function (model) {
-    return routingService.buildUrl(model + '/new');
-  };
+    $scope.newUrl = function (model) {
+      return routingService.buildUrl(model + '/new');
+    };
 
-  $scope.listUrl = function (model) {
-    return routingService.buildUrl(model);
-  };
+    $scope.listUrl = function (model) {
+      return routingService.buildUrl(model);
+    };
 
-}]);
+  }]);
+
+}

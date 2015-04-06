@@ -5,7 +5,6 @@ module.exports = function(config) {
         files: [
           "bower_components/angular/angular.js",
           "bower_components/angular-sanitize/angular-sanitize.js",
-          "bower_components/angular-route/angular-route.js",
           "bower_components/underscore/underscore.js",
           "bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js",
           'bower_components/angular-mocks/angular-mocks.js',
