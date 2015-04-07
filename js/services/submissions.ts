@@ -2,6 +2,7 @@
 
 module fng.services {
 
+  /*@ngInject*/
   export function SubmissionsService($http) {
     /*
      generate a query string for a filtered and paginated query for submissions.

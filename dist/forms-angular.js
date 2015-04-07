@@ -4,7 +4,7 @@ var fng;
 (function (fng) {
     var controllers;
     (function (controllers) {
-        // @ngInject
+        /*@ngInject*/
         function BaseCtrl($scope, $rootScope, $location, $filter, $modal, $data, routingService, formGenerator, recordHandler) {
             var sharedStuff = $data;
             var ctrlState = {
@@ -33,6 +33,7 @@ var fng;
 (function (fng) {
     var controllers;
     (function (controllers) {
+        /*@ngInject*/
         function SaveChangesModalCtrl($scope, $modalInstance) {
             $scope.yes = function () {
                 $modalInstance.close(true);
@@ -44,6 +45,7 @@ var fng;
                 $modalInstance.dismiss('cancel');
             };
         }
+        SaveChangesModalCtrl.$inject = ["$scope", "$modalInstance"];
         controllers.SaveChangesModalCtrl = SaveChangesModalCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
@@ -52,6 +54,7 @@ var fng;
 (function (fng) {
     var controllers;
     (function (controllers) {
+        /*@ngInject*/
         function ModelCtrl($scope, $http, $location, routingService) {
             $scope.models = [];
             $http.get('/api/models').success(function (data) {
@@ -66,6 +69,7 @@ var fng;
                 return routingService.buildUrl(model);
             };
         }
+        ModelCtrl.$inject = ["$scope", "$http", "$location", "routingService"];
         controllers.ModelCtrl = ModelCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
@@ -74,6 +78,7 @@ var fng;
 (function (fng) {
     var controllers;
     (function (controllers) {
+        /*@ngInject*/
         function NavCtrl($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
             $scope.items = [];
             $scope.isCollapsed = true;
@@ -220,6 +225,7 @@ var fng;
                 return thisClass;
             };
         }
+        NavCtrl.$inject = ["$scope", "$data", "$location", "$filter", "$controller", "routingService", "cssFrameworkService"];
         controllers.NavCtrl = NavCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
@@ -228,6 +234,7 @@ var fng;
 (function (fng) {
     var controllers;
     (function (controllers) {
+        /*@ngInject*/
         function SearchCtrl($scope, $http, $location, routingService) {
             var currentRequest = '';
             var _isNotMobile;
@@ -333,6 +340,7 @@ var fng;
                 $scope.searchTarget = '';
             });
         }
+        SearchCtrl.$inject = ["$scope", "$http", "$location", "routingService"];
         controllers.SearchCtrl = SearchCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
@@ -341,6 +349,7 @@ var fng;
 (function (fng) {
     var directives;
     (function (directives) {
+        /*@ngInject*/
         function modelControllerDropdown() {
             return {
                 restrict: 'AE',
@@ -356,6 +365,7 @@ var fng;
 (function (fng) {
     var directives;
     (function (directives) {
+        /*@ngInject*/
         function errorDisplay() {
             return {
                 restrict: 'E',
@@ -370,6 +380,7 @@ var fng;
 (function (fng) {
     var directives;
     (function (directives) {
+        /*@ngInject*/
         function fngLink(routingService, SubmissionsService) {
             return {
                 restrict: 'E',
@@ -406,6 +417,7 @@ var fng;
                 }
             };
         }
+        fngLink.$inject = ["routingService", "SubmissionsService"];
         directives.fngLink = fngLink;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
@@ -422,6 +434,7 @@ var fng;
             tabsSetupState[tabsSetupState["N"] = 1] = "N";
             tabsSetupState[tabsSetupState["Forced"] = 2] = "Forced";
         })(tabsSetupState || (tabsSetupState = {}));
+        /*@ngInject*/
         function formInput($compile, $rootScope, $filter, $data, routingService, cssFrameworkService, formGenerator, formMarkupHelper) {
             return {
                 restrict: 'EA',
@@ -1047,6 +1060,7 @@ var fng;
                 }
             };
         }
+        formInput.$inject = ["$compile", "$rootScope", "$filter", "$data", "routingService", "cssFrameworkService", "formGenerator", "formMarkupHelper"];
         directives.formInput = formInput;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
@@ -1055,12 +1069,14 @@ var fng;
 (function (fng) {
     var directives;
     (function (directives) {
+        /*@ngInject*/
         function formButtons(cssFrameworkService) {
             return {
                 restrict: 'A',
                 templateUrl: 'form-button-' + cssFrameworkService.framework() + '.html'
             };
         }
+        formButtons.$inject = ["cssFrameworkService"];
         directives.formButtons = formButtons;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
@@ -1070,6 +1086,7 @@ var fng;
 (function (fng) {
     var directives;
     (function (directives) {
+        /*@ngInject*/
         function globalSearch(cssFrameworkService) {
             return {
                 restrict: 'AE',
@@ -1077,6 +1094,7 @@ var fng;
                 controller: fng.controllers.SearchCtrl
             };
         }
+        globalSearch.$inject = ["cssFrameworkService"];
         directives.globalSearch = globalSearch;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
@@ -1085,6 +1103,7 @@ var fng;
 (function (fng) {
     var filters;
     (function (filters) {
+        /*@ngInject*/
         function camelCase() {
             return function (name) {
                 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
@@ -1101,6 +1120,7 @@ var fng;
 (function (fng) {
     var filters;
     (function (filters) {
+        /*@ngInject*/
         function titleCase() {
             return function (str, stripSpaces) {
                 var value = str.replace(/(_|\.)/g, ' ').replace(/[A-Z]/g, ' $&').trim().replace(/\w\S*/g, function (txt) {
@@ -1124,6 +1144,7 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
+        /*@ngInject*/
         function addAllService() {
             this.getAddAllGroupOptions = function (scope, attrs, classes) {
                 return getAddAllOptions(scope, attrs, 'Group', classes);
@@ -1195,6 +1216,7 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
+        /*@ngInject*/
         function cssFrameworkService() {
             // Supported options for framework are:
             //      bs2 = Twitter Bootstrap 2.3.2 (default)
@@ -1263,6 +1285,7 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
+        /*@ngInject*/
         function $data() {
             var sharedData = {
                 // The record from BaseCtrl
@@ -1282,6 +1305,7 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
+        /*@ngInject*/
         function routingService($injector, $locationProvider) {
             var config = {
                 //  fixedRoutes: [] an array in the same format as builtInRoutes that is matched before the generic routes.  Can be omitted
@@ -1530,6 +1554,7 @@ var fng;
                 }
             };
         }
+        routingService.$inject = ["$injector", "$locationProvider"];
         services.routingService = routingService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
@@ -1547,6 +1572,7 @@ var fng;
          * All methods should be state-less
          *
          */
+        /*@ngInject*/
         function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) {
             function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState, handleError) {
                 function handletabInfo(tabName, thisInst) {
@@ -2241,6 +2267,7 @@ var fng;
                 }
             };
         }
+        formGenerator.$inject = ["$location", "$timeout", "$filter", "SubmissionsService", "routingService", "recordHandler"];
         services.formGenerator = formGenerator;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
@@ -2249,6 +2276,7 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
+        /*@ngInject*/
         function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService) {
             function generateNgShow(showWhen, model) {
                 function evaluateSide(side) {
@@ -2455,6 +2483,7 @@ var fng;
                 }
             };
         }
+        formMarkupHelper.$inject = ["cssFrameworkService", "inputSizeHelper", "addAllService"];
         services.formMarkupHelper = formMarkupHelper;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
@@ -2463,6 +2492,7 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
+        /*@ngInject*/
         function inputSizeHelper() {
             var sizeMapping = [1, 2, 4, 6, 8, 10, 12];
             var sizeDescriptions = ['mini', 'small', 'medium', 'large', 'xlarge', 'xxlarge', 'block-level'];
@@ -2487,6 +2517,7 @@ var fng;
         /*
          A helper service to provide a starting off point for directive plugins
          */
+        /*@ngInject*/
         function pluginHelper(formMarkupHelper) {
             return {
                 extractFromAttr: function extractFromAttr(attr, directiveName) {
@@ -2574,6 +2605,7 @@ var fng;
                 }
             };
         }
+        pluginHelper.$inject = ["formMarkupHelper"];
         services.pluginHelper = pluginHelper;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
@@ -2589,6 +2621,7 @@ var fng;
          * All methods should be state-less
          *
          */
+        /*@ngInject*/
         function recordHandler($location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) {
             var suffixCleanId = function suffixCleanId(inst, suffix) {
                 return (inst.id || 'f_' + inst.name).replace(/\./g, '_') + suffix;
@@ -3322,6 +3355,7 @@ var fng;
                 }
             };
         }
+        recordHandler.$inject = ["$location", "$window", "$filter", "$timeout", "routingService", "SubmissionsService", "SchemasService"];
         services.recordHandler = recordHandler;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
@@ -3330,6 +3364,7 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
+        /*@ngInject*/
         function SchemasService($http) {
             return {
                 getSchema: function (modelName, formName) {
@@ -3337,6 +3372,7 @@ var fng;
                 }
             };
         }
+        SchemasService.$inject = ["$http"];
         services.SchemasService = SchemasService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
@@ -3345,6 +3381,7 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
+        /*@ngInject*/
         function SubmissionsService($http) {
             /*
              generate a query string for a filtered and paginated query for submissions.
@@ -3404,6 +3441,7 @@ var fng;
                 }
             };
         }
+        SubmissionsService.$inject = ["$http"];
         services.SubmissionsService = SubmissionsService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));

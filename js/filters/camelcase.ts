@@ -2,6 +2,7 @@
 
 module fng.filters {
 
+  /*@ngInject*/
   export function camelCase() {
     return function (name) {
       var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;

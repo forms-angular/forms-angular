@@ -2,6 +2,7 @@
 
 module fng.services {
 
+  /*@ngInject*/
   export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService) {
 
       function generateNgShow(showWhen, model) {

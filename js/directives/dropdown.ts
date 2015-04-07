@@ -2,6 +2,7 @@
 
 module fng.directives {
 
+  /*@ngInject*/
   export function modelControllerDropdown() : angular.IDirective {
       return {
         restrict: 'AE',

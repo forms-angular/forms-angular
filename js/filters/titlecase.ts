@@ -2,6 +2,7 @@
 
 module fng.filters {
 
+  /*@ngInject*/
   export function titleCase() {
     return function (str, stripSpaces) {
       var value = str

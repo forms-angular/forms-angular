@@ -2,6 +2,7 @@
 
 module fng.services {
 
+  /*@ngInject*/
   export function $data() {
 
     var sharedData = {

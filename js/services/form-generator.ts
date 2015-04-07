@@ -11,6 +11,7 @@ module fng.services {
    *
    */
 
+  /*@ngInject*/
   export function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) {
 
     function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState, handleError) {

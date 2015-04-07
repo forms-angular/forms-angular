@@ -2,6 +2,7 @@
 
 module fng.controllers {
 
+  /*@ngInject*/
   export function SearchCtrl($scope, $http, $location, routingService) {
 
     var currentRequest = '';

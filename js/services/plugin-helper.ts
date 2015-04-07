@@ -5,6 +5,7 @@ module fng.services {
    A helper service to provide a starting off point for directive plugins
    */
 
+  /*@ngInject*/
   export function pluginHelper(formMarkupHelper) {
     return {
       extractFromAttr: function extractFromAttr(attr, directiveName) {

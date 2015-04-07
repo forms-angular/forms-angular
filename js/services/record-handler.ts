@@ -9,6 +9,7 @@ module fng.services {
    *
    */
 
+  /*@ngInject*/
   export function recordHandler($location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) {
 
     var suffixCleanId = function suffixCleanId(inst, suffix) {

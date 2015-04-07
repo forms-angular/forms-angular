@@ -2,6 +2,7 @@
 
 module fng.services {
 
+  /*@ngInject*/
   export function cssFrameworkService() {
     // Supported options for framework are:
     //      bs2 = Twitter Bootstrap 2.3.2 (default)
