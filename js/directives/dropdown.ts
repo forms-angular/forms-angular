@@ -1,10 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
+module fng.directives {
 
-  formsAngular
-    .directive('modelControllerDropdown', function () {
+  export function modelControllerDropdown() : angular.IDirective {
       return {
         restrict: 'AE',
         replace: true,
@@ -21,6 +19,5 @@ module fng {
         ' </ul>' +
         '</li>'
       };
-    });
-
+    }
 }

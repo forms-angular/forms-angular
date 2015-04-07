@@ -1,10 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
-  formsAngular.factory('formMarkupHelper', [
-    'cssFrameworkService', 'inputSizeHelper', 'addAllService',
-    function (cssFrameworkService, inputSizeHelper, addAllService) {
+module fng.services {
+
+  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService) {
 
       function generateNgShow(showWhen, model) {
 
@@ -229,6 +227,5 @@ module fng {
           return result;
         }
       }
-    }]);
-
+    }
 }

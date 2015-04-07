@@ -1,8 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
-  formsAngular.provider('cssFrameworkService', [function () {
+module fng.services {
+
+  export function cssFrameworkService() {
     // Supported options for framework are:
     //      bs2 = Twitter Bootstrap 2.3.2 (default)
     //      bs3 = Bootstrap 3.1.1
@@ -62,5 +62,5 @@ module fng {
         };
       }
     };
-  }]);
+  }
 }

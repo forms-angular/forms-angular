@@ -1,8 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
-  formsAngular.service('addAllService', function () {
+module fng.services {
+
+  export function addAllService() {
 
     this.getAddAllGroupOptions = function (scope, attrs, classes) {
       return getAddAllOptions(scope, attrs, 'Group', classes);
@@ -83,5 +83,5 @@ module fng {
 
     }
 
-  });
+  }
 }

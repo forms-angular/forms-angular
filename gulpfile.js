@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var karma = require('gulp-karma');
 var runSequence = require('run-sequence');
+var del = require('del');
 
 var browserSources = [
   'js/**/*.ts'
@@ -15,15 +16,19 @@ gulp.task('all', function(callback) {
   runSequence(
     'clean',
     'build',
-//    'test',
+    'test',
+    'midwayTest',
     callback);
 });
 
 gulp.task('build', function(callback) {
   runSequence(
     'compile',
+    'templates',
+    'concatTemplates',
+    'annotate',
+    'tidy',
     'uglify',
-    'umdify',
     'map',
     'less',
     callback);
@@ -34,9 +39,28 @@ gulp.task('compile', function() {
 });
 
 gulp.task('clean', function() {
-  var del = require('del');
-
   return del(distDirectory, function(err,paths) {console.log('Cleared ' + paths.join(' '));});
+});
+
+gulp.task('annotate', function() {
+  var ngAnnotate = require('gulp-ng-annotate');
+
+  return gulp.src(distDirectory + '/forms-angular.js')
+    .pipe(ngAnnotate())
+    .pipe(gulp.dest(distDirectory));
+});
+
+gulp.task('concatTemplates', function() {
+
+  var concat = require('gulp-concat');
+
+  return gulp.src(distDirectory + '/*.js')
+    .pipe(concat('forms-angular.js'))
+    .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('tidy', function() {
+  return del([distDirectory + '/templates.js'], function(err,paths) {console.log('Cleared ' + paths.join(' '));});
 });
 
 gulp.task('map', function() {
@@ -63,7 +87,7 @@ gulp.task('test', function() {
     });
 });
 
-gulp.task('midway', function() {
+gulp.task('midwayTest', function() {
   // Be sure to return the stream
   return gulp.src(testFiles)
     .pipe(karma({
@@ -84,6 +108,7 @@ gulp.task('midway', function() {
 //    }));
 //});
 //
+
 gulp.task('uglify', function() {
   var fs = require('fs');
   var uglifyJs = require('uglify-js2');
@@ -103,10 +128,10 @@ gulp.task('uglify', function() {
   fs.writeFileSync('dist/forms-angular.min.js', finalCode);
 });
 
-gulp.task('umdify', function() {
-  umdHelper('dist/forms-angular.js', 'dist');
-  umdHelper('dist/forms-angular.min.js', 'dist');
-});
+//gulp.task('umdify', function() {
+//  umdHelper('dist/forms-angular.js', 'dist');
+//  umdHelper('dist/forms-angular.min.js', 'dist');
+//});
 
 var buildHelper = function(browserSources, directory, outputFile) {
   var typeScriptCompiler = require('gulp-tsc');
@@ -114,7 +139,7 @@ var buildHelper = function(browserSources, directory, outputFile) {
   return gulp
     .src(browserSources)
     .pipe(typeScriptCompiler({
-      module: 'CommonJS',
+      //module: 'CommonJS',
       declaration: true, // Generate *.d.ts declarations file as well
       emitError: false,
       out: outputFile,
@@ -123,21 +148,30 @@ var buildHelper = function(browserSources, directory, outputFile) {
     .pipe(gulp.dest(directory));
 };
 
-var umdHelper = function(browserSources, directory) {
-  var umd = require('gulp-umd');
+gulp.task('templates', function() {
+  var templateCache = require('gulp-angular-templatecache');
 
   return gulp
-    .src(browserSources)
-    .pipe(umd({
-      exports: function(file) {
-        return 'fng';
-      },
-      namespace: function(file) {
-        return 'fng';
-      }
-    }))
-    .pipe(gulp.dest(directory));
-};
+    .src('template/**/*.html')
+    .pipe(templateCache({standalone: false, module: 'formsAngular'}))
+    .pipe(gulp.dest(distDirectory));
+});
+
+//var umdHelper = function(browserSources, directory) {
+//  var umd = require('gulp-umd');
+//
+//  return gulp
+//    .src(browserSources)
+//    .pipe(umd({
+//      exports: function(file) {
+//        return 'formsAngular';
+//      },
+//      namespace: function(file) {
+//        return 'formsAngular';
+//      }
+//    }))
+//    .pipe(gulp.dest(directory));
+//};
 
 gulp.task('less', function () {
   var less = require('gulp-less');

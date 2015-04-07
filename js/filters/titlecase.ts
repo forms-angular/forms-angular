@@ -1,8 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
-  formsAngular.filter('titleCase', [function () {
+module fng.filters {
+
+  export function titleCase() {
     return function (str, stripSpaces) {
       var value = str
         .replace(/(_|\.)/g, ' ')                       // replace underscores and dots with spaces
@@ -18,5 +18,5 @@ module fng {
       }
       return value;
     };
-  }]);
+  }
 }

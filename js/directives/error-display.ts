@@ -1,10 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
+module fng.directives {
 
-  formsAngular
-    .directive('errorDisplay', function () {
+  export function errorDisplay() : angular.IDirective {
       return {
         restrict: 'E',
         template: '<div id="display-error" ng-show="errorMessage" ng-class="css(\'rowFluid\')">' +
@@ -15,6 +13,5 @@ module fng {
         '  </div>' +
         '</div>'
       };
-    });
-
+    }
 }

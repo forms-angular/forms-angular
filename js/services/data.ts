@@ -1,8 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
-  formsAngular.factory('$data', [function () {
+module fng.services {
+
+  export function $data() {
 
     var sharedData = {
 
@@ -15,5 +15,6 @@ module fng {
     };
     return sharedData;
 
-  }]);
+  }
+
 }

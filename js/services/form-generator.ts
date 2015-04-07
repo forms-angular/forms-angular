@@ -1,8 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
-/// <reference path="../forms-angular.ts" />
+/// <reference path="../fng-types.ts" />
 
-module fng {
+module fng.services {
   /**
    *
    * Manipulate record items for generating a form
@@ -11,7 +11,7 @@ module fng {
    *
    */
 
-  formsAngular.factory('formGenerator', function ($location, $timeout, SubmissionsService, routingService, recordHandler) {
+  export function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) {
 
     function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState, handleError) {
 
@@ -331,7 +331,7 @@ module fng {
               formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
               recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema, handleError);
             }
-          } else if (!formInstructions.directive || !formInstructions[$.camelCase(formInstructions.directive)] || !formInstructions[$.camelCase(formInstructions.directive)].fngAjax) {
+          } else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
             formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
             formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
             recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema, handleError);
@@ -651,7 +651,7 @@ module fng {
         return result;
       },
 
-      decorateScope: function decorateScope($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
+      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
         $scope.record = sharedStuff.record;
         $scope.phase = 'init';
         $scope.disableFunctions = sharedStuff.disableFunctions;
@@ -723,7 +723,7 @@ module fng {
 
         // Open a select2 control from the appended search button.  OK to use $ here as select2 itself is dependent on jQuery.
         $scope.openSelect2 = function (ev) {
-          $('#' + $(ev.currentTarget).data('select2-open')).select2('open');
+          $('#' + $(ev.currentTarget).data('select2-open'))['select2']('open');
         };
 
         // Useful utility when debugging
@@ -737,5 +737,5 @@ module fng {
 
       }
     };
-  });
+  }
 }
