@@ -1,8 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
-  formsAngular.factory('SubmissionsService', ['$http', function ($http) {
+module fng.services {
+
+  export function SubmissionsService($http) {
     /*
      generate a query string for a filtered and paginated query for submissions.
      options consists of the following:
@@ -64,5 +64,5 @@ module fng {
       }
 
     };
-  }]);
+  }
 }

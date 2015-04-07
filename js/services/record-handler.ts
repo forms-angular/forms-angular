@@ -1,8 +1,7 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
+module fng.services {
   /**
    * Operations on a whole record
    *
@@ -10,7 +9,7 @@ module fng {
    *
    */
 
-  formsAngular.factory('recordHandler', function ($location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) {
+  export function recordHandler($location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) {
 
     var suffixCleanId = function suffixCleanId(inst, suffix) {
       return (inst.id || 'f_' + inst.name).replace(/\./g, '_') + suffix;
@@ -812,5 +811,5 @@ module fng {
           .error(handleError);
       }
     }
-  });
+  }
 }

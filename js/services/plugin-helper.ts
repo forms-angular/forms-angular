@@ -1,12 +1,11 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
+module fng.services {
   /*
    A helper service to provide a starting off point for directive plugins
    */
 
-  formsAngular.factory('pluginHelper', ['formMarkupHelper', function (formMarkupHelper) {
+  export function pluginHelper(formMarkupHelper) {
     return {
       extractFromAttr: function extractFromAttr(attr, directiveName) {
         var info = {};
@@ -99,5 +98,5 @@ module fng {
         return foundIt;
       }
     };
-  }]);
+  }
 }

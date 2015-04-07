@@ -1,9 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
 
-module fng {
+module fng.controllers {
 
-  formsAngular.controller('ModelCtrl', ['$scope', '$http', '$location', 'routingService', function ($scope, $http, $location, routingService) {
+  export function ModelCtrl($scope, $http, $location, routingService) {
 
     $scope.models = [];
     $http.get('/api/models').success(function (data) {
@@ -20,6 +19,5 @@ module fng {
       return routingService.buildUrl(model);
     };
 
-  }]);
-
+  }
 }

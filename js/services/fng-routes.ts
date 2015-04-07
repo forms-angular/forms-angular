@@ -1,45 +1,11 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../forms-angular.ts" />
+/// <reference path="../fng-types.ts" />
 
-module fng {
-  interface BuiltInRoute {
-    route: string;
-    state: string;
-    templateUrl: string;
-    options? : any;
-  }
+module fng.services {
 
-  interface RoutingConfig {
-    hashPrefix: string;
-    html5Mode: Boolean;
-    routing: string;                // What sort of routing do we want?  ngroute or uirouter.
-                                    // TODO Should be enum
-    prefix: string;                 // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
-                                    // for example '/db' that gets prepended to all the generated routes.  This can be used to
-                                    // prevent generated routes (which have a lot of parameters) from clashing with other routes in
-                                    // the web app that have nothing to do with CRUD forms
-    fixedRoutes?: Array<BuiltInRoute>;
-    add2fngRoutes?: any;            // An object to add to the generated routes.  One user case would be to add {authenticate: true}
-                                    // so that the client authenticates for certain routes
+  export function routingService($injector, $locationProvider) {
 
-    variantsForDemoWebsite? : any;  // Just for demo website
-    variants?: any;                 // Just for demo website
-  }
-
-  interface FngRoute {
-    newRecord?:           Boolean;
-    analyse?:             Boolean;
-    modelName?:           string;
-    reportSchemaName? :   string;
-    id? :                 string;
-    formName? :           string;
-    tab? :                string;
-    variant? :            string;    // TODO should be enum of supported frameworks
-  }
-
-  formsAngular.provider('routingService', ['$injector', '$locationProvider', function ($injector, $locationProvider) {
-
-    var config:RoutingConfig = {
+    var config:fng.IRoutingConfig = {
 //  fixedRoutes: [] an array in the same format as builtInRoutes that is matched before the generic routes.  Can be omitted
       hashPrefix: '',
       html5Mode: false,
@@ -47,7 +13,7 @@ module fng {
       prefix: ''        // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
     };
 
-    var builtInRoutes:Array<BuiltInRoute> = [
+    var builtInRoutes:Array<fng.IBuiltInRoute> = [
       {
         route: '/analyse/:model/:reportSchemaName',
         state: 'analyse::model::report',
@@ -66,9 +32,9 @@ module fng {
 
     var _routeProvider, _stateProvider;
     var lastRoute = null;
-    var lastObject:FngRoute = {};
+    var lastObject:fng.IFngRoute = {};
 
-    function _setUpNgRoutes(routes:Array<BuiltInRoute>, prefix:string = '', additional?:any):void {
+    function _setUpNgRoutes(routes:Array<fng.IBuiltInRoute>, prefix:string = '', additional?:any):void {
       prefix = prefix || '';
       angular.forEach(routes, function (routeSpec) {
         _routeProvider.when(prefix + routeSpec.route, angular.extend(routeSpec.options || {templateUrl: routeSpec.templateUrl}, additional));
@@ -83,7 +49,7 @@ module fng {
       }
     }
 
-    function _setUpUIRoutes(routes:Array<BuiltInRoute>, prefix:string = '', additional?:any):void {
+    function _setUpUIRoutes(routes:Array<fng.IBuiltInRoute>, prefix:string = '', additional?:any):void {
       prefix = prefix || '';
       angular.forEach(routes, function (routeSpec) {
         _stateProvider.state(routeSpec.state, angular.extend(routeSpec.options || {
@@ -114,7 +80,7 @@ module fng {
     }
 
     return {
-      start: function (options:RoutingConfig) {
+      start: function (options:fng.IRoutingConfig) {
         angular.extend(config, options);
         if (config.prefix[0] && config.prefix[0] !== '/') {
           config.prefix = '/' + config.prefix;
@@ -294,5 +260,5 @@ module fng {
         };
       }
     };
-  }]);
+  }
 }
