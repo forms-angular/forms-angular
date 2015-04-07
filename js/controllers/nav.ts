@@ -2,6 +2,7 @@
 
 module fng.controllers {
 
+  /*@ngInject*/
   export function NavCtrl($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
 
     $scope.items = [];

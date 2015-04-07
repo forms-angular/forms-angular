@@ -2,6 +2,7 @@
 
 module fng.services {
 
+  /*@ngInject*/
   export function inputSizeHelper() {
 
     var sizeMapping = [1, 2, 4, 6, 8, 10, 12];

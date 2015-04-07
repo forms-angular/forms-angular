@@ -3,6 +3,7 @@
 
 module fng.services {
 
+  /*@ngInject*/
   export function routingService($injector, $locationProvider) {
 
     var config:fng.IRoutingConfig = {

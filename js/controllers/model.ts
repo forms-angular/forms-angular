@@ -2,6 +2,7 @@
 
 module fng.controllers {
 
+  /*@ngInject*/
   export function ModelCtrl($scope, $http, $location, routingService) {
 
     $scope.models = [];

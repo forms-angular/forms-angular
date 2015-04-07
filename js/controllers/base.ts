@@ -2,7 +2,7 @@
 
 module fng.controllers {
 
-  // @ngInject
+  /*@ngInject*/
   export function BaseCtrl($scope, $rootScope, $location, $filter, $modal,
                            $data, routingService, formGenerator, recordHandler) {
 

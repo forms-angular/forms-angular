@@ -2,6 +2,7 @@
 
 module fng.directives {
 
+  /*@ngInject*/
   export function formButtons(cssFrameworkService):angular.IDirective {
     return {
       restrict: 'A',

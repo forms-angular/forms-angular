@@ -6,6 +6,7 @@ module fng.directives {
 
   enum tabsSetupState {Y, N, Forced}
 
+  /*@ngInject*/
   export function formInput($compile, $rootScope, $filter, $data, routingService, cssFrameworkService, formGenerator, formMarkupHelper):angular.IDirective {
     return {
       restrict: 'EA',

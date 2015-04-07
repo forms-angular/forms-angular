@@ -2,6 +2,7 @@
 
 module fng.services {
 
+  /*@ngInject*/
   export function SchemasService($http) {
     return {
       getSchema: function (modelName, formName) {

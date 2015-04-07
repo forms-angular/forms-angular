@@ -2,6 +2,7 @@
 
 module fng.controllers {
 
+  /*@ngInject*/
   export function SaveChangesModalCtrl($scope, $modalInstance) {
     $scope.yes = function () {
       $modalInstance.close(true);

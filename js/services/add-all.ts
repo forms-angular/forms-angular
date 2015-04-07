@@ -2,6 +2,7 @@
 
 module fng.services {
 
+  /*@ngInject*/
   export function addAllService() {
 
     this.getAddAllGroupOptions = function (scope, attrs, classes) {

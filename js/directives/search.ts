@@ -3,11 +3,12 @@
 
 module fng.directives {
 
-    export function globalSearch(cssFrameworkService) : angular.IDirective {
-      return {
-        restrict: 'AE',
-        templateUrl: 'search-' + cssFrameworkService.framework() + '.html',
-        controller: fng.controllers.SearchCtrl
-      };
-    }
+  /*@ngInject*/
+  export function globalSearch(cssFrameworkService):angular.IDirective {
+    return {
+      restrict: 'AE',
+      templateUrl: 'search-' + cssFrameworkService.framework() + '.html',
+      controller: fng.controllers.SearchCtrl
+    };
+  }
 }

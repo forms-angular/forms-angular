@@ -2,6 +2,7 @@
 
 module fng.directives {
 
+  /*@ngInject*/
   export function fngLink(routingService, SubmissionsService):angular.IDirective {
     return {
       restrict: 'E',

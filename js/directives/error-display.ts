@@ -2,6 +2,7 @@
 
 module fng.directives {
 
+  /*@ngInject*/
   export function errorDisplay() : angular.IDirective {
       return {
         restrict: 'E',
