@@ -377,8 +377,8 @@ module fng.services {
         ctrlState.allowLocationChange = true;
       } else {
         var force = true;
-        //var formsjsForm = $scope.formsjsForm = new formsjs.Form();
-        //formsjsForm.formData = $scope.record;
+        var formsjsForm = $scope.formsjsForm = new formsjs.Form();
+        formsjsForm.formData = $scope.record;
         $scope.$watch('record', function (newValue, oldValue) {
           if (newValue !== oldValue) {
             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
