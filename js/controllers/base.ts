@@ -1,9 +1,10 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../fng-types.ts" />
 
 module fng.controllers {
 
   /*@ngInject*/
-  export function BaseCtrl($scope, $rootScope, $location, $filter, $modal,
+  export function BaseCtrl($scope:fng.IFormScope, $rootScope, $location, $filter, $modal,
                            $data, routingService, formGenerator, recordHandler) {
 
     var sharedStuff = $data;

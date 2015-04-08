@@ -1,7 +1,32 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../typings/underscore/underscore.d.ts" />
 declare module fng {
+    interface IFieldViewInfo {
+    }
+    /**
+     * What is the validation method?
+     * HTML5 loses you some lack of control over the UI, especially with required fields
+     * formsjs is in early days
+     */
     interface IFormScope extends angular.IScope {
+        modelNameDisplay: string;
+        modelName: string;
+        formName: string;
+        cancel(): any;
+        showError: any;
+        alertTitle: any;
+        errorMessage: any;
+        save: any;
+        newRecord: boolean;
+        id: any;
+        newClick: any;
+        deleteClick: any;
+        isDeleteDisabled: any;
+        isCancelDisabled: any;
+        isNewDisabled: any;
+        isSaveDisabled: any;
+        disabledText: any;
+        getVal: any;
         tabs?: Array<any>;
         topLevelFormName: string;
         record: any;
@@ -14,14 +39,9 @@ declare module fng {
         conversions: any;
         pageSize: any;
         pagesLoaded: any;
-        generateEditUrl: any;
-        generateNewUrl: any;
-        scrollTheList: any;
-        getListData: any;
         select2List: any;
-        setPristine: any;
-        dismissError: any;
-        skipCols: any;
+        formSchema: Array<IFieldViewInfo>;
+        baseSchema(): Array<any>;
         setFormDirty: any;
         add: any;
         hasError: any;
@@ -29,8 +49,48 @@ declare module fng {
         remove: any;
         openSelect2: any;
         toJSON: any;
-        baseSchema: any;
-        formSchema: any;
+        skipCols: any;
+        setPristine: any;
+        generateEditUrl: any;
+        generateNewUrl: any;
+        scrollTheList: any;
+        getListData: any;
+        dismissError: any;
+    }
+    interface IBaseFormOptions {
+        /**
+         * The style of the form layout.  Supported values are horizontalcompact, horizontal, vertical, inline
+         */
+        formstyle?: string;
+        /**
+         * Model on form scope (defaults to record).
+         * <li><strong>model</strong> the object in the scope to be bound to the model controller.  Specifying
+         * the model inhibits the generation of the <strong>form</strong> tag unless the <strong>forceform</strong> attribute is set to true</li>
+         */
+        model?: string;
+        /**
+         * The name to be given to the form - defaults to myForm
+         */
+        name?: string;
+        /**
+         * Validation type.  Must convert to ValidationType
+         */
+        /**
+         * Normally first field in a form gets autofocus set.  Use this to prevent this
+         */
+        noautofocus?: string;
+    }
+    interface IFormAttrs extends IFormOptions, angular.IAttributes {
+        /**
+         * Schema used by the form
+         */
+        schema: string;
+        forceform?: string;
+    }
+    interface IFormOptions extends IBaseFormOptions {
+        schema?: string;
+        subkey?: string;
+        subschema?: string;
     }
     interface IBuiltInRoute {
         route: string;
@@ -40,7 +100,7 @@ declare module fng {
     }
     interface IRoutingConfig {
         hashPrefix: string;
-        html5Mode: Boolean;
+        html5Mode: boolean;
         routing: string;
         prefix: string;
         fixedRoutes?: Array<IBuiltInRoute>;
@@ -49,8 +109,8 @@ declare module fng {
         variants?: any;
     }
     interface IFngRoute {
-        newRecord?: Boolean;
-        analyse?: Boolean;
+        newRecord?: boolean;
+        analyse?: boolean;
         modelName?: string;
         reportSchemaName?: string;
         id?: string;
@@ -60,7 +120,7 @@ declare module fng {
     }
 }
 declare module fng.controllers {
-    function BaseCtrl($scope: any, $rootScope: any, $location: any, $filter: any, $modal: any, $data: any, routingService: any, formGenerator: any, recordHandler: any): void;
+    function BaseCtrl($scope: fng.IFormScope, $rootScope: any, $location: any, $filter: any, $modal: any, $data: any, routingService: any, formGenerator: any, recordHandler: any): void;
 }
 declare module fng.controllers {
     function SaveChangesModalCtrl($scope: any, $modalInstance: any): void;
@@ -84,7 +144,7 @@ declare module fng.directives {
     function fngLink(routingService: any, SubmissionsService: any): angular.IDirective;
 }
 declare module fng.directives {
-    function formInput($compile: any, $rootScope: any, $filter: any, $data: any, routingService: any, cssFrameworkService: any, formGenerator: any, formMarkupHelper: any): angular.IDirective;
+    function formInput($compile: any, $rootScope: any, $filter: any, $data: any, cssFrameworkService: any, formGenerator: any, formMarkupHelper: any): angular.IDirective;
 }
 declare module fng.directives {
     function formButtons(cssFrameworkService: any): angular.IDirective;
@@ -143,7 +203,7 @@ declare module fng.services {
      *
      */
     function formGenerator($location: any, $timeout: any, $filter: any, SubmissionsService: any, routingService: any, recordHandler: any): {
-        generateEditUrl: (obj: any, $scope: any) => string;
+        generateEditUrl: (obj: any, $scope: IFormScope) => string;
         generateNewUrl: ($scope: any) => string;
         handleFieldType: (formInstructions: any, mongooseType: any, mongooseOptions: any, $scope: any, ctrlState: any, handleError: any) => any;
         handleSchema: (description: any, source: any, destForm: any, destList: any, prefix: any, doRecursion: any, $scope: any, ctrlState: any, handleError: any) => void;
@@ -171,11 +231,11 @@ declare module fng.services {
             compactClass: string;
             formControl: string;
         };
-        inputChrome: (value: any, fieldInfo: any, options: any, markupVars: any) => any;
+        inputChrome: (value: any, fieldInfo: any, options: IFormOptions, markupVars: any) => any;
         generateSimpleInput: (common: any, fieldInfo: any, options: any) => string;
         controlDivClasses: (options: any) => any[];
         handleInputAndControlDiv: (inputMarkup: any, controlDivClasses: any) => any;
-        handleArrayInputAndControlDiv: (inputMarkup: any, controlDivClasses: any, info: any, options: any) => string;
+        handleArrayInputAndControlDiv: (inputMarkup: any, controlDivClasses: any, info: any, options: IFormOptions) => string;
         addTextInputMarkup: (allInputsVars: any, fieldInfo: any, requiredStr: any) => string;
     };
 }
@@ -221,8 +281,8 @@ declare module fng.services {
         convertToMongoModel: (schema: any, anObject: any, prefixLength: any, $scope: any) => any;
         convertIdToListValue: (id: any, idsArray: any, valuesArray: any, fname: any) => any;
         handleError: ($scope: any) => (data: any, status: any) => void;
-        decorateScope: ($scope: any, $modal: any, recordHandlerInstance: any, ctrlState: any) => void;
-        fillFormFromBackendCustomSchema: (schema: any, $scope: any, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any, handleError: any) => void;
+        decorateScope: ($scope: IFormScope, $modal: any, recordHandlerInstance: any, ctrlState: any) => void;
+        fillFormFromBackendCustomSchema: (schema: any, $scope: IFormScope, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any, handleError: any) => void;
         fillFormWithBackendSchema: ($scope: any, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any, handleError: any) => void;
     };
 }

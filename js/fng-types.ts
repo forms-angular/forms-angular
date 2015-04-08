@@ -1,11 +1,51 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
+/* /// <reference path="../bower_components/forms-js/dist/forms-js.d.ts" /> */
 
 module fng {
+
+  export interface IFieldViewInfo {
+
+  }
+
+  /**
+   * What is the validation method?
+   * HTML5 loses you some lack of control over the UI, especially with required fields
+   * formsjs is in early days
+   */
+  //export enum ValidationType {html5=1, formsjs, both}
 
   /*
     The scope which contains form data
    */
   export interface IFormScope extends angular.IScope {
+
+//    formsjsForm : formsjs.Form;
+
+    //Next steps -
+    //* have an attribute in the form that choses HTML 5 validation or formsjs validation
+    //* create markup and validationService accordingly
+    //* set up ng messages
+    //* hook the validation service into the $watch
+
+    modelNameDisplay : string;
+    modelName: string;
+    formName: string;
+    cancel(): any;
+    showError: any;
+    alertTitle: any;
+    errorMessage: any;
+    save: any;
+    newRecord: boolean;
+    id: any;
+    newClick: any;
+    deleteClick: any;
+    isDeleteDisabled: any;
+    isCancelDisabled: any;
+    isNewDisabled: any;
+    isSaveDisabled: any;
+    disabledText: any;
+    getVal: any;
+
     tabs?: Array<any>;              // In the case of forms that contain a tab set
     topLevelFormName: string;       // The name of the form
     record: any;
@@ -18,14 +58,11 @@ module fng {
     conversions: any;
     pageSize: any;
     pagesLoaded: any;
-    generateEditUrl: any;
-    generateNewUrl: any;
-    scrollTheList: any;
-    getListData: any;
     select2List: any;
-    setPristine: any;
-    dismissError: any;
-    skipCols: any;
+    formSchema: Array<IFieldViewInfo>;
+
+    //functions
+    baseSchema() : Array<any>;
     setFormDirty: any;
     add: any;
     hasError: any;
@@ -33,8 +70,53 @@ module fng {
     remove: any;
     openSelect2: any;
     toJSON: any;
-    baseSchema: any;
-    formSchema: any;
+    skipCols: any;
+    setPristine: any;
+    generateEditUrl: any;
+    generateNewUrl: any;
+    scrollTheList: any;
+    getListData: any;
+    dismissError: any;
+  }
+
+  export interface IBaseFormOptions {
+    /**
+     * The style of the form layout.  Supported values are horizontalcompact, horizontal, vertical, inline
+     */
+    //TODO supported values should be in an enum
+    formstyle?: string;
+    /**
+     * Model on form scope (defaults to record).
+     * <li><strong>model</strong> the object in the scope to be bound to the model controller.  Specifying
+     * the model inhibits the generation of the <strong>form</strong> tag unless the <strong>forceform</strong> attribute is set to true</li>
+     */
+    model? : string;
+    /**
+     * The name to be given to the form - defaults to myForm
+     */
+    name?: string;
+    /**
+     * Validation type.  Must convert to ValidationType
+     */
+    //validation?: string;
+    /**
+     * Normally first field in a form gets autofocus set.  Use this to prevent this
+     */
+    noautofocus?: string;
+  }
+
+  export interface IFormAttrs extends IFormOptions, angular.IAttributes {
+    /**
+     * Schema used by the form
+     */
+    schema : string;
+    forceform?: string;    // Must be true or omitted.  Forces generation of the <strong>form</strong> tag when model is specified
+  }
+
+  export interface IFormOptions extends IBaseFormOptions {
+    schema? : string;
+    subkey?: string;
+    subschema? : string;
   }
 
   export interface IBuiltInRoute {
@@ -46,7 +128,7 @@ module fng {
 
   export interface IRoutingConfig {
     hashPrefix: string;
-    html5Mode: Boolean;
+    html5Mode: boolean;
     routing: string;                // What sort of routing do we want?  ngroute or uirouter.
                                     // TODO Should be enum
     prefix: string;                 // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
@@ -62,8 +144,8 @@ module fng {
   }
 
   export interface IFngRoute {
-    newRecord?:           Boolean;
-    analyse?:             Boolean;
+    newRecord?:           boolean;
+    analyse?:             boolean;
     modelName?:           string;
     reportSchemaName? :   string;
     id? :                 string;

@@ -7,10 +7,10 @@ module fng.directives {
   enum tabsSetupState {Y, N, Forced}
 
   /*@ngInject*/
-  export function formInput($compile, $rootScope, $filter, $data, routingService, cssFrameworkService, formGenerator, formMarkupHelper):angular.IDirective {
+  export function formInput($compile, $rootScope, $filter, $data, cssFrameworkService, formGenerator, formMarkupHelper):angular.IDirective {
     return {
       restrict: 'EA',
-      link: function (scope: fng.IFormScope, element, attrs) {
+      link: function (scope: fng.IFormScope, element, attrs: fng.IFormAttrs) {
 //                generate markup for bootstrap forms
 //
 //                Bootstrap 3
@@ -53,6 +53,7 @@ module fng.directives {
 
         var subkeys = [];
         var tabsSetup:tabsSetupState = tabsSetupState.N;
+        //var validationType: fng.ValidationType;
 
         var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
           var nameString;
@@ -292,7 +293,7 @@ module fng.directives {
           return result;
         };
 
-        var handleField = function (info, options) {
+        var handleField = function (info, options: fng.IFormOptions) {
           var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options);
           var template = fieldChrome.template;
 
@@ -312,7 +313,7 @@ module fng.directives {
                   var topAndTail = containerInstructions(subKeyArray[arraySel]);
                   template += topAndTail.before;
                   template += processInstructions(info.schema, null, {
-                    subschema: true,
+                    subschema: 'true',          // We are trying to behave like attrs here
                     formStyle: options.formstyle,
                     subkey: schemaDefName + '_subkey',
                     subkeyno: arraySel,
@@ -349,7 +350,7 @@ module fng.directives {
                   }
 
                   template += processInstructions(info.schema, false, {
-                    subschema: true,
+                    subschema: 'true',
                     formstyle: info.formStyle,
                     model: options.model,
                     subschemaroot: info.name
@@ -385,7 +386,8 @@ module fng.directives {
             } else {
               // Single fields here
               template += formMarkupHelper.label(scope, info, null, options);
-              template += formMarkupHelper.handleInputAndControlDiv(generateInput(info, null, options.required, info.id, options), controlDivClasses);
+              if ((<any>options).required) { console.log("*********  Options required - found it ********");}
+              template += formMarkupHelper.handleInputAndControlDiv(generateInput(info, null, (<any>options).required, info.id, options), controlDivClasses);
             }
           }
           template += fieldChrome.closeTag;
@@ -401,7 +403,7 @@ module fng.directives {
 
 //              var processInstructions = function (instructionsArray, topLevel, groupId) {
 //  removing groupId as it was only used when called by containerType container, which is removed for now
-        var processInstructions = function (instructionsArray, topLevel, options) {
+        var processInstructions = function (instructionsArray, topLevel, options: fng.IFormOptions) {
           var result = '';
           if (instructionsArray) {
             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
@@ -438,7 +440,7 @@ module fng.directives {
                       newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.value + '"';
                   }
                 }
-                var directiveCamel = attrs.$normalize(info.directive);
+                var directiveCamel = $filter('camelCase')(info.directive);
                 for (var prop in info) {
                   if (info.hasOwnProperty(prop)) {
                     switch (prop) {
@@ -530,7 +532,6 @@ module fng.directives {
             result = '';
           }
           return result;
-
         };
 
         var unwatch = scope.$watch(attrs.schema, function (newValue) {
@@ -542,6 +543,7 @@ module fng.directives {
               var recordAttribute = attrs.model || 'record';      // By default data comes from scope.record
               var theRecord = scope[recordAttribute];
               theRecord = theRecord || {};
+              //validationType = (attrs.validation ? fng.ValidationType[attrs.validation] : fng.ValidationType.html5);
               if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                 elementHtml = '';
               } else {

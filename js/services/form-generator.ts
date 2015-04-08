@@ -516,7 +516,7 @@ module fng.services {
 
     return {
       // utility for apps that use forms-angular
-      generateEditUrl: function generateEditUrl(obj, $scope):string {
+      generateEditUrl: function generateEditUrl(obj, $scope:fng.IFormScope):string {
         return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
       },
       generateNewUrl: function generateNewUrl($scope):string {
@@ -729,7 +729,8 @@ module fng.services {
 
         // Useful utility when debugging
         $scope.toJSON = function (obj) {
-          return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2);
+          return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2) +
+            '\n\n*** The toJSON function is deprecated - use the json filter instead ***';
         };
 
         $scope.baseSchema = function () {
