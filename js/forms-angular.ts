@@ -28,6 +28,7 @@ module fng {
 
   export var formsAngular = angular.module('formsAngular', [
     'ngSanitize',
+    'ngMessages',
     'ui.bootstrap',
     'infinite-scroll',
     'monospaced.elastic'
