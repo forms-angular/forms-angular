@@ -1,5 +1,6 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../fng-types.ts" />
 
 module fng.services {
   /**
@@ -366,7 +367,7 @@ module fng.services {
       };
     }
 
-    function fillFormFromBackendCustomSchema(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError) {
+    function fillFormFromBackendCustomSchema(schema, $scope:fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError) {
       var listOnly = (!$scope.id && !$scope.newRecord);
       // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
       // but should be removed when/if formschemas are cached
@@ -376,6 +377,8 @@ module fng.services {
         ctrlState.allowLocationChange = true;
       } else {
         var force = true;
+        //var formsjsForm = $scope.formsjsForm = new formsjs.Form();
+        //formsjsForm.formData = $scope.record;
         $scope.$watch('record', function (newValue, oldValue) {
           if (newValue !== oldValue) {
             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
@@ -614,7 +617,7 @@ module fng.services {
 
       handleError: handleError,
 
-      decorateScope: function decorateScope($scope, $modal, recordHandlerInstance, ctrlState) {
+      decorateScope: function decorateScope($scope:fng.IFormScope, $modal, recordHandlerInstance, ctrlState) {
 
         $scope.cancel = function () {
           angular.copy(ctrlState.master, $scope.record);

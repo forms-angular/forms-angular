@@ -1,4 +1,5 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../fng-types.ts" />
 
 module fng.services {
 
@@ -165,7 +166,7 @@ module fng.services {
           };
         },
 
-        inputChrome: function inputChrome(value, fieldInfo, options, markupVars) {
+        inputChrome: function inputChrome(value, fieldInfo, options: fng.IFormOptions, markupVars) {
           if (cssFrameworkService.framework() === 'bs3' && isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
             value = '<div class="bs3-input ' + markupVars.sizeClassBS3 + '">' + value + '</div>';
           }
@@ -202,7 +203,7 @@ module fng.services {
           return inputMarkup;
         },
 
-        handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup, controlDivClasses, info, options) {
+        handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup, controlDivClasses, info, options: fng.IFormOptions) {
           var result = '<div ';
           if (cssFrameworkService.framework() === 'bs3') {
             result += 'ng-class="skipCols($index)" ';

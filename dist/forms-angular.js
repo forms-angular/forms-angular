@@ -1,5 +1,7 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
+/* /// <reference path="../bower_components/forms-js/dist/forms-js.d.ts" /> */
 /// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
     var controllers;
@@ -435,7 +437,7 @@ var fng;
             tabsSetupState[tabsSetupState["Forced"] = 2] = "Forced";
         })(tabsSetupState || (tabsSetupState = {}));
         /*@ngInject*/
-        function formInput($compile, $rootScope, $filter, $data, routingService, cssFrameworkService, formGenerator, formMarkupHelper) {
+        function formInput($compile, $rootScope, $filter, $data, cssFrameworkService, formGenerator, formMarkupHelper) {
             return {
                 restrict: 'EA',
                 link: function (scope, element, attrs) {
@@ -479,6 +481,7 @@ var fng;
                     //                <input type="text" class="input-small" placeholder="Email">
                     var subkeys = [];
                     var tabsSetup = 1 /* N */;
+                    //var validationType: fng.ValidationType;
                     var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
                         var nameString;
                         if (!modelString) {
@@ -744,7 +747,7 @@ var fng;
                                         var topAndTail = containerInstructions(subKeyArray[arraySel]);
                                         template += topAndTail.before;
                                         template += processInstructions(info.schema, null, {
-                                            subschema: true,
+                                            subschema: 'true',
                                             formStyle: options.formstyle,
                                             subkey: schemaDefName + '_subkey',
                                             subkeyno: arraySel,
@@ -775,7 +778,7 @@ var fng;
                                             template += '  </div> ';
                                         }
                                         template += processInstructions(info.schema, false, {
-                                            subschema: true,
+                                            subschema: 'true',
                                             formstyle: info.formStyle,
                                             model: options.model,
                                             subschemaroot: info.name
@@ -809,6 +812,9 @@ var fng;
                             else {
                                 // Single fields here
                                 template += formMarkupHelper.label(scope, info, null, options);
+                                if (options.required) {
+                                    console.log("*********  Options required - found it ********");
+                                }
                                 template += formMarkupHelper.handleInputAndControlDiv(generateInput(info, null, options.required, info.id, options), controlDivClasses);
                             }
                         }
@@ -859,7 +865,7 @@ var fng;
                                                 newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.value + '"';
                                         }
                                     }
-                                    var directiveCamel = attrs.$normalize(info.directive);
+                                    var directiveCamel = $filter('camelCase')(info.directive);
                                     for (var prop in info) {
                                         if (info.hasOwnProperty(prop)) {
                                             switch (prop) {
@@ -962,6 +968,7 @@ var fng;
                                 var recordAttribute = attrs.model || 'record'; // By default data comes from scope.record
                                 var theRecord = scope[recordAttribute];
                                 theRecord = theRecord || {};
+                                //validationType = (attrs.validation ? fng.ValidationType[attrs.validation] : fng.ValidationType.html5);
                                 if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                                     elementHtml = '';
                                 }
@@ -1060,7 +1067,7 @@ var fng;
                 }
             };
         }
-        formInput.$inject = ["$compile", "$rootScope", "$filter", "$data", "routingService", "cssFrameworkService", "formGenerator", "formMarkupHelper"];
+        formInput.$inject = ["$compile", "$rootScope", "$filter", "$data", "cssFrameworkService", "formGenerator", "formMarkupHelper"];
         directives.formInput = formInput;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
@@ -2259,7 +2266,7 @@ var fng;
                     };
                     // Useful utility when debugging
                     $scope.toJSON = function (obj) {
-                        return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2);
+                        return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2) + '\n\n*** The toJSON function is deprecated - use the json filter instead ***';
                     };
                     $scope.baseSchema = function () {
                         return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
@@ -2272,6 +2279,7 @@ var fng;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -2611,6 +2619,7 @@ var fng;
 })(fng || (fng = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -2974,6 +2983,8 @@ var fng;
                 }
                 else {
                     var force = true;
+                    //var formsjsForm = $scope.formsjsForm = new formsjs.Form();
+                    //formsjsForm.formData = $scope.record;
                     $scope.$watch('record', function (newValue, oldValue) {
                         if (newValue !== oldValue) {
                             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
