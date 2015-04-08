@@ -1,5 +1,19 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
-/* /// <reference path="../bower_components/forms-js/dist/forms-js.d.ts" /> */
+/// <reference path="../bower_components/forms-js/dist/forms-js.d.ts" />
+var fng;
+(function (fng) {
+    /**
+     * What is the validation method?
+     * HTML5 loses you some lack of control over the UI, especially with required fields
+     * formsjs is in early days
+     */
+    (function (ValidationType) {
+        ValidationType[ValidationType["html5"] = 1] = "html5";
+        ValidationType[ValidationType["formsjs"] = 2] = "formsjs";
+        ValidationType[ValidationType["both"] = 3] = "both";
+    })(fng.ValidationType || (fng.ValidationType = {}));
+    var ValidationType = fng.ValidationType;
+})(fng || (fng = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
@@ -481,7 +495,7 @@ var fng;
                     //                <input type="text" class="input-small" placeholder="Email">
                     var subkeys = [];
                     var tabsSetup = 1 /* N */;
-                    //var validationType: fng.ValidationType;
+                    var validationType;
                     var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
                         var nameString;
                         if (!modelString) {
@@ -968,7 +982,7 @@ var fng;
                                 var recordAttribute = attrs.model || 'record'; // By default data comes from scope.record
                                 var theRecord = scope[recordAttribute];
                                 theRecord = theRecord || {};
-                                //validationType = (attrs.validation ? fng.ValidationType[attrs.validation] : fng.ValidationType.html5);
+                                validationType = (attrs.validation ? fng.ValidationType[attrs.validation] : 1 /* html5 */);
                                 if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                                     elementHtml = '';
                                 }
@@ -2983,8 +2997,8 @@ var fng;
                 }
                 else {
                     var force = true;
-                    //var formsjsForm = $scope.formsjsForm = new formsjs.Form();
-                    //formsjsForm.formData = $scope.record;
+                    var formsjsForm = $scope.formsjsForm = new formsjs.Form();
+                    formsjsForm.formData = $scope.record;
                     $scope.$watch('record', function (newValue, oldValue) {
                         if (newValue !== oldValue) {
                             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);

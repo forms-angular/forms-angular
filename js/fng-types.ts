@@ -1,5 +1,5 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
-/* /// <reference path="../bower_components/forms-js/dist/forms-js.d.ts" /> */
+/// <reference path="../bower_components/forms-js/dist/forms-js.d.ts" />
 
 module fng {
 
@@ -12,14 +12,14 @@ module fng {
    * HTML5 loses you some lack of control over the UI, especially with required fields
    * formsjs is in early days
    */
-  //export enum ValidationType {html5=1, formsjs, both}
+  export enum ValidationType {html5=1, formsjs, both}
 
   /*
     The scope which contains form data
    */
   export interface IFormScope extends angular.IScope {
 
-//    formsjsForm : formsjs.Form;
+    formsjsForm : formsjs.Form;
 
     //Next steps -
     //* have an attribute in the form that choses HTML 5 validation or formsjs validation
@@ -98,7 +98,7 @@ module fng {
     /**
      * Validation type.  Must convert to ValidationType
      */
-    //validation?: string;
+    validation?: string;
     /**
      * Normally first field in a form gets autofocus set.  Use this to prevent this
      */
