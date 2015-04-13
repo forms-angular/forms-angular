@@ -397,7 +397,13 @@ module fng.directives {
         var inferMissingProperties = function (info) {
           // infer missing values
           info.type = info.type || 'text';
-          info.id = info.id || 'f_' + info.name.replace(/\./g, '_');
+          if (info.id) {
+            if (typeof info.id === 'number' || (info.id[0] >= 0 && info.id <= '9')) {
+              info.id = '_' + info.id;
+            }
+          } else {
+            info.id = 'f_' + info.name.replace(/\./g, '_');
+          }
           info.label = (info.label !== undefined) ? (info.label === null ? '' : info.label) : $filter('titleCase')(info.name.split('.').slice(-1)[0]);
         };
 
@@ -567,6 +573,7 @@ module fng.directives {
                 elementHtml += '</tabset>';
               }
               elementHtml += attrs.subschema ? '' : '</form>';
+              //console.log(elementHtml);
               element.replaceWith($compile(elementHtml)(scope));
               // If there are subkeys we need to fix up ng-model references when record is read
               // If we have modelControllers we need to let them know when we have form + data

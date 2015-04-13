@@ -58,12 +58,12 @@ describe('formInput', function () {
       input = angular.element(elm.find('input')[0]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input.attr('id')).toBe('1');
+      expect(input.attr('id')).toBe('_1');
       expect(input.attr('autofocus')).toBe('');
       expect(input.attr('type')).toBe('text');
 
       input = angular.element(elm.find('input')[1]);
-      expect(input.attr('id')).toBe('2');
+      expect(input.attr('id')).toBe('_2');
       expect(input.attr('type')).toBe('text');
       expect(input.attr('autofocus')).toBe(undefined);
     });
@@ -74,11 +74,11 @@ describe('formInput', function () {
 
       label = angular.element(elm.find('label')[0]);
       expect((label).text()).toBe('Name');
-      expect(label.attr('for')).toBe('1');
+      expect(label.attr('for')).toBe('_1');
 
       label = angular.element(elm.find('label')[1]);
       expect(label.text()).toBe('Colour of Eyes');
-      expect(label.attr('for')).toBe('2');
+      expect(label.attr('for')).toBe('_2');
     });
 
   });
@@ -202,11 +202,11 @@ describe('formInput', function () {
       input = angular.element(elm.find('input')[0]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input.attr('id')).toBe('1');
+      expect(input.attr('id')).toBe('_1');
       expect(input.attr('type')).toBe('text');
 
       input = angular.element(elm.find('input')[3]);
-      expect(input.attr('id')).toBe('2');
+      expect(input.attr('id')).toBe('_2');
       expect(input.attr('type')).toBe('text');
     });
 
@@ -216,7 +216,7 @@ describe('formInput', function () {
 
       label = angular.element(elm.find('label')[0]);
       expect((label).text()).toBe('Name');
-      expect(label.attr('for')).toBe('1');
+      expect(label.attr('for')).toBe('_1');
 
       label = angular.element(elm.find('label')[1]);
       expect((label).text()).toBe('Nickname');
@@ -246,12 +246,12 @@ describe('formInput', function () {
       input = angular.element(elm.find('input')[0]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-invalid');
-      expect(input.attr('id')).toBe('1');
+      expect(input.attr('id')).toBe('_1');
       expect(input.attr('required')).toBe('required');
       expect(input.attr('type')).toBe('text');
 
       input = angular.element(elm.find('input')[1]);
-      expect(input.attr('id')).toBe('2');
+      expect(input.attr('id')).toBe('_2');
       expect(input.attr('required')).toBe(undefined);
       expect(input.attr('type')).toBe('text');
     });
@@ -306,13 +306,13 @@ describe('formInput', function () {
       expect(input.length).toBe(1);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input.attr('id')).toBe('1');
+      expect(input.attr('id')).toBe('_1');
       expect(input.attr('type')).toBe('text');
       input = elm.find('textarea');
       expect(input.length).toBe(1);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input.attr('id')).toBe('2');
+      expect(input.attr('id')).toBe('_2');
       expect(input.attr('rows')).toBe('10');
     });
 
