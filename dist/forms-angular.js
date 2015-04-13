@@ -824,7 +824,14 @@ var fng;
                     var inferMissingProperties = function (info) {
                         // infer missing values
                         info.type = info.type || 'text';
-                        info.id = info.id || 'f_' + info.name.replace(/\./g, '_');
+                        if (info.id) {
+                            if (typeof info.id === 'number' || (info.id[0] >= 0 && info.id <= '9')) {
+                                info.id = '_' + info.id;
+                            }
+                        }
+                        else {
+                            info.id = 'f_' + info.name.replace(/\./g, '_');
+                        }
                         info.label = (info.label !== undefined) ? (info.label === null ? '' : info.label) : $filter('titleCase')(info.name.split('.').slice(-1)[0]);
                     };
                     //              var processInstructions = function (instructionsArray, topLevel, groupId) {
@@ -993,6 +1000,7 @@ var fng;
                                     elementHtml += '</tabset>';
                                 }
                                 elementHtml += attrs.subschema ? '' : '</form>';
+                                //console.log(elementHtml);
                                 element.replaceWith($compile(elementHtml)(scope));
                                 // If there are subkeys we need to fix up ng-model references when record is read
                                 // If we have modelControllers we need to let them know when we have form + data
@@ -2439,6 +2447,7 @@ var fng;
                     if (fieldInfo.helpInline) {
                         value += '<span class="' + (cssFrameworkService.framework() === 'bs2' ? 'help-inline' : 'help-block') + '">' + fieldInfo.helpInline + '</span>';
                     }
+                    // If we have chosen
                     value += '<div ng-if="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$dirty" class="help-block" ng-messages="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$error" ng-messages-include="error-messages.html"></div>';
                     if (fieldInfo.help) {
                         value += '<span class="help-block">' + fieldInfo.help + '</span>';
@@ -3495,7 +3504,7 @@ var fng;
 // expose the library
 var formsAngular = fng.formsAngular;
 
-angular.module("formsAngular").run(["$templateCache", function($templateCache) {$templateCache.put("error-messages.html","<div ng-message=\"required\">You left the field blank...</div>\n<div ng-message=\"minlength\">Your field is too short</div>\n<div ng-message=\"maxlength\">Your field is too long</div>\n<div ng-message=\"min\">Your value is too small</div>\n<div ng-message=\"max\">Your value is too large</div>\n<div ng-message=\"email\">Your field has an invalid email address</div>\n<div ng-message=\"pattern\">This field does not match the expected pattern</div>\n");
+angular.module("formsAngular").run(["$templateCache", function($templateCache) {$templateCache.put("error-messages.html","<div ng-message=\"required\">A value is required for this field</div>\n<div ng-message=\"minlength\">Too few characters entered</div>\n<div ng-message=\"maxlength\">Too many characters entered</div>\n<div ng-message=\"min\">That value is too small</div>\n<div ng-message=\"max\">That value is too large</div>\n<div ng-message=\"email\">You need to enter a valid email address</div>\n<div ng-message=\"pattern\">This field does not match the expected pattern</div>\n");
 $templateCache.put("form-button-bs2.html","<div class=\"form-btn-grp\">\n  <div class=\"btn-group pull-right\">\n    <button id=\"saveButton\" class=\"btn btn-mini btn-primary form-btn\" ng-click=\"save()\" ng-disabled=\"isSaveDisabled()\"><i class=\"icon-ok\"></i> Save</button>\n    <button id=\"cancelButton\" class=\"btn btn-mini btn-warning form-btn\" ng-click=\"cancel()\" ng-disabled=\"isCancelDisabled()\"><i class=\"icon-remove\"></i> Cancel</button>\n  </div>\n  <div class=\"btn-group pull-right\">\n    <button id=\"newButton\" class=\"btn btn-mini btn-success form-btn\" ng-click=\"newClick()\" ng-disabled=\"isNewDisabled()\"><i class=\"icon-plus\"></i> New</button>\n    <button id=\"deleteButton\" class=\"btn btn-mini btn-danger form-btn\" ng-click=\"deleteClick()\" ng-disabled=\"isDeleteDisabled()\"><i class=\"icon-minus\"></i> Delete</button>\n  </div>\n</div>\n");
 $templateCache.put("form-button-bs3.html","<div class=\"form-btn-grp\">\n  <div class=\"btn-group pull-right\">\n    <button id=\"saveButton\" class=\"btn btn-primary form-btn btn-xs\" ng-click=\"save()\" ng-disabled=\"isSaveDisabled()\"><i class=\"glyphicon glyphicon-ok\"></i> Save</button>\n    <button id=\"cancelButton\" class=\"btn btn-warning form-btn btn-xs\" ng-click=\"cancel()\" ng-disabled=\"isCancelDisabled()\"><i class=\"glyphicon glyphicon-remove\"></i> Cancel</button>\n  </div>\n  <div class=\"btn-group pull-right\">\n    <button id=\"newButton\" class=\"btn btn-success form-btn btn-xs\" ng-click=\"newClick()\" ng-disabled=\"isNewDisabled()\"><i class=\"glyphicon glyphicon-plus\"></i> New</button>\n    <button id=\"deleteButton\" class=\"btn btn-danger form-btn btn-xs\" ng-click=\"deleteClick()\" ng-disabled=\"isDeleteDisabled()\"><i class=\"glyphicon glyphicon-minus\"></i> Delete</button>\n  </div>\n</div>\n");
 $templateCache.put("search-bs2.html","<form class=\"navbar-search pull-right\">\n    <div id=\"search-cg\" class=\"control-group\" ng-class=\"errorClass\">\n        <input type=\"text\" id=\"searchinput\" ng-model=\"searchTarget\" class=\"search-query\" placeholder=\"{{searchPlaceholder}}\" ng-keyup=\"handleKey($event)\">\n    </div>\n</form>\n<div class=\"results-container\" ng-show=\"results.length >= 1\">\n    <div class=\"search-results\">\n        <div ng-repeat=\"result in results\">\n            <span ng-class=\"resultClass($index)\" ng-click=\"selectResult($index)\">{{result.resourceText}} {{result.text}}</span>\n        </div>\n        <div ng-show=\"moreCount > 0\">(plus more - continue typing to narrow down search...)\n        </div>\n    </div>\n</div>\n");
