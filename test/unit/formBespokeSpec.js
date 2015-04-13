@@ -32,7 +32,7 @@ describe('formBespokeInput', function () {
       input = angular.element(elm.find('input')[0]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input.attr('id')).toBe('1');
+      expect(input.attr('id')).toBe('_1');
       expect(input.attr('type')).toBe('email');
 
       var prepend = angular.element(elm.find('div')[2]);
