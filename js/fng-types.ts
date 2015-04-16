@@ -7,13 +7,6 @@ module fng {
 
   }
 
-  /**
-   * What is the validation method?
-   * HTML5 loses you some lack of control over the UI, especially with required fields
-   * formsjs is in early days
-   */
-  export enum ValidationType {html5=1, formsjs, both}
-
   /*
     The scope which contains form data
    */
@@ -95,10 +88,6 @@ module fng {
      * The name to be given to the form - defaults to myForm
      */
     name?: string;
-    /**
-     * Validation type.  Must convert to ValidationType
-     */
-    validation?: string;
     /**
      * Normally first field in a form gets autofocus set.  Use this to prevent this
      */

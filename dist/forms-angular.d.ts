@@ -4,16 +4,6 @@
 declare module fng {
     interface IFieldViewInfo {
     }
-    /**
-     * What is the validation method?
-     * HTML5 loses you some lack of control over the UI, especially with required fields
-     * formsjs is in early days
-     */
-    enum ValidationType {
-        html5 = 1,
-        formsjs = 2,
-        both = 3,
-    }
     interface IFormScope extends angular.IScope {
         formsjsForm: formsjs.Form;
         modelNameDisplay: string;
@@ -79,10 +69,6 @@ declare module fng {
          * The name to be given to the form - defaults to myForm
          */
         name?: string;
-        /**
-         * Validation type.  Must convert to ValidationType
-         */
-        validation?: string;
         /**
          * Normally first field in a form gets autofocus set.  Use this to prevent this
          */
