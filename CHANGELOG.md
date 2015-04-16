@@ -2,7 +2,11 @@
 
 ## 0.4 to 0.5
 ### Summary
+* Changed development language to typescript and added _some_ types
+* Moved to gulp for build processing
+* Added ng-messages for field level errors
 * Required and readonly now work consistently across input types
+* Added error-display directive for form level errors
 * Some styling improvements for required fields and mobile
 * Added support for ui-select plugin, and in so doing added new services (formMarkupHelper, pluginHelper) that make it
 much easier to add new plugins.
