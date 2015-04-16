@@ -1,5 +1,4 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
-/// <reference path="../bower_components/forms-js/dist/forms-js.d.ts" />
 
 module fng {
 
@@ -11,15 +10,6 @@ module fng {
     The scope which contains form data
    */
   export interface IFormScope extends angular.IScope {
-
-    formsjsForm : formsjs.Form;
-
-    //Next steps -
-    //* have an attribute in the form that choses HTML 5 validation or formsjs validation
-    //* create markup and validationService accordingly
-    //* set up ng messages
-    //* hook the validation service into the $watch
-
     modelNameDisplay : string;
     modelName: string;
     formName: string;
