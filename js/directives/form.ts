@@ -53,7 +53,6 @@ module fng.directives {
 
         var subkeys = [];
         var tabsSetup:tabsSetupState = tabsSetupState.N;
-        var validationType: fng.ValidationType;
 
         var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
           var nameString;
@@ -549,7 +548,6 @@ module fng.directives {
               var recordAttribute = attrs.model || 'record';      // By default data comes from scope.record
               var theRecord = scope[recordAttribute];
               theRecord = theRecord || {};
-              validationType = (attrs.validation ? fng.ValidationType[attrs.validation] : fng.ValidationType.html5);
               if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                 elementHtml = '';
               } else {
