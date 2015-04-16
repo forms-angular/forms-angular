@@ -1,11 +1,9 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
-/// <reference path="../bower_components/forms-js/dist/forms-js.d.ts" />
 /// <reference path="../typings/underscore/underscore.d.ts" />
 declare module fng {
     interface IFieldViewInfo {
     }
     interface IFormScope extends angular.IScope {
-        formsjsForm: formsjs.Form;
         modelNameDisplay: string;
         modelName: string;
         formName: string;
