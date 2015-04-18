@@ -3,7 +3,40 @@
 module fng {
 
   export interface IFieldViewInfo {
+    name: string;
+    schema: Array<IFieldViewInfo>;
+    array: boolean;
+  }
 
+  export interface IRecordHandler {
+    convertToMongoModel(schema: Array<IFieldViewInfo>, anObject: any, prefixLength: number, scope: fng.IFormScope): any;
+    createNew(dataToSave: any, options: any, scope: fng.IFormScope): void;
+    deleteRecord(model: any, id: any, scope: fng.IFormScope, ctrlState: any): void;
+    updateDocument(dataToSave : any, options: any, scope: fng.IFormScope, ctrlState: any) : void;
+    readRecord($scope: fng.IFormScope, ctrlState);
+    scrollTheList($scope: fng.IFormScope);
+    getListData(record, fieldName, select2List);
+    suffixCleanId(inst, suffix);
+    setData(object, fieldname, element, value);
+    setUpSelectOptions(lookupCollection, schemaElement, $scope: fng.IFormScope, ctrlState, handleSchema);
+    preservePristine(element, fn): void;
+    convertIdToListValue(id, idsArray, valuesArray, fname);
+    decorateScope($scope:fng.IFormScope, $modal, recordHandlerInstance : fng.IRecordHandler, ctrlState);
+    fillFormFromBackendCustomSchema(schema, $scope:fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
+    fillFormWithBackendSchema($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
+  }
+
+  export interface IFormGenerator {
+    generateEditUrl(obj, $scope:fng.IFormScope): string;
+    generateNewUrl($scope: fng.IFormScope): string;
+    handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope: fng.IFormScope, ctrlState);
+    handleSchema(description: string, source, destForm, destList, prefix, doRecursion: boolean, $scope: fng.IFormScope, ctrlState);
+    updateDataDependentDisplay(curValue, oldValue, force, $scope: fng.IFormScope);
+    add(fieldName, $event, $scope: fng.IFormScope);
+    unshift(fieldName, $event, $scope: fng.IFormScope);
+    remove(fieldName, value, $event, $scope: fng.IFormScope);
+    hasError(formName, name, index, $scope: fng.IFormScope);
+    decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedStuff);
   }
 
   /*
@@ -60,6 +93,7 @@ module fng {
     scrollTheList: any;
     getListData: any;
     dismissError: any;
+    handleHttpError(data: any, status: number): void;
   }
 
   export interface IBaseFormOptions {

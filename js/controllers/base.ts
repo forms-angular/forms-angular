@@ -4,7 +4,7 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function BaseCtrl($scope:fng.IFormScope, $rootScope, $location, $filter, $modal,
+  export function BaseCtrl($scope: fng.IFormScope, $rootScope, $location, $filter, $modal,
                            $data, routingService, formGenerator, recordHandler) {
 
     var sharedStuff = $data;
@@ -23,7 +23,7 @@ module fng.controllers {
     formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
     recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
 
-    recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState, recordHandler.handleError($scope));
+    recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
 
     // Tell the 'model controllers' that they can start fiddling with basescope
     for (var i = 0; i < sharedStuff.modelControllers.length; i++) {
