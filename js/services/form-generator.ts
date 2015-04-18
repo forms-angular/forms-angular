@@ -12,9 +12,9 @@ module fng.services {
    */
 
   /*@ngInject*/
-  export function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) {
+  export function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) : IFormGenerator {
 
-    function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState, handleError) {
+    function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
 
       function handletabInfo(tabName, thisInst) {
         var tabTitle = angular.copy(tabName);
@@ -50,7 +50,7 @@ module fng.services {
             if (mongooseType.schema) {
               if (doRecursion && destForm) {
                 var schemaSchema = [];
-                handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState, handleError);
+                handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
                 var sectionInstructions = basicInstructions(field, formData, prefix);
                 sectionInstructions.schema = schemaSchema;
                 if (formData.tab) {
@@ -66,7 +66,7 @@ module fng.services {
               if (destForm) {
                 var formInstructions = basicInstructions(field, formData, prefix);
                 if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
-                  var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError);
+                  var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
                   if (formInst.tab) {
                     handletabInfo(formInst.tab, formInst);
                   }
@@ -109,7 +109,7 @@ module fng.services {
       }
     }
 
-    function handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError) {
+    function handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState) {
 
       var select2ajaxName;
       if (mongooseType.caster) {
@@ -267,7 +267,7 @@ module fng.services {
                         recordHandler.preservePristine(element, function () {
                           callback(display);
                         });
-                      }).error(handleError);
+                      }).error($scope.handleHttpError);
                     //                                } else {
                     //                                    throw new Error('select2 initSelection called without a value');
                   }
@@ -330,12 +330,12 @@ module fng.services {
               _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
               formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
               formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-              recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema, handleError);
+              recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
             }
           } else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
             formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
             formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-            recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema, handleError);
+            recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
           }
         }
       } else if (mongooseType.instance === 'Date') {
@@ -652,7 +652,7 @@ module fng.services {
         return result;
       },
 
-      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
+      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedStuff) {
         $scope.record = sharedStuff.record;
         $scope.phase = 'init';
         $scope.disableFunctions = sharedStuff.disableFunctions;
@@ -679,7 +679,7 @@ module fng.services {
         };
 
         $scope.scrollTheList = function () {
-          return recordHandlerInstance.scrollTheList($scope, recordHandlerInstance.handleError($scope));
+          return recordHandlerInstance.scrollTheList($scope);
         };
 
         $scope.getListData = function (record, fieldName) {
