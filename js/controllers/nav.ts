@@ -27,7 +27,7 @@ module fng.controllers {
     };
 
     function loadControllerAndMenu(controllerName, level, needDivider) {
-      var locals:any = {}, addThis;
+      var locals: any = {}, addThis;
 
       controllerName += 'Ctrl';
       locals.$scope = $data.modelControllers[level] = $scope.$new();
@@ -53,8 +53,7 @@ module fng.controllers {
             }
           });
         }
-      }
-      catch (error) {
+      } catch (error) {
         // Check to see if error is no such controller - don't care
         if (!(/is not a function, got undefined/.test(error.message))) {
           console.log('Unable to instantiate ' + controllerName + ' - ' + error.message);

@@ -3,13 +3,13 @@
 module fng.directives {
 
   /*@ngInject*/
-  export function fngLink(routingService, SubmissionsService):angular.IDirective {
+  export function fngLink(routingService, SubmissionsService): angular.IDirective {
     return {
       restrict: 'E',
       scope: {dataSrc: '&model'},
       link: function (scope, element, attrs) {
-        var ref:string = attrs['ref'];
-        var form:string = attrs['form'];
+        var ref: string = attrs['ref'];
+        var form: string = attrs['form'];
         scope['readonly'] = attrs['readonly'];
         form = form ? form + '/' : '';
         if (attrs['text'] && attrs['text'].length > 0) {
