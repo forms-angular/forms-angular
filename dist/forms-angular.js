@@ -18,7 +18,7 @@ var fng;
             $rootScope.$broadcast('fngFormLoadStart', $scope);
             formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
             recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
-            recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState, recordHandler.handleError($scope));
+            recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
             for (var i = 0; i < sharedStuff.modelControllers.length; i++) {
                 if (sharedStuff.modelControllers[i].onBaseCtrlReady) {
                     sharedStuff.modelControllers[i].onBaseCtrlReady($scope);
@@ -242,7 +242,9 @@ var fng;
             _isNotMobile = (function () {
                 var check = false;
                 (function (a) {
+                    /* tslint:disable:max-line-length */
                     if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) {
+                        /* tslint:enable:max-line-length */
                         check = true;
                     }
                 })(navigator.userAgent || navigator.vendor || window['opera']);
@@ -1586,7 +1588,7 @@ var fng;
          */
         /*@ngInject*/
         function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) {
-            function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState, handleError) {
+            function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
                 function handletabInfo(tabName, thisInst) {
                     var tabTitle = angular.copy(tabName);
                     var tab = _.find($scope.tabs, function (atab) {
@@ -1619,7 +1621,7 @@ var fng;
                             if (mongooseType.schema) {
                                 if (doRecursion && destForm) {
                                     var schemaSchema = [];
-                                    handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState, handleError);
+                                    handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
                                     var sectionInstructions = basicInstructions(field, formData, prefix);
                                     sectionInstructions.schema = schemaSchema;
                                     if (formData.tab) {
@@ -1637,7 +1639,7 @@ var fng;
                                 if (destForm) {
                                     var formInstructions = basicInstructions(field, formData, prefix);
                                     if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
-                                        var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError);
+                                        var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
                                         if (formInst.tab) {
                                             handletabInfo(formInst.tab, formInst);
                                         }
@@ -1679,7 +1681,7 @@ var fng;
                     handleEmptyList(description, destList, destForm, source);
                 }
             }
-            function handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState, handleError) {
+            function handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState) {
                 var select2ajaxName;
                 if (mongooseType.caster) {
                     formInstructions.array = true;
@@ -1834,7 +1836,7 @@ var fng;
                                                 recordHandler.preservePristine(element, function () {
                                                     callback(display);
                                                 });
-                                            }).error(handleError);
+                                            }).error($scope.handleHttpError);
                                         }
                                     },
                                     ajax: {
@@ -1896,13 +1898,13 @@ var fng;
                                 _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
                                 formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                                 formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                                recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema, handleError);
+                                recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
                             }
                         }
                         else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
                             formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
                             formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                            recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema, handleError);
+                            recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
                         }
                     }
                 }
@@ -2230,7 +2232,7 @@ var fng;
                         return formGeneratorInstance.generateNewUrl($scope);
                     };
                     $scope.scrollTheList = function () {
-                        return recordHandlerInstance.scrollTheList($scope, recordHandlerInstance.handleError($scope));
+                        return recordHandlerInstance.scrollTheList($scope);
                     };
                     $scope.getListData = function (record, fieldName) {
                         return recordHandlerInstance.getListData(record, fieldName, $scope.select2List);
@@ -2949,42 +2951,11 @@ var fng;
                 $scope.phase = 'ready';
                 $scope.cancel();
             };
-            function handleError($scope) {
-                return function (data, status) {
-                    if ([200, 400].indexOf(status) !== -1) {
-                        var errorMessage = '';
-                        for (var errorField in data.errors) {
-                            if (data.errors.hasOwnProperty(errorField)) {
-                                errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
-                                switch (data.errors[errorField].type) {
-                                    case 'enum':
-                                        errorMessage += 'You need to select from the list of values';
-                                        break;
-                                    default:
-                                        errorMessage += data.errors[errorField].message;
-                                        break;
-                                }
-                                errorMessage += '</li>';
-                            }
-                        }
-                        if (errorMessage.length > 0) {
-                            errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
-                        }
-                        else {
-                            errorMessage = data.message || 'Error!  Sorry - No further details available.';
-                        }
-                        $scope.showError(errorMessage);
-                    }
-                    else {
-                        $scope.showError(status + ' ' + JSON.stringify(data));
-                    }
-                };
-            }
-            function fillFormFromBackendCustomSchema(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError) {
+            function fillFormFromBackendCustomSchema(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState) {
                 var listOnly = (!$scope.id && !$scope.newRecord);
                 // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
                 // but should be removed when/if formschemas are cached
-                formGeneratorInstance.handleSchema('Main ' + $scope.modelName, schema, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState, handleError);
+                formGeneratorInstance.handleSchema('Main ' + $scope.modelName, schema, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState);
                 if (listOnly) {
                     ctrlState.allowLocationChange = true;
                 }
@@ -3003,12 +2974,12 @@ var fng;
                                     $scope.showError(err);
                                 }
                                 else {
-                                    recordHandlerInstance.readRecord($scope, ctrlState, handleError);
+                                    recordHandlerInstance.readRecord($scope, ctrlState);
                                 }
                             });
                         }
                         else {
-                            recordHandlerInstance.readRecord($scope, ctrlState, handleError);
+                            recordHandlerInstance.readRecord($scope, ctrlState);
                         }
                     }
                     else {
@@ -3020,7 +2991,7 @@ var fng;
                 }
             }
             return {
-                readRecord: function readRecord($scope, ctrlState, handleError) {
+                readRecord: function readRecord($scope, ctrlState) {
                     // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
                     SubmissionsService.readRecord($scope.modelName, $scope.id).success(function (data) {
                         if (data.success === false) {
@@ -3032,9 +3003,9 @@ var fng;
                             $scope.dataEventFunctions.onAfterRead(data);
                         }
                         processServerData(data, $scope, ctrlState);
-                    }).error(handleError);
+                    }).error($scope.handleHttpError);
                 },
-                scrollTheList: function scrollTheList($scope, handleError) {
+                scrollTheList: function scrollTheList($scope) {
                     var pagesLoaded = $scope.pagesLoaded;
                     SubmissionsService.getPagedAndFilteredList($scope.modelName, {
                         aggregate: $location.$$search.a,
@@ -3056,7 +3027,7 @@ var fng;
                         else {
                             $scope.showError(data, 'Invalid query');
                         }
-                    }).error(handleError);
+                    }).error($scope.handleHttpError);
                 },
                 // TODO: Do we need model here?  Can we not infer it from scope?
                 deleteRecord: function deleteRecord(model, id, $scope, ctrlState) {
@@ -3067,7 +3038,7 @@ var fng;
                         routingService.redirectTo()('list', $scope, $location);
                     });
                 },
-                updateDocument: function updateDocument(dataToSave, options, $scope, handleError, ctrlState) {
+                updateDocument: function updateDocument(dataToSave, options, $scope, ctrlState) {
                     $scope.phase = 'updating';
                     SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave).success(function (data) {
                         if (data.success !== false) {
@@ -3088,9 +3059,9 @@ var fng;
                         else {
                             $scope.showError(data);
                         }
-                    }).error(handleError);
+                    }).error($scope.handleHttpError);
                 },
-                createNew: function createNew(dataToSave, options, $scope, handleError) {
+                createNew: function createNew(dataToSave, options, $scope) {
                     SubmissionsService.createRecord($scope.modelName, dataToSave).success(function (data) {
                         if (data.success !== false) {
                             if (typeof $scope.dataEventFunctions.onAfterCreate === 'function') {
@@ -3106,17 +3077,17 @@ var fng;
                         else {
                             $scope.showError(data);
                         }
-                    }).error(handleError);
+                    }).error($scope.handleHttpError);
                 },
                 getListData: getListData,
                 suffixCleanId: suffixCleanId,
                 setData: setData,
-                setUpSelectOptions: function setUpSelectOptions(lookupCollection, schemaElement, $scope, ctrlState, handleSchema, handleError) {
+                setUpSelectOptions: function setUpSelectOptions(lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
                     var optionsList = $scope[schemaElement.options] = [];
                     var idList = $scope[schemaElement.ids] = [];
                     SchemasService.getSchema(lookupCollection).success(function (data) {
                         var listInstructions = [];
-                        handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState, handleError);
+                        handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState);
                         var dataRequest;
                         if (typeof schemaElement.filter !== 'undefined' && schemaElement.filter) {
                             console.log('filtering');
@@ -3207,14 +3178,41 @@ var fng;
                     return anObject;
                 },
                 convertIdToListValue: convertIdToListValue,
-                handleError: handleError,
                 decorateScope: function decorateScope($scope, $modal, recordHandlerInstance, ctrlState) {
+                    $scope.handleHttpError = function (data, status) {
+                        if ([200, 400].indexOf(status) !== -1) {
+                            var errorMessage = '';
+                            for (var errorField in data.errors) {
+                                if (data.errors.hasOwnProperty(errorField)) {
+                                    errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
+                                    switch (data.errors[errorField].type) {
+                                        case 'enum':
+                                            errorMessage += 'You need to select from the list of values';
+                                            break;
+                                        default:
+                                            errorMessage += data.errors[errorField].message;
+                                            break;
+                                    }
+                                    errorMessage += '</li>';
+                                }
+                            }
+                            if (errorMessage.length > 0) {
+                                errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
+                            }
+                            else {
+                                errorMessage = data.message || 'Error!  Sorry - No further details available.';
+                            }
+                            $scope.showError(errorMessage);
+                        }
+                        else {
+                            $scope.showError(status + ' ' + JSON.stringify(data));
+                        }
+                    };
                     $scope.cancel = function () {
                         angular.copy(ctrlState.master, $scope.record);
                         // Let call backs etc resolve in case they dirty form, then clean it
                         $timeout($scope.setPristine);
                     };
-                    var errorHandlerFunc = handleError($scope);
                     //listener for any child scopes to display messages
                     // pass like this:
                     //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
@@ -3241,12 +3239,12 @@ var fng;
                                         $scope.showError(err);
                                     }
                                     else {
-                                        recordHandlerInstance.updateDocument(dataToSave, options, $scope, errorHandlerFunc, ctrlState);
+                                        recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
                                     }
                                 });
                             }
                             else {
-                                recordHandlerInstance.updateDocument(dataToSave, options, $scope, errorHandlerFunc, ctrlState);
+                                recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
                             }
                         }
                         else {
@@ -3256,12 +3254,12 @@ var fng;
                                         $scope.showError(err);
                                     }
                                     else {
-                                        recordHandlerInstance.createNew(dataToSave, options, $scope, errorHandlerFunc);
+                                        recordHandlerInstance.createNew(dataToSave, options, $scope);
                                     }
                                 });
                             }
                             else {
-                                recordHandlerInstance.createNew(dataToSave, options, $scope, errorHandlerFunc);
+                                recordHandlerInstance.createNew(dataToSave, options, $scope);
                             }
                         }
                     };
@@ -3364,10 +3362,10 @@ var fng;
                     };
                 },
                 fillFormFromBackendCustomSchema: fillFormFromBackendCustomSchema,
-                fillFormWithBackendSchema: function fillFormWithBackendSchema($scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError) {
+                fillFormWithBackendSchema: function fillFormWithBackendSchema($scope, formGeneratorInstance, recordHandlerInstance, ctrlState) {
                     SchemasService.getSchema($scope.modelName, $scope.formName).success(function (schema) {
-                        fillFormFromBackendCustomSchema(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState, handleError);
-                    }).error(handleError);
+                        fillFormFromBackendCustomSchema(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState);
+                    }).error($scope.handleHttpError);
                 }
             };
         }
