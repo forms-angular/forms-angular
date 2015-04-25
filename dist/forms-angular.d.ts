@@ -5,34 +5,36 @@ declare module fng {
         name: string;
         schema: Array<IFieldViewInfo>;
         array: boolean;
+        id?: string;
+        showIf?: any;
     }
     interface IRecordHandler {
         convertToMongoModel(schema: Array<IFieldViewInfo>, anObject: any, prefixLength: number, scope: fng.IFormScope): any;
         createNew(dataToSave: any, options: any, scope: fng.IFormScope): void;
         deleteRecord(model: any, id: any, scope: fng.IFormScope, ctrlState: any): void;
         updateDocument(dataToSave: any, options: any, scope: fng.IFormScope, ctrlState: any): void;
-        readRecord($scope: any, ctrlState: any): any;
-        scrollTheList($scope: any): any;
+        readRecord($scope: fng.IFormScope, ctrlState: any): any;
+        scrollTheList($scope: fng.IFormScope): any;
         getListData(record: any, fieldName: any, select2List: any): any;
         suffixCleanId(inst: any, suffix: any): any;
         setData(object: any, fieldname: any, element: any, value: any): any;
-        setUpSelectOptions(lookupCollection: any, schemaElement: any, $scope: any, ctrlState: any, handleSchema: any): any;
+        setUpSelectOptions(lookupCollection: any, schemaElement: any, $scope: fng.IFormScope, ctrlState: any, handleSchema: any): any;
         preservePristine(element: any, fn: any): void;
         convertIdToListValue(id: any, idsArray: any, valuesArray: any, fname: any): any;
         decorateScope($scope: fng.IFormScope, $modal: any, recordHandlerInstance: fng.IRecordHandler, ctrlState: any): any;
         fillFormFromBackendCustomSchema(schema: any, $scope: fng.IFormScope, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any): any;
-        fillFormWithBackendSchema($scope: any, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any): any;
+        fillFormWithBackendSchema($scope: fng.IFormScope, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any): any;
     }
     interface IFormGenerator {
         generateEditUrl(obj: any, $scope: fng.IFormScope): string;
-        generateNewUrl($scope: any): string;
-        handleFieldType(formInstructions: any, mongooseType: any, mongooseOptions: any, $scope: any, ctrlState: any): any;
-        handleSchema(description: string, source: any, destForm: any, destList: any, prefix: any, doRecursion: boolean, $scope: any, ctrlState: any): any;
-        updateDataDependentDisplay(curValue: any, oldValue: any, force: any, $scope: any): any;
-        add(fieldName: any, $event: any, $scope: any): any;
-        unshift(fieldName: any, $event: any, $scope: any): any;
-        remove(fieldName: any, value: any, $event: any, $scope: any): any;
-        hasError(formName: any, name: any, index: any, $scope: any): any;
+        generateNewUrl($scope: fng.IFormScope): string;
+        handleFieldType(formInstructions: any, mongooseType: any, mongooseOptions: any, $scope: fng.IFormScope, ctrlState: any): any;
+        handleSchema(description: string, source: any, destForm: any, destList: any, prefix: any, doRecursion: boolean, $scope: fng.IFormScope, ctrlState: any): any;
+        updateDataDependentDisplay(curValue: any, oldValue: any, force: any, $scope: fng.IFormScope): any;
+        add(fieldName: any, $event: any, $scope: fng.IFormScope): any;
+        unshift(fieldName: any, $event: any, $scope: fng.IFormScope): any;
+        remove(fieldName: any, value: any, $event: any, $scope: fng.IFormScope): any;
+        hasError(formName: any, name: any, index: any, $scope: fng.IFormScope): any;
         decorateScope($scope: fng.IFormScope, formGeneratorInstance: any, recordHandlerInstance: fng.IRecordHandler, sharedStuff: any): any;
     }
     interface IFormScope extends angular.IScope {

@@ -396,10 +396,15 @@ var fng;
                     if (attrs['text'] && attrs['text'].length > 0) {
                         scope['text'] = attrs['text'];
                     }
+                    var index = scope['$parent']['$index'];
                     scope.$watch('dataSrc()', function (newVal) {
                         if (newVal) {
+                            if (typeof index !== 'undefined') {
+                                newVal = newVal[index];
+                            }
                             scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
                             if (!scope['text']) {
+                                console.log('Calling http');
                                 SubmissionsService.getListAttributes(ref, newVal).success(function (data) {
                                     if (data.success === false) {
                                         console.log(data.err);
@@ -806,8 +811,8 @@ var fng;
                                 if (options.formstyle === 'inline') {
                                     throw new Error('Cannot use arrays in an inline form');
                                 }
-                                template += formMarkupHelper.label(scope, info, true, options);
-                                template += formMarkupHelper.handleArrayInputAndControlDiv(generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options), controlDivClasses, info, options);
+                                template += formMarkupHelper.label(scope, info, info.type !== 'link', options);
+                                template += formMarkupHelper.handleArrayInputAndControlDiv(generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, info.id + '_{{$index}}', options), controlDivClasses, info, options);
                             }
                             else {
                                 // Single fields here
@@ -2482,7 +2487,9 @@ var fng;
                     result += 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ';
                     result += 'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + ' track by $index">';
                     result += inputMarkup;
-                    result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass() + '-minus-sign"></i>';
+                    if (info.type !== 'link') {
+                        result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass() + '-minus-sign"></i>';
+                    }
                     result += '</div>';
                     return result;
                 },
