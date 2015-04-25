@@ -15,13 +15,16 @@ module fng.directives {
         if (attrs['text'] && attrs['text'].length > 0) {
           scope['text'] = attrs['text'];
         }
+        var index = scope['$parent']['$index'];
         scope.$watch('dataSrc()', function (newVal) {
           if (newVal) {
+            if (typeof index !== 'undefined') {
+              newVal = newVal[index];
+            }
             scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
             if (!scope['text']) {
               SubmissionsService.getListAttributes(ref, newVal).success(function (data) {
                 if (data.success === false) {
-                  console.log(data.err);
                   scope['text'] = data.err;
                 } else {
                   scope['text'] = data.list;

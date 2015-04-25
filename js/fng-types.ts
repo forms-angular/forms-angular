@@ -6,6 +6,8 @@ module fng {
     name: string;
     schema: Array<IFieldViewInfo>;
     array: boolean;
+    id? : string;
+    showIf? : any;
   }
 
   export interface IRecordHandler {

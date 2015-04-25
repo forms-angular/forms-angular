@@ -380,8 +380,8 @@ module fng.directives {
               if (options.formstyle === 'inline') {
                 throw new Error('Cannot use arrays in an inline form');
               }
-              template += formMarkupHelper.label(scope, info, true, options);
-              template += formMarkupHelper.handleArrayInputAndControlDiv(generateInput(info, 'arrayItem.x', true, info.id + '_{{$index}}', options), controlDivClasses, info, options);
+              template += formMarkupHelper.label(scope, info, info.type !== 'link', options);
+              template += formMarkupHelper.handleArrayInputAndControlDiv(generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, info.id + '_{{$index}}', options), controlDivClasses, info, options);
             } else {
               // Single fields here
               template += formMarkupHelper.label(scope, info, null, options);

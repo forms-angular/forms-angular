@@ -213,7 +213,9 @@ module fng.services {
           result += 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ';
           result += 'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + ' track by $index">';
           result += inputMarkup;
-          result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass() + '-minus-sign"></i>';
+          if (info.type !== 'link') {
+            result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass() + '-minus-sign"></i>';
+          }
           result += '</div>';
           return result;
         },
