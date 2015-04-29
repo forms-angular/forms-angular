@@ -111,7 +111,7 @@ module fng.services {
     var getListData = function getListData(record, fieldName, select2List) {
       var nests = fieldName.split('.');
       for (var i = 0; i < nests.length; i++) {
-        if (record !== undefined) {
+        if (record !== undefined && record !== null) {
           record = record[nests[i]];
         }
       }
@@ -375,6 +375,36 @@ module fng.services {
       }
     }
 
+    function handleError($scope: fng.IFormScope) {
+      return function(data:any, status: number) : void {
+        if ([200, 400].indexOf(status) !== -1) {
+          var errorMessage = '';
+          for (var errorField in data.errors) {
+            if (data.errors.hasOwnProperty(errorField)) {
+              errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
+              switch (data.errors[errorField].type) {
+                case 'enum' :
+                  errorMessage += 'You need to select from the list of values';
+                  break;
+                default:
+                  errorMessage += data.errors[errorField].message;
+                  break;
+              }
+              errorMessage += '</li>';
+            }
+          }
+          if (errorMessage.length > 0) {
+            errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
+          } else {
+            errorMessage = data.message || 'Error!  Sorry - No further details available.';
+          }
+          $scope.showError(errorMessage);
+        } else {
+          $scope.showError(status + ' ' + JSON.stringify(data));
+        }
+      }
+    }
+
     return {
       readRecord: function readRecord($scope, ctrlState) {
         // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
@@ -583,35 +613,11 @@ module fng.services {
 
       convertIdToListValue: convertIdToListValue,
 
+      handleError: handleError,
+
       decorateScope: function decorateScope($scope:fng.IFormScope, $modal, recordHandlerInstance : fng.IRecordHandler, ctrlState) {
 
-        $scope.handleHttpError = function(data:any, status: number) : void {
-          if ([200, 400].indexOf(status) !== -1) {
-            var errorMessage = '';
-            for (var errorField in data.errors) {
-              if (data.errors.hasOwnProperty(errorField)) {
-                errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
-                switch (data.errors[errorField].type) {
-                  case 'enum' :
-                    errorMessage += 'You need to select from the list of values';
-                    break;
-                  default:
-                    errorMessage += data.errors[errorField].message;
-                    break;
-                }
-                errorMessage += '</li>';
-              }
-            }
-            if (errorMessage.length > 0) {
-              errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
-            } else {
-              errorMessage = data.message || 'Error!  Sorry - No further details available.';
-            }
-            $scope.showError(errorMessage);
-          } else {
-            $scope.showError(status + ' ' + JSON.stringify(data));
-          }
-        };
+        $scope.handleHttpError = handleError($scope);
 
         $scope.cancel = function () {
           angular.copy(ctrlState.master, $scope.record);
