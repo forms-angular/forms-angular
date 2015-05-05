@@ -875,6 +875,7 @@ var fng;
                                                 newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.value + '"';
                                         }
                                     }
+                                    newElement += ' ';
                                     var directiveCamel = $filter('camelCase')(info.directive);
                                     for (var prop in info) {
                                         if (info.hasOwnProperty(prop)) {
@@ -3160,8 +3161,8 @@ var fng;
                     function convertLookup(lookup, schemaElement) {
                         var retVal;
                         if ((schemaElement.select2 && schemaElement.select2.fngAjax) || ($scope.conversions[schemaElement.name] && $scope.conversions[schemaElement.name].fngajax)) {
-                            if (lookup && lookup.id) {
-                                retVal = lookup.id;
+                            if (lookup) {
+                                retVal = lookup.id || lookup;
                             }
                         }
                         else if (lookup) {
