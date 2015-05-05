@@ -445,6 +445,7 @@ module fng.directives {
                       newElement += ' ' + thisAttr.nodeName + '="' + thisAttr.value + '"';
                   }
                 }
+                newElement += ' ';
                 var directiveCamel = $filter('camelCase')(info.directive);
                 for (var prop in info) {
                   if (info.hasOwnProperty(prop)) {
