@@ -399,7 +399,7 @@ var fng;
                     var index = scope['$parent']['$index'];
                     scope.$watch('dataSrc()', function (newVal) {
                         if (newVal) {
-                            if (typeof index !== 'undefined') {
+                            if (typeof index !== 'undefined' && angular.isArray(newVal)) {
                                 newVal = newVal[index];
                             }
                             scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
