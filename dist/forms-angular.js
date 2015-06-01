@@ -1,4 +1,4 @@
-/*! forms-angular 2015-03-30 */
+/*! forms-angular 2015-06-01 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -3429,8 +3429,11 @@ formsAngular.factory('SubmissionsService', ['$http', function ($http) {
     readRecord: function (modelName, id) {
       return $http.get('/api/' + modelName + '/' + id);
     },
-    getAll: function (modelName) {
-      return $http.get('/api/' + modelName, {cache: true});
+    getAll: function (modelName, _options) {
+      var options = angular.extend({
+        cache: true
+      }, _options);
+      return $http.get('/api/' + modelName, options);
     },
     getPagedAndFilteredList: function (modelName, options) {
       return $http.get('/api/' + modelName + generateListQuery(options));
