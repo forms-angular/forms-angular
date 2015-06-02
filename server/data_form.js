@@ -1,7 +1,15 @@
+/// <reference path="../typings/node/node.d.ts" />
+/// <reference path="../typings/mongoose/mongoose.d.ts" />
 'use strict';
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
-var _ = require('underscore'), util = require('util'), extend = require('node.extend'), async = require('async'), url = require('url'), mongoose = require('mongoose'), debug = false;
+var _ = require('underscore');
+var util = require('util');
+var extend = require('node.extend');
+var async = require('async');
+var url = require('url');
+var mongoose = require('mongoose');
+var debug = false;
 mongoose.set('debug', debug);
 function logTheAPICalls(req, res, next) {
     void (res);
@@ -117,7 +125,7 @@ DataForm.prototype.addResource = function (resourceName, model, options) {
             }
         }
     }
-    extend(resource.options, this.preprocess(resource.model.schema.paths, null));
+    extend(resource.options, this.preprocess(resource.model.schema['paths'], null));
     if (resource.options.searchImportance) {
         this.searchFunc = async.forEachSeries;
     }
@@ -150,8 +158,9 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
     }
     // return a string that determines the sort order of the resultObject
     function calcResultValue(obj) {
-        function padLeft(number, reqLength, str) {
-            return new Array(reqLength - String(number).length + 1).join(str || '0') + number;
+        function padLeft(score, reqLength, str) {
+            if (str === void 0) { str = '0'; }
+            return new Array(1 + reqLength - String(score).length).join(str) + score;
         }
         var sortString = '';
         sortString += padLeft(obj.addHits || 9, 1);
