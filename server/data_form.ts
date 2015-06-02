@@ -79,6 +79,9 @@ DataForm.prototype.getListFields = function (resource, doc) {
   if (listFields) {
     for (; listElement < listFields.length; listElement++) {
         if (typeof doc[listFields[listElement].field] !== 'undefined') {
+
+
+
             display += doc[listFields[listElement].field] + ' ';
         }
     }
@@ -153,7 +156,7 @@ DataForm.prototype.addResource = function (resourceName, model, options) {
     }
   }
 
-  extend(resource.options, this.preprocess(resource.model.schema.paths, null));
+  extend(resource.options, this.preprocess(resource.model.schema['paths'], null));
 
   if (resource.options.searchImportance) {
     this.searchFunc = async.forEachSeries;
