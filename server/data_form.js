@@ -45,32 +45,66 @@ var DataForm = function (app, options) {
     }
 };
 module.exports = exports = DataForm;
-DataForm.prototype.getListFields = function (resource, doc) {
+DataForm.prototype.getListFields = function (resource, doc, cb) {
     function getFirstMatchingField(keyList, type) {
         for (var i = 0; i < keyList.length; i++) {
-            var fieldDetails = resource.model.schema.tree[keyList[i]];
+            var fieldDetails = resource.model.schema['tree'][keyList[i]];
             if (fieldDetails.type && (!type || fieldDetails.type.name === type) && keyList[i] !== '_id') {
                 resource.options.listFields = [{ field: keyList[i] }];
                 return doc[keyList[i]];
             }
         }
     }
+    var that = this;
     var display = '';
-    var listElement = 0;
     var listFields = resource.options.listFields;
     if (listFields) {
-        for (; listElement < listFields.length; listElement++) {
-            if (typeof doc[listFields[listElement].field] !== 'undefined') {
-                display += doc[listFields[listElement].field] + ' ';
+        async.map(listFields, function (aField, cbm) {
+            if (typeof doc[aField.field] !== 'undefined') {
+                if (aField.params) {
+                    if (aField.params.ref) {
+                        var lookupResource = that.getResource(resource.model.schema['paths'][aField.field].options.ref);
+                        if (lookupResource) {
+                            var hiddenFields = that.generateHiddenFields(lookupResource, false);
+                            hiddenFields.__v = 0;
+                            lookupResource.model.findOne({ _id: doc[aField.field] }).select(hiddenFields).exec(function (err, doc2) {
+                                if (err) {
+                                    cbm(err);
+                                }
+                                else {
+                                    that.getListFields(lookupResource, doc2, cbm);
+                                }
+                            });
+                        }
+                    }
+                }
+                else {
+                    cbm(null, doc[aField.field]);
+                }
             }
-        }
+            else {
+                cbm(null, '');
+            }
+        }, function (err, results) {
+            if (err) {
+                cb(err);
+            }
+            else {
+                if (results) {
+                    cb(err, results.join(' ').trim());
+                }
+                else {
+                    console.log('No results ' + listFields);
+                }
+            }
+        });
     }
     else {
-        var keyList = Object.keys(resource.model.schema.tree);
+        var keyList = Object.keys(resource.model.schema['tree']);
         // No list field specified - use the first String field,
         display = getFirstMatchingField(keyList, 'String') || getFirstMatchingField(keyList);
+        cb(null, display.trim());
     }
-    return display.trim();
 };
 /**
  * Registers all REST routes with the provided `app` object.
@@ -234,13 +268,23 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
         // TODO : Figure out a better way to deal with this
         that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 60, null, function (err, docs) {
             if (!err && docs && docs.length > 0) {
-                for (var k = 0; k < docs.length; k++) {
+                async.map(docs, function (aDoc, cbdoc) {
                     // Do we already have them in the list?
-                    var thisId = docs[k]._id, resultObject, resultPos;
+                    var thisId = aDoc._id, resultObject, resultPos;
                     for (resultPos = results.length - 1; resultPos >= 0; resultPos--) {
                         if (results[resultPos].id.id === thisId.id) {
                             break;
                         }
+                    }
+                    function handleResultsInList() {
+                        resultObject.searchImportance = item.resource.options.searchImportance || 99;
+                        if (item.resource.options.localisationData) {
+                            resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, 'resource');
+                            resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
+                            resultObject.resourceTab = translate(resultObject.resourceTab, item.resource.options.localisationData, 'resourceTab');
+                        }
+                        results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
+                        cbdoc(null);
                     }
                     if (resultPos >= 0) {
                         resultObject = {};
@@ -251,35 +295,42 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                         results.splice(resultPos, 1);
                         // and re-insert where appropriate
                         results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
+                        cbdoc(null);
                     }
                     else {
                         // Otherwise add them new...
                         // Use special listings format if defined
                         var specialListingFormat = item.resource.options.searchResultFormat;
                         if (specialListingFormat) {
-                            resultObject = specialListingFormat.apply(docs[k]);
+                            resultObject = specialListingFormat.apply(aDoc);
+                            handleResultsInList();
                         }
                         else {
-                            resultObject = {
-                                id: thisId,
-                                weighting: 9999,
-                                text: that.getListFields(item.resource, docs[k])
-                            };
-                            if (resourceCount > 1 || includeResourceInResults) {
-                                resultObject.resource = resultObject.resourceText = item.resource.resourceName;
-                            }
+                            that.getListFields(item.resource, aDoc, function (err, description) {
+                                if (err) {
+                                    cbdoc(err);
+                                }
+                                else {
+                                    resultObject = {
+                                        id: thisId,
+                                        weighting: 9999,
+                                        text: description
+                                    };
+                                    if (resourceCount > 1 || includeResourceInResults) {
+                                        resultObject.resource = resultObject.resourceText = item.resource.resourceName;
+                                    }
+                                    handleResultsInList();
+                                }
+                            });
                         }
-                        resultObject.searchImportance = item.resource.options.searchImportance || 99;
-                        if (item.resource.options.localisationData) {
-                            resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, 'resource');
-                            resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
-                            resultObject.resourceTab = translate(resultObject.resourceTab, item.resource.options.localisationData, 'resourceTab');
-                        }
-                        results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
                     }
-                }
+                }, function (err) {
+                    cb(err);
+                });
             }
-            cb(err);
+            else {
+                cb(err);
+            }
         });
     }, function () {
         // Strip weighting from the results
@@ -393,8 +444,13 @@ DataForm.prototype.preprocess = function (paths, formSchema) {
                 if (paths[element].options.match) {
                     outPath[element].options.match = paths[element].options.match.source;
                 }
-                if (paths[element].options.list) {
-                    listFields.push({ field: element, params: paths[element].options.list });
+                var schemaListInfo = paths[element].options.list;
+                if (schemaListInfo) {
+                    var listFieldInfo = { field: element };
+                    if (typeof schemaListInfo === 'object' && Object.keys(schemaListInfo).length > 0) {
+                        listFieldInfo.params = schemaListInfo;
+                    }
+                    listFields.push(listFieldInfo);
                 }
             }
         }
@@ -610,10 +666,26 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
                                                     cb(err);
                                                 }
                                                 else {
-                                                    for (var j = 0; j < findResults.length; j++) {
-                                                        translateObject.translations[j] = { value: findResults[j]._id, display: self.getListFields(lookup, findResults[j]) };
-                                                    }
-                                                    cb(null, null);
+                                                    // TODO - this ref func can probably be done away with now that list fields can have ref
+                                                    var j = 0;
+                                                    async.whilst(function () {
+                                                        return j < findResults.length;
+                                                    }, function (cbres) {
+                                                        var theResult = findResults[j];
+                                                        translateObject.translations[j] = translateObject.translations[j] || {};
+                                                        var theTranslation = translateObject.translations[j];
+                                                        j++;
+                                                        self.getListFields(lookup, theResult, function (err, description) {
+                                                            if (err) {
+                                                                cbres(err);
+                                                            }
+                                                            else {
+                                                                theTranslation.value = theResult._id;
+                                                                theTranslation.display = description;
+                                                                cbres(null);
+                                                            }
+                                                        });
+                                                    }, cb);
                                                 }
                                             });
                                         };
@@ -953,7 +1025,14 @@ DataForm.prototype.entityList = function () {
         if (!req.resource) {
             return next();
         }
-        return res.send({ list: this.getListFields(req.resource, req.doc) });
+        this.getListFields(req.resource, req.doc, function (err, display) {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            else {
+                return res.send({ list: display });
+            }
+        });
     }, this);
 };
 //# sourceMappingURL=data_form.js.map
