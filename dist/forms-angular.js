@@ -1,4 +1,4 @@
-/*! forms-angular 2015-06-01 */
+/*! forms-angular 2015-06-05 */
 'use strict';
 
 var formsAngular = angular.module('formsAngular', [
@@ -3384,7 +3384,7 @@ formsAngular.factory('SchemasService', ['$http', function ($http) {
 }]);
 'use strict';
 
-formsAngular.factory('SubmissionsService', ['$http', function ($http) {
+formsAngular.factory('SubmissionsService', ['$http', '$cacheFactory', function ($http, $cacheFactory) {
   /*
    generate a query string for a filtered and paginated query for submissions.
    options consists of the following:
@@ -3442,9 +3442,11 @@ formsAngular.factory('SubmissionsService', ['$http', function ($http) {
       return $http.delete('/api/' + model + '/' + id);
     },
     updateRecord: function (modelName, id, dataToSave) {
+      $cacheFactory.get('$http').remove('/api/' + modelName);
       return $http.post('/api/' + modelName + '/' + id, dataToSave);
     },
     createRecord: function (modelName, dataToSave) {
+      $cacheFactory.get('$http').remove('/api/' + modelName);
       return $http.post('/api/' + modelName, dataToSave);
     }
 
