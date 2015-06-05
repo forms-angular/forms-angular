@@ -107,5 +107,12 @@ describe('List API', function () {
     });
   });
 
+  it('returns looked up fields', function() {
+
+  });
+
+  it('handles list items in search', function() {
+
+  });
 
 });

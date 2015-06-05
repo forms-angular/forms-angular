@@ -18,6 +18,7 @@ gulp.task('all', function(callback) {
     'build',
     'test',
     'midwayTest',
+    'apiTest',
     callback);
 });
 
@@ -98,6 +99,12 @@ gulp.task('midwayTest', function() {
       // Make sure failed tests cause gulp to exit non-zero
       throw error;
     });
+});
+
+gulp.task('apiTest', function () {
+  return gulp.src('test/api/**/*Spec.js', {read: false})
+    // gulp-mocha needs filepaths so you can't have any plugins before it
+    .pipe(require('gulp-mocha')({reporter: 'dot'}));
 });
 
 //gulp.task('test:watch', function() {

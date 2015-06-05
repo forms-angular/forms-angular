@@ -277,5 +277,8 @@ describe('Report API', function () {
     fng.report()(mockReq, mockRes);
   });
 
+  it('supports lookups where the list item is a lookup', function() {
+
+  });
 
 });

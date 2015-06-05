@@ -333,7 +333,7 @@ describe('API', function () {
       };
       fng.searchAll()(mockReq, mockRes);
     });
-  
+
     it('should find a record from a partial initial string', function (done) {
       var mockReq = {
         url: '/search?q=ann'
@@ -366,8 +366,8 @@ describe('API', function () {
       };
       fng.searchAll()(mockReq, mockRes);
     });
-  
-  
+
+
     it('should support searchResultFormat option', function (done) {
       var mockReq = {
         url: '/search?q=Br',
