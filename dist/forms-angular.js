@@ -3401,7 +3401,7 @@ var fng;
     var services;
     (function (services) {
         /*@ngInject*/
-        function SubmissionsService($http) {
+        function SubmissionsService($http, $cacheFactory) {
             /*
              generate a query string for a filtered and paginated query for submissions.
              options consists of the following:
@@ -3443,8 +3443,11 @@ var fng;
                 readRecord: function (modelName, id) {
                     return $http.get('/api/' + modelName + '/' + id);
                 },
-                getAll: function (modelName) {
-                    return $http.get('/api/' + modelName, { cache: true });
+                getAll: function (modelName, _options) {
+                    var options = angular.extend({
+                        cache: true
+                    }, _options);
+                    return $http.get('/api/' + modelName, options);
                 },
                 getPagedAndFilteredList: function (modelName, options) {
                     return $http.get('/api/' + modelName + generateListQuery(options));
@@ -3453,14 +3456,16 @@ var fng;
                     return $http.delete('/api/' + model + '/' + id);
                 },
                 updateRecord: function (modelName, id, dataToSave) {
+                    $cacheFactory.get('$http').remove('/api/' + modelName);
                     return $http.post('/api/' + modelName + '/' + id, dataToSave);
                 },
                 createRecord: function (modelName, dataToSave) {
+                    $cacheFactory.get('$http').remove('/api/' + modelName);
                     return $http.post('/api/' + modelName, dataToSave);
                 }
             };
         }
-        SubmissionsService.$inject = ["$http"];
+        SubmissionsService.$inject = ["$http", "$cacheFactory"];
         services.SubmissionsService = SubmissionsService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
