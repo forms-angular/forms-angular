@@ -291,10 +291,10 @@ declare module fng.services {
     };
 }
 declare module fng.services {
-    function SubmissionsService($http: any): {
+    function SubmissionsService($http: any, $cacheFactory: any): {
         getListAttributes: (ref: any, id: any) => any;
         readRecord: (modelName: any, id: any) => any;
-        getAll: (modelName: any) => any;
+        getAll: (modelName: any, _options: any) => any;
         getPagedAndFilteredList: (modelName: any, options: any) => any;
         deleteRecord: (model: any, id: any) => any;
         updateRecord: (modelName: any, id: any, dataToSave: any) => any;
