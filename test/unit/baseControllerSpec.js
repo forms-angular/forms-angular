@@ -93,6 +93,27 @@ describe('BaseCtrl', function () {
 
   });
 
+  describe('creates list schema from moodel schema', function () {
+
+    var scope, ctrl;
+
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.whenGET('/api/schema/collection').respond(
+        {'name': {'instance': 'String', options:{list:true}}, 'hide_me': {'instance': 'String', 'options': {list:true, 'form': {'hidden': true}}}}
+      );
+      scope = $rootScope.$new();
+      ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+      $httpBackend.flush();
+    }));
+
+    it('includes hidden fields', function () {
+      expect(scope.listSchema.length).toBe(2);
+    });
+
+  });
+
+
   describe('handles references', function () {
     var scope, ctrl;
 
@@ -498,7 +519,7 @@ describe('BaseCtrl', function () {
         '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}
       });
       $httpBackend.whenGET('/api/schema/teachers').respond({
-        'surname': {'path': 'surname', 'instance': 'String', 'validators': [[null, 'required']], 'options': {'required': true, 'list': {}}, 'isRequired': true},
+        'surname': {'path': 'surname', 'instance': 'String', 'validators': [[null, 'required']], 'options': {'required': true, 'list': {}}},
         'forename': {'path': 'forename', 'instance': 'String', 'options': {'list': true}},
         'address.line1': {'path': 'address.line1', 'instance': 'String', 'options': {'form': {'label': 'Address'}}},
         'address.line2': {'path': 'address.line2', 'instance': 'String', 'options': {'form': {'label': null}}},
@@ -508,7 +529,7 @@ describe('BaseCtrl', function () {
         'weight': {'path': 'weight', 'instance': 'Number', 'options': {'form': {'label': 'Weight (lbs)'}}},
         'dateOfBirth': {'path': 'dateOfBirth', 'instance': 'Date', 'options': {}},
         'accepted': {'path': 'accepted', 'instance': 'boolean', 'options': {'form': {'helpInline': 'Did we take them?'}}},
-        'interviewScore': {'path': 'interviewScore', 'instance': 'Number', 'options': {'form': {'hidden': true}, 'list': {}}},
+        'interviewScore': {'path': 'interviewScore', 'instance': 'Number', 'options': {'form': {'hidden': true}}},
         'freeText': {'path': 'freeText', 'instance': 'String', 'options': {'form': {'type': 'textarea', 'rows': 5}}},
         '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}
       });
@@ -523,7 +544,7 @@ describe('BaseCtrl', function () {
         'weight': {'path': 'weight', 'instance': 'Number', 'options': {'form': {'label': 'Weight (lbs)'}}},
         'dateOfBirth': {'path': 'dateOfBirth', 'instance': 'Date', 'options': {}},
         'accepted': {'path': 'accepted', 'instance': 'boolean', 'options': {'form': {'helpInline': 'Did we take them?'}}},
-        'interviewScore': {'path': 'interviewScore', 'instance': 'Number', 'options': {'form': {'hidden': true}, 'list': {}}},
+        'interviewScore': {'path': 'interviewScore', 'instance': 'Number', 'options': {'form': {'hidden': true}}},
         'freeText': {'path': 'freeText', 'instance': 'String', 'options': {'form': {'type': 'textarea', 'rows': 5}}},
         '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}
       });
