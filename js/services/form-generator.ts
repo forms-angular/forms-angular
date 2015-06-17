@@ -40,46 +40,43 @@ module fng.services {
         }
         tab.content.push(thisInst);
       }
-
       for (var field in source) {
         if (field !== '_id' && source.hasOwnProperty(field)) {
           var mongooseType = source[field],
             mongooseOptions = mongooseType.options || {};
           var formData = mongooseOptions.form || {};
-          if (!formData.hidden) {
-            if (mongooseType.schema) {
-              if (doRecursion && destForm) {
-                var schemaSchema = [];
-                handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
-                var sectionInstructions = basicInstructions(field, formData, prefix);
-                sectionInstructions.schema = schemaSchema;
-                if (formData.tab) {
-                  handletabInfo(formData.tab, sectionInstructions);
+          if (mongooseType.schema && !formData.hidden) {
+            if (doRecursion && destForm) {
+              var schemaSchema = [];
+              handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
+              var sectionInstructions = basicInstructions(field, formData, prefix);
+              sectionInstructions.schema = schemaSchema;
+              if (formData.tab) {
+                handletabInfo(formData.tab, sectionInstructions);
+              }
+              if (formData.order !== undefined) {
+                destForm.splice(formData.order, 0, sectionInstructions);
+              } else {
+                destForm.push(sectionInstructions);
+              }
+            }
+          } else {
+            if (destForm && !formData.hidden) {
+              var formInstructions = basicInstructions(field, formData, prefix);
+              if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
+                var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
+                if (formInst.tab) {
+                  handletabInfo(formInst.tab, formInst);
                 }
                 if (formData.order !== undefined) {
-                  destForm.splice(formData.order, 0, sectionInstructions);
+                  destForm.splice(formData.order, 0, formInst);
                 } else {
-                  destForm.push(sectionInstructions);
+                  destForm.push(formInst);
                 }
               }
-            } else {
-              if (destForm) {
-                var formInstructions = basicInstructions(field, formData, prefix);
-                if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
-                  var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
-                  if (formInst.tab) {
-                    handletabInfo(formInst.tab, formInst);
-                  }
-                  if (formData.order !== undefined) {
-                    destForm.splice(formData.order, 0, formInst);
-                  } else {
-                    destForm.push(formInst);
-                  }
-                }
-              }
-              if (destList) {
-                handleListInfo(destList, mongooseOptions.list, field);
-              }
+            }
+            if (destList && mongooseOptions.list) {
+              handleListInfo(destList, mongooseOptions.list, field);
             }
           }
         }
@@ -407,14 +404,11 @@ module fng.services {
     };
 
     var handleListInfo = function (destList, listOptions, field) {
-      var listData = listOptions || {hidden: true};
-      if (!listData.hidden) {
-        if (typeof listData === 'object') {
-          listData.name = field;
-          destList.push(listData);
-        } else {
-          destList.push({name: field});
-        }
+      if (typeof listOptions === 'object') {
+        listOptions.name = field;
+        destList.push(listOptions);
+      } else {
+        destList.push({name: field});
       }
     };
 

@@ -64,7 +64,8 @@ var BSchema = new Schema({
   ipAddress: {type: String, form: {hidden: true}},
   //any field containing password will display as a password field (dots).
   // This can be overidden by adding 'form:{password:false}' - also this can be true if the field is NOT called password
-  password: {type: String}
+  password: {type: String},
+  lastUpdated: {type: Date, list:true, form:{hidden:true}}
 });
 
 BSchema.pre('save', function (next) {

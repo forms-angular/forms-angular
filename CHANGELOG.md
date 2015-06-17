@@ -15,6 +15,7 @@ much easier to add new plugins.
 * Changed id generation to remove . characters.  This may break some tests (but the . characters themselves were upsetting 
 some testing software).
 * Removed body padding from styling.  If you use a navbar you should put body {padding-top: 40px} (or required navbar height) in your styling. 
+* Hidden fields that are also list fields are still not displayed on forms, but now _are_ added to the list schema (so appear in lookups etc).
 
 ## 0.3 to 0.4
 ### Summary
