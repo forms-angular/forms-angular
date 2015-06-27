@@ -621,6 +621,7 @@ module fng.services {
 
         $scope.cancel = function () {
           angular.copy(ctrlState.master, $scope.record);
+          $scope.$broadcast('fngCancel', $scope);
           // Let call backs etc resolve in case they dirty form, then clean it
           $timeout($scope.setPristine);
         };
