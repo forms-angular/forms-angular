@@ -485,7 +485,7 @@ module fng.directives {
                   }
                 }
 
-                newElement += '></' + directiveName + '>';
+                newElement += 'ng-model="' + info.name + '"></' + directiveName + '>';
                 result += newElement;
                 callHandleField = false;
               } else if (info.containerType) {
