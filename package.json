@@ -78,7 +78,8 @@
     "karma-phantomjs-launcher": "~0.1.0",
     "matchdep": "~0.3",
     "mocha": "~2",
-    "run-sequence": "^1.0.2"
+    "run-sequence": "^1.0.2",
+    "uglify-js2": "~2.1.11"
   },
   "license": "MIT"
 }

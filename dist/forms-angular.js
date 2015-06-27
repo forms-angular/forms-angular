@@ -914,7 +914,7 @@ var fng;
                                             newElement += ' fng-opt-' + prop + '="' + options[prop].toString().replace(/"/g, '&quot;') + '"';
                                         }
                                     }
-                                    newElement += '></' + directiveName + '>';
+                                    newElement += 'ng-model="' + info.name + '"></' + directiveName + '>';
                                     result += newElement;
                                     callHandleField = false;
                                 }
@@ -1141,17 +1141,19 @@ var fng;
         /*@ngInject*/
         function titleCase() {
             return function (str, stripSpaces) {
-                var value = str.replace(/(_|\.)/g, ' ').replace(/[A-Z]/g, ' $&').trim().replace(/\w\S*/g, function (txt) {
-                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-                });
-                if (stripSpaces) {
-                    value = value.replace(/\s/g, '');
+                if (str) {
+                    str = str.replace(/(_|\.)/g, ' ').replace(/[A-Z]/g, ' $&').trim().replace(/\w\S*/g, function (txt) {
+                        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                    });
+                    if (stripSpaces) {
+                        str = str.replace(/\s/g, '');
+                    }
+                    else {
+                        // lose double spaces
+                        str = str.replace(/\s{2,}/g, ' ');
+                    }
                 }
-                else {
-                    // lose double spaces
-                    value = value.replace(/\s{2,}/g, ' ');
-                }
-                return value;
+                return str;
             };
         }
         filters.titleCase = titleCase;
@@ -3215,6 +3217,7 @@ var fng;
                     $scope.handleHttpError = handleError($scope);
                     $scope.cancel = function () {
                         angular.copy(ctrlState.master, $scope.record);
+                        $scope.$broadcast('fngCancel', $scope);
                         // Let call backs etc resolve in case they dirty form, then clean it
                         $timeout($scope.setPristine);
                     };
