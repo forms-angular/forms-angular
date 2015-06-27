@@ -63,7 +63,8 @@ var DataForm = function (app, options) {
   this.registerRoutes();
   this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
   if (this.options.JQMongoFileUploader) {
-    this.fileUploader = new (require('fng-jq-upload'))(this, processArgs, this.options.JQMongoFileUploader);
+    var JqUploadModule = this.options.JQMongoFileUploader.module || require('fng-jq-upload').Controller;
+    this.fileUploader = new JqUploadModule(this, processArgs, this.options.JQMongoFileUploader);
     void (this.fileUploader);  // suppress warning
   }
 };
