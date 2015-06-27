@@ -6094,4 +6094,8 @@ form .tab-content {
   .navbar-form.navbar-right:last-child {
     margin-right: -15px;
   }
+  form .schema-head,
+  form .schema-foot {
+    padding: 5px 15px;
+  }
 }
