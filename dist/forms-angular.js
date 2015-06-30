@@ -844,7 +844,7 @@ var fng;
                         if (instructionsArray) {
                             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
                                 var info = instructionsArray[anInstruction];
-                                if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/)) {
+                                if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/) && typeof info.add !== 'object') {
                                     info.add = info.add ? ' ' + info.add + ' ' : '';
                                     if (info.add.indexOf('ui-date') === -1 && !options.noautofocus && !info.containerType) {
                                         info.add = info.add + 'autofocus ';
@@ -2541,20 +2541,33 @@ var fng;
         function pluginHelper(formMarkupHelper) {
             return {
                 extractFromAttr: function extractFromAttr(attr, directiveName) {
+                    function deserialize(str) {
+                        var retVal = str.replace(/&quot;/g, '"');
+                        if (retVal === 'true') {
+                            retVal = true;
+                        }
+                        else if (retVal === 'false') {
+                            retVal = false;
+                        }
+                        else if (!isNaN(parseFloat(retVal)) && isFinite(retVal)) {
+                            retVal = parseFloat(retVal);
+                        }
+                        return retVal;
+                    }
                     var info = {};
                     var options = { formStyle: attr.formstyle };
                     var directiveOptions = {};
-                    var directiveNameLength = directiveName.length;
+                    var directiveNameLength = directiveName ? directiveName.length : 0;
                     for (var prop in attr) {
                         if (attr.hasOwnProperty(prop)) {
                             if (prop.slice(0, 6) === 'fngFld') {
-                                info[prop.slice(6).toLowerCase()] = attr[prop].replace(/&quot;/g, '"');
+                                info[prop.slice(6).toLowerCase()] = deserialize(attr[prop]);
                             }
                             else if (prop.slice(0, 6) === 'fngOpt') {
-                                options[prop.slice(6).toLowerCase()] = attr[prop].replace(/&quot;/g, '"');
+                                options[prop.slice(6).toLowerCase()] = deserialize(attr[prop]);
                             }
-                            else if (prop.slice(0, directiveNameLength) === directiveName) {
-                                directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = attr[prop].replace(/&quot;/g, '"');
+                            else if (directiveName && prop.slice(0, directiveNameLength) === directiveName) {
+                                directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = deserialize(attr[prop]);
                             }
                         }
                     }

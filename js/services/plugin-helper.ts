@@ -9,18 +9,31 @@ module fng.services {
   export function pluginHelper(formMarkupHelper) {
     return {
       extractFromAttr: function extractFromAttr(attr, directiveName) {
+
+        function deserialize(str) {
+          var retVal = str.replace(/&quot;/g, '"')
+          if (retVal === 'true') {
+            retVal = true;
+          } else if (retVal === 'false') {
+            retVal = false;
+          } else if (!isNaN(parseFloat(retVal)) && isFinite(retVal)) {
+            retVal = parseFloat(retVal);
+          }
+          return retVal;
+        }
+
         var info = {};
         var options = {formStyle: attr.formstyle};
         var directiveOptions = {};
-        var directiveNameLength = directiveName.length;
+        var directiveNameLength = directiveName ? directiveName.length : 0;
         for (var prop in attr) {
           if (attr.hasOwnProperty(prop)) {
             if (prop.slice(0, 6) === 'fngFld') {
-              info[prop.slice(6).toLowerCase()] = attr[prop].replace(/&quot;/g, '"');
+              info[prop.slice(6).toLowerCase()] = deserialize(attr[prop]);
             } else if (prop.slice(0, 6) === 'fngOpt') {
-              options[prop.slice(6).toLowerCase()] = attr[prop].replace(/&quot;/g, '"');
-            } else if (prop.slice(0, directiveNameLength) === directiveName) {
-              directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = attr[prop].replace(/&quot;/g, '"');
+              options[prop.slice(6).toLowerCase()] = deserialize(attr[prop]);
+            } else if (directiveName && prop.slice(0, directiveNameLength) === directiveName) {
+              directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = deserialize(attr[prop]);
             }
           }
         }
