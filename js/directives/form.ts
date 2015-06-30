@@ -413,7 +413,7 @@ module fng.directives {
           if (instructionsArray) {
             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
               var info = instructionsArray[anInstruction];
-              if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/)) {
+              if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/) && typeof info.add !== 'object') {
                 info.add = info.add ? ' ' + info.add + ' ' : '';
                 if (info.add.indexOf('ui-date') === -1 && !options.noautofocus && !info.containerType) {
                   info.add = info.add + 'autofocus ';
