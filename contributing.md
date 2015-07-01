@@ -13,7 +13,7 @@ In order for us to help you please check that you've completed the following ste
 
 ## Style Guide
 
-There is a picky .jshintrc file that will be used when you run grunt.  The main points are that the project uses single-quotes, 
+There is a picky .jshintrc file, but it is not part of the build process since the move to typsescript.  The main points are that the project uses single-quotes, 
 two space indentation, multiple var statements and whitespace around arguments. Use a single space after keywords like `function`.
 
 ## Pull Request Guidelines
@@ -22,7 +22,7 @@ two space indentation, multiple var statements and whitespace around arguments. 
 * Non-trivial changes should be discussed in an issue or #forms-angular on IRC first
 * Develop in a topic branch, not master
 * Add relevant tests to cover the change
-* Lint the code and run unit tests by running `grunt`
+* Build and run unit tests by running `npm test` (which just runs gulp all).
 * Run the end to end tests in the [website repo](https://github.com/forms-angular/website) by doing the following:
   * Run the website with `NODE_ENV=test` using your up to date forms-angular (`npm link` and `bower link` are useful here)
   * Change the port number in the relavant protractor config file(s) in test/e2e/protractor*.conf.js

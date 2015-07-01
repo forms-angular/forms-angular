@@ -19,6 +19,7 @@ var fng;
             formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
             recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
             recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
+            // Tell the 'model controllers' that they can start fiddling with basescope
             for (var i = 0; i < sharedStuff.modelControllers.length; i++) {
                 if (sharedStuff.modelControllers[i].onBaseCtrlReady) {
                     sharedStuff.modelControllers[i].onBaseCtrlReady($scope);
@@ -357,7 +358,18 @@ var fng;
             return {
                 restrict: 'AE',
                 replace: true,
-                template: '<li ng-show="items.length > 0" class="dropdown mcdd" dropdown>' + ' <a class="dropdown-toggle" dropdown-toggle>' + '  {{contextMenu}} <b class="caret"></b>' + ' </a>' + ' <ul class="dropdown-menu">' + '  <li ng-repeat="choice in items" ng-hide="isHidden($index)" ng-class="dropdownClass($index)">' + '   <a ng-show="choice.text" class="dropdown-option" ng-href="{{choice.url}}" ng-click="doClick($index, $event)">' + '    {{choice.text}}' + '   </a>' + '  </li>' + ' </ul>' + '</li>'
+                template: '<li ng-show="items.length > 0" class="dropdown mcdd" dropdown>' +
+                    ' <a class="dropdown-toggle" dropdown-toggle>' +
+                    '  {{contextMenu}} <b class="caret"></b>' +
+                    ' </a>' +
+                    ' <ul class="dropdown-menu">' +
+                    '  <li ng-repeat="choice in items" ng-hide="isHidden($index)" ng-class="dropdownClass($index)">' +
+                    '   <a ng-show="choice.text" class="dropdown-option" ng-href="{{choice.url}}" ng-click="doClick($index, $event)">' +
+                    '    {{choice.text}}' +
+                    '   </a>' +
+                    '  </li>' +
+                    ' </ul>' +
+                    '</li>'
             };
         }
         directives.modelControllerDropdown = modelControllerDropdown;
@@ -372,7 +384,13 @@ var fng;
         function errorDisplay() {
             return {
                 restrict: 'E',
-                template: '<div id="display-error" ng-show="errorMessage" ng-class="css(\'rowFluid\')">' + '  <div class="alert alert-error col-lg-offset-3 offset3 col-lg-6 col-xs-12 span6 alert-warning alert-dismissable">' + '    <button type="button" class="close" ng-click="dismissError()">×</button>' + '    <h4>{{alertTitle}}</h4>' + '    <div ng-bind-html="errorMessage"></div>' + '  </div>' + '</div>'
+                template: '<div id="display-error" ng-show="errorMessage" ng-class="css(\'rowFluid\')">' +
+                    '  <div class="alert alert-error col-lg-offset-3 offset3 col-lg-6 col-xs-12 span6 alert-warning alert-dismissable">' +
+                    '    <button type="button" class="close" ng-click="dismissError()">×</button>' +
+                    '    <h4>{{alertTitle}}</h4>' +
+                    '    <div ng-bind-html="errorMessage"></div>' +
+                    '  </div>' +
+                    '</div>'
             };
         }
         directives.errorDisplay = errorDisplay;
@@ -484,7 +502,7 @@ var fng;
                     //                Inline
                     //                <input type="text" class="input-small" placeholder="Email">
                     var subkeys = [];
-                    var tabsSetup = 1 /* N */;
+                    var tabsSetup = tabsSetupState.N;
                     var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
                         var nameString;
                         if (!modelString) {
@@ -767,16 +785,22 @@ var fng;
                                     else {
                                         template += '<div class="schema-head">' + info.label;
                                         if (info.unshift) {
-                                            template += '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' + '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
+                                            template += '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
+                                                '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                                         }
-                                        template += '</div>' + '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') + convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' + ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' + '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">';
+                                        template += '</div>' +
+                                            '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
+                                            convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
+                                            ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
+                                            '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">';
                                         if (!info.noRemove || info.customSubDoc) {
                                             template += '   <div class="sub-doc-btns">';
                                             if (info.customSubDoc) {
                                                 template += info.customSubDoc;
                                             }
                                             if (!info.noRemove) {
-                                                template += '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' + '<i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove</button>';
+                                                template += '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
+                                                    '<i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove</button>';
                                             }
                                             template += '  </div> ';
                                         }
@@ -786,14 +810,16 @@ var fng;
                                             model: options.model,
                                             subschemaroot: info.name
                                         });
-                                        template += '   </div>' + '</div>';
+                                        template += '   </div>' +
+                                            '</div>';
                                         if (!info.noAdd || info.customFooter) {
                                             template += '<div class = "schema-foot">';
                                             if (info.customFooter) {
                                                 template += info.customFooter;
                                             }
                                             if (!info.noAdd) {
-                                                template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' + '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
+                                                template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                                                    '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                                             }
                                             template += '</div>';
                                         }
@@ -923,8 +949,8 @@ var fng;
                                     switch (info.containerType) {
                                         case 'tab':
                                             // maintain support for simplified tabset syntax for now
-                                            if (tabsSetup === 1 /* N */) {
-                                                tabsSetup = 2 /* Forced */;
+                                            if (tabsSetup === tabsSetupState.N) {
+                                                tabsSetup = tabsSetupState.Forced;
                                                 result += '<tabset>';
                                             }
                                             result += parts.before;
@@ -932,7 +958,7 @@ var fng;
                                             result += parts.after;
                                             break;
                                         case 'tabset':
-                                            tabsSetup = 0 /* Y */;
+                                            tabsSetup = tabsSetupState.Y;
                                             result += parts.before;
                                             result += processInstructions(info.content, null, options);
                                             result += parts.after;
@@ -999,7 +1025,7 @@ var fng;
                                     throw new Error('Model and Name must be distinct - they are both ' + theRecord);
                                 }
                                 elementHtml += processInstructions(newValue, true, attrs);
-                                if (tabsSetup === 2 /* Forced */) {
+                                if (tabsSetup === tabsSetupState.Forced) {
                                     elementHtml += '</tabset>';
                                 }
                                 elementHtml += attrs.subschema ? '' : '</form>';
@@ -1011,11 +1037,13 @@ var fng;
                                     var unwatch2 = scope.$watch('phase', function (newValue) {
                                         if (newValue === 'ready') {
                                             unwatch2();
+                                            // Tell the 'model controllers' that the form and data are there
                                             for (var i = 0; i < $data.modelControllers.length; i++) {
                                                 if ($data.modelControllers[i].onAllReady) {
                                                     $data.modelControllers[i].onAllReady(scope);
                                                 }
                                             }
+                                            // For each one of the subkeys sets in the form we need to fix up ng-model references
                                             for (var subkeyCtr = 0; subkeyCtr < subkeys.length; subkeyCtr++) {
                                                 var info = subkeys[subkeyCtr];
                                                 var arrayOffset;
@@ -1027,6 +1055,7 @@ var fng;
                                                     dataVal = dataVal[parts.shift()] || {};
                                                 }
                                                 dataVal = dataVal[parts[0]] = dataVal[parts[0]] || [];
+                                                // For each of the required subkeys of this type
                                                 for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
                                                     if (arrayToProcess[thisOffset].selectFunc) {
                                                         // Get the array offset from a function
@@ -1043,7 +1072,8 @@ var fng;
                                                             for (var keyField in thisSubkeyList) {
                                                                 if (thisSubkeyList.hasOwnProperty(keyField)) {
                                                                     // Not (currently) concerned with objects here - just simple types and lookups
-                                                                    if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField] && (typeof dataVal[arrayOffset][keyField] === 'undefined' || !dataVal[arrayOffset][keyField].text || dataVal[arrayOffset][keyField].text !== thisSubkeyList[keyField])) {
+                                                                    if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField] &&
+                                                                        (typeof dataVal[arrayOffset][keyField] === 'undefined' || !dataVal[arrayOffset][keyField].text || dataVal[arrayOffset][keyField].text !== thisSubkeyList[keyField])) {
                                                                         matching = false;
                                                                         break;
                                                                     }
@@ -1125,7 +1155,8 @@ var fng;
         function camelCase() {
             return function (name) {
                 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
-                return name.replace(SPECIAL_CHARS_REGEXP, function (_, separator, letter, offset) {
+                return name.
+                    replace(SPECIAL_CHARS_REGEXP, function (_, separator, letter, offset) {
                     return offset ? letter.toUpperCase() : letter;
                 });
             };
@@ -1142,7 +1173,10 @@ var fng;
         function titleCase() {
             return function (str, stripSpaces) {
                 if (str) {
-                    str = str.replace(/(_|\.)/g, ' ').replace(/[A-Z]/g, ' $&').trim().replace(/\w\S*/g, function (txt) {
+                    str = str
+                        .replace(/(_|\.)/g, ' ') // replace underscores and dots with spaces
+                        .replace(/[A-Z]/g, ' $&').trim() // precede replace caps with a space
+                        .replace(/\w\S*/g, function (txt) {
                         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
                     });
                     if (stripSpaces) {
@@ -1348,7 +1382,7 @@ var fng;
                 { route: '/:model/:form/:id/edit', state: 'model::form::edit', templateUrl: 'partials/base-edit.html' },
                 { route: '/:model/:form/:id/edit/:tab', state: 'model::form::edit::tab', templateUrl: 'partials/base-edit.html' },
                 { route: '/:model/:form/new', state: 'model::form::new', templateUrl: 'partials/base-edit.html' },
-                { route: '/:model/:form', state: 'model::form::list', templateUrl: 'partials/base-list.html' }
+                { route: '/:model/:form', state: 'model::form::list', templateUrl: 'partials/base-list.html' } // list page with links to non default form
             ];
             var _routeProvider, _stateProvider;
             var lastRoute = null;
@@ -1832,7 +1866,8 @@ var fng;
                                     initSelection: function (element, callback) {
                                         var theId = element.val();
                                         if (theId && theId !== '') {
-                                            SubmissionsService.getListAttributes(mongooseOptions.ref, theId).success(function (data) {
+                                            SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
+                                                .success(function (data) {
                                                 if (data.success === false) {
                                                     $location.path('/404');
                                                 }
@@ -2006,6 +2041,7 @@ var fng;
                     }
                 }
                 if (destList.length === 0) {
+                    // If it is still blank then just use the first field from source
                     for (var field in source) {
                         if (field !== '_id' && source.hasOwnProperty(field)) {
                             destList.push({ name: field });
@@ -2154,6 +2190,7 @@ var fng;
                                 }
                             }
                             else {
+                                // TODO: this needs rewrite for nesting
                                 throw new Error('You can only go down one level of subdocument with showIf');
                             }
                         }
@@ -2274,7 +2311,8 @@ var fng;
                     };
                     // Useful utility when debugging
                     $scope.toJSON = function (obj) {
-                        return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2) + '\n\n*** The toJSON function is deprecated - use the json filter instead ***';
+                        return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2) +
+                            '\n\n*** The toJSON function is deprecated - use the json filter instead ***';
                     };
                     $scope.baseSchema = function () {
                         return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
@@ -3040,7 +3078,8 @@ var fng;
             return {
                 readRecord: function readRecord($scope, ctrlState) {
                     // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
-                    SubmissionsService.readRecord($scope.modelName, $scope.id).success(function (data) {
+                    SubmissionsService.readRecord($scope.modelName, $scope.id)
+                        .success(function (data) {
                         if (data.success === false) {
                             $location.path('/404');
                         }
@@ -3060,7 +3099,8 @@ var fng;
                         limit: $scope.pageSize,
                         skip: pagesLoaded * $scope.pageSize,
                         order: $location.$$search.o
-                    }).success(function (data) {
+                    })
+                        .success(function (data) {
                         if (angular.isArray(data)) {
                             //  I have seen an intermittent problem where a page is requested twice
                             if (pagesLoaded === $scope.pagesLoaded) {
@@ -3074,11 +3114,13 @@ var fng;
                         else {
                             $scope.showError(data, 'Invalid query');
                         }
-                    }).error($scope.handleHttpError);
+                    })
+                        .error($scope.handleHttpError);
                 },
                 // TODO: Do we need model here?  Can we not infer it from scope?
                 deleteRecord: function deleteRecord(model, id, $scope, ctrlState) {
-                    SubmissionsService.deleteRecord(model, id).success(function () {
+                    SubmissionsService.deleteRecord(model, id)
+                        .success(function () {
                         if (typeof $scope.dataEventFunctions.onAfterDelete === 'function') {
                             $scope.dataEventFunctions.onAfterDelete(ctrlState.master);
                         }
@@ -3087,7 +3129,8 @@ var fng;
                 },
                 updateDocument: function updateDocument(dataToSave, options, $scope, ctrlState) {
                     $scope.phase = 'updating';
-                    SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave).success(function (data) {
+                    SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave)
+                        .success(function (data) {
                         if (data.success !== false) {
                             if (typeof $scope.dataEventFunctions.onAfterUpdate === 'function') {
                                 $scope.dataEventFunctions.onAfterUpdate(data, ctrlState.master);
@@ -3106,10 +3149,12 @@ var fng;
                         else {
                             $scope.showError(data);
                         }
-                    }).error($scope.handleHttpError);
+                    })
+                        .error($scope.handleHttpError);
                 },
                 createNew: function createNew(dataToSave, options, $scope) {
-                    SubmissionsService.createRecord($scope.modelName, dataToSave).success(function (data) {
+                    SubmissionsService.createRecord($scope.modelName, dataToSave)
+                        .success(function (data) {
                         if (data.success !== false) {
                             if (typeof $scope.dataEventFunctions.onAfterCreate === 'function') {
                                 $scope.dataEventFunctions.onAfterCreate(data);
@@ -3124,7 +3169,8 @@ var fng;
                         else {
                             $scope.showError(data);
                         }
-                    }).error($scope.handleHttpError);
+                    })
+                        .error($scope.handleHttpError);
                 },
                 getListData: getListData,
                 suffixCleanId: suffixCleanId,
@@ -3132,7 +3178,8 @@ var fng;
                 setUpSelectOptions: function setUpSelectOptions(lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
                     var optionsList = $scope[schemaElement.options] = [];
                     var idList = $scope[schemaElement.ids] = [];
-                    SchemasService.getSchema(lookupCollection).success(function (data) {
+                    SchemasService.getSchema(lookupCollection)
+                        .success(function (data) {
                         var listInstructions = [];
                         handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState);
                         var dataRequest;
@@ -3143,7 +3190,8 @@ var fng;
                         else {
                             dataRequest = SubmissionsService.getAll(lookupCollection);
                         }
-                        dataRequest.success(function (data) {
+                        dataRequest
+                            .success(function (data) {
                             if (data) {
                                 for (var i = 0; i < data.length; i++) {
                                     var option = '';
@@ -3291,7 +3339,17 @@ var fng;
                         if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
                             event.preventDefault();
                             var modalInstance = $modal.open({
-                                template: '<div class="modal-header">' + '   <h3>Record modified</h3>' + '</div>' + '<div class="modal-body">' + '   <p>Would you like to save your changes?</p>' + '</div>' + '<div class="modal-footer">' + '    <button class="btn btn-primary dlg-yes" ng-click="yes()">Yes</button>' + '    <button class="btn btn-warning dlg-no" ng-click="no()">No</button>' + '    <button class="btn dlg-cancel" ng-click="cancel()">Cancel</button>' + '</div>',
+                                template: '<div class="modal-header">' +
+                                    '   <h3>Record modified</h3>' +
+                                    '</div>' +
+                                    '<div class="modal-body">' +
+                                    '   <p>Would you like to save your changes?</p>' +
+                                    '</div>' +
+                                    '<div class="modal-footer">' +
+                                    '    <button class="btn btn-primary dlg-yes" ng-click="yes()">Yes</button>' +
+                                    '    <button class="btn btn-warning dlg-no" ng-click="no()">No</button>' +
+                                    '    <button class="btn dlg-cancel" ng-click="cancel()">Cancel</button>' +
+                                    '</div>',
                                 controller: 'SaveChangesModalCtrl',
                                 backdrop: 'static'
                             });
@@ -3309,7 +3367,16 @@ var fng;
                     $scope.deleteClick = function () {
                         if ($scope.record._id) {
                             var modalInstance = $modal.open({
-                                template: '<div class="modal-header">' + '   <h3>Delete Item</h3>' + '</div>' + '<div class="modal-body">' + '   <p>Are you sure you want to delete this record?</p>' + '</div>' + '<div class="modal-footer">' + '    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>' + '    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>' + '</div>',
+                                template: '<div class="modal-header">' +
+                                    '   <h3>Delete Item</h3>' +
+                                    '</div>' +
+                                    '<div class="modal-body">' +
+                                    '   <p>Are you sure you want to delete this record?</p>' +
+                                    '</div>' +
+                                    '<div class="modal-footer">' +
+                                    '    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>' +
+                                    '    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>' +
+                                    '</div>',
                                 controller: 'SaveChangesModalCtrl',
                                 backdrop: 'static'
                             });
@@ -3384,9 +3451,11 @@ var fng;
                 },
                 fillFormFromBackendCustomSchema: fillFormFromBackendCustomSchema,
                 fillFormWithBackendSchema: function fillFormWithBackendSchema($scope, formGeneratorInstance, recordHandlerInstance, ctrlState) {
-                    SchemasService.getSchema($scope.modelName, $scope.formName).success(function (schema) {
+                    SchemasService.getSchema($scope.modelName, $scope.formName)
+                        .success(function (schema) {
                         fillFormFromBackendCustomSchema(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState);
-                    }).error($scope.handleHttpError);
+                    })
+                        .error($scope.handleHttpError);
                 }
             };
         }
@@ -3518,7 +3587,30 @@ var fng;
         'ui.bootstrap',
         'infinite-scroll',
         'monospaced.elastic'
-    ]).controller('BaseCtrl', fng.controllers.BaseCtrl).controller('SaveChangesModalCtrl', fng.controllers.SaveChangesModalCtrl).controller('ModelCtrl', fng.controllers.ModelCtrl).controller('NavCtrl', fng.controllers.NavCtrl).directive('modelControllerDropdown', fng.directives.modelControllerDropdown).directive('errorDisplay', fng.directives.errorDisplay).directive('fngLink', fng.directives.fngLink).directive('formInput', fng.directives.formInput).directive('formButtons', fng.directives.formButtons).directive('globalSearch', fng.directives.globalSearch).filter('camelCase', fng.filters.camelCase).filter('titleCase', fng.filters.titleCase).service('addAllService', fng.services.addAllService).provider('cssFrameworkService', fng.services.cssFrameworkService).provider('routingService', fng.services.routingService).factory('$data', fng.services.$data).factory('formGenerator', fng.services.formGenerator).factory('formMarkupHelper', fng.services.formMarkupHelper).factory('inputSizeHelper', fng.services.inputSizeHelper).factory('pluginHelper', fng.services.pluginHelper).factory('recordHandler', fng.services.recordHandler).factory('SchemasService', fng.services.SchemasService).factory('SubmissionsService', fng.services.SubmissionsService);
+    ])
+        .controller('BaseCtrl', fng.controllers.BaseCtrl)
+        .controller('SaveChangesModalCtrl', fng.controllers.SaveChangesModalCtrl)
+        .controller('ModelCtrl', fng.controllers.ModelCtrl)
+        .controller('NavCtrl', fng.controllers.NavCtrl)
+        .directive('modelControllerDropdown', fng.directives.modelControllerDropdown)
+        .directive('errorDisplay', fng.directives.errorDisplay)
+        .directive('fngLink', fng.directives.fngLink)
+        .directive('formInput', fng.directives.formInput)
+        .directive('formButtons', fng.directives.formButtons)
+        .directive('globalSearch', fng.directives.globalSearch)
+        .filter('camelCase', fng.filters.camelCase)
+        .filter('titleCase', fng.filters.titleCase)
+        .service('addAllService', fng.services.addAllService)
+        .provider('cssFrameworkService', fng.services.cssFrameworkService)
+        .provider('routingService', fng.services.routingService)
+        .factory('$data', fng.services.$data)
+        .factory('formGenerator', fng.services.formGenerator)
+        .factory('formMarkupHelper', fng.services.formMarkupHelper)
+        .factory('inputSizeHelper', fng.services.inputSizeHelper)
+        .factory('pluginHelper', fng.services.pluginHelper)
+        .factory('recordHandler', fng.services.recordHandler)
+        .factory('SchemasService', fng.services.SchemasService)
+        .factory('SubmissionsService', fng.services.SubmissionsService);
 })(fng || (fng = {}));
 // expose the library
 var formsAngular = fng.formsAngular;
