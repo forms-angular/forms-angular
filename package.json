@@ -21,7 +21,7 @@
     "underscore": "~1.8.2"
   },
   "scripts": {
-    "test": "gulp all"
+    "test": "scripts/testrun.sh"
   },
   "main": "server/data_form.js",
   "repository": {
