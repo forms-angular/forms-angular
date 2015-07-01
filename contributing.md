@@ -22,7 +22,7 @@ two space indentation, multiple var statements and whitespace around arguments. 
 * Non-trivial changes should be discussed in an issue or #forms-angular on IRC first
 * Develop in a topic branch, not master
 * Add relevant tests to cover the change
-* Build and run unit tests by running `npm test` (which just runs gulp all).
+* Build and run unit tests by running `npm test` (or `gulp all` which runs the tests after a build).
 * Run the end to end tests in the [website repo](https://github.com/forms-angular/website) by doing the following:
   * Run the website with `NODE_ENV=test` using your up to date forms-angular (`npm link` and `bower link` are useful here)
   * Change the port number in the relavant protractor config file(s) in test/e2e/protractor*.conf.js
