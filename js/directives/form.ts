@@ -7,10 +7,10 @@ module fng.directives {
   enum tabsSetupState {Y, N, Forced}
 
   /*@ngInject*/
-  export function formInput($compile, $rootScope, $filter, $data, cssFrameworkService, formGenerator, formMarkupHelper):angular.IDirective {
+  export function formInput($compile, $rootScope, $filter, $data, $timeout, cssFrameworkService, formGenerator, formMarkupHelper):angular.IDirective {
     return {
       restrict: 'EA',
-      link: function (scope: fng.IFormScope, element, attrs: fng.IFormAttrs) {
+      link: function (scope:fng.IFormScope, element, attrs:fng.IFormAttrs) {
 //                generate markup for bootstrap forms
 //
 //                Bootstrap 3
@@ -292,7 +292,7 @@ module fng.directives {
           return result;
         };
 
-        var handleField = function (info, options: fng.IFormOptions) {
+        var handleField = function (info, options:fng.IFormOptions) {
           var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options);
           var template = fieldChrome.template;
 
@@ -328,14 +328,14 @@ module fng.directives {
                   template += '<div class="schema-head">' + info.label;
                   if (info.unshift) {
                     template += '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
-                    '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
+                      '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                   }
 
                   template += '</div>' +
-                  '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
-                  convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
-                  ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
-                  '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">';
+                    '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
+                    convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
+                    ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
+                    '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">';
                   if (!info.noRemove || info.customSubDoc) {
                     template += '   <div class="sub-doc-btns">';
                     if (info.customSubDoc) {
@@ -343,7 +343,7 @@ module fng.directives {
                     }
                     if (!info.noRemove) {
                       template += '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                      '<i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove</button>';
+                        '<i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove</button>';
                     }
                     template += '  </div> ';
                   }
@@ -356,7 +356,7 @@ module fng.directives {
                   });
 
                   template += '   </div>' +
-                  '</div>';
+                    '</div>';
                   if (!info.noAdd || info.customFooter) {
                     template += '<div class = "schema-foot">';
                     if (info.customFooter) {
@@ -364,7 +364,7 @@ module fng.directives {
                     }
                     if (!info.noAdd) {
                       template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
-                      '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
+                        '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                     }
                     template += '</div>';
                   }
@@ -385,7 +385,9 @@ module fng.directives {
             } else {
               // Single fields here
               template += formMarkupHelper.label(scope, info, null, options);
-              if ((<any>options).required) { console.log("*********  Options required - found it ********");}
+              if ((<any>options).required) {
+                console.log("*********  Options required - found it ********");
+              }
               template += formMarkupHelper.handleInputAndControlDiv(generateInput(info, null, (<any>options).required, info.id, options), controlDivClasses);
             }
           }
@@ -408,7 +410,7 @@ module fng.directives {
 
 //              var processInstructions = function (instructionsArray, topLevel, groupId) {
 //  removing groupId as it was only used when called by containerType container, which is removed for now
-        var processInstructions = function (instructionsArray, topLevel, options: fng.IFormOptions) {
+        var processInstructions = function (instructionsArray, topLevel, options:fng.IFormOptions) {
           var result = '';
           if (instructionsArray) {
             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
@@ -633,8 +635,22 @@ module fng.directives {
                             }
                           }
                           if (!matching) {
-                            // There is no matching array element - we need to create one
-                            arrayOffset = theRecord[info.name].push(thisSubkeyList) - 1;
+                            // There is no matching array element
+                            switch (arrayToProcess[thisOffset].onNotFound) {
+                              case 'error' :
+                                var errorMessage = 'Cannot find matching ' + (arrayToProcess[thisOffset].title || arrayToProcess[thisOffset].path);
+                                //Have to do this async as setPristine clears it
+                                $timeout(function() {
+                                  scope.showError(errorMessage, 'Unable to set up form correctly');
+                                });
+                                arrayOffset = -1;
+                                //throw new Error(scope.errorMessage);
+                                break;
+                              case 'create':
+                              default:
+                                arrayOffset = theRecord[info.name].push(thisSubkeyList) - 1;
+                                break;
+                            }
                           }
                         } else {
                           throw new Error('Invalid subkey setup for ' + info.name);
