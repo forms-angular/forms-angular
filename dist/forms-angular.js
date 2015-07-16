@@ -459,7 +459,7 @@ var fng;
             tabsSetupState[tabsSetupState["Forced"] = 2] = "Forced";
         })(tabsSetupState || (tabsSetupState = {}));
         /*@ngInject*/
-        function formInput($compile, $rootScope, $filter, $data, cssFrameworkService, formGenerator, formMarkupHelper) {
+        function formInput($compile, $rootScope, $filter, $data, $timeout, cssFrameworkService, formGenerator, formMarkupHelper) {
             return {
                 restrict: 'EA',
                 link: function (scope, element, attrs) {
@@ -1084,8 +1084,22 @@ var fng;
                                                             }
                                                         }
                                                         if (!matching) {
-                                                            // There is no matching array element - we need to create one
-                                                            arrayOffset = theRecord[info.name].push(thisSubkeyList) - 1;
+                                                            // There is no matching array element
+                                                            switch (arrayToProcess[thisOffset].onNotFound) {
+                                                                case 'error':
+                                                                    var errorMessage = 'Cannot find matching ' + (arrayToProcess[thisOffset].title || arrayToProcess[thisOffset].path);
+                                                                    //Have to do this async as setPristine clears it
+                                                                    $timeout(function () {
+                                                                        scope.showError(errorMessage, 'Unable to set up form correctly');
+                                                                    });
+                                                                    arrayOffset = -1;
+                                                                    //throw new Error(scope.errorMessage);
+                                                                    break;
+                                                                case 'create':
+                                                                default:
+                                                                    arrayOffset = theRecord[info.name].push(thisSubkeyList) - 1;
+                                                                    break;
+                                                            }
                                                         }
                                                     }
                                                     else {
@@ -1108,7 +1122,7 @@ var fng;
                 }
             };
         }
-        formInput.$inject = ["$compile", "$rootScope", "$filter", "$data", "cssFrameworkService", "formGenerator", "formMarkupHelper"];
+        formInput.$inject = ["$compile", "$rootScope", "$filter", "$data", "$timeout", "cssFrameworkService", "formGenerator", "formMarkupHelper"];
         directives.formInput = formInput;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));

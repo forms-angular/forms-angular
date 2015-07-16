@@ -171,7 +171,7 @@ declare module fng.directives {
     function fngLink(routingService: any, SubmissionsService: any): angular.IDirective;
 }
 declare module fng.directives {
-    function formInput($compile: any, $rootScope: any, $filter: any, $data: any, cssFrameworkService: any, formGenerator: any, formMarkupHelper: any): angular.IDirective;
+    function formInput($compile: any, $rootScope: any, $filter: any, $data: any, $timeout: any, cssFrameworkService: any, formGenerator: any, formMarkupHelper: any): angular.IDirective;
 }
 declare module fng.directives {
     function formButtons(cssFrameworkService: any): angular.IDirective;
