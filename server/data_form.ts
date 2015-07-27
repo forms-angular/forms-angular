@@ -54,6 +54,8 @@ function processArgs(options, array) {
 
 var DataForm = function (app, options) {
   this.app = app;
+  app.locals.formsAngular = app.locals.formsAngular || [];
+  app.locals.formsAngular.push(this);
   this.mongoose = mongoose;
   this.options = _.extend({
     urlPrefix: '/api/'
@@ -1003,6 +1005,11 @@ DataForm.prototype.cleanseRequest = function (req) {
   return reqData;
 };
 
+DataForm.prototype.generateQueryForEntity = function (resource, id) {
+  var hiddenFields = this.generateHiddenFields(resource, false);
+  hiddenFields.__v = 0;
+  return resource.model.findOne({_id: id}).select(hiddenFields);
+}
 
 /*
  * Entity request goes there first
@@ -1015,12 +1022,7 @@ DataForm.prototype.entity = function () {
       return;
     }
 
-    var hiddenFields = this.generateHiddenFields(req.resource, false);
-    hiddenFields.__v = 0;
-
-    var query = req.resource.model.findOne({ _id: req.params.id }).select(hiddenFields);
-
-    query.exec(function (err, doc) {
+    this.generateQueryForEntity(req.resource, req.params.id).exec(function (err, doc) {
       if (err) {
         return res.send({
           success: false,
