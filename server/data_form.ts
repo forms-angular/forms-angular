@@ -659,7 +659,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
               if (dateTest) {
                 obj[prop] = new Date(dateTest[1] + 'Z');
               } else {
-                var objectIdTest : Array<string> = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
+                var objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
                 if (objectIdTest) {
                   obj[prop] = new mongoose.Types.ObjectId(objectIdTest[1]);
                 }
@@ -832,8 +832,16 @@ DataForm.prototype.saveAndRespond = function (req, res, hiddenFields) {
         doc2 = doc2.toObject();
         for (var hiddenField in hiddenFields) {
           if (hiddenFields.hasOwnProperty(hiddenField) && hiddenFields[hiddenField]) {
-            if (doc2.hasOwnProperty(hiddenField)) {
-              delete doc2[hiddenField];
+            var parts = hiddenField.split('.');
+            var lastPart = parts.length - 1;
+            var target = doc2;
+            for (var i = 0; i < lastPart; i++) {
+              if (target.hasOwnProperty(parts[i])) {
+                target = target[parts[i]];
+              }
+            }
+            if (target.hasOwnProperty(parts[lastPart])) {
+              delete target[parts[lastPart]];
             }
           }
         }

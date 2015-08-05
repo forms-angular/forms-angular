@@ -209,7 +209,7 @@ describe('API', function () {
       });
     });
 
-    it('should not be transmitted in an edit', function (done) {
+    it('should not be transmitted in an entity get', function (done) {
       var mockReq = {
         url: 'c_subdoc_example/519aaaaab320153869b175e0',
         params: {
@@ -243,8 +243,7 @@ describe('API', function () {
           assert.equal(data.weight, 124);
           assert.equal(data.passwordHash, undefined);
           assert.equal(data.interview.score, 97);
-// TODO: Get this working
-//          assert.equal(data.interview.interviewHash, undefined);
+          assert.equal(data.interview.interviewHash, undefined);
           var resource = fng.getResource('c_subdoc_example');
           resource.model.findById('519aaaaab320153869b175e0', function (err, dataOnDisk) {
             if (err) { throw err; }
