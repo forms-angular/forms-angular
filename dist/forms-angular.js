@@ -1973,7 +1973,7 @@ var fng;
                         }
                     }
                 }
-                else if (mongooseType.instance === 'boolean') {
+                else if (mongooseType.instance === 'Boolean') {
                     formInstructions.type = 'checkbox';
                 }
                 else if (mongooseType.instance === 'Number') {
