@@ -113,6 +113,7 @@ module fng.directives {
                 }
               } else {
                 common += (fieldInfo.readonly ? 'disabled ' : '');
+                common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
                 if (!isRequired) {
                   value += '<option></option>';
