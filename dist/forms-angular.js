@@ -544,6 +544,7 @@ var fng;
                                     common += 'class="fng-select2' + allInputsVars.formControl + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '"';
                                     common += (fieldInfo.readonly ? ' readonly' : '');
                                     common += (fieldInfo.required ? ' ng-required="true"' : '');
+                                    common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                                     if (fieldInfo.select2.fngAjax) {
                                         if (cssFrameworkService.framework() === 'bs2') {
                                             value = '<div class="input-append">';
