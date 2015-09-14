@@ -105,7 +105,9 @@ DataForm.prototype.getListFields = function (resource, doc, cb) {
     else {
         var keyList = Object.keys(resource.model.schema['tree']);
         // No list field specified - use the first String field,
-        display = getFirstMatchingField(keyList, 'String') || getFirstMatchingField(keyList);
+        display = getFirstMatchingField(keyList, 'String') ||
+            // and if there aren't any then just take the first field
+            getFirstMatchingField(keyList);
         cb(null, display.trim());
     }
 };
@@ -514,8 +516,8 @@ DataForm.prototype.report = function () {
                 }
             }
             reportSchema = { pipeline: [
-                { $project: fields }
-            ], drilldown: req.params.resourceName + '/|_id|/edit' };
+                    { $project: fields }
+                ], drilldown: req.params.resourceName + '/|_id|/edit' };
         }
         // Replace parameters in pipeline
         var schemaCopy = {};
@@ -618,34 +620,34 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
             // if we need to do any column translations add the function to the tasks list
             if (schema.columnTranslations) {
                 toDo.applyTranslations = ['runAggregation', function (cb, results) {
-                    function doATranslate(column, theTranslation) {
-                        results.runAggregation.forEach(function (resultRow) {
-                            var valToTranslate = resultRow[column.field];
-                            valToTranslate = (valToTranslate ? valToTranslate.toString() : '');
-                            var thisTranslation = _.find(theTranslation.translations, function (option) {
-                                return valToTranslate === option.value.toString();
+                        function doATranslate(column, theTranslation) {
+                            results.runAggregation.forEach(function (resultRow) {
+                                var valToTranslate = resultRow[column.field];
+                                valToTranslate = (valToTranslate ? valToTranslate.toString() : '');
+                                var thisTranslation = _.find(theTranslation.translations, function (option) {
+                                    return valToTranslate === option.value.toString();
+                                });
+                                resultRow[column.field] = thisTranslation ? thisTranslation.display : ' * Missing columnTranslation * ';
                             });
-                            resultRow[column.field] = thisTranslation ? thisTranslation.display : ' * Missing columnTranslation * ';
+                        }
+                        schema.columnTranslations.forEach(function (columnTranslation) {
+                            if (columnTranslation.translations) {
+                                doATranslate(columnTranslation, columnTranslation);
+                            }
+                            if (columnTranslation.ref) {
+                                var theTranslation = _.find(translations, function (translation) {
+                                    return (translation.ref === columnTranslation.ref);
+                                });
+                                if (theTranslation) {
+                                    doATranslate(columnTranslation, theTranslation);
+                                }
+                                else {
+                                    cb('Invalid ref property of ' + columnTranslation.ref + ' in columnTranslations ' + columnTranslation.field);
+                                }
+                            }
                         });
-                    }
-                    schema.columnTranslations.forEach(function (columnTranslation) {
-                        if (columnTranslation.translations) {
-                            doATranslate(columnTranslation, columnTranslation);
-                        }
-                        if (columnTranslation.ref) {
-                            var theTranslation = _.find(translations, function (translation) {
-                                return (translation.ref === columnTranslation.ref);
-                            });
-                            if (theTranslation) {
-                                doATranslate(columnTranslation, theTranslation);
-                            }
-                            else {
-                                cb('Invalid ref property of ' + columnTranslation.ref + ' in columnTranslations ' + columnTranslation.field);
-                            }
-                        }
-                    });
-                    cb(null, null);
-                }];
+                        cb(null, null);
+                    }];
                 var callFuncs = false;
                 for (var i = 0; i < schema.columnTranslations.length; i++) {
                     var thisColumnTranslation = schema.columnTranslations[i];
@@ -671,9 +673,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
                                                 else {
                                                     // TODO - this ref func can probably be done away with now that list fields can have ref
                                                     var j = 0;
-                                                    async.whilst(function () {
-                                                        return j < findResults.length;
-                                                    }, function (cbres) {
+                                                    async.whilst(function () { return j < findResults.length; }, function (cbres) {
                                                         var theResult = findResults[j];
                                                         translateObject.translations[j] = translateObject.translations[j] || {};
                                                         var theTranslation = translateObject.translations[j];
@@ -711,17 +711,17 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
                 }
                 if (callFuncs) {
                     toDo['callFunctions'] = ['runAggregation', function (cb, results) {
-                        async.each(results.runAggregation, function (row, cb) {
-                            for (var i = 0; i < schema.columnTranslations.length; i++) {
-                                var thisColumnTranslation = schema.columnTranslations[i];
-                                if (thisColumnTranslation.fn) {
-                                    thisColumnTranslation.fn(row, cb);
+                            async.each(results.runAggregation, function (row, cb) {
+                                for (var i = 0; i < schema.columnTranslations.length; i++) {
+                                    var thisColumnTranslation = schema.columnTranslations[i];
+                                    if (thisColumnTranslation.fn) {
+                                        thisColumnTranslation.fn(row, cb);
+                                    }
                                 }
-                            }
-                        }, function () {
-                            cb(null);
-                        });
-                    }];
+                            }, function () {
+                                cb(null);
+                            });
+                        }];
                     toDo.applyTranslations.unshift('callFunctions'); // Make sure we do function before translating its result
                 }
             }

@@ -232,7 +232,7 @@ describe('API', function () {
     });
 
 
-    it('should not be overwritten and should not be transmitted on update', function (done) {
+    it('should not be overwritten by nulls and should not be transmitted on update', function (done) {
       var mockReq = {
         url: '/c_subdoc_example/519aaaaab320153869b175e0',
         params: {resourceName: 'c_subdoc_example', id: '519aaaaab320153869b175e0'},
