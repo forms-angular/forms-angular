@@ -94,6 +94,7 @@ module fng.directives {
                 common += 'class="fng-select2' + allInputsVars.formControl + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '"';
                 common += (fieldInfo.readonly ? ' readonly' : '');
                 common += (fieldInfo.required ? ' ng-required="true"' : '');
+                common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 if (fieldInfo.select2.fngAjax) {
                   if (cssFrameworkService.framework() === 'bs2') {
                     value = '<div class="input-append">';
@@ -112,6 +113,7 @@ module fng.directives {
                 }
               } else {
                 common += (fieldInfo.readonly ? 'disabled ' : '');
+                common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
                 if (!isRequired) {
                   value += '<option></option>';
