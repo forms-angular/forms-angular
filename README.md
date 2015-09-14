@@ -10,3 +10,21 @@ See the documentation at http://www.forms-angular.org
 
 
 
+## Installation of forms-angular
+Recommended: use yeoman generator.
+ 
+Alternative: you can install both front-end and back-end modules:
+````
+npm install --save forms-angular
+bower install --save forms-angular
+````
+
+## For developers of forms-angular
+````
+npm install -g tsd
+tsd update -so
+````
+Prepare a new release:
+````
+gulp all
+````
