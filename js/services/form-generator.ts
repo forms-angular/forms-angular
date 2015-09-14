@@ -344,7 +344,7 @@ module fng.services {
             formInstructions.add = 'ui-date ui-date-format datepicker-popup-fix ';
           }
         }
-      } else if (mongooseType.instance === 'Boolean') {
+      } else if (mongooseType.instance.toLowerCase() === 'boolean') {
         formInstructions.type = 'checkbox';
       } else if (mongooseType.instance === 'Number') {
         formInstructions.type = 'number';
