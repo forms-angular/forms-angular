@@ -26,6 +26,7 @@ module fng {
     decorateScope($scope:fng.IFormScope, $modal, recordHandlerInstance : fng.IRecordHandler, ctrlState);
     fillFormFromBackendCustomSchema(schema, $scope:fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
     fillFormWithBackendSchema($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
+    handleError($scope: fng.IFormScope);
   }
 
   export interface IFormGenerator {
@@ -131,7 +132,9 @@ module fng {
   export interface IFormOptions extends IBaseFormOptions {
     schema? : string;
     subkey?: string;
+    subkeyno?: number;
     subschema? : string;
+    subschemaroot? : string;
   }
 
   export interface IBuiltInRoute {

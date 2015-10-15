@@ -12,6 +12,9 @@ module fng.services {
    */
 
   /*@ngInject*/
+  import IFormController = angular.IFormController;
+
+
   export function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) : IFormGenerator {
 
     function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
@@ -693,7 +696,7 @@ module fng.services {
 
         $scope.setFormDirty = function (event) {
           if (event) {
-            var form = angular.element(event.target).inheritedData('$formController');
+            var form:any = angular.element(event.target).inheritedData('$formController');
             form.$setDirty();
           } else {
             console.log('setFormDirty called without an event (fine in a unit test)');
@@ -734,4 +737,7 @@ module fng.services {
       }
     };
   }
-}
+
+  formGenerator.$inject = ["$location", "$timeout", "$filter", "SubmissionsService", "routingService", "recordHandler"];
+
+  }
