@@ -238,7 +238,11 @@ module fng.directives {
                   }
                 }
                 if (tabNo >= 0) {
-                  result.before = '<tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '" active="tabs[' + tabNo + '].active">';
+                  result.before = '<tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
+                  if (tabNo > 0) {
+                    result.before += 'active="tabs[' + tabNo + '].active"';
+                  }
+                  result.before += '>';
                   result.after = '</tab>';
                 } else {
                   result.before = '<p>Error!  Tab ' + info.title + ' not found in tab list</p>';
@@ -315,7 +319,7 @@ module fng.directives {
                   template += topAndTail.before;
                   template += processInstructions(info.schema, null, {
                     subschema: 'true',          // We are trying to behave like attrs here
-                    formStyle: options.formstyle,
+                    formstyle: options.formstyle,
                     subkey: schemaDefName + '_subkey',
                     subkeyno: arraySel,
                     subschemaroot: info.name
