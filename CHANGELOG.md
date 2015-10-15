@@ -1,5 +1,8 @@
 # forms-angular
 
+## 0.5.0 to 0.5.1
+* Fix stupid dependency error for Angular
+
 ## 0.4 to 0.5
 ### Summary
 * Changed development language to typescript and added _some_ types
