@@ -24,6 +24,7 @@ declare module fng {
         decorateScope($scope: fng.IFormScope, $modal: any, recordHandlerInstance: fng.IRecordHandler, ctrlState: any): any;
         fillFormFromBackendCustomSchema(schema: any, $scope: fng.IFormScope, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any): any;
         fillFormWithBackendSchema($scope: fng.IFormScope, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any): any;
+        handleError($scope: fng.IFormScope): any;
     }
     interface IFormGenerator {
         generateEditUrl(obj: any, $scope: fng.IFormScope): string;
@@ -117,7 +118,9 @@ declare module fng {
     interface IFormOptions extends IBaseFormOptions {
         schema?: string;
         subkey?: string;
+        subkeyno?: number;
         subschema?: string;
+        subschemaroot?: string;
     }
     interface IBuiltInRoute {
         route: string;
@@ -222,13 +225,6 @@ declare module fng.services {
     };
 }
 declare module fng.services {
-    /**
-     *
-     * Manipulate record items for generating a form
-     *
-     * All methods should be state-less
-     *
-     */
     function formGenerator($location: any, $timeout: any, $filter: any, SubmissionsService: any, routingService: any, recordHandler: any): IFormGenerator;
 }
 declare module fng.services {

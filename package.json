@@ -3,9 +3,9 @@
   "author": "Mark Chapman <support@forms-angular.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "engines": {
-    "node": "0.10.x",
+    "node": ">=0.10.x",
     "npm": ">=1.x"
   },
   "dependencies": {

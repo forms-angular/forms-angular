@@ -695,7 +695,11 @@ var fng;
                                         }
                                     }
                                     if (tabNo >= 0) {
-                                        result.before = '<tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '" active="tabs[' + tabNo + '].active">';
+                                        result.before = '<tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"';
+                                        if (tabNo > 0) {
+                                            result.before += 'active="tabs[' + tabNo + '].active"';
+                                        }
+                                        result.before += '>';
                                         result.after = '</tab>';
                                     }
                                     else {
@@ -771,7 +775,7 @@ var fng;
                                         template += topAndTail.before;
                                         template += processInstructions(info.schema, null, {
                                             subschema: 'true',
-                                            formStyle: options.formstyle,
+                                            formstyle: options.formstyle,
                                             subkey: schemaDefName + '_subkey',
                                             subkeyno: arraySel,
                                             subschemaroot: info.name
@@ -1635,14 +1639,6 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
-        /**
-         *
-         * Manipulate record items for generating a form
-         *
-         * All methods should be state-less
-         *
-         */
-        /*@ngInject*/
         function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) {
             function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
                 function handletabInfo(tabName, thisInst) {
@@ -2336,8 +2332,8 @@ var fng;
                 }
             };
         }
-        formGenerator.$inject = ["$location", "$timeout", "$filter", "SubmissionsService", "routingService", "recordHandler"];
         services.formGenerator = formGenerator;
+        formGenerator.$inject = ["$location", "$timeout", "$filter", "SubmissionsService", "routingService", "recordHandler"];
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
