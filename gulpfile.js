@@ -111,7 +111,7 @@ gulp.task('apiTest', function () {
 
 gulp.task('uglify', function() {
   var fs = require('fs');
-  var uglifyJs = require('uglify-js2');
+  var uglifyJs = require('uglify-js');
 
   var code = fs.readFileSync('dist/forms-angular.js', 'utf8');
 
