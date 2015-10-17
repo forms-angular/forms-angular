@@ -30,16 +30,15 @@
     "RESTful API"
   ],
   "dependencies": {
-    "underscore": "1.8.3",
     "async": "1.4.2",
+    "mongoose": "4.1.11",
     "node.extend": "1.1.5",
-    "mongoose": "4.1.11"
+    "underscore": "1.8.3"
   },
   "devDependencies": {
     "del": "2.0.2",
     "express": "4.13.3",
     "gulp-angular-templatecache": "1.8.0",
-    "gulp-clean": "0.3.1",
     "gulp-concat": "2.6.0",
     "gulp-karma": "0.0.5",
     "gulp-less": "3.0.3",
