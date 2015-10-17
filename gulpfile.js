@@ -1,12 +1,13 @@
 var gulp = require('gulp');
-var karma = require('gulp-karma');
 var runSequence = require('run-sequence');
 var del = require('del');
+var Server = require('karma').Server;
 
 var browserSources = [
   'js/**/*.ts'
 ];
 var testFiles = []; // Declared in the karma.conf.js
+var rootDir = process.cwd();
 var distDirectory = 'dist';
 
 /**
@@ -67,38 +68,24 @@ gulp.task('tidy', function() {
 gulp.task('map', function() {
   var shell = require('gulp-shell');
 
-  console.log('CWD: ' + process.cwd() + '/dist');
-
   return shell.task(
     'uglifyjs --compress --mangle --source-map forms-angular.min.js.map --source-map-root . -o forms-angular.min.js -- forms-angular.js',
-    {cwd: process.cwd() + '/dist'}
+    {cwd: rootDir + '/dist'}
   )();
 });
 
-gulp.task('test', function() {
-  // Be sure to return the stream
-  return gulp.src(testFiles)
-    .pipe(karma({
-      configFile: 'config/karma.conf.js',
-      action: 'run'
-    }))
-    .on('error', function(error) {
-      // Make sure failed tests cause gulp to exit non-zero
-      throw error;
-    });
+gulp.task('test', function(done) {
+  new Server({
+    configFile: rootDir + '/config/karma.conf.js',
+    singleRun: true
+  }, done).start();
 });
 
-gulp.task('midwayTest', function() {
-  // Be sure to return the stream
-  return gulp.src(testFiles)
-    .pipe(karma({
-      configFile: 'config/karma.midway.conf.js',
-      action: 'run'
-    }))
-    .on('error', function(error) {
-      // Make sure failed tests cause gulp to exit non-zero
-      throw error;
-    });
+gulp.task('midwayTest', function(done) {
+  new Server({
+    configFile: rootDir + '/config/karma.midway.conf.js',
+    singleRun: true
+  }, done).start();
 });
 
 gulp.task('apiTest', function () {
