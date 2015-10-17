@@ -18,8 +18,6 @@ gulp.task('all', function(callback) {
     'clean',
     'build',
     'test',
-    'midwayTest',
-    'apiTest',
     callback);
 });
 
@@ -74,7 +72,15 @@ gulp.task('map', function() {
   )();
 });
 
-gulp.task('test', function(done) {
+gulp.task('test', function(callback) {
+  runSequence(
+    'karmaTest',
+    'midwayTest',
+    'apiTest',
+    callback);
+});
+
+gulp.task('karmaTest', function(done) {
   new Server({
     configFile: rootDir + '/config/karma.conf.js',
     singleRun: true
