@@ -2498,7 +2498,12 @@ var fng;
                         value += '<span class="' + (cssFrameworkService.framework() === 'bs2' ? 'help-inline' : 'help-block') + '">' + fieldInfo.helpInline + '</span>';
                     }
                     // If we have chosen
-                    value += '<div ng-if="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$dirty" class="help-block" ng-messages="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$error" ng-messages-include="error-messages.html"></div>';
+                    value += '<div ng-if="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$dirty" class="help-block">' +
+                        ' <div ng-messages="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$error">' +
+                        '  <div ng-messages-include="error-messages.html">' +
+                        '  </div>' +
+                        ' </div>' +
+                        '</div>';
                     if (fieldInfo.help) {
                         value += '<span class="help-block">' + fieldInfo.help + '</span>';
                     }
