@@ -23,10 +23,27 @@ two space indentation, multiple var statements and whitespace around arguments. 
 * Develop in a topic branch, not master
 * Add relevant tests to cover the change
 * Build and run unit tests by running `npm test` (or `gulp all` which runs the tests after a build).
-* Run the end to end tests in the [website repo](https://github.com/forms-angular/website) by doing the following:
-  * Run the website with `NODE_ENV=test` using your up to date forms-angular (`npm link` and `bower link` are useful here)
-  * Change the port number in the relavant protractor config file(s) in test/e2e/protractor*.conf.js
-  * Run `protractor test/e2e/protractor-firefox.conf.js` (the more browsers the better)
+* Run the end to end tests in the [website repo](https://github.com/forms-angular/website) by running `grunt test` <sup>1</sup>
 * Squash your commits
 * Write a convincing description of your PR and why we should land it
 * Please submit PRs to the `master` branch, it is the main development branch for this repo.
+
+
+<sup>1</sup> Many of the e2e tests in website generate screen shot PNG files.  This enables a quick visual check that no 
+unintended changes have been made to the UI.  The best way to use this is as follows:
+
+In your .gitconfig in your home folder add a section
+
+```
+[diff "image"]
+	command = ~/bin/git-imgdiff
+```
+
+where the ~/bin/git-imgdiff file referred to is
+
+```
+#!/bin/sh
+compare "$2" "$1" png:- | montage -geometry +4+4 "$2" - "$1" png:- | display -title "$1"
+```
+
+compare is part of [ImageMagick](http://www.imagemagick.org/script/index.php)
