@@ -38,6 +38,7 @@
   "devDependencies": {
     "del": "2.0.2",
     "express": "4.13.3",
+    "gulp":"3.9.0",
     "gulp-angular-templatecache": "1.8.0",
     "gulp-concat": "2.6.0",
     "gulp-karma": "0.0.5",
