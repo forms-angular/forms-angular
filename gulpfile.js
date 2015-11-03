@@ -10,6 +10,10 @@ var testFiles = []; // Declared in the karma.conf.js
 var rootDir = process.cwd();
 var distDirectory = 'dist';
 
+gulp.task('watch', function(){
+  gulp.watch(['js/**/*.ts', 'server/data_form.ts'], ['build']);
+})
+
 /**
  * Main task: cleans, builds, run tests, and bundles up for distribution.
  */
