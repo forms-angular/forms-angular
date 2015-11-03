@@ -21,14 +21,14 @@
     "angular": "1.4.7",
     "angular-sanitize": "1.4.7",
     "angular-messages": "1.4.7",
-    "angular-ui-bootstrap-bower": "^0.8 || ^0.13",
+    "angular-ui-bootstrap-bower": "^0.8 || ^0.14",
     "underscore": "1.8.3",
     "ngInfiniteScroll": "1.2.1",
     "angular-elastic": "2.5.1"
   },
   "devDependencies": {
     "angular-mocks": "1.4.7",
-    "bootstrap-3-1-1": "git://github.com/twbs/bootstrap.git#v3.1.1",
+    "bootstrap-3-3-5": "git://github.com/twbs/bootstrap.git#v3.3.5",
     "bootstrap-2-3-2": "git://github.com/twbs/bootstrap.git#v2.3.2"
   },
   "ignore": [
