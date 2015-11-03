@@ -6,7 +6,7 @@ module fng.services {
   export function cssFrameworkService() {
     // Supported options for framework are:
     //      bs2 = Twitter Bootstrap 2.3.2 (default)
-    //      bs3 = Bootstrap 3.1.1
+    //      bs3 = Bootstrap 3.3.5
     var config = {
       framework: 'bs2'  // Unit tests depend on this being bs2
     };
