@@ -10,6 +10,7 @@ build.xml
 .bower-registry
 .bower-tmp
 .tmp
+.bower.json
 generated
 bower_components
 node_modules
@@ -23,6 +24,7 @@ server/**/*.map
 
 test_out/*
 PhantomJS_1.9.8_(Linux_0.0.0)/test_out/unit.xml
+PhantomJS_1.9.8_(Mac_OS_X_0.0.0)/test_out/unit.xml
 
 lib-cov
 *.seed
