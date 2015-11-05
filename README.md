@@ -8,16 +8,16 @@
 
 See the documentation at http://www.forms-angular.org
 
-
-
 ## Installation of forms-angular
-Recommended: use yeoman generator.
+Recommended: use [yeoman generator](http://www.forms-angular.org/#/get-started).
  
 Alternative: you can install both front-end and back-end modules:
 ````
 npm install --save forms-angular
 bower install --save forms-angular
 ````
+## Security Disclosure
+Security is very important to us. If discover any issue regarding security, please disclose the information responsibly by sending an email to security@forms-angular.org and not by creating a github issue.
 
 ## For developers of forms-angular
 ````
