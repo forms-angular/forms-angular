@@ -14,7 +14,7 @@
   "main": "server/data_form.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/forms-angular/forms-angular"
+    "url": "git://github.com/forms-angular/forms-angular"
   },
   "bugs": {
     "url": "https://github.com/forms-angular/forms-angular/issues",
