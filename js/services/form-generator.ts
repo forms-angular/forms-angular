@@ -683,8 +683,10 @@ module fng.services {
           return recordHandlerInstance.getListData(record, fieldName, $scope.select2List);
         };
 
-        $scope.setPristine = function () {
-          $scope.dismissError();
+        $scope.setPristine = function (clearErrors) {
+          if (clearErrors) {
+            $scope.dismissError();
+          }
           if ($scope[$scope.topLevelFormName]) {
             $scope[$scope.topLevelFormName].$setPristine();
           }
