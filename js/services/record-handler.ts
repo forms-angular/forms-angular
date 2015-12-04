@@ -474,7 +474,7 @@ module fng.services {
                 $window.location = options.redirect;
               } else {
                 processServerData(data, $scope, ctrlState);
-                $scope.setPristine();
+                $scope.setPristine(false);
               }
             } else {
               $scope.showError(data);
@@ -615,7 +615,7 @@ module fng.services {
 
       handleError: handleError,
 
-      decorateScope: function decorateScope($scope:fng.IFormScope, $modal, recordHandlerInstance : fng.IRecordHandler, ctrlState) {
+      decorateScope: function decorateScope($scope:fng.IFormScope, $uibModal, recordHandlerInstance : fng.IRecordHandler, ctrlState) {
 
         $scope.handleHttpError = handleError($scope);
 
@@ -642,8 +642,8 @@ module fng.services {
 
         $scope.dismissError = function () {
           delete $scope.errorMessage;
+          delete $scope.alertTitle;
         };
-
 
         $scope.save = function (options) {
           options = options || {};
@@ -684,7 +684,7 @@ module fng.services {
         $scope.$on('$locationChangeStart', function (event, next) {
           if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
             event.preventDefault();
-            var modalInstance = $modal.open({
+            var modalInstance = $uibModal.open({
               template: '<div class="modal-header">' +
               '   <h3>Record modified</h3>' +
               '</div>' +
@@ -715,7 +715,7 @@ module fng.services {
 
         $scope.deleteClick = function () {
           if ($scope.record._id) {
-            var modalInstance = $modal.open({
+            var modalInstance = $uibModal.open({
               template: '<div class="modal-header">' +
               '   <h3>Delete Item</h3>' +
               '</div>' +
