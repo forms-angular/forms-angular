@@ -21,7 +21,7 @@ declare module fng {
         setUpSelectOptions(lookupCollection: any, schemaElement: any, $scope: fng.IFormScope, ctrlState: any, handleSchema: any): any;
         preservePristine(element: any, fn: any): void;
         convertIdToListValue(id: any, idsArray: any, valuesArray: any, fname: any): any;
-        decorateScope($scope: fng.IFormScope, $modal: any, recordHandlerInstance: fng.IRecordHandler, ctrlState: any): any;
+        decorateScope($scope: fng.IFormScope, $uibModal: any, recordHandlerInstance: fng.IRecordHandler, ctrlState: any): any;
         fillFormFromBackendCustomSchema(schema: any, $scope: fng.IFormScope, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any): any;
         fillFormWithBackendSchema($scope: fng.IFormScope, formGeneratorInstance: any, recordHandlerInstance: any, ctrlState: any): any;
         handleError($scope: fng.IFormScope): any;
@@ -150,10 +150,10 @@ declare module fng {
     }
 }
 declare module fng.controllers {
-    function BaseCtrl($scope: fng.IFormScope, $rootScope: any, $location: any, $filter: any, $modal: any, $data: any, routingService: any, formGenerator: any, recordHandler: any): void;
+    function BaseCtrl($scope: fng.IFormScope, $rootScope: any, $location: any, $filter: any, $uibModal: any, $data: any, routingService: any, formGenerator: any, recordHandler: any): void;
 }
 declare module fng.controllers {
-    function SaveChangesModalCtrl($scope: any, $modalInstance: any): void;
+    function SaveChangesModalCtrl($scope: any, $uibModalInstance: any): void;
 }
 declare module fng.controllers {
     function ModelCtrl($scope: any, $http: any, $location: any, routingService: any): void;

@@ -23,7 +23,7 @@ module fng {
     setUpSelectOptions(lookupCollection, schemaElement, $scope: fng.IFormScope, ctrlState, handleSchema);
     preservePristine(element, fn): void;
     convertIdToListValue(id, idsArray, valuesArray, fname);
-    decorateScope($scope:fng.IFormScope, $modal, recordHandlerInstance : fng.IRecordHandler, ctrlState);
+    decorateScope($scope:fng.IFormScope, $uibModal, recordHandlerInstance : fng.IRecordHandler, ctrlState);
     fillFormFromBackendCustomSchema(schema, $scope:fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
     fillFormWithBackendSchema($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
     handleError($scope: fng.IFormScope);

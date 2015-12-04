@@ -3,15 +3,15 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function SaveChangesModalCtrl($scope, $modalInstance) {
+  export function SaveChangesModalCtrl($scope, $uibModalInstance) {
     $scope.yes = function () {
-      $modalInstance.close(true);
+      $uibModalInstance.close(true);
     };
     $scope.no = function () {
-      $modalInstance.close(false);
+      $uibModalInstance.close(false);
     };
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   }
 }

@@ -154,9 +154,9 @@ describe('Data Events', function () {
     describe('Delete', function () {
 
       it('should make a call before deleting document', function () {
-        inject(function (_$httpBackend_, $rootScope, $controller, $location, $data, _$modal_, $q) {
+        inject(function (_$httpBackend_, $rootScope, $controller, $location, $data, _$uibModal_, $q) {
           $httpBackend = _$httpBackend_;
-          var $modal = _$modal_;
+          var $modal = _$uibModal_;
           $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}, '_index': null}});
           $httpBackend.whenGET('/api/collection/125').respond({'name': 'Alan', '_id': '125'});
           $location.$$path = '/collection/125/edit';
@@ -187,9 +187,9 @@ describe('Data Events', function () {
 
 
       it('should not delete document if onBefore returns an error', function () {
-        inject(function (_$httpBackend_, $rootScope, $controller, $location, $data, _$modal_, $q) {
+        inject(function (_$httpBackend_, $rootScope, $controller, $location, $data, _$uibModal_, $q) {
           $httpBackend = _$httpBackend_;
-          var $modal = _$modal_;
+          var $modal = _$uibModal_;
           $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}, '_index': null}});
           $httpBackend.whenGET('/api/collection/125').respond({'name': 'Alan', '_id': '125'});
           $location.$$path = '/collection/125/edit';
@@ -290,9 +290,9 @@ describe('Data Events', function () {
     describe('Delete', function () {
 
       it('should request make a call after deleting document', function () {
-        inject(function (_$httpBackend_, $rootScope, $controller, $location, $data, _$modal_, $q) {
+        inject(function (_$httpBackend_, $rootScope, $controller, $location, $data, _$uibModal_, $q) {
           $httpBackend = _$httpBackend_;
-          var $modal = _$modal_;
+          var $modal = _$uibModal_;
           $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}, '_index': null}});
           $httpBackend.whenGET('/api/collection/125').respond({'name': 'Alan', '_id': '125'});
           $location.$$path = '/collection/125/edit';
