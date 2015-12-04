@@ -799,8 +799,8 @@ describe('BaseCtrl', function () {
       module(function ($modalProvider) {
         provider = $modalProvider;
       });
-      inject(function (_$httpBackend_, $rootScope, $controller, _$modal_, $q) {
-        $modal = _$modal_;
+      inject(function (_$httpBackend_, $rootScope, $controller, _$uibModal_, $q) {
+        $modal = _$uibModal_;
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}});
         $httpBackend.whenGET('/api/collection/125').respond({'name': 'Alan'});

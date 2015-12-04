@@ -1,5 +1,10 @@
 # forms-angular
 
+## 0.5.1 to 0.6.0
+* Upgrade to angular-ui-bootstrap 0.14.x, which drops support for Bootstrap 2 (but seems to work fine for the forms-angular.org website, which is BS2)
+* Start specifying versions in npm and bower.
+* Several small fixes
+
 ## 0.5.0 to 0.5.1
 * Fix stupid dependency error for Angular
 

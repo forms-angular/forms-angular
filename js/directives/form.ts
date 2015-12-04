@@ -238,20 +238,20 @@ module fng.directives {
                   }
                 }
                 if (tabNo >= 0) {
-                  result.before = '<tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
+                  result.before = '<uib-tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
                   if (tabNo > 0) {
                     result.before += 'active="tabs[' + tabNo + '].active"';
                   }
                   result.before += '>';
-                  result.after = '</tab>';
+                  result.after = '</uib-tab>';
                 } else {
                   result.before = '<p>Error!  Tab ' + info.title + ' not found in tab list</p>';
                   result.after = '';
                 }
                 break;
               case 'tabset' :
-                result.before = '<tabset>';
-                result.after = '</tabset>';
+                result.before = '<uib-tabset>';
+                result.after = '</uib-tabset>';
                 break;
               case 'well' :
                 result.before = '<div class="well">';
@@ -503,7 +503,7 @@ module fng.directives {
                     // maintain support for simplified tabset syntax for now
                     if (tabsSetup === tabsSetupState.N) {
                       tabsSetup = tabsSetupState.Forced;
-                      result += '<tabset>';
+                      result += '<uib-tabset>';
                     }
 
                     result += parts.before;
@@ -577,7 +577,7 @@ module fng.directives {
               }
               elementHtml += processInstructions(newValue, true, attrs);
               if (tabsSetup === tabsSetupState.Forced) {
-                elementHtml += '</tabset>';
+                elementHtml += '</uib-tabset>';
               }
               elementHtml += attrs.subschema ? '' : '</form>';
               //console.log(elementHtml);

@@ -60,7 +60,7 @@ describe('API', function () {
 
   describe('data read', function () {
 
-    var aData, bData;
+    var aData, aPtr, bData, bPtr;
 
     function getCollection(model, cb) {
       var mockReq = {
@@ -86,7 +86,9 @@ describe('API', function () {
         function (err, results) {
           if (err) { throw err; }
           aData = results['aData'];
+          aPtr = aData.find(function(obj) {return obj.surname === 'TestPerson1'});
           bData = results['bData'];
+          bPtr = bData.find(function(obj) {return obj.surname === 'IsAccepted'});
           done();
         }
       );
@@ -97,12 +99,12 @@ describe('API', function () {
     });
 
     it('should send the all the fields of mongoose schema', function () {
-      assert(aData[0].surname, 'must send surname');
-      assert(aData[0].forename, 'must send forename');
-      assert(aData[0].weight, 'must send weight');
-      assert(aData[0].eyeColour, 'must send eyeColour');
-      assert(aData[0].dateOfBirth, 'must send dob');
-      assert.equal(aData[0].accepted, false, 'must send accepted');
+      assert(aPtr.surname, 'must send surname');
+      assert(aPtr.forename, 'must send forename');
+      assert(aPtr.weight, 'must send weight');
+      assert(aPtr.eyeColour, 'must send eyeColour');
+      assert(aPtr.dateOfBirth, 'must send dob');
+      assert.equal(aPtr.accepted, false, 'must send accepted');
     });
 
     it('should filter out records that do not match the find func', function () {
@@ -110,22 +112,22 @@ describe('API', function () {
     });
 
     it('should not send secure fields of a modified schema', function () {
-      assert(bData[0].surname, 'Must send surname');
-      assert(bData[0].forename, 'Must send forename');
-      assert.equal(Object.keys(bData[0]).indexOf('login'), -1, 'Must not send secure login field');
-      assert.equal(Object.keys(bData[0]).indexOf('passwordHash'), -1, 'Must not send secure password hash field');
-      assert(bData[0].email, 'Must send email');
-      assert(bData[0].weight, 'Must send weight');
-      assert(bData[0].accepted, 'Must send accepted');
-      assert(bData[0].interviewScore, 'Must send interview score');
-      assert(bData[0].freeText, 'Must send freetext');
+      assert(bPtr.surname, 'Must send surname');
+      assert(bPtr.forename, 'Must send forename');
+      assert.equal(Object.keys(bPtr).indexOf('login'), -1, 'Must not send secure login field');
+      assert.equal(Object.keys(bPtr).indexOf('passwordHash'), -1, 'Must not send secure password hash field');
+      assert(bPtr.email, 'Must send email');
+      assert(bPtr.weight, 'Must send weight');
+      assert(bPtr.accepted, 'Must send accepted');
+      assert(bPtr.interviewScore, 'Must send interview score');
+      assert(bPtr.freeText, 'Must send freetext');
     });
 
     it('should not send secure fields of a modified subschema', function () {
-      assert(bData[0].address.line1, 'Must send line1');
-      assert(bData[0].address.town, 'Must send town');
-      assert(bData[0].address.postcode, 'Must send postcode');
-      assert.equal(Object.keys(bData[0]).indexOf('address.surveillance'), -1, 'Must not send secure surveillance field');
+      assert(bPtr.address.line1, 'Must send line1');
+      assert(bPtr.address.town, 'Must send town');
+      assert(bPtr.address.postcode, 'Must send postcode');
+      assert.equal(Object.keys(bPtr).indexOf('address.surveillance'), -1, 'Must not send secure surveillance field');
     });
 
   });
@@ -197,10 +199,10 @@ describe('API', function () {
       var mockRes = {
         send: function (data) {
           assert.equal(data.length, 2);
-          assert.equal(data[0].surname, 'Anderson');
-          assert.equal(data[0].passwordHash, undefined);
-          assert.notEqual(data[0].interview.score, undefined);
-          assert.equal(data[0].interview.interviewHash, undefined);
+          var dataPtr = data.find(function(obj) {return obj.surname === 'Anderson'});
+          assert.equal(dataPtr.passwordHash, undefined);
+          assert.notEqual(dataPtr.interview.score, undefined);
+          assert.equal(dataPtr.interview.interviewHash, undefined);
           done();
         }
       };
@@ -412,8 +414,8 @@ describe('API', function () {
       var mockRes = {
         send: function (data) {
           assert.equal(data.length, 2);
-          assert.equal(data[0].forename, 'John');
-          assert.equal(data[1].forename, 'Jenny');
+          assert.notEqual(null, data.find(function(obj) {return obj.forename === 'John'}));
+          assert.notEqual(null, data.find(function(obj) {return obj.forename === 'Jenny'}));
           done();
         }
       };

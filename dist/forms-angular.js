@@ -6,7 +6,7 @@ var fng;
     var controllers;
     (function (controllers) {
         /*@ngInject*/
-        function BaseCtrl($scope, $rootScope, $location, $filter, $modal, $data, routingService, formGenerator, recordHandler) {
+        function BaseCtrl($scope, $rootScope, $location, $filter, $uibModal, $data, routingService, formGenerator, recordHandler) {
             var sharedStuff = $data;
             var ctrlState = {
                 master: {},
@@ -17,7 +17,7 @@ var fng;
             $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
             $rootScope.$broadcast('fngFormLoadStart', $scope);
             formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
-            recordHandler.decorateScope($scope, $modal, recordHandler, ctrlState);
+            recordHandler.decorateScope($scope, $uibModal, recordHandler, ctrlState);
             recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
             // Tell the 'model controllers' that they can start fiddling with basescope
             for (var i = 0; i < sharedStuff.modelControllers.length; i++) {
@@ -26,7 +26,7 @@ var fng;
                 }
             }
         }
-        BaseCtrl.$inject = ["$scope", "$rootScope", "$location", "$filter", "$modal", "$data", "routingService", "formGenerator", "recordHandler"];
+        BaseCtrl.$inject = ["$scope", "$rootScope", "$location", "$filter", "$uibModal", "$data", "routingService", "formGenerator", "recordHandler"];
         controllers.BaseCtrl = BaseCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
@@ -36,18 +36,18 @@ var fng;
     var controllers;
     (function (controllers) {
         /*@ngInject*/
-        function SaveChangesModalCtrl($scope, $modalInstance) {
+        function SaveChangesModalCtrl($scope, $uibModalInstance) {
             $scope.yes = function () {
-                $modalInstance.close(true);
+                $uibModalInstance.close(true);
             };
             $scope.no = function () {
-                $modalInstance.close(false);
+                $uibModalInstance.close(false);
             };
             $scope.cancel = function () {
-                $modalInstance.dismiss('cancel');
+                $uibModalInstance.dismiss('cancel');
             };
         }
-        SaveChangesModalCtrl.$inject = ["$scope", "$modalInstance"];
+        SaveChangesModalCtrl.$inject = ["$scope", "$uibModalInstance"];
         controllers.SaveChangesModalCtrl = SaveChangesModalCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
@@ -358,11 +358,11 @@ var fng;
             return {
                 restrict: 'AE',
                 replace: true,
-                template: '<li ng-show="items.length > 0" class="dropdown mcdd" dropdown>' +
-                    ' <a class="dropdown-toggle" dropdown-toggle>' +
+                template: '<li ng-show="items.length > 0" class="mcdd" uib-dropdown>' +
+                    ' <a uib-dropdown-toggle>' +
                     '  {{contextMenu}} <b class="caret"></b>' +
                     ' </a>' +
-                    ' <ul class="dropdown-menu">' +
+                    ' <ul class="uib-dropdown-menu dropdown-menu">' +
                     '  <li ng-repeat="choice in items" ng-hide="isHidden($index)" ng-class="dropdownClass($index)">' +
                     '   <a ng-show="choice.text" class="dropdown-option" ng-href="{{choice.url}}" ng-click="doClick($index, $event)">' +
                     '    {{choice.text}}' +
@@ -695,12 +695,12 @@ var fng;
                                         }
                                     }
                                     if (tabNo >= 0) {
-                                        result.before = '<tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"';
+                                        result.before = '<uib-tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"';
                                         if (tabNo > 0) {
                                             result.before += 'active="tabs[' + tabNo + '].active"';
                                         }
                                         result.before += '>';
-                                        result.after = '</tab>';
+                                        result.after = '</uib-tab>';
                                     }
                                     else {
                                         result.before = '<p>Error!  Tab ' + info.title + ' not found in tab list</p>';
@@ -708,8 +708,8 @@ var fng;
                                     }
                                     break;
                                 case 'tabset':
-                                    result.before = '<tabset>';
-                                    result.after = '</tabset>';
+                                    result.before = '<uib-tabset>';
+                                    result.after = '</uib-tabset>';
                                     break;
                                 case 'well':
                                     result.before = '<div class="well">';
@@ -957,7 +957,7 @@ var fng;
                                             // maintain support for simplified tabset syntax for now
                                             if (tabsSetup === tabsSetupState.N) {
                                                 tabsSetup = tabsSetupState.Forced;
-                                                result += '<tabset>';
+                                                result += '<uib-tabset>';
                                             }
                                             result += parts.before;
                                             result += processInstructions(info.content, null, options);
@@ -1032,7 +1032,7 @@ var fng;
                                 }
                                 elementHtml += processInstructions(newValue, true, attrs);
                                 if (tabsSetup === tabsSetupState.Forced) {
-                                    elementHtml += '</tabset>';
+                                    elementHtml += '</uib-tabset>';
                                 }
                                 elementHtml += attrs.subschema ? '' : '</form>';
                                 //console.log(elementHtml);
@@ -2287,8 +2287,10 @@ var fng;
                     $scope.getListData = function (record, fieldName) {
                         return recordHandlerInstance.getListData(record, fieldName, $scope.select2List);
                     };
-                    $scope.setPristine = function () {
-                        $scope.dismissError();
+                    $scope.setPristine = function (clearErrors) {
+                        if (clearErrors) {
+                            $scope.dismissError();
+                        }
                         if ($scope[$scope.topLevelFormName]) {
                             $scope[$scope.topLevelFormName].$setPristine();
                         }
@@ -3160,7 +3162,7 @@ var fng;
                             }
                             else {
                                 processServerData(data, $scope, ctrlState);
-                                $scope.setPristine();
+                                $scope.setPristine(false);
                             }
                         }
                         else {
@@ -3291,7 +3293,7 @@ var fng;
                 },
                 convertIdToListValue: convertIdToListValue,
                 handleError: handleError,
-                decorateScope: function decorateScope($scope, $modal, recordHandlerInstance, ctrlState) {
+                decorateScope: function decorateScope($scope, $uibModal, recordHandlerInstance, ctrlState) {
                     $scope.handleHttpError = handleError($scope);
                     $scope.cancel = function () {
                         angular.copy(ctrlState.master, $scope.record);
@@ -3313,6 +3315,7 @@ var fng;
                     };
                     $scope.dismissError = function () {
                         delete $scope.errorMessage;
+                        delete $scope.alertTitle;
                     };
                     $scope.save = function (options) {
                         options = options || {};
@@ -3355,7 +3358,7 @@ var fng;
                     $scope.$on('$locationChangeStart', function (event, next) {
                         if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
                             event.preventDefault();
-                            var modalInstance = $modal.open({
+                            var modalInstance = $uibModal.open({
                                 template: '<div class="modal-header">' +
                                     '   <h3>Record modified</h3>' +
                                     '</div>' +
@@ -3383,7 +3386,7 @@ var fng;
                     });
                     $scope.deleteClick = function () {
                         if ($scope.record._id) {
-                            var modalInstance = $modal.open({
+                            var modalInstance = $uibModal.open({
                                 template: '<div class="modal-header">' +
                                     '   <h3>Delete Item</h3>' +
                                     '</div>' +
