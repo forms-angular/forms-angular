@@ -3,19 +3,7 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
-        /*@ngInject*/
         function SubmissionsService($http, $cacheFactory) {
-            /*
-             generate a query string for a filtered and paginated query for submissions.
-             options consists of the following:
-             {
-             aggregate - whether or not to aggregate results (http://docs.mongodb.org/manual/aggregation/)
-             find - find parameter
-             limit - limit results to this number of records
-             skip - skip this number of records before returning results
-             order - sort order
-             }
-             */
             var generateListQuery = function (options) {
                 var queryString = '';
                 var addParameter = function (param, value) {
