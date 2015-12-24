@@ -10,6 +10,12 @@ module fng {
     showIf? : any;
   }
 
+  export interface IEnumInstruction {
+    repeat: string;
+    value: string;
+    label? : string;
+  }
+
   export interface IRecordHandler {
     convertToMongoModel(schema: Array<IFieldViewInfo>, anObject: any, prefixLength: number, scope: fng.IFormScope): any;
     createNew(dataToSave: any, options: any, scope: fng.IFormScope): void;

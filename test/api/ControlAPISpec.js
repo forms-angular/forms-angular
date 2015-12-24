@@ -181,5 +181,19 @@ describe('original API', function () {
     fng.schema()(mockReq, mockRes);
   });
 
+  it('supports enums with values and labels', function (done) {
+    var mockReq = {params : {resourceName: 'b_using_options'}};
+    var mockRes = {
+      send: function (schema) {
+        var keys = Object.keys(schema);
+        assert.equal(schema['education'].enumValues[1], 'univ');
+        assert.equal(schema['education'].options.enum.values[1], 'univ');
+        assert.equal(schema['education'].options.enum.labels[1], 'University');
+        assert.equal(schema['education'].validators[0].enumValues[1], 'univ');
+        done();
+      }
+    };
+    fng.schema()(mockReq, mockRes);
+  });
 
 });

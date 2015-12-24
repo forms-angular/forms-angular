@@ -3,7 +3,6 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
-        /*@ngInject*/
         function addAllService() {
             this.getAddAllGroupOptions = function (scope, attrs, classes) {
                 return getAddAllOptions(scope, attrs, 'Group', classes);
@@ -39,7 +38,6 @@ var fng;
                 }
                 getAllOptions(scope);
                 if (attrs[type] !== undefined) {
-                    // TODO add support for objects and raise error on invalid types
                     if (typeof (attrs[type]) === 'string') {
                         tmp = attrs[type].split(' ');
                         for (i = 0; i < tmp.length; i++) {

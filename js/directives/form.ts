@@ -55,6 +55,30 @@ module fng.directives {
         var tabsSetup:tabsSetupState = tabsSetupState.N;
 
         var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
+
+          function generateEnumInstructions() : IEnumInstruction{
+            var enumInstruction:IEnumInstruction;
+            if (angular.isArray(scope[fieldInfo.options])) {
+              enumInstruction = {repeat: fieldInfo.options, value: 'option'};
+            } else if (angular.isArray(scope[fieldInfo.options].values)) {
+              if (angular.isArray(scope[fieldInfo.options].labels)) {
+                enumInstruction = {
+                  repeat: fieldInfo.options + '.values',
+                  value: fieldInfo.options + '.values[$index]',
+                  label: fieldInfo.options + '.labels[$index]'
+                };
+              } else {
+                enumInstruction = {
+                  repeat: fieldInfo.options + '.values',
+                  value: fieldInfo.options + '.values[$index]'
+                };
+              }
+            } else {
+              throw new Error('Invalid enumeration setup in field ' + fieldInfo.name);
+            }
+            return enumInstruction;
+          }
+
           var nameString;
           if (!modelString) {
             var modelBase = (options.model || 'record') + '.';
@@ -87,6 +111,7 @@ module fng.directives {
           var common = allInputsVars.common;
           var value;
           var requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
+          var enumInstruction:IEnumInstruction;
 
           switch (fieldInfo.type) {
             case 'select' :
@@ -127,7 +152,13 @@ module fng.directives {
                     }
                   });
                 } else {
-                  value += '<option ng-repeat="option in ' + fieldInfo.options + '">{{option}}</option>';
+                  enumInstruction = generateEnumInstructions();
+                  value += '<option ng-repeat="option in ' + enumInstruction.repeat + '"';
+                  if (enumInstruction.label) {
+                    value += ' value="{{' + enumInstruction.value + '}}"> {{ ' + enumInstruction.label + ' }} </option> ';
+                  } else {
+                    value += '>{{' + enumInstruction.value + '}}</option> ';
+                  }
                 }
                 value += '</select>';
               }
@@ -166,7 +197,10 @@ module fng.directives {
                 if (options.subschema) {
                   common = common.replace('$index', '$parent.$index').replace('name="', 'name="{{$parent.$index}}-');
                 }
-                value += '<' + tagType + ' ng-repeat="option in ' + fieldInfo.options + '"><input ' + common + ' type="radio" value="{{option}}"> {{option}} </' + tagType + '> ';
+                enumInstruction = generateEnumInstructions();
+                value += '<' + tagType + ' ng-repeat="option in ' + enumInstruction.repeat + '"><input ' + common + ' type="radio" value="{{' + enumInstruction.value + '}}"> {{';
+                value += enumInstruction.label || enumInstruction.value;
+                value += ' }} </' + tagType + '> ';
               }
               break;
             case 'checkbox' :

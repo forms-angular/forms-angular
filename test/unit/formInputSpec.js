@@ -470,6 +470,74 @@ describe('formInput', function () {
 
   });
 
+  describe('generates selects for enumerated lists with specified labels', function () {
+
+    beforeEach(inject(function ($rootScope, $compile) {
+      elm = angular.element('<div><form-input schema="schema"></form-input></div>');
+      scope = $rootScope;
+      scope.fEyeColourOptions = {values:['bl','br','gr','ha'], labels:['Blue', 'Brown', 'Green', 'Hazel']};
+      scope.schema = [
+        {name: 'name', id: '1', label: 'Name', type: 'text'},
+        {'name': 'eyeColour', 'id': 'f_eyeColour', 'label': 'Eye Colour', 'type': 'select', 'options': 'fEyeColourOptions'}
+      ];
+      $compile(elm)(scope);
+      scope.$digest();
+    }));
+
+    it('should have combobox', function () {
+      var input = elm.find('select');
+      expect(input.length).toBe(1);
+      expect(input).toHaveClass('ng-pristine');
+      expect(input).toHaveClass('ng-valid');
+      expect(input.attr('id')).toBe('f_eyeColour');
+      input = elm.find('option');
+      expect(input.length).toBe(5);
+
+      input = angular.element(elm.find('option')[0]);
+      expect(input.attr('value')).toBe('');
+      expect(input.text()).toBe('');
+
+      input = angular.element(elm.find('option')[4]);
+      expect(input.attr('value')).toBe('ha');
+      expect(input.text()).toMatch('Hazel');
+    });
+
+  });
+
+  describe('generates selects for enumerated lists with no specified labels', function () {
+
+    beforeEach(inject(function ($rootScope, $compile) {
+      elm = angular.element('<div><form-input schema="schema"></form-input></div>');
+      scope = $rootScope;
+      scope.fEyeColourOptions = {values:['bl','br','gr','ha']};
+      scope.schema = [
+        {name: 'name', id: '1', label: 'Name', type: 'text'},
+        {'name': 'eyeColour', 'id': 'f_eyeColour', 'label': 'Eye Colour', 'type': 'select', 'options': 'fEyeColourOptions'}
+      ];
+      $compile(elm)(scope);
+      scope.$digest();
+    }));
+
+    it('should have combobox', function () {
+      var input = elm.find('select');
+      expect(input.length).toBe(1);
+      expect(input).toHaveClass('ng-pristine');
+      expect(input).toHaveClass('ng-valid');
+      expect(input.attr('id')).toBe('f_eyeColour');
+      input = elm.find('option');
+      expect(input.length).toBe(5);
+
+      input = angular.element(elm.find('option')[0]);
+      expect(input.attr('value')).toBe('');
+      expect(input.text()).toBe('');
+
+      input = angular.element(elm.find('option')[4]);
+      expect(input.attr('value')).toBe('ha');
+      expect(input.text()).toMatch('ha');
+    });
+
+  });
+
   describe('generates selects for passed enumerated lists', function () {
 
     beforeEach(inject(function ($rootScope, $compile) {
@@ -561,6 +629,63 @@ describe('formInput', function () {
       expect(input).toHaveClass('ng-valid');
       expect(input.attr('id')).toBe('f_eyeColour');
       expect(input.attr('value')).toBe('Hazel');
+      expect(input.parent().text()).toMatch('Hazel');
+    });
+
+  });
+
+  describe('generates radio buttons for enumerated lists stored in scope with specified labels', function () {
+
+    beforeEach(inject(function ($rootScope, $compile) {
+      elm = angular.element('<div><form-input schema="schema"></form-input></div>');
+      scope = $rootScope;
+      scope.fEyeColourOptions = {values:['bl','br','gr','ha'], labels:['Blue', 'Brown', 'Green', 'Hazel']};
+      scope.schema = [
+        {name: 'name', id: '1', label: 'Name', type: 'text'},
+        {'name': 'eyeColour', 'id': 'f_eyeColour', 'label': 'Eye Colour', 'type': 'radio', 'options': 'fEyeColourOptions'}
+      ];
+      $compile(elm)(scope);
+      scope.$digest();
+    }));
+
+    it('should have radio buttons', function () {
+      var input = elm.find('input');
+      expect(input.length).toBe(5);
+
+      input = angular.element(elm.find('input')[4]);
+      expect(input).toHaveClass('ng-pristine');
+      expect(input).toHaveClass('ng-valid');
+      expect(input.attr('id')).toBe('f_eyeColour');
+      expect(input.attr('value')).toBe('ha');
+      expect(input.parent().text()).toMatch('Hazel');
+    });
+
+  });
+
+  describe('generates radio buttons for enumerated lists stored in scope with no specified labels', function () {
+
+    beforeEach(inject(function ($rootScope, $compile) {
+      elm = angular.element('<div><form-input schema="schema"></form-input></div>');
+      scope = $rootScope;
+      scope.fEyeColourOptions = {values:['bl','br','gr','ha']};
+      scope.schema = [
+        {name: 'name', id: '1', label: 'Name', type: 'text'},
+        {'name': 'eyeColour', 'id': 'f_eyeColour', 'label': 'Eye Colour', 'type': 'radio', 'options': 'fEyeColourOptions'}
+      ];
+      $compile(elm)(scope);
+      scope.$digest();
+    }));
+
+    it('should have radio buttons', function () {
+      var input = elm.find('input');
+      expect(input.length).toBe(5);
+
+      input = angular.element(elm.find('input')[4]);
+      expect(input).toHaveClass('ng-pristine');
+      expect(input).toHaveClass('ng-valid');
+      expect(input.attr('id')).toBe('f_eyeColour');
+      expect(input.attr('value')).toBe('ha');
+      expect(input.parent().text()).toMatch('ha');
     });
 
   });
@@ -684,6 +809,7 @@ describe('formInput', function () {
     beforeEach(inject(function ($rootScope, $compile) {
       elm = angular.element('<div><form-input schema="formSchema"></form-input></div>');
       scope = $rootScope;
+      scope.f_exams_resultOptions = ['fail','pass'];
       scope.formSchema = [
         {name: 'boolean', type: 'checkbox'},
         {name: 'desc', id: 'desc_id', label: 'Description', size: 'small', type: 'text', showWhen: {lhs: '$boolean', comp: 'eq', rhs: true}},

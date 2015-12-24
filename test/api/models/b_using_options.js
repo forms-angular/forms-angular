@@ -6,16 +6,15 @@ var BSchema = new Schema({
   surname: {type: String, required: true, index: true, list: {}}, // this field appears in a listing and the default edit form header
   forename: {type: String, list: true, index: true},        // this field appears in a listing and the default edit form header
   website: {type: String, form: {type: 'url'}},
-  files: {type: String, form: {type: 'fileuploader', collection:'files'}},
   login: {type: String, secure: true, form: {hidden: true}},  // secure prevents the data from being sent by the API, hidden from being shown on the default form
   passwordHash: {type: String, secure: true, form: {hidden: true}},
   address: {
     line1: {type: String, form: {label: 'Address'}},      // this label overrides the one generated from the field name
     line2: {type: String, form: {label: null}},           // null label - gives a blank label
-    line3: {type: String, form: {label: null, add: 'class="some classes here"'}},
+    line3: {type: String, form: {label: null, add: 'random attributes', class : 'some classes here'}},
     town: {type: String, form: {label: 'Town', placeHolder: 'Post town'}},          // You can specify place holders
     postcode: {type: String,
-      match: /(GIR 0AA)|([A-Z]{1,2}[0-9][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2})/,
+      match: /^(GIR 0AA|[A-Z]{1,2}[0-9][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2})$/,
       form: {label: 'Postcode', size: 'small', help: 'Enter your UK postcode (for example TN2 1AA)'}},  // help displays on the line under the control, size adds matching bootstrap input- class
     country: {type: String, form: {label: 'Country', hidden: true}},
     surveillance: {type: Boolean, secure: true, form: {hidden: true}}
@@ -29,19 +28,30 @@ var BSchema = new Schema({
   weight: {type: Number, min: 5, max: 300, form: {label: 'Approx Weight (lbs)',  // this label overrides the one generated from the field name
     step: 5}},                         // input uses the min and max from the Mongoose schema, and the step from the form object
 
+  hairColour: {
+    type: String,
+    enum: ['Black', 'Blond', 'Brown', 'Fair', 'Grey', 'What hair?'],
+    required: false,
+    form: {
+      directive: 'fng-ui-select',
+      placeHolder: 'Choose hair colour...',
+      help:'This controller uses the <a href="https://github.com/forms-angular/fng-ui-select">fng-ui-select plugin</a> which pulls in the <a href="https://github.com/angular-ui/ui-select">angular-ui ui-select component</a>.'
+    }
+  },
   eyeColour: {
     type: String,
     enum: ['Blue', 'Brown', 'Green', 'Hazel'],
     required: false,
     form: {
       placeHolder: 'Select eye colour',   // Placeholders work in a combo box
-      select2: {},
+      select2: {},     // deprecated - use fng-ui-select
       help: 'This control has had an event handler added to it (which looks horrid - sorry!).' +
-            '  See post form-input generation processing section of <a ng-href="{{buildUrl(\'forms#client-side-customisation\')}}">documentation</a> for details.'
+      '  See post form-input generation processing section of <a ng-href="{{buildUrl(\'forms#client-side-customisation\')}}">documentation</a> for details. This field uses the (deprecated) ui-select2 component.'
     }
   },
   sex: {type: String, enum: ['Male', 'Female'], form: {type: 'radio', inlineRadio: true}},
-  dateOfBirth: Date,
+  dateOfBirth: {type: Date, form: {helpInline: 'When is their birthday?'}},
+  education: {type: String, enum: {values:['sec', 'univ', 'mas', 'dr'], labels:['Secondary', 'University', 'Masters', 'Doctorate']}, form: {type: 'radio'}},
   accepted: {type: Boolean, required: true, form: {helpInline: 'Did we take them?'}, list: {}},   // helpInline displays to the right of the input control
   interviewScore: {type: Number, form: {hidden: true}, list: {}},  // this field does appear on listings, even though it is hidden on default form
   freeText: {
@@ -64,8 +74,7 @@ var BSchema = new Schema({
   ipAddress: {type: String, form: {hidden: true}},
   //any field containing password will display as a password field (dots).
   // This can be overidden by adding 'form:{password:false}' - also this can be true if the field is NOT called password
-  password: {type: String},
-  lastUpdated: {type: Date, list:true, form:{hidden:true}}
+  password: {type: String}
 });
 
 BSchema.pre('save', function (next) {
@@ -136,7 +145,7 @@ BSchema.statics.report = function (report) {
 module.exports = {
   model: B,                                          // pass the model in an object if you want to add options
   findFunc: BSchema.statics.findAccepted,            // this can be used to 'pre' filter selections.
-  // A common use case is to restrict a user to only see their own records
-  // as described in https://groups.google.com/forum/?fromgroups=#!topic/mongoose-orm/TiR5OXR9mAM
+    // A common use case is to restrict a user to only see their own records
+    // as described in https://groups.google.com/forum/?fromgroups=#!topic/mongoose-orm/TiR5OXR9mAM
   onSave: BSchema.statics.prepareSave                // a hook that can be used to add something from environment to record before update
 };

@@ -15,6 +15,7 @@ describe('formInput', function () {
           '</form>');
 
       scope = $rootScope;
+      scope.f_teachers_teacherOptions = scope.f_studies_exams_graderOptions = scope.f_studies_exams_resultOptions = ['opt1','opt2'];
       scope.formSchema = [
         {'name': 'surname', 'id': 'f_surname', 'label': 'Surname', 'type': 'text', 'add': 'autofocus '},
         {'name': 'forename', 'id': 'f_forename', 'label': 'Forename', 'type': 'text'},
