@@ -237,7 +237,11 @@ module fng.services {
           } else if (schemaEntry.select2) {
             // Do nothing with these - handled elsewhere (and deprecated)
             void(schemaEntry.select2);
-          } else if (fieldValue && $scope.conversions[schemaEntry.name] && $scope.conversions[schemaEntry.name].fngajax) {
+          } else if (fieldValue &&
+            $scope.conversions[schemaEntry.name] &&
+            $scope.conversions[schemaEntry.name].fngajax &&
+            !$scope.conversions[schemaEntry.name].noconvert
+          ) {
             var conversionEntry = schemaEntry;
             $scope.conversions[conversionEntry.name].fngajax(fieldValue, conversionEntry, function (updateEntry, value) {
               // Update the master and (preserving pristine if appropriate) the record
