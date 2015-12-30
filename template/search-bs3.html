@@ -6,7 +6,7 @@
 <div class="results-container" ng-show="results.length >= 1">
     <div class="search-results">
         <div ng-repeat="result in results">
-            <span ng-class="resultClass($index)" ng-click="selectResult($index)">{{result.resourceText}} {{result.text}}</span>
+            <span ng-class="resultClass($index)" ng-click="selectResult($index)" title={{result.additional}}>{{result.resourceText}} {{result.text}}</span>
         </div>
         <div ng-show="moreCount > 0">(plus more - continue typing to narrow down search...)
         </div>
