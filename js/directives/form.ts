@@ -60,7 +60,7 @@ module fng.directives {
             var enumInstruction:IEnumInstruction;
             if (angular.isArray(scope[fieldInfo.options])) {
               enumInstruction = {repeat: fieldInfo.options, value: 'option'};
-            } else if (angular.isArray(scope[fieldInfo.options].values)) {
+            } else if (scope[fieldInfo.options] && angular.isArray(scope[fieldInfo.options].values)) {
               if (angular.isArray(scope[fieldInfo.options].labels)) {
                 enumInstruction = {
                   repeat: fieldInfo.options + '.values',
