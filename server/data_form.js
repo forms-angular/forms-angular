@@ -241,14 +241,8 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
         }
     }
     var that = this, results = [], moreCount = 0, searchCriteria;
-    if (req.route && req.route.path === '/api/search') {
-        // Called from search box - treat words as separate strings
-        searchCriteria = { $regex: '^(' + searchFor.split(' ').join('|') + ')', $options: 'i' };
-    }
-    else {
-        // called from somewhere else (probably select2 ajax) preserve spaces
-        searchCriteria = { $regex: '^' + searchFor, $options: 'i' };
-    }
+    // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
+    searchCriteria = { $regex: '^(' + searchFor.split(' ').join('|') + ')', $options: 'i' };
     this.searchFunc(searches, function (item, cb) {
         var searchDoc = {};
         //      console.log(searchCriteria);
