@@ -72,9 +72,7 @@ describe('API', function () {
           cb(null, data);
         }
       };
-      fng.collection()(mockReq, null, function () {
-        fng.collectionGet()(mockReq, mockRes);
-      });
+      fng.collectionGet()(mockReq, mockRes);
     }
 
     before(function (done) {
@@ -153,9 +151,7 @@ describe('API', function () {
           done();
         }
       };
-      fng.collection()(mockReq, null, function () {
-        fng.collectionPost()(mockReq, mockRes);
-      });
+      fng.collectionPost()(mockReq, mockRes);
     });
 
     it('should update a record', function (done) {
@@ -170,9 +166,7 @@ describe('API', function () {
           done();
         }
       };
-      fng.entity()(mockReq, null, function () {
-        fng.entityPut()(mockReq, mockRes);
-      });
+      fng.entityPut()(mockReq, mockRes);
     });
 
     it('should delete a record', function (done) {
@@ -186,10 +180,9 @@ describe('API', function () {
           done();
         }
       };
-      fng.entity()(mockReq, null, function () {
-        fng.entityDelete()(mockReq, mockRes);
-      });
+      fng.entityDelete()(mockReq, mockRes);
     });
+
   });
 
   describe('Secure fields', function () {
@@ -206,9 +199,7 @@ describe('API', function () {
           done();
         }
       };
-      fng.collection()(mockReq, null, function () {
-        fng.collectionGet()(mockReq, mockRes);
-      });
+      fng.collectionGet()(mockReq, mockRes);
     });
 
     it('should not be transmitted in an entity get', function (done) {
@@ -228,9 +219,7 @@ describe('API', function () {
           done();
         }
       };
-      fng.entity()(mockReq, null, function () {
-        fng.entityGet()(mockReq, mockRes);
-      });
+      fng.entityGet()(mockReq, mockRes);
     });
 
 
@@ -257,9 +246,7 @@ describe('API', function () {
           });
         }
       };
-      fng.entity()(mockReq, null, function () {
-        fng.entityPut()(mockReq, mockRes);
-      });
+      fng.entityPut()(mockReq, mockRes);
     });
   });
 
@@ -400,9 +387,7 @@ describe('API', function () {
           done();
         }
       };
-      fng.collection()(mockReq, null, function () {
-        fng.collectionGet()(mockReq, mockRes);
-      });
+      fng.collectionGet()(mockReq, mockRes);
     });
 
     it('Should aggregate and return appropriate records', function (done) {
@@ -419,9 +404,7 @@ describe('API', function () {
           done();
         }
       };
-      fng.collection()(mockReq, null, function () {
-        fng.collectionGet()(mockReq, mockRes);
-      });
+      fng.collectionGet()(mockReq, mockRes);
     });
 
     it('Should combine aggregation and filtering', function (done) {
@@ -438,9 +421,7 @@ describe('API', function () {
           done();
         }
       };
-      fng.collection()(mockReq, null, function () {
-        fng.collectionGet()(mockReq, mockRes);
-      });
+      fng.collectionGet()(mockReq, mockRes);
     });
   });
 

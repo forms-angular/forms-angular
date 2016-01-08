@@ -138,31 +138,27 @@ DataForm.prototype.getListFields = function (resource : Resource, doc: mongoose.
  * Registers all REST routes with the provided `app` object.
  */
 DataForm.prototype.registerRoutes = function () {
-  this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
-  this.app.get.apply(this.app, processArgs(this.options, ['search/:resourceName', this.search()]));
+  var search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id'
+  this.app.get.apply(this.app, processArgs(this.options,   ['models', this.models()]));
 
-  this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName', this.schema()]));
-  this.app.get.apply(this.app, processArgs(this.options, ['schema/:resourceName/:formName', this.schema()]));
-  this.app.get.apply(this.app, processArgs(this.options, ['report/:resourceName', this.report()]));
-  this.app.get.apply(this.app, processArgs(this.options, ['report/:resourceName/:reportName', this.report()]));
+  this.app.get.apply(this.app, processArgs(this.options,   [search+resourceName, this.search()]));
 
-  this.app.all.apply(this.app, processArgs(this.options, [':resourceName', this.collection()]));
-  this.app.get.apply(this.app, processArgs(this.options, [':resourceName', this.collectionGet()]));
+  this.app.get.apply(this.app, processArgs(this.options,   [schema+resourceName, this.schema()]));
+  this.app.get.apply(this.app, processArgs(this.options,   [schema+resourceName + '/:formName', this.schema()]));
 
-  this.app.post.apply(this.app, processArgs(this.options, [':resourceName', this.collectionPost()]));
+  this.app.get.apply(this.app, processArgs(this.options,   [report+resourceName, this.report()]));
+  this.app.get.apply(this.app, processArgs(this.options,   [report+resourceName + '/:reportName', this.report()]));
 
-  this.app.all.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entity()]));
-  this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityGet()]));
+  this.app.get.apply(this.app, processArgs(this.options,   [resourceName, this.collectionGet()]));
+  this.app.post.apply(this.app, processArgs(this.options,  [resourceName, this.collectionPost()]));
 
-  // You can POST or PUT to update data
-  this.app.post.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityPut()]));
-  this.app.put.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityPut()]));
-
-  this.app.delete.apply(this.app, processArgs(this.options, [':resourceName/:id', this.entityDelete()]));
+  this.app.get.apply(this.app, processArgs(this.options,   [resourceName+id, this.entityGet()]));
+  this.app.post.apply(this.app, processArgs(this.options,  [resourceName+id, this.entityPut()]));  // You can POST or PUT to update data
+  this.app.put.apply(this.app, processArgs(this.options,   [resourceName+id, this.entityPut()]));
+  this.app.delete.apply(this.app, processArgs(this.options,[resourceName+id, this.entityDelete()]));
 
   // return the List attributes for a record - used by select2
-  this.app.all.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entity()]));
-  this.app.get.apply(this.app, processArgs(this.options, [':resourceName/:id/list', this.entityList()]));
+  this.app.get.apply(this.app, processArgs(this.options,   [resourceName+id+'/list', this.entityList()]));
 };
 
 DataForm.prototype.newResource = function (model, options) {
@@ -862,13 +858,8 @@ DataForm.prototype.saveAndRespond = function (req, res, hiddenFields) {
 /**
  * All entities REST functions have to go through this first.
  */
-DataForm.prototype.collection = function () {
-  return _.bind(function (req, res, next) {
-    if (!(req.resource = this.getResource(req.params.resourceName))) {
-      return next();
-    }
-    return next();
-  }, this);
+DataForm.prototype.processCollection = function (req) {
+  req.resource = this.getResource(req.params.resourceName);
 };
 
 /**
@@ -876,6 +867,7 @@ DataForm.prototype.collection = function () {
  */
 DataForm.prototype.collectionGet = function () {
   return _.bind(function (req, res, next) {
+    this.processCollection(req);
     if (!req.resource) {
       return next();
     }
@@ -956,6 +948,7 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
 
 DataForm.prototype.collectionPost = function () {
   return _.bind(function (req, res, next) {
+    this.processCollection(req);
     if (!req.resource) {
       next();
       return;
@@ -1012,36 +1005,34 @@ DataForm.prototype.generateQueryForEntity = function (resource, id) {
   var hiddenFields = this.generateHiddenFields(resource, false);
   hiddenFields.__v = 0;
   return resource.model.findOne({_id: id}).select(hiddenFields);
-}
+};
 
 /*
  * Entity request goes there first
  * It retrieves the resource
  */
-DataForm.prototype.entity = function () {
-  return _.bind(function (req, res, next) {
-    if (!(req.resource = this.getResource(req.params.resourceName))) {
-      next();
-      return;
-    }
+DataForm.prototype.processEntity = function (req,res,next) {
+  if (!(req.resource = this.getResource(req.params.resourceName))) {
+    next();
+    return;
+  }
 
-    this.generateQueryForEntity(req.resource, req.params.id).exec(function (err, doc) {
-      if (err) {
-        return res.send({
-          success: false,
-          err: util.inspect(err)
-        });
-      }
-      else if (doc == null) {
-        return res.send({
-          success: false,
-          err: 'Record not found'
-        });
-      }
-      req.doc = doc;
-      return next();
-    });
-  }, this);
+  this.generateQueryForEntity(req.resource, req.params.id).exec(function (err, doc) {
+    if (err) {
+      return res.send({
+        success: false,
+        err: util.inspect(err)
+      });
+    }
+    else if (doc == null) {
+      return res.send({
+        success: false,
+        err: 'Record not found'
+      });
+    }
+    req.doc = doc;
+    next();
+  });
 };
 
 /**
@@ -1051,10 +1042,12 @@ DataForm.prototype.entity = function () {
  */
 DataForm.prototype.entityGet = function () {
   return _.bind(function (req, res, next) {
-    if (!req.resource) {
-      return next();
-    }
-    return res.send(req.doc);
+    this.processEntity(req,res,function() {
+      if (!req.resource) {
+        return next();
+      }
+      return res.send(req.doc);
+    });
   }, this);
 };
 
@@ -1075,61 +1068,70 @@ DataForm.prototype.replaceHiddenFields = function (record, data) {
 
 DataForm.prototype.entityPut = function () {
   return _.bind(function (req, res, next) {
-    if (!req.resource) {
-      next();
-      return;
-    }
+    var that = this;
+    this.processEntity(req,res, function() {
+      if (!req.resource) {
+        next();
+        return;
+      }
 
-    if (!req.body) { throw new Error('Nothing submitted.'); }
-    var cleansedBody = this.cleanseRequest(req),
-      that = this;
+      if (!req.body) {
+        throw new Error('Nothing submitted.');
+      }
+      var cleansedBody = that.cleanseRequest(req);
 
-    // Merge
-    _.each(cleansedBody, function (value, name) {
-      req.doc[name] = (value === '') ? undefined : value;
-    });
-
-    if (req.resource.options.hide !== undefined) {
-      var hiddenFields = this.generateHiddenFields(req.resource, true);
-      hiddenFields._id = false;
-      req.resource.model.findById(req.doc._id, hiddenFields, {lean: true}, function (err, data) {
-        that.replaceHiddenFields(req.doc, data);
-        that.saveAndRespond(req, res, hiddenFields);
+      // Merge
+      _.each(cleansedBody, function (value, name) {
+        req.doc[name] = (value === '') ? undefined : value;
       });
-    } else {
-      that.saveAndRespond(req, res);
-    }
+
+      if (req.resource.options.hide !== undefined) {
+        var hiddenFields = that.generateHiddenFields(req.resource, true);
+        hiddenFields._id = false;
+        req.resource.model.findById(req.doc._id, hiddenFields, {lean: true}, function (err, data) {
+          that.replaceHiddenFields(req.doc, data);
+          that.saveAndRespond(req, res, hiddenFields);
+        });
+      } else {
+        that.saveAndRespond(req, res);
+      }
+    });
   }, this);
 };
 
 DataForm.prototype.entityDelete = function () {
   return _.bind(function (req, res, next) {
-    if (!req.resource) {
-      next();
-      return;
-    }
-
-    req.doc.remove(function (err) {
-      if (err) {
-        return res.send({success: false});
+    this.processEntity(req,res,function() {
+      if (!req.resource) {
+        next();
+        return;
       }
-      return res.send({success: true});
+
+      req.doc.remove(function (err) {
+        if (err) {
+          return res.send({success: false});
+        }
+        return res.send({success: true});
+      });
     });
   }, this);
 };
 
 DataForm.prototype.entityList = function () {
   return _.bind(function (req, res, next) {
-    if (!req.resource) {
-      return next();
-    }
-    this.getListFields(req.resource, req.doc, function(err, display) {
-      if (err) {
-        return res.status(500).send(err);
-      } else {
-        return res.send({list: display});
+    var that = this;
+    this.processEntity(req,res,function() {
+      if (!req.resource) {
+        return next();
       }
-    })
+      that.getListFields(req.resource, req.doc, function (err, display) {
+        if (err) {
+          return res.status(500).send(err);
+        } else {
+          return res.send({list: display});
+        }
+      })
+    });
   }, this);
 };
 
