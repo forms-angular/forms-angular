@@ -70,9 +70,7 @@ describe('List API', function () {
         done();
       }
     };
-    fng.entity()(mockReq, null, function () {
-      fng.entityList()(mockReq, mockRes);
-    });
+    fng.entityList()(mockReq, mockRes);
   });
 
   it('returns hidden list fields', function (done) {
@@ -86,9 +84,7 @@ describe('List API', function () {
         done();
       }
     };
-    fng.entity()(mockReq, null, function () {
-      fng.entityList()(mockReq, mockRes);
-    });
+    fng.entityList()(mockReq, mockRes);
   });
 
   it('returns first string field if no explicit list fields', function (done) {
@@ -102,9 +98,7 @@ describe('List API', function () {
         done();
       }
     };
-    fng.entity()(mockReq, null, function () {
-      fng.entityList()(mockReq, mockRes);
-    });
+    fng.entityList()(mockReq, mockRes);
   });
 
   it('returns looked up fields', function() {
