@@ -19,7 +19,7 @@ module fng.services {
       var queryString = '';
 
       var addParameter = function (param, value) {
-        if (value && value !== '') {
+        if (value && value !== '' || typeof(value) == 'number') {
           if (typeof value === 'object') {
             value = JSON.stringify(value);
           }
