@@ -83,12 +83,65 @@ var fng;
         /*@ngInject*/
         function NavCtrl($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
             $scope.items = [];
+            /* isCollapsed and showShortcuts are used to control how the menu is displayed in a responsive environment and whether the shortcut keystrokes help should be displayed */
             $scope.isCollapsed = true;
+            $scope.showShortcuts = false;
+            $scope.shortcuts = [
+                { key: '?', act: 'Show shortcuts' },
+                { key: '/', act: 'Jump to search' },
+                { key: 'Ctrl+Shift+S', act: 'Save the current record' },
+                { key: 'Ctrl+Shift+Esc', act: 'Cancel changes on the current record' },
+                { key: 'Ctrl+Shift+Ins', act: 'Create a new record' },
+                { key: 'Ctrl+Shift+X', act: 'Delete the current record' }
+            ];
+            $scope.markupShortcut = function (keys) {
+                return '<span class="key">' + keys.split('+').join('</span><span class="key">') + '</span>';
+            };
             $scope.globalShortcuts = function (event) {
-                if (event.keyCode === 191 && event.ctrlKey) {
-                    // Ctrl+/ takes you to global search
-                    document.getElementById('searchinput').focus();
-                    event.preventDefault();
+                function deferredBtnClick(id) {
+                    var btn = document.getElementById(id);
+                    if (btn) {
+                        if (!btn.disabled) {
+                            setTimeout(function () {
+                                btn.click();
+                            });
+                        }
+                        event.preventDefault();
+                    }
+                }
+                function filter(event) {
+                    var tagName = (event.target || event.srcElement).tagName;
+                    return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+                }
+                //console.log(event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.metaKey);
+                if (event.keyCode === 191 && (filter(event) || (!event.altKey && !event.metaKey))) {
+                    if (event.ctrlKey || !event.shiftKey) {
+                        var searchInput = document.getElementById('searchinput');
+                        if (searchInput) {
+                            searchInput.focus();
+                            event.preventDefault();
+                        }
+                    }
+                    else {
+                        $scope.showShortcuts = true;
+                    }
+                }
+                else if (event.keyCode === 83 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+                    deferredBtnClick('saveButton'); // Ctrl+Shift+S saves changes
+                }
+                else if (event.keyCode === 27 && ((event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) || $scope.showShortcuts)) {
+                    if (event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+                        deferredBtnClick('cancelButton'); // Ctrl+Shift+Esc cancels updates
+                    }
+                    else {
+                        $scope.showShortcuts = false;
+                    }
+                }
+                else if (event.keyCode === 45 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+                    deferredBtnClick('newButton'); // Ctrl+Shift+Ins creates New record
+                }
+                else if (event.keyCode === 88 && event.ctrlKey && event.shiftKey && event.altKey && !event.metaKey) {
+                    deferredBtnClick('deleteButton'); // Ctrl+Shift+X deletes record
                 }
             };
             $scope.css = function (fn, arg) {
@@ -3677,5 +3730,5 @@ var formsAngular = fng.formsAngular;
 angular.module("formsAngular").run(["$templateCache", function($templateCache) {$templateCache.put("error-messages.html","<div ng-message=\"required\">A value is required for this field</div>\n<div ng-message=\"minlength\">Too few characters entered</div>\n<div ng-message=\"maxlength\">Too many characters entered</div>\n<div ng-message=\"min\">That value is too small</div>\n<div ng-message=\"max\">That value is too large</div>\n<div ng-message=\"email\">You need to enter a valid email address</div>\n<div ng-message=\"pattern\">This field does not match the expected pattern</div>\n");
 $templateCache.put("form-button-bs2.html","<div class=\"form-btn-grp\">\n  <div class=\"btn-group pull-right\">\n    <button id=\"saveButton\" class=\"btn btn-mini btn-primary form-btn\" ng-click=\"save()\" ng-disabled=\"isSaveDisabled()\"><i class=\"icon-ok\"></i> Save</button>\n    <button id=\"cancelButton\" class=\"btn btn-mini btn-warning form-btn\" ng-click=\"cancel()\" ng-disabled=\"isCancelDisabled()\"><i class=\"icon-remove\"></i> Cancel</button>\n  </div>\n  <div class=\"btn-group pull-right\">\n    <button id=\"newButton\" class=\"btn btn-mini btn-success form-btn\" ng-click=\"newClick()\" ng-disabled=\"isNewDisabled()\"><i class=\"icon-plus\"></i> New</button>\n    <button id=\"deleteButton\" class=\"btn btn-mini btn-danger form-btn\" ng-click=\"deleteClick()\" ng-disabled=\"isDeleteDisabled()\"><i class=\"icon-minus\"></i> Delete</button>\n  </div>\n</div>\n");
 $templateCache.put("form-button-bs3.html","<div class=\"form-btn-grp\">\n  <div class=\"btn-group pull-right\">\n    <button id=\"saveButton\" class=\"btn btn-primary form-btn btn-xs\" ng-click=\"save()\" ng-disabled=\"isSaveDisabled()\"><i class=\"glyphicon glyphicon-ok\"></i> Save</button>\n    <button id=\"cancelButton\" class=\"btn btn-warning form-btn btn-xs\" ng-click=\"cancel()\" ng-disabled=\"isCancelDisabled()\"><i class=\"glyphicon glyphicon-remove\"></i> Cancel</button>\n  </div>\n  <div class=\"btn-group pull-right\">\n    <button id=\"newButton\" class=\"btn btn-success form-btn btn-xs\" ng-click=\"newClick()\" ng-disabled=\"isNewDisabled()\"><i class=\"glyphicon glyphicon-plus\"></i> New</button>\n    <button id=\"deleteButton\" class=\"btn btn-danger form-btn btn-xs\" ng-click=\"deleteClick()\" ng-disabled=\"isDeleteDisabled()\"><i class=\"glyphicon glyphicon-minus\"></i> Delete</button>\n  </div>\n</div>\n");
-$templateCache.put("search-bs2.html","<form class=\"navbar-search pull-right\">\n    <div id=\"search-cg\" class=\"control-group\" ng-class=\"errorClass\">\n        <input type=\"text\" autocomplete=\"off\" id=\"searchinput\" ng-model=\"searchTarget\" class=\"search-query\" placeholder=\"{{searchPlaceholder}}\" ng-keyup=\"handleKey($event)\">\n    </div>\n</form>\n<div class=\"results-container\" ng-show=\"results.length >= 1\">\n    <div class=\"search-results\">\n        <div ng-repeat=\"result in results\">\n            <span ng-class=\"resultClass($index)\" ng-click=\"selectResult($index)\">{{result.resourceText}} {{result.text}}</span>\n        </div>\n        <div ng-show=\"moreCount > 0\">(plus more - continue typing to narrow down search...)\n        </div>\n    </div>\n</div>\n");
-$templateCache.put("search-bs3.html","<form class=\"pull-right navbar-form\">\n    <div id=\"search-cg\" class=\"form-group\" ng-class=\"errorClass\">\n        <input type=\"text\" autocomplete=\"off\" id=\"searchinput\" ng-model=\"searchTarget\" class=\"search-query form-control\" placeholder=\"{{searchPlaceholder}}\" ng-keyup=\"handleKey($event)\">\n    </div>\n</form>\n<div class=\"results-container\" ng-show=\"results.length >= 1\">\n    <div class=\"search-results\">\n        <div ng-repeat=\"result in results\">\n            <span ng-class=\"resultClass($index)\" ng-click=\"selectResult($index)\" title={{result.additional}}>{{result.resourceText}} {{result.text}}</span>\n        </div>\n        <div ng-show=\"moreCount > 0\">(plus more - continue typing to narrow down search...)\n        </div>\n    </div>\n</div>\n");}]);
+$templateCache.put("search-bs2.html","<form class=\"navbar-search pull-right\">\n    <div id=\"search-cg\" class=\"control-group\" ng-class=\"errorClass\">\n        <input type=\"text\" autocomplete=\"off\" id=\"searchinput\" ng-model=\"searchTarget\" ng-model-options=\"{debounce:250}\" class=\"search-query\" placeholder=\"{{searchPlaceholder}}\" ng-keyup=\"handleKey($event)\">\n    </div>\n</form>\n<div class=\"results-container\" ng-show=\"results.length >= 1\">\n    <div class=\"search-results\">\n        <div ng-repeat=\"result in results\">\n            <span ng-class=\"resultClass($index)\" ng-click=\"selectResult($index)\">{{result.resourceText}} {{result.text}}</span>\n        </div>\n        <div ng-show=\"moreCount > 0\">(plus more - continue typing to narrow down search...)\n        </div>\n    </div>\n</div>\n");
+$templateCache.put("search-bs3.html","<form class=\"pull-right navbar-form\">\n    <div id=\"search-cg\" class=\"form-group\" ng-class=\"errorClass\">\n        <input type=\"text\" autocomplete=\"off\" id=\"searchinput\" ng-model=\"searchTarget\" ng-model-options=\"{debounce:250}\" class=\"search-query form-control\" placeholder=\"{{searchPlaceholder}}\" ng-keyup=\"handleKey($event)\">\n    </div>\n</form>\n<div class=\"results-container\" ng-show=\"results.length >= 1\">\n    <div class=\"search-results\">\n        <div ng-repeat=\"result in results\">\n            <span ng-class=\"resultClass($index)\" ng-click=\"selectResult($index)\" title={{result.additional}}>{{result.resourceText}} {{result.text}}</span>\n        </div>\n        <div ng-show=\"moreCount > 0\">(plus more - continue typing to narrow down search...)\n        </div>\n    </div>\n</div>\n");}]);
