@@ -797,8 +797,8 @@ DataForm.prototype.collectionGet = function () {
         try {
             var aggregationParam = urlParts.query.a ? JSON.parse(urlParts.query.a) : null;
             var findParam = urlParts.query.f ? JSON.parse(urlParts.query.f) : {};
-            var limitParam = urlParts.query.l ? JSON.parse(urlParts.query.l) : {};
-            var skipParam = urlParts.query.s ? JSON.parse(urlParts.query.s) : {};
+            var limitParam = urlParts.query.l ? JSON.parse(urlParts.query.l) : 0;
+            var skipParam = urlParts.query.s ? JSON.parse(urlParts.query.s) : 0;
             var orderParam = urlParts.query.o ? JSON.parse(urlParts.query.o) : req.resource.options.listOrder;
             var self = this;
             this.filteredFind(req.resource, req, aggregationParam, findParam, orderParam, limitParam, skipParam, function (err, docs) {
