@@ -20,7 +20,7 @@ module fng.controllers {
     ];
 
     $scope.markupShortcut = function(keys) {
-      return '<span class="key">' + keys.split('+').join('</span><span class="key">') + '</span>';
+      return '<span class="key">' + keys.split('+').join('</span> + <span class="key">') + '</span>';
     };
 
     $scope.globalShortcuts = function (event) {
