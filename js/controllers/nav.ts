@@ -6,13 +6,66 @@ module fng.controllers {
   export function NavCtrl($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
 
     $scope.items = [];
+
+    /* isCollapsed and showShortcuts are used to control how the menu is displayed in a responsive environment and whether the shortcut keystrokes help should be displayed */
     $scope.isCollapsed = true;
+    $scope.showShortcuts = false;
+    $scope.shortcuts = [
+      {key:'?', act:'Show shortcuts'},
+      {key:'/', act:'Jump to search'},
+      {key:'Ctrl+Shift+S', act:'Save the current record'},
+      {key:'Ctrl+Shift+Esc', act:'Cancel changes on the current record'},
+      {key:'Ctrl+Shift+Ins', act:'Create a new record'},
+      {key:'Ctrl+Shift+X', act:'Delete the current record'}
+    ];
+
+    $scope.markupShortcut = function(keys) {
+      return '<span class="key">' + keys.split('+').join('</span><span class="key">') + '</span>';
+    };
 
     $scope.globalShortcuts = function (event) {
-      if (event.keyCode === 191 && event.ctrlKey) {
-        // Ctrl+/ takes you to global search
-        document.getElementById('searchinput').focus();
-        event.preventDefault();
+
+      function deferredBtnClick(id) {
+        var btn:HTMLButtonElement = <HTMLButtonElement>document.getElementById(id);
+        if (btn) {
+          if (!btn.disabled) {
+            setTimeout(function () {
+              btn.click();
+            });
+          }
+          event.preventDefault();
+        }
+      }
+
+      function filter(event){
+        var tagName = (event.target || event.srcElement).tagName;
+        return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+      }
+
+      //console.log(event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.metaKey);
+
+      if (event.keyCode === 191 && (filter(event) || (!event.altKey && !event.metaKey))) {
+        if (event.ctrlKey || !event.shiftKey) {
+          var searchInput = document.getElementById('searchinput');
+          if (searchInput) {
+            searchInput.focus();
+            event.preventDefault();
+          }
+        } else {
+          $scope.showShortcuts = true;
+        }
+      } else if (event.keyCode === 83 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+        deferredBtnClick('saveButton');                           // Ctrl+Shift+S saves changes
+      } else if (event.keyCode === 27 && ((event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) || $scope.showShortcuts)) {
+        if (event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+          deferredBtnClick('cancelButton');                         // Ctrl+Shift+Esc cancels updates
+        } else {
+          $scope.showShortcuts = false;
+        }
+      } else if (event.keyCode === 45 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+        deferredBtnClick('newButton');                           // Ctrl+Shift+Ins creates New record
+      } else if (event.keyCode === 88 && event.ctrlKey && event.shiftKey && event.altKey && !event.metaKey) {
+        deferredBtnClick('deleteButton');                        // Ctrl+Shift+X deletes record
       }
     };
 
