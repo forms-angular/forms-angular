@@ -24,7 +24,7 @@ module fng.controllers {
     $scope.searchPlaceholder = _isNotMobile ? 'Ctrl + / to Search' : 'Search';
 
     $scope.handleKey = function (event) {
-      if (event.keyCode === 27 && $scope.searchTarget.length > 0) {
+      if (event.keyCode === 27 && $scope.searchTarget && $scope.searchTarget.length > 0) {
         $scope.searchTarget = '';
       } else if ($scope.results.length > 0) {
         switch (event.keyCode) {
