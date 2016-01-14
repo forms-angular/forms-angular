@@ -44,7 +44,7 @@ module fng.controllers {
 
       //console.log(event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.metaKey);
 
-      if (event.keyCode === 191 && (filter(event) || (!event.altKey && !event.metaKey))) {
+      if (event.keyCode === 191 && (filter(event) || (event.ctrlKey && !event.altKey && !event.metaKey))) {
         if (event.ctrlKey || !event.shiftKey) {
           var searchInput = document.getElementById('searchinput');
           if (searchInput) {
