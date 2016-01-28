@@ -33,7 +33,6 @@ gulp.task('build', function(callback) {
     'annotate',
     'tidy',
     'uglify',
-    'map',
     'less',
     callback);
 });
@@ -65,15 +64,6 @@ gulp.task('concatTemplates', function() {
 
 gulp.task('tidy', function() {
   return del([distDirectory + '/templates.js'], function(err,paths) {console.log('Cleared ' + paths.join(' '));});
-});
-
-gulp.task('map', function() {
-  var shell = require('gulp-shell');
-
-  return shell.task(
-    'uglifyjs --compress --mangle --source-map forms-angular.min.js.map --source-map-root . -o forms-angular.min.js -- forms-angular.js',
-    {cwd: rootDir + '/dist'}
-  )();
 });
 
 gulp.task('test', function(callback) {
@@ -179,7 +169,7 @@ gulp.task('templates', function() {
 
 gulp.task('less', function () {
   var less = require('gulp-less');
-  var minifyCSS = require('gulp-minify-css');
+  var minifyCSS = require('gulp-cssnano');
   var path = require('path');
 
   return gulp.src('less/forms-angular-with-*.less')
