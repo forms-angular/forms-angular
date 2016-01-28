@@ -21,6 +21,7 @@ js/**/*.d.ts
 js/**/*.map
 server/**/*.js
 server/**/*.map
+Phantom*/**/*
 
 test_out/*
 PhantomJS_1.9.8_(Linux_0.0.0)/test_out/unit.xml
