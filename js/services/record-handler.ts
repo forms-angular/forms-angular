@@ -373,6 +373,13 @@ module fng.services {
         } else {
           // New record
           ctrlState.master = {};
+          if ($location.$$search.r) {
+            try {
+              ctrlState.master = JSON.parse($location.$$search.r);
+            } catch (e) {
+              console.log('Error parsing specified record : ' + e.message);
+            }
+          }
           $scope.phase = 'ready';
           $scope.cancel();
         }
