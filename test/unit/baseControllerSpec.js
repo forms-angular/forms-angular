@@ -640,10 +640,7 @@ describe('BaseCtrl', function () {
             'setters': [],
             'getters': [],
             'options': {
-              'ref': 'organisation',
-              'form': {
-                'hidden': true
-              }
+              'ref': 'organisation'
             },
             '_index': null
           },
@@ -654,10 +651,7 @@ describe('BaseCtrl', function () {
           'options': {
             'type': [
               {
-                'ref': 'organisation',
-                'form': {
-                  'hidden': true
-                }
+                'ref': 'organisation'
               }
             ],
             'form': {'label': 'Organisations'}

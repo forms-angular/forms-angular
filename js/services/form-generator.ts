@@ -111,6 +111,14 @@ module fng.services {
 
     function handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState) {
 
+      function performLookupSelect(){
+        formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
+        formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
+        if (!formInstructions.hidden) {
+          recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
+        };
+      }
+
       var select2ajaxName;
       if (mongooseType.caster) {
         formInstructions.array = true;
@@ -232,111 +240,106 @@ module fng.services {
           delete formInstructions.link;
         } else {
           formInstructions.type = 'select';
-
 // Support both of the syntaxes below
 //            team : [ { type: Schema.Types.ObjectId , ref: 'f_nested_schema', form: {select2: {fngAjax: true}}} ],
 //            team2:   { type:[Schema.Types.ObjectId], ref: 'f_nested_schema', form: {select2: {fngAjax: true}}},
-          if (formInstructions.select2 || (mongooseOptions.form && mongooseOptions.form.select2)) {
-            if (!formInstructions.select2) {
-              formInstructions.select2 = mongooseOptions.form.select2;
-            }
-            if (formInstructions.select2 === true) {
-              formInstructions.select2 = {};
-            }
-            $scope.select2List.push(formInstructions.name);
-            $scope.conversions[formInstructions.name] = formInstructions.select2;
-            if (formInstructions.select2.fngAjax) {
-              // create the instructions for select2
-              select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
-              // If not required then generate a place holder if none specified (see https://github.com/forms-angular/forms-angular/issues/53)
-              if (!mongooseOptions.required && !formInstructions.placeHolder) {
-                formInstructions.placeHolder = 'Select...';
+            if (formInstructions.select2 || (mongooseOptions.form && mongooseOptions.form.select2)) {
+              if (!formInstructions.select2) {
+                formInstructions.select2 = mongooseOptions.form.select2;
               }
-              $scope[select2ajaxName] = {
-                allowClear: !mongooseOptions.required,
-                minimumInputLength: 2,
-                initSelection: function (element, callback) {
-                  var theId = element.val();
-                  if (theId && theId !== '') {
-                    SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
-                      .success(function (data) {
-                        if (data.success === false) {
-                          $location.path('/404');
-                        }
-                        var display = {id: theId, text: data.list};
-                        recordHandler.preservePristine(element, function () {
-                          callback(display);
-                        });
-                      }).error($scope.handleHttpError);
-                    //                                } else {
-                    //                                    throw new Error('select2 initSelection called without a value');
-                  }
-                },
-                ajax: {
-                  url: '/api/search/' + mongooseOptions.ref,
-                  data: function (term, page) { // page is the one-based page number tracked by Select2
-                    var queryList = {
-                      q: term, //search term
-                      pageLimit: 10, // page size
-                      page: page // page number
-                    };
-                    var queryListExtension;
-                    if (typeof mongooseOptions.form.searchQuery === 'object') {
-                      queryListExtension = mongooseOptions.form.searchQuery;
-                    } else if (typeof mongooseOptions.form.searchQuery === 'function') {
-                      queryListExtension = mongooseOptions.form.searchQuery($scope, mongooseOptions);
-                    }
-                    if (queryListExtension) {
-                      _.extend(queryList, queryListExtension);
-                    }
-                    return queryList;
-                  },
-                  results: function (data) {
-                    return {results: data.results, more: data.moreCount > 0};
-                  }
-                }
-              };
-              _.extend($scope[select2ajaxName], formInstructions.select2);
-              formInstructions.select2.fngAjax = select2ajaxName;
-            } else {
               if (formInstructions.select2 === true) {
                 formInstructions.select2 = {};
               }
-              formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
-              $scope['select2' + formInstructions.select2.s2query] = {
-                allowClear: !mongooseOptions.required,
-                initSelection: function (element, callback) {
-                  var myId = element.val();
-                  if (myId !== '' && $scope[formInstructions.ids].length > 0) {
-                    var myVal = recordHandler.convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
-                    var display = {id: myId, text: myVal};
-                    callback(display);
-                  }
-                },
-                query: function (query) {
-                  var data = {results: []},
-                    searchString = query.term.toUpperCase();
-                  for (var i = 0; i < $scope[formInstructions.options].length; i++) {
-                    if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
-                      data.results.push({
-                        id: $scope[formInstructions.ids][i],
-                        text: $scope[formInstructions.options][i]
-                      });
+              $scope.select2List.push(formInstructions.name);
+              $scope.conversions[formInstructions.name] = formInstructions.select2;
+              if (formInstructions.select2.fngAjax) {
+                // create the instructions for select2
+                select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
+                // If not required then generate a place holder if none specified (see https://github.com/forms-angular/forms-angular/issues/53)
+                if (!mongooseOptions.required && !formInstructions.placeHolder) {
+                  formInstructions.placeHolder = 'Select...';
+                }
+                $scope[select2ajaxName] = {
+                  allowClear: !mongooseOptions.required,
+                  minimumInputLength: 2,
+                  initSelection: function (element, callback) {
+                    var theId = element.val();
+                    if (theId && theId !== '') {
+                      SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
+                        .success(function (data) {
+                          if (data.success === false) {
+                            $location.path('/404');
+                          }
+                          var display = {id: theId, text: data.list};
+                          recordHandler.preservePristine(element, function () {
+                            callback(display);
+                          });
+                        }).error($scope.handleHttpError);
+                      //                                } else {
+                      //                                    throw new Error('select2 initSelection called without a value');
+                    }
+                  },
+                  ajax: {
+                    url: '/api/search/' + mongooseOptions.ref,
+                    data: function (term, page) { // page is the one-based page number tracked by Select2
+                      var queryList = {
+                        q: term, //search term
+                        pageLimit: 10, // page size
+                        page: page // page number
+                      };
+                      var queryListExtension;
+                      if (typeof mongooseOptions.form.searchQuery === 'object') {
+                        queryListExtension = mongooseOptions.form.searchQuery;
+                      } else if (typeof mongooseOptions.form.searchQuery === 'function') {
+                        queryListExtension = mongooseOptions.form.searchQuery($scope, mongooseOptions);
+                      }
+                      if (queryListExtension) {
+                        _.extend(queryList, queryListExtension);
+                      }
+                      return queryList;
+                    },
+                    results: function (data) {
+                      return {results: data.results, more: data.moreCount > 0};
                     }
                   }
-                  query.callback(data);
+                };
+                _.extend($scope[select2ajaxName], formInstructions.select2);
+                formInstructions.select2.fngAjax = select2ajaxName;
+              } else {
+                if (formInstructions.select2 === true) {
+                  formInstructions.select2 = {};
                 }
-              };
-              _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
-              formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
-              formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-              recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
+                formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
+                $scope['select2' + formInstructions.select2.s2query] = {
+                  allowClear: !mongooseOptions.required,
+                  initSelection: function (element, callback) {
+                    var myId = element.val();
+                    if (myId !== '' && $scope[formInstructions.ids].length > 0) {
+                      var myVal = recordHandler.convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
+                      var display = {id: myId, text: myVal};
+                      callback(display);
+                    }
+                  },
+                  query: function (query) {
+                    var data = {results: []},
+                      searchString = query.term.toUpperCase();
+                    for (var i = 0; i < $scope[formInstructions.options].length; i++) {
+                      if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
+                        data.results.push({
+                          id: $scope[formInstructions.ids][i],
+                          text: $scope[formInstructions.options][i]
+                        });
+                      }
+                    }
+                    query.callback(data);
+                  }
+                };
+                _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
+                performLookupSelect();
+              }
+            } else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
+              performLookupSelect();
             }
-          } else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
-            formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
-            formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-            recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
-          }
         }
       } else if (mongooseType.instance === 'Date') {
         if (!formInstructions.type) {
