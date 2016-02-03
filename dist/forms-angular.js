@@ -1821,6 +1821,14 @@ var fng;
                 }
             }
             function handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState) {
+                function performLookupSelect() {
+                    formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
+                    formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
+                    if (!formInstructions.hidden) {
+                        recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
+                    }
+                    ;
+                }
                 var select2ajaxName;
                 if (mongooseType.caster) {
                     formInstructions.array = true;
@@ -2036,15 +2044,11 @@ var fng;
                                     }
                                 };
                                 _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
-                                formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
-                                formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                                recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
+                                performLookupSelect();
                             }
                         }
                         else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
-                            formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
-                            formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-                            recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
+                            performLookupSelect();
                         }
                     }
                 }
@@ -3156,7 +3160,7 @@ var fng;
                                 ctrlState.master = JSON.parse($location.$$search.r);
                             }
                             catch (e) {
-                                console.log('Error parsing specified record ' + e.message);
+                                console.log('Error parsing specified record : ' + e.message);
                             }
                         }
                         $scope.phase = 'ready';
