@@ -103,9 +103,7 @@ module fng.services {
             if (config.fixedRoutes) {
               _setUpUIRoutes(config.fixedRoutes);
             }
-            setTimeout(function () {
-              _setUpUIRoutes(builtInRoutes, config.prefix, options.add2fngRoutes);
-            });
+            _setUpUIRoutes(builtInRoutes, config.prefix, options.add2fngRoutes);
             break;
         }
       },
