@@ -139,6 +139,7 @@ declare module fng {
         routing: string;
         prefix: string;
         fixedRoutes?: Array<IBuiltInRoute>;
+        templateFolder?: string;
         add2fngRoutes?: any;
         variantsForDemoWebsite?: any;
         variants?: any;

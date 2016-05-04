@@ -1,0 +1,18 @@
+<div ng-controller="AnalysisCtrl">
+  <div class="container-fluid page-header report-header">
+    <div ng-class="css('rowFluid')">
+      <div class="header-lhs col-xs-7 span7">
+        <h1>{{ reportSchema.title }}</h1>
+      </div>
+      <div class="header-rhs col-xs-5 span5">
+        <form-input schema="paramSchema" name="paramForm" ng-show="paramSchema" formstyle="horizontalCompact"></form-input>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid page-body report-body">
+    <error-display></error-display>
+    <div class="row-fluid">
+      <div class="gridStyle" ng-grid="gridOptions"></div>
+    </div>
+  </div>
+</div>
