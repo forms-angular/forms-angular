@@ -10,44 +10,58 @@ module fng.services {
 //  fixedRoutes: [] an array in the same format as builtInRoutes that is matched before the generic routes.  Can be omitted
       hashPrefix: '',
       html5Mode: false,
-      routing: 'ngroute',    // What sort of routing do we want?  ngroute or uirouter
-      prefix: ''        // How do we want to prefix out routes?  If not empty string then first character must be slash (which is added if not)
+      routing: 'ngroute',   // What sort of routing do we want?  ngroute or uirouter
+      prefix: ''            // How do we want to prefix our routes?  If not empty string then first character must be slash (which is added if not)
     };
 
     var builtInRoutes:Array<fng.IBuiltInRoute> = [
       {
         route: '/analyse/:model/:reportSchemaName',
         state: 'analyse::model::report',
-        templateUrl: 'partials/base-analysis.html'
+        templateUrl: 'base-analysis.html'
       },
-      {route: '/analyse/:model', state: 'analyse::model', templateUrl: 'partials/base-analysis.html'},
-      {route: '/:model/:id/edit', state: 'model::edit', templateUrl: 'partials/base-edit.html'},
-      {route: '/:model/:id/edit/:tab', state: 'model::edit::tab', templateUrl: 'partials/base-edit.html'},
-      {route: '/:model/new', state: 'model::new', templateUrl: 'partials/base-edit.html'},
-      {route: '/:model', state: 'model::list', templateUrl: 'partials/base-list.html'},
-      {route: '/:model/:form/:id/edit', state: 'model::form::edit', templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
-      {route: '/:model/:form/:id/edit/:tab', state: 'model::form::edit::tab', templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
-      {route: '/:model/:form/new', state: 'model::form::new', templateUrl: 'partials/base-edit.html'},       // non default form (different fields etc)
-      {route: '/:model/:form', state: 'model::form::list', templateUrl: 'partials/base-list.html'}        // list page with links to non default form
+      {route: '/analyse/:model', state: 'analyse::model', templateUrl: 'base-analysis.html'},
+      {route: '/:model/:id/edit', state: 'model::edit', templateUrl: 'base-edit.html'},
+      {route: '/:model/:id/edit/:tab', state: 'model::edit::tab', templateUrl: 'base-edit.html'},
+      {route: '/:model/new', state: 'model::new', templateUrl: 'base-edit.html'},
+      {route: '/:model', state: 'model::list', templateUrl: 'base-list.html'},
+      {route: '/:model/:form/:id/edit', state: 'model::form::edit', templateUrl: 'base-edit.html'},       // non default form (different fields etc)
+      {route: '/:model/:form/:id/edit/:tab', state: 'model::form::edit::tab', templateUrl: 'base-edit.html'},       // non default form (different fields etc)
+      {route: '/:model/:form/new', state: 'model::form::new', templateUrl: 'base-edit.html'},       // non default form (different fields etc)
+      {route: '/:model/:form', state: 'model::form::list', templateUrl: 'base-list.html'}        // list page with links to non default form
     ];
 
     var _routeProvider, _stateProvider;
     var lastRoute = null;
     var lastObject:fng.IFngRoute = {};
 
+    function handleFolder(templateURL: string) : string {
+      var retVal : string = templateURL;
+      if (config.templateFolder) {
+        if (config.templateFolder[config.templateFolder.length-1] !== '/') {
+          retVal = config.templateFolder + '/' + retVal;
+        } else {
+          retVal = config.templateFolder + retVal;
+        }
+      }
+      return retVal;
+    }
+
     function _setUpNgRoutes(routes:Array<fng.IBuiltInRoute>, prefix:string = '', additional?:any):void {
       prefix = prefix || '';
       angular.forEach(routes, function (routeSpec) {
-        _routeProvider.when(prefix + routeSpec.route, angular.extend(routeSpec.options || {templateUrl: routeSpec.templateUrl}, additional));
+        _routeProvider.when(prefix + routeSpec.route, angular.extend(routeSpec.options || {templateUrl: handleFolder(routeSpec.templateUrl)}, additional));
       });
-      // This next bit is just for the demo website to allow demonstrating multiple frameworks - not available with other routers
+
+      // This next bit is just for the demo website to allow demonstrating multiple CSS frameworks - not available with other routers
       if (config.variantsForDemoWebsite) {
         angular.forEach(config.variantsForDemoWebsite, function (variant) {
           angular.forEach(routes, function (routeSpec) {
-            _routeProvider.when(prefix + variant + routeSpec.route, angular.extend(routeSpec.options || {templateUrl: routeSpec.templateUrl}, additional));
+            _routeProvider.when(prefix + variant + routeSpec.route, angular.extend(routeSpec.options || {templateUrl: handleFolder(routeSpec.templateUrl)}, additional));
           });
         });
       }
+
     }
 
     function _setUpUIRoutes(routes:Array<fng.IBuiltInRoute>, prefix:string = '', additional?:any):void {
