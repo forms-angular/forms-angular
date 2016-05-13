@@ -18,7 +18,7 @@ formsAngular.directive('emailField', ['$compile', '$filter', 'cssFrameworkServic
               template += '<label class="control-label" for="' + info.id + '">' + info.label + '</label>';
             }
             template += '<div class="controls">' +
-              '<div class="input-prepend">' +
+              '<div class="input-prepend test-class">' +
               '<span class="add-on">@</span>' +
               '<input type="email" ng-model="record.' + info.name + '" id="' + info.id + '" name="' + info.id + '" />' +
               '</div>' +
@@ -33,7 +33,7 @@ formsAngular.directive('emailField', ['$compile', '$filter', 'cssFrameworkServic
               template += '<label class="col-sm-2" for="' + info.id + '">' + info.label + '</label>';
             }
             template += '<div class="col-sm-10">' +
-              '<div class="col-xs-4">' +
+              '<div class="col-xs-4 test-class">' +
               '<div class="input-group">' +
               '<span class="input-group-addon input-sm">@</span>' +
               '<input type="email" class="form-control input-sm" ng-model="record.' + info.name + '" id="' + info.id + '" name="' + info.id + '" />' +

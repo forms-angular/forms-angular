@@ -4,11 +4,10 @@ module fng.services {
 
   /*@ngInject*/
   export function cssFrameworkService() {
-    // Supported options for framework are:
-    //      bs2 = Twitter Bootstrap 2.3.2 (default)
-    //      bs3 = Bootstrap 3.3.5
+    // Bootstrap 3 is now the only supported framework
+    // Bootstrap 2 can be made to work - an example can be made available if you request on gitter.
     var config = {
-      framework: 'bs2'  // Unit tests depend on this being bs2
+      framework: 'bs3'
     };
 
     return {

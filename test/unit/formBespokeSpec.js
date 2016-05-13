@@ -36,7 +36,7 @@ describe('formBespokeInput', function () {
       expect(input.attr('type')).toBe('email');
 
       var prepend = angular.element(elm.find('div')[2]);
-      expect(prepend).toHaveClass('input-prepend');
+      expect(prepend).toHaveClass('test-class');
       expect(prepend.length).toBe(1);
       expect(prepend.text()).toBe('@');
     });

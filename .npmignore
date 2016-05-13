@@ -13,10 +13,7 @@ build.xml
 generated
 bower_components
 config
-dist
-fonts
 js
-less
 scripts
 node_modules
 template
