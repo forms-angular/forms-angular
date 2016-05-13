@@ -1,11 +1,13 @@
 # forms-angular
 
 ## 0.6.0 to 0.7.0
+* Removed support for Bootstrap 2 (just in time for Bootstrap 4?)
 * Fixed bug with ui-router setup which meant that full routes were not parsed.
 * Added internal templates for lists, edit forms and report forms (previously they were in the Yeoman generator).
 * Internal templates can be over-ridden by specifying a templateFolder property in the routing config.
 ### BREAKING CHANGES
-* To use the edit / list / report templates from a pre 0.7.0 application you must specify a templateFolder property of 'partials' when starting the routingService when configuring forms-angular       
+* To use the edit / list / report templates from a pre 0.7.0 application you must specify a templateFolder property of 'partials' when starting the routingService when configuring forms-angular
+* Removed support for Bootstrap 2 (though your BS2 apps should still work - www.forms-angular.org is still BS2)       
 
 ## 0.5.1 to 0.6.0
 * Upgrade to angular-ui-bootstrap 0.14.x, which drops support for Bootstrap 2 (but seems to work fine for the forms-angular.org website, which is BS2)

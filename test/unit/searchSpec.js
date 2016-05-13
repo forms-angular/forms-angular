@@ -23,13 +23,13 @@ describe('search', function () {
 
     it('should have a search form', function () {
       var form = elm.find('form');
-      expect(form).toHaveClass('navbar-search');
+      expect(form).toHaveClass('navbar-form');
     });
 
     it('should not have an error class in the search box when the form is created', function () {
       var div = angular.element(elm.find('div')[0]);
       expect(div.attr('id')).toBe('search-cg');
-      expect(div.attr('class')).toBe('control-group');
+      expect(div.attr('class')).toBe('form-group');
     });
 
   });
@@ -58,7 +58,7 @@ describe('search', function () {
       var results = elm.find('span');
       expect(results.length).toBe(2);
       var div = angular.element(elm.find('div')[0]);
-      expect(div.attr('class')).toBe('control-group');
+      expect(div.attr('class')).toBe('form-group');
     });
 
     it('should have an error class in the search box when the string is not found', function () {
@@ -69,10 +69,10 @@ describe('search', function () {
       var results = elm.find('span');
       expect(results.length).toBe(0);
       var div = angular.element(elm.find('div')[0]);
-      expect(div.attr('class')).toBe('control-group error has-error');
+      expect(div.attr('class')).toBe('form-group error has-error');
       scope.searchTarget = '';
       scope.$digest();
-      expect(div.attr('class')).toBe('control-group');
+      expect(div.attr('class')).toBe('form-group');
     });
 
     it('formats results', function () {

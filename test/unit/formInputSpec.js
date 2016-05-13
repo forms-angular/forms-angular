@@ -107,11 +107,11 @@ describe('formInput', function () {
       }));
 
       it('has Exams section', function () {
-        var thisElm = angular.element(elm.find('div')[5]);
+        var thisElm = angular.element(elm.find('div')[7]);
         expect(thisElm).toHaveClass('schema-head');
         expect(thisElm.text()).toBe('Exams');
 
-        thisElm = angular.element(elm.find('div')[20]);
+        thisElm = angular.element(elm.find('div')[26]);
         expect(thisElm).toHaveClass('schema-foot');
 
         thisElm = thisElm.find('button');
@@ -120,9 +120,9 @@ describe('formInput', function () {
         thisElm = elm.find('div');
         expect(thisElm).toHaveClassCount('sub-doc', 2);
 
-        thisElm = angular.element(elm.find('div')[6]);
+        thisElm = angular.element(elm.find('div')[8]);
         expect(thisElm.attr('id')).toBe('f_examsList_0');
-        thisElm = angular.element(elm.find('div')[13]);
+        thisElm = angular.element(elm.find('div')[17]);
         expect(thisElm.attr('id')).toBe('f_examsList_1');
 
         thisElm = elm.find('input');
@@ -156,7 +156,7 @@ describe('formInput', function () {
       it('has amended Exams section head', function () {
         var thisElm = elm.find('div');
         expect(thisElm).toHaveClassCount('schema-head', 1);
-        thisElm = angular.element(elm.find('div')[5]);
+        thisElm = angular.element(elm.find('div')[7]);
         expect(thisElm.text()).toBe('Exams');
       });
 
@@ -210,9 +210,9 @@ describe('formInput', function () {
       expect(input.attr('type')).toBe('text');
     });
 
-    it('should have 2 label', function () {
+    it('should have 2 visible labels', function () {
       var label = elm.find('label');
-      expect(label.length).toBe(2);
+      expect(label.length).toBe(4);
 
       label = angular.element(elm.find('label')[0]);
       expect((label).text()).toBe('Name');
@@ -221,6 +221,15 @@ describe('formInput', function () {
       label = angular.element(elm.find('label')[1]);
       expect((label).text()).toBe('Nickname');
       expect(label.attr('for')).toBe('f_nickname');
+
+      label = angular.element(elm.find('label')[2]);
+      expect((label).text()).toBe('');
+      expect(label.attr('for')).toBe('f_hairColour');
+
+      label = angular.element(elm.find('label')[3]);
+      expect((label).text()).toBe('');
+      expect(label.attr('for')).toBe('_2');
+
     });
 
   });
@@ -281,7 +290,7 @@ describe('formInput', function () {
       expect(help.text()).toBe('This is some help');
 
       help = angular.element(elm.find('span')[1]);
-      expect(help).toHaveClass('help-inline');
+      // expect(help).toHaveClass('help-inline');   No such thing in BS3
       expect(help.text()).toBe('This is some inline help');
     });
 
@@ -797,7 +806,7 @@ describe('formInput', function () {
       var input = elm.find('input');
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input).toHaveClass('input-small');
+      expect(input).toHaveClass('input-sm');
       expect(input.attr('id')).toBe('desc_id');
       expect(input.attr('type')).toBe('text');
     });
@@ -834,19 +843,19 @@ describe('formInput', function () {
     }));
 
     it('on simple field', function () {
-      var cg = angular.element(elm.find('div')[2]);
+      var cg = angular.element(elm.find('div')[3]);
       expect(cg.attr('id')).toBe('cg_desc_id');
       expect(cg.attr('ng-show')).toBe('record.boolean===true');
     });
 
     it('on nested field', function () {
-      var cg = angular.element(elm.find('span')[0]);
+      var cg = angular.element(elm.find('div')[11]);
       expect(cg.attr('id')).toBe('cg_f_exams_subject');
       expect(cg.attr('ng-show')).toBe('record.boolean===true');
     });
 
     it('dependent on nested field', function () {
-      var cg = angular.element(elm.find('span')[2]);
+      var cg = angular.element(elm.find('div')[13]);
       expect(cg.attr('id')).toBe('cg_f_exams_retakeDate');
       expect(cg.attr('ng-show')).toBe('record.exams[$index].result===\'fail\'');
     });
@@ -999,9 +1008,10 @@ describe('formInput', function () {
       scope.$digest();
     }));
 
-    it('should not have a label', function () {
+    it('should not have a visible label', function () {
       var label = elm.find('label');
-      expect(label.length).toBe(0);
+      expect(label.length).toBe(1);
+      expect(label).toHaveClass('sr-only');
     });
 
   });
@@ -1018,19 +1028,6 @@ describe('formInput', function () {
         var input = elm.find('input');
         expect(input.attr('thing')).toBe('');
         expect(input.attr('controlthing')).toBe(undefined);
-      });
-    });
-
-    it('adds a class to text input without size using add (deprecated behaviour)', function() {
-      inject(function ($rootScope, $compile) {
-        elm = angular.element('<div><form-input formStyle="inline" schema="formSchema"></form-input></div>');
-        scope = $rootScope;
-        scope.formSchema = {name: 'desc', id: 'descId', label: 'Description', type: 'text',  add: 'class="some class"'};
-        $compile(elm)(scope);
-        scope.$digest();
-        var input = elm.find('input');
-        expect(input).toHaveClass('some');
-        expect(input).toHaveClass('class');
       });
     });
 
