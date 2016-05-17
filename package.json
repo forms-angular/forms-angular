@@ -3,10 +3,10 @@
   "author": "Mark Chapman <support@forms-angular.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
-  "version": "0.7.0",
+  "version": "0.7.0-beta.1",
   "engines": {
-    "node": ">=0.10.x",
-    "npm": ">=1.x"
+    "node": ">=4.x",
+    "npm": ">=3.x"
   },
   "scripts": {
     "test": "scripts/testrun.sh"
@@ -31,6 +31,9 @@
     "RESTful API"
   ],
   "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "method-override": "^2.3.5",
     "async": "1.5.2",
     "mongoose": "4.3.6",
     "node.extend": "1.1.5",
