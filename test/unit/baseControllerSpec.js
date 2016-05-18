@@ -790,8 +790,8 @@ describe('BaseCtrl', function () {
 
 
     beforeEach(function () {
-      module(function ($modalProvider) {
-        provider = $modalProvider;
+      module(function ($uibModalProvider) {
+        provider = $uibModalProvider;
       });
       inject(function (_$httpBackend_, $rootScope, $controller, _$uibModal_, $q) {
         $modal = _$uibModal_;
