@@ -1,7 +1,7 @@
 {
   "name": "forms-angular",
   "author": "Mark Chapman <support@forms-angular.org>",
-  "version": "0.7.0-beta.1",
+  "version": "0.7.0",
   "homepage": "https://github.com/forms-angular/forms-angular",
   "description": "No nonsense forms for the MEAN stack",
   "keywords": [
