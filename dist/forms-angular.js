@@ -1047,7 +1047,9 @@ var fng;
                                             // maintain support for simplified tabset syntax for now
                                             if (tabsSetup === tabsSetupState.N) {
                                                 tabsSetup = tabsSetupState.Forced;
-                                                result += '<uib-tabset>';
+                                                result += '<uib-tabset active="activeTabNo">';
+                                                var activeTabNo = _.findIndex(scope.tabs, function (tab) { return (tab.active); });
+                                                scope.activeTabNo = activeTabNo >= 0 ? activeTabNo : 0;
                                             }
                                             result += parts.before;
                                             result += processInstructions(info.content, null, options);

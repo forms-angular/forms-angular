@@ -1,5 +1,8 @@
 # forms-angular
 
+## 0.7.0 to 0.7.1
+* Fix bug with routing to specific tab (such as /#/collection/id/edit/tab1
+
 ## 0.6.0 to 0.7.0
 * Removed support for Bootstrap 2 (just in time for Bootstrap 4?)
 * Fixed bug with ui-router setup which meant that full routes were not parsed.

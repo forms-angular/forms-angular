@@ -537,7 +537,9 @@ module fng.directives {
                     // maintain support for simplified tabset syntax for now
                     if (tabsSetup === tabsSetupState.N) {
                       tabsSetup = tabsSetupState.Forced;
-                      result += '<uib-tabset>';
+                      result += '<uib-tabset active="activeTabNo">';
+                      let activeTabNo: number = _.findIndex(scope.tabs, (tab) => (tab.active));
+                      scope.activeTabNo = activeTabNo >= 0 ? activeTabNo : 0;
                     }
 
                     result += parts.before;
