@@ -63,6 +63,8 @@ declare module fng {
         disabledText: any;
         getVal: any;
         tabs?: Array<any>;
+        tab?: string;
+        activeTabNo?: number;
         topLevelFormName: string;
         record: any;
         phase: any;
