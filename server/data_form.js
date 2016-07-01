@@ -525,6 +525,38 @@ DataForm.prototype.report = function () {
         });
     }, this);
 };
+DataForm.prototype.hackVariablesInPipeline = function (runPipeline) {
+    for (var pipelineSection = 0; pipelineSection < runPipeline.length; pipelineSection++) {
+        if (runPipeline[pipelineSection]['$match']) {
+            this.hackVariables(runPipeline[pipelineSection]['$match']);
+        }
+    }
+};
+DataForm.prototype.hackVariables = function (obj) {
+    // Replace variables that cannot be serialised / deserialised.  Bit of a hack, but needs must...
+    // Anything formatted 1800-01-01T00:00:00.000Z or 1800-01-01T00:00:00.000+0000 is converted to a Date
+    // Only handles the cases I need for now
+    // TODO: handle arrays etc
+    for (var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+            if (typeof obj[prop] === 'string') {
+                var dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(obj[prop]);
+                if (dateTest) {
+                    obj[prop] = new Date(dateTest[1] + 'Z');
+                }
+                else {
+                    var objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
+                    if (objectIdTest) {
+                        obj[prop] = new mongoose.Types.ObjectId(objectIdTest[1]);
+                    }
+                }
+            }
+            else if (_.isObject(obj[prop])) {
+                this.hackVariables(obj[prop]);
+            }
+        }
+    }
+};
 DataForm.prototype.reportInternal = function (req, resource, schema, options, callback) {
     var runPipeline, self = this;
     self.doFindFunc(req, resource, function (err, queryObj) {
@@ -569,36 +601,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
                 }
             }
             runPipeline = JSON.parse(runPipeline);
-            // Replace variables that cannot be serialised / deserialised.  Bit of a hack, but needs must...
-            // Anything formatted 1800-01-01T00:00:00.000Z or 1800-01-01T00:00:00.000+0000 is converted to a Date
-            // Only handles the cases I need for now
-            // TODO: handle arrays etc
-            var hackVariables = function (obj) {
-                for (var prop in obj) {
-                    if (obj.hasOwnProperty(prop)) {
-                        if (typeof obj[prop] === 'string') {
-                            var dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(obj[prop]);
-                            if (dateTest) {
-                                obj[prop] = new Date(dateTest[1] + 'Z');
-                            }
-                            else {
-                                var objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
-                                if (objectIdTest) {
-                                    obj[prop] = new mongoose.Types.ObjectId(objectIdTest[1]);
-                                }
-                            }
-                        }
-                        else if (_.isObject(obj[prop])) {
-                            hackVariables(obj[prop]);
-                        }
-                    }
-                }
-            };
-            for (var pipelineSection = 0; pipelineSection < runPipeline.length; pipelineSection++) {
-                if (runPipeline[pipelineSection]['$match']) {
-                    hackVariables(runPipeline[pipelineSection]['$match']);
-                }
-            }
+            self.hackVariablesInPipeline(runPipeline);
             // Add the findFunc query to the pipeline
             if (queryObj) {
                 runPipeline.unshift({ $match: queryObj });
@@ -786,7 +789,7 @@ DataForm.prototype.processCollection = function (req) {
     req.resource = this.getResource(req.params.resourceName);
 };
 /**
- * Renders a view with the list of docs, which may be filtered by the f query parameter
+ * Renders a view with the list of docs, which may be modified by query parameters
  */
 DataForm.prototype.collectionGet = function () {
     return _.bind(function (req, res, next) {
@@ -801,6 +804,10 @@ DataForm.prototype.collectionGet = function () {
             var limitParam = urlParts.query.l ? JSON.parse(urlParts.query.l) : 0;
             var skipParam = urlParts.query.s ? JSON.parse(urlParts.query.s) : 0;
             var orderParam = urlParts.query.o ? JSON.parse(urlParts.query.o) : req.resource.options.listOrder;
+            // Dates in aggregation must be Dates
+            if (aggregationParam) {
+                this.hackVariablesInPipeline(aggregationParam);
+            }
             var self = this;
             this.filteredFind(req.resource, req, aggregationParam, findParam, orderParam, limitParam, skipParam, function (err, docs) {
                 if (err) {
