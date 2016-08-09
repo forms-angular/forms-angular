@@ -1,7 +1,10 @@
+{
  "ignore": [
     "**/dist/**",
     "**/node_modules/**",
     "**/bower_components/**",
     "**/js/**/*.js",
+    "**/typings/**/*.d.ts",
     "**/server/**/*.js"
   ]
+}
