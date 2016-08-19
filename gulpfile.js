@@ -133,7 +133,7 @@ var buildHelper = function(browserSources, directory, outputFile) {
   return gulp
     .src(browserSources)
     .pipe(typeScriptCompiler({
-      //module: 'CommonJS',
+      module: 'amd',
       declaration: true, // Generate *.d.ts declarations file as well
       emitError: false,
       out: outputFile,
@@ -169,7 +169,7 @@ gulp.task('templates', function() {
 
 gulp.task('less', function () {
   var less = require('gulp-less');
-  var minifyCSS = require('gulp-cssnano');
+  var minifyCSS = require('gulp-clean-css');
   var path = require('path');
 
   return gulp.src('less/forms-angular-with-*.less')
