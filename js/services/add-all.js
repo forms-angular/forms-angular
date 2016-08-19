@@ -70,4 +70,3 @@ var fng;
         services.addAllService = addAllService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-//# sourceMappingURL=add-all.js.map
