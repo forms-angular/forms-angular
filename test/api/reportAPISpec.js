@@ -207,7 +207,7 @@ describe('Report API', function () {
     fng.report()(mockReq, mockRes);
   });
 
-  it('supports selection by query text parameter', function (done) {
+  it.only('supports selection by query text parameter', function (done) {
     var mockReq = {
       url: 'report/g_conditional_fields/totalforonesex?sex=F',
       params : {

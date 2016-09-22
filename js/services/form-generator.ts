@@ -1,5 +1,5 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../typings/globals/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 
 module fng.services {

@@ -1,5 +1,5 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../typings/globals/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 
 module fng.directives {
@@ -584,10 +584,10 @@ module fng.directives {
           return result;
         };
 
-        var unwatch = scope.$watch(attrs.schema, function (newValue) {
+        var unwatch = scope.$watch(attrs.schema, function (newValue: any) {
           if (newValue) {
-            newValue = angular.isArray(newValue) ? newValue : [newValue];   // otherwise some old tests stop working for no real reason
-            if (newValue.length > 0) {
+            var newArrayValue: Array<any> = angular.isArray(newValue) ? newValue : [newValue];   // otherwise some old tests stop working for no real reason
+            if (newArrayValue.length > 0) {
               unwatch();
               var elementHtml = '';
               var recordAttribute = attrs.model || 'record';      // By default data comes from scope.record
@@ -611,7 +611,7 @@ module fng.directives {
               if (theRecord === scope.topLevelFormName) {
                 throw new Error('Model and Name must be distinct - they are both ' + theRecord);
               }
-              elementHtml += processInstructions(newValue, true, attrs);
+              elementHtml += processInstructions(newArrayValue, true, attrs);
               if (tabsSetup === tabsSetupState.Forced) {
                 elementHtml += '</uib-tabset>';
               }

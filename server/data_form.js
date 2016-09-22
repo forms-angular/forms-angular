@@ -1,5 +1,6 @@
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/mongoose/mongoose.d.ts" />
+/// <reference path="../typings/globals/node/index.d.ts" />
+/// <reference path="../typings/modules/mongoose/index.d.ts" />
+/// <reference path="../typings/modules/mpromise/index.d.ts" />
 'use strict';
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
@@ -11,7 +12,7 @@ var url = require('url');
 var mongoose = require('mongoose');
 var debug = false;
 mongoose.set('debug', debug);
-mongoose.Promise = global.Promise;
+// mongoose.Promise = global.Promise;
 function logTheAPICalls(req, res, next) {
     void (res);
     console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
@@ -567,7 +568,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
             // Bit crap here switching back and forth to string
             runPipeline = JSON.stringify(schema.pipeline);
             for (var param in options.query) {
-                if (options.query.hasOwnProperty(param)) {
+                if (options.query[param]) {
                     if (param !== 'r') {
                         schema.params[param].value = options.query[param];
                     }
@@ -576,18 +577,18 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
             // Replace parameters with the value
             if (runPipeline) {
                 runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function (match) {
-                    param = schema.params[match.slice(2, -2)];
-                    if (param.type === 'number') {
-                        return param.value;
+                    var sparam = schema.params[match.slice(2, -2)];
+                    if (sparam.type === 'number') {
+                        return sparam.value;
                     }
-                    else if (_.isObject(param.value)) {
-                        return JSON.stringify(param.value);
+                    else if (_.isObject(sparam.value)) {
+                        return JSON.stringify(sparam.value);
                     }
-                    else if (param.value[0] === '{') {
-                        return param.value;
+                    else if (sparam.value[0] === '{') {
+                        return sparam.value;
                     }
                     else {
-                        return '"' + param.value + '"';
+                        return '"' + sparam.value + '"';
                     }
                 });
             }
