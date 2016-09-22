@@ -1,5 +1,5 @@
-/// <reference path="../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../typings/globals/angular/index.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -30,7 +30,7 @@ var fng;
         controllers.BaseCtrl = BaseCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var controllers;
@@ -51,7 +51,7 @@ var fng;
         controllers.SaveChangesModalCtrl = SaveChangesModalCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var controllers;
@@ -75,7 +75,7 @@ var fng;
         controllers.ModelCtrl = ModelCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var controllers;
@@ -284,7 +284,7 @@ var fng;
         controllers.NavCtrl = NavCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var controllers;
@@ -401,7 +401,7 @@ var fng;
         controllers.SearchCtrl = SearchCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var directives;
@@ -428,7 +428,7 @@ var fng;
         directives.modelControllerDropdown = modelControllerDropdown;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var directives;
@@ -449,7 +449,7 @@ var fng;
         directives.errorDisplay = errorDisplay;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var directives;
@@ -498,8 +498,8 @@ var fng;
         directives.fngLink = fngLink;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../typings/globals/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -1096,8 +1096,8 @@ var fng;
                     };
                     var unwatch = scope.$watch(attrs.schema, function (newValue) {
                         if (newValue) {
-                            newValue = angular.isArray(newValue) ? newValue : [newValue]; // otherwise some old tests stop working for no real reason
-                            if (newValue.length > 0) {
+                            var newArrayValue = angular.isArray(newValue) ? newValue : [newValue]; // otherwise some old tests stop working for no real reason
+                            if (newArrayValue.length > 0) {
                                 unwatch();
                                 var elementHtml = '';
                                 var recordAttribute = attrs.model || 'record'; // By default data comes from scope.record
@@ -1122,7 +1122,7 @@ var fng;
                                 if (theRecord === scope.topLevelFormName) {
                                     throw new Error('Model and Name must be distinct - they are both ' + theRecord);
                                 }
-                                elementHtml += processInstructions(newValue, true, attrs);
+                                elementHtml += processInstructions(newArrayValue, true, attrs);
                                 if (tabsSetup === tabsSetupState.Forced) {
                                     elementHtml += '</uib-tabset>';
                                 }
@@ -1223,7 +1223,7 @@ var fng;
         directives.formInput = formInput;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var directives;
@@ -1239,7 +1239,7 @@ var fng;
         directives.formButtons = formButtons;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 /// <reference path="../controllers/search-ctrl.ts" />
 var fng;
 (function (fng) {
@@ -1257,7 +1257,7 @@ var fng;
         directives.globalSearch = globalSearch;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var filters;
@@ -1275,7 +1275,7 @@ var fng;
         filters.camelCase = camelCase;
     })(filters = fng.filters || (fng.filters = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var filters;
@@ -1304,7 +1304,7 @@ var fng;
         filters.titleCase = titleCase;
     })(filters = fng.filters || (fng.filters = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -1376,7 +1376,7 @@ var fng;
         services.addAllService = addAllService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -1444,7 +1444,7 @@ var fng;
         services.cssFrameworkService = cssFrameworkService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -1463,7 +1463,7 @@ var fng;
         services.$data = $data;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -1732,8 +1732,8 @@ var fng;
         services.routingService = routingService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../typings/globals/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -2442,7 +2442,7 @@ var fng;
         formGenerator.$inject = ["$location", "$timeout", "$filter", "SubmissionsService", "routingService", "recordHandler"];
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -2668,7 +2668,7 @@ var fng;
         services.formMarkupHelper = formMarkupHelper;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -2690,7 +2690,7 @@ var fng;
         services.inputSizeHelper = inputSizeHelper;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -2803,8 +2803,8 @@ var fng;
         services.pluginHelper = pluginHelper;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../typings/globals/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -3598,7 +3598,7 @@ var fng;
         services.recordHandler = recordHandler;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -3615,7 +3615,7 @@ var fng;
         services.SchemasService = SchemasService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -3689,7 +3689,7 @@ var fng;
         services.SubmissionsService = SubmissionsService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../typings/angularjs/angular.d.ts" />
+/// <reference path="../typings/globals/angular/index.d.ts" />
 /// <reference path="controllers/base.ts" />
 /// <reference path="controllers/saveChangesModal.ts" />
 /// <reference path="controllers/model.ts" />

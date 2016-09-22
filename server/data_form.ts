@@ -1,5 +1,6 @@
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/mongoose/mongoose.d.ts" />
+/// <reference path="../typings/globals/node/index.d.ts" />
+/// <reference path="../typings/modules/mongoose/index.d.ts" />
+/// <reference path="../typings/modules/mpromise/index.d.ts" />
 
 'use strict';
 
@@ -31,7 +32,7 @@ interface ListField {
 }
 
 mongoose.set('debug', debug);
-mongoose.Promise = global.Promise;
+// mongoose.Promise = global.Promise;
 
 function logTheAPICalls(req, res, next) {
   void(res);
@@ -625,7 +626,6 @@ DataForm.prototype.hackVariables = function (obj) {
   }
 };
 
-
 DataForm.prototype.reportInternal = function (req, resource, schema, options, callback) {
   var runPipeline,
     self = this;
@@ -637,7 +637,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
       // Bit crap here switching back and forth to string
       runPipeline = JSON.stringify(schema.pipeline);
       for (var param in options.query) {
-        if (options.query.hasOwnProperty(param)) {
+        if (options.query[param]) {
           if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
             schema.params[param].value = options.query[param];
           }
@@ -647,15 +647,15 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
       // Replace parameters with the value
       if (runPipeline) {
         runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function (match) {
-          param = schema.params[match.slice(2, -2)];
-          if (param.type === 'number') {
-            return param.value;
-          } else if (_.isObject(param.value)) {
-            return JSON.stringify(param.value);
-          } else if (param.value[0] === '{') {
-            return param.value;
+          var sparam = schema.params[match.slice(2, -2)];
+          if (sparam.type === 'number') {
+            return sparam.value;
+          } else if (_.isObject(sparam.value)) {
+            return JSON.stringify(sparam.value);
+          } else if (sparam.value[0] === '{') {
+            return sparam.value;
           } else {
-            return '"' + param.value + '"';
+            return '"' + sparam.value + '"';
           }
         });
       }

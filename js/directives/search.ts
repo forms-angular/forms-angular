@@ -1,4 +1,4 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 /// <reference path="../controllers/search-ctrl.ts" />
 
 module fng.directives {

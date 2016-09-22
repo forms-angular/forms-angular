@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var runSequence = require('run-sequence');
 var del = require('del');
 var Server = require('karma').Server;
+var typeScriptCompiler = require('gulp-tsc');
 
 var browserSources = [
   'js/**/*.ts'
@@ -37,8 +38,33 @@ gulp.task('build', function(callback) {
     callback);
 });
 
-gulp.task('compile', function() {
-  return buildHelper(browserSources, distDirectory , 'forms-angular.js');
+gulp.task('compile', function(callback) {
+  runSequence(
+    'compileServerSide',
+    'compileClientSide',
+    callback);
+});
+
+gulp.task('compileClientSide', function() {
+  return gulp
+    .src(browserSources)
+    .pipe(typeScriptCompiler({
+      module: 'amd',
+      declaration: true, // Generate *.d.ts declarations file as well
+      emitError: false,
+      out: 'forms-angular.js',
+      target: 'ES5'
+    }))
+    .pipe(gulp.dest(distDirectory));
+});
+
+gulp.task('compileServerSide', function() {
+  return gulp
+    .src('server/*.ts')
+    .pipe(typeScriptCompiler({
+      target: 'ES5'
+    }))
+    .pipe(gulp.dest('./server'));
 });
 
 gulp.task('clean', function() {
@@ -122,25 +148,6 @@ gulp.task('uglify', function() {
   fs.writeFileSync('dist/forms-angular.min.js', finalCode);
 });
 
-//gulp.task('umdify', function() {
-//  umdHelper('dist/forms-angular.js', 'dist');
-//  umdHelper('dist/forms-angular.min.js', 'dist');
-//});
-
-var buildHelper = function(browserSources, directory, outputFile) {
-  var typeScriptCompiler = require('gulp-tsc');
-
-  return gulp
-    .src(browserSources)
-    .pipe(typeScriptCompiler({
-      module: 'amd',
-      declaration: true, // Generate *.d.ts declarations file as well
-      emitError: false,
-      out: outputFile,
-      target: 'ES5'
-    }))
-    .pipe(gulp.dest(directory));
-};
 
 gulp.task('templates', function() {
   var templateCache = require('gulp-angular-templatecache');
