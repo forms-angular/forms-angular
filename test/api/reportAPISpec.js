@@ -61,14 +61,14 @@ describe('Report API', function () {
 
   it('handles pipeline request', function (done) {
     var mockReq = {
-      url: '/report/g_conditional_fields?r={"pipeline":{"$group":{"_id":"$sex","count":{"$sum":1}}},"$sort":{"_id":1}}',
+      // url: '/report/g_conditional_fields?r={"pipeline":[{"$group":{"_id":"$sex","count":{"$sum":1}}},{"$sort":{"_id":1}}]}',
+      url: '/report/g_conditional_fields?r={"pipeline":{"$group":{"_id":"x","count":{"$sum":1}}}}',
       params: {resourceName: 'g_conditional_fields'}
     };
     var mockRes = {
       send: function (data) {
-        assert.equal(data.report.length, 2);
-        assert.deepEqual(data.report[0], {_id: 'F', count: 11});
-        assert.deepEqual(data.report[1], {_id: 'M', count: 6});
+        assert.equal(data.report.length, 1);
+        assert.deepEqual(data.report[0], {_id: 'x', count: 17});
         done();
       }
     };
@@ -207,7 +207,7 @@ describe('Report API', function () {
     fng.report()(mockReq, mockRes);
   });
 
-  it.only('supports selection by query text parameter', function (done) {
+  it('supports selection by query text parameter', function (done) {
     var mockReq = {
       url: 'report/g_conditional_fields/totalforonesex?sex=F',
       params : {
