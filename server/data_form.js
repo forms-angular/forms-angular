@@ -163,7 +163,7 @@ DataForm.prototype.addResource = function (resourceName, model, options) {
             }
         }
     }
-    extend(resource.options, this.preprocess(resource.model.schema['paths'], null));
+    extend(resource.options, this.preprocess(resource, resource.model.schema['paths'], null));
     if (resource.options.searchImportance) {
         this.searchFunc = async.forEachSeries;
     }
@@ -409,13 +409,17 @@ DataForm.prototype.applySchemaSubset = function (vanilla, schema) {
     }
     return outPath;
 };
-DataForm.prototype.preprocess = function (paths, formSchema) {
+DataForm.prototype.preprocess = function (resource, paths, formSchema) {
     var outPath = {}, hiddenFields = [], listFields = [];
+    if (resource && resource.options && resource.options.idIsList) {
+        paths['_id'].options = paths['_id'].options || {};
+        paths['_id'].options.list = resource.options.idIsList;
+    }
     for (var element in paths) {
         if (paths.hasOwnProperty(element) && element !== '__v') {
             // check for schemas
             if (paths[element].schema) {
-                var subSchemaInfo = this.preprocess(paths[element].schema.paths);
+                var subSchemaInfo = this.preprocess(null, paths[element].schema.paths);
                 outPath[element] = { schema: subSchemaInfo.paths };
                 if (paths[element].options.form) {
                     outPath[element].options = { form: extend(true, {}, paths[element].options.form) };
@@ -472,7 +476,7 @@ DataForm.prototype.schema = function () {
         if (req.params.formName) {
             formSchema = req.resource.model.schema.statics['form'](req.params.formName);
         }
-        var paths = this.preprocess(req.resource.model.schema.paths, formSchema).paths;
+        var paths = this.preprocess(req.resource, req.resource.model.schema.paths, formSchema).paths;
         res.send(paths);
     }, this);
 };
@@ -1053,3 +1057,4 @@ DataForm.prototype.entityList = function () {
         });
     }, this);
 };
+//# sourceMappingURL=data_form.js.map

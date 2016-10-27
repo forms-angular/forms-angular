@@ -43,8 +43,13 @@ module fng.services {
         }
         tab.content.push(thisInst);
       }
+
       for (var field in source) {
-        if (field !== '_id' && source.hasOwnProperty(field)) {
+        if (field === '_id') {
+          if (destList && source['_id'].options && source['_id'].options.list) {
+            handleListInfo(destList, source['_id'].options.list, field);
+          }
+        } else if (source.hasOwnProperty(field)) {
           var mongooseType = source[field],
             mongooseOptions = mongooseType.options || {};
           var formData = mongooseOptions.form || {};
@@ -683,7 +688,7 @@ module fng.services {
         };
 
         $scope.getListData = function (record, fieldName) {
-          return recordHandlerInstance.getListData(record, fieldName, $scope.select2List);
+          return recordHandlerInstance.getListData( record, fieldName, $scope.select2List, $scope.listSchema);
         };
 
         $scope.setPristine = function (clearErrors) {

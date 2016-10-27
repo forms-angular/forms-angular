@@ -108,7 +108,7 @@ module fng.services {
     // TODO: Think about nested arrays
     // This doesn't handle things like :
     // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
-    var getListData = function getListData(record, fieldName, select2List) {
+    var getListData = function getListData(record, fieldName, select2List=null, listSchema=null) {
       var nests = fieldName.split('.');
       for (var i = 0; i < nests.length; i++) {
         if (record !== undefined && record !== null) {
@@ -120,6 +120,18 @@ module fng.services {
       }
       if (record === undefined) {
         record = '';
+      }
+
+      if (record && listSchema) {
+        // Convert list fields as per instructions in params (ideally should be the same as what is found in data_form getListFields
+        var params = _.find(listSchema, elm => (elm['name'] === fieldName)).params;
+        switch (params) {
+          case 'timestamp' :
+            var timestamp = record.toString().substring(0,8);
+            var date = new Date( parseInt( timestamp, 16 ) * 1000 );
+          record = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            break;
+        }
       }
       return record;
     };
