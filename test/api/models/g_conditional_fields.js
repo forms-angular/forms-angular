@@ -70,7 +70,8 @@ GSchema.statics.report = function (report) {
     case 'functiondemo' :
       reportSchema = {
         'pipeline': [
-          {'$group': {'_id': '$sex', 'count': {'$sum': 1}, 'functionResult': {'$sum': 1}}}
+          {'$group': {'_id': '$sex', 'count': {'$sum': 1}, 'functionResult': {'$sum': 1}}},
+          {'$sort': {'_id':1}}
         ],
         'title': 'Numbers of Applicants By Sex',
         'columnDefs': [

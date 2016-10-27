@@ -61,7 +61,6 @@ describe('Report API', function () {
 
   it('handles pipeline request', function (done) {
     var mockReq = {
-      // url: '/report/g_conditional_fields?r={"pipeline":[{"$group":{"_id":"$sex","count":{"$sum":1}}},{"$sort":{"_id":1}}]}',
       url: '/report/g_conditional_fields?r={"pipeline":{"$group":{"_id":"x","count":{"$sum":1}}}}',
       params: {resourceName: 'g_conditional_fields'}
     };
