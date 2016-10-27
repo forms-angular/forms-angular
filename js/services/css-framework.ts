@@ -27,10 +27,10 @@ module fng.services {
             var result;
             switch (config.framework) {
               case 'bs2' :
-                result = 'span' + cols;
+                result = 'span' + Math.floor(cols);
                 break;
               case 'bs3' :
-                result = 'col-xs-' + cols;
+                result = 'col-xs-' + Math.floor(cols);
                 break;
             }
             return result;
@@ -39,10 +39,10 @@ module fng.services {
             var result;
             switch (config.framework) {
               case 'bs2' :
-                result = 'offset' + cols;
+                result = 'offset' + Math.floor(cols);
                 break;
               case 'bs3' :
-                result = 'col-lg-offset-' + cols;
+                result = 'col-lg-offset-' + Math.floor(cols);
                 break;
             }
             return result;
