@@ -71,3 +71,4 @@ var fng;
         services.SubmissionsService = SubmissionsService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
+//# sourceMappingURL=submissions.js.map

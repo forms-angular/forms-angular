@@ -124,13 +124,15 @@ module fng.services {
 
       if (record && listSchema) {
         // Convert list fields as per instructions in params (ideally should be the same as what is found in data_form getListFields
-        var params = _.find(listSchema, elm => (elm['name'] === fieldName)).params;
-        switch (params) {
-          case 'timestamp' :
-            var timestamp = record.toString().substring(0,8);
-            var date = new Date( parseInt( timestamp, 16 ) * 1000 );
-          record = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-            break;
+        var schemaElm  = _.find(listSchema, elm => (elm['name'] === fieldName));
+        if (schemaElm) {
+          switch (schemaElm['params']) {
+            case 'timestamp' :
+              var timestamp = record.toString().substring(0,8);
+              var date = new Date( parseInt( timestamp, 16 ) * 1000 );
+              record = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+              break;
+          }
         }
       }
       return record;
