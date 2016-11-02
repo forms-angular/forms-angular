@@ -291,7 +291,6 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
     searches,
     function (item, cb) {
       var searchDoc = {};
-//      console.log(searchCriteria);
       if (filter) {
         extend(searchDoc, filter);
         if (filter[item.field]) {
@@ -313,16 +312,10 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
       that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 60, null, function (err, docs) {
         if (!err && docs && docs.length > 0) {
           async.map(docs, function(aDoc, cbdoc) {
-
             // Do we already have them in the list?
-            var thisId = aDoc._id,
-              resultObject,
-              resultPos;
-            for (resultPos = results.length - 1; resultPos >= 0; resultPos--) {
-              if (results[resultPos].id.id === thisId.id) {
-                break;
-              }
-            }
+            var thisId:string = aDoc._id.toString(),
+              resultObject: any,
+              resultPos: number;
 
             function handleResultsInList() {
               resultObject.searchImportance = item.resource.options.searchImportance || 99;
@@ -333,6 +326,12 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
               }
               results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
               cbdoc(null);
+            }
+
+            for (resultPos = results.length - 1; resultPos >= 0; resultPos--) {
+              if (results[resultPos].id.toString() === thisId) {
+                break;
+              }
             }
             if (resultPos >= 0) {
               resultObject = {};
@@ -357,7 +356,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                     cbdoc(err);
                   } else {
                     resultObject = {
-                      id: thisId,
+                      id: aDoc._id,
                       weighting: 9999,
                       text: description
                     };
@@ -508,7 +507,7 @@ DataForm.prototype.preprocess = function (resource: Resource, paths, formSchema)
         if (paths[element].options.match) {
           outPath[element].options.match = paths[element].options.match.source;
         }
-        let schemaListInfo = paths[element].options.list;
+        let schemaListInfo: any = paths[element].options.list;
         if (schemaListInfo) {
           var listFieldInfo:ListField = {field: element};
           if (typeof schemaListInfo === 'object' && Object.keys(schemaListInfo).length > 0) {
@@ -691,10 +690,10 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
       var translations = [];  // array of form {ref:'lookupname',translations:[{value:xx, display:'  '}]}
       // if we need to do any column translations add the function to the tasks list
       if (schema.columnTranslations) {
-        toDo.applyTranslations = ['runAggregation', function (cb, results) {
+        toDo.applyTranslations = ['runAggregation', function (cb, results: any) {
 
           function doATranslate(column, theTranslation) {
-            results.runAggregation.forEach(function (resultRow) {
+            results['runAggregation'].forEach(function (resultRow) {
               var valToTranslate = resultRow[column.field];
               valToTranslate = (valToTranslate ? valToTranslate.toString() : '');
               var thisTranslation = _.find(theTranslation.translations, function (option) {

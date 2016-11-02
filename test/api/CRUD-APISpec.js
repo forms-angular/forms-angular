@@ -347,8 +347,23 @@ describe('API', function () {
       var mockRes = {
         send: function (data) {
           assert.notEqual(data.moreCount, 0);
-          assert.equal(data.results[0].text, 'Smith04 John04');  // Double hit
+          assert.equal(data.results[0].text, 'Smith04 John04');  // Double hit should come first
           assert.equal(data.results[1].text, 'Smith00 John00');  // normal weighting
+          done();
+        }
+      };
+      fng.searchAll()(mockReq, mockRes);
+    });
+
+    it('should not repeat a record in the results', function (done) {
+      var mockReq = {
+        url: '/search?q=smith04 john04',
+        route: {path : '/api/search'}
+      };
+      var mockRes = {
+        send: function (data) {
+          assert.equal(data.results.length, 1);
+          assert.equal(data.results[0].text, 'Smith04 John04');
           done();
         }
       };
