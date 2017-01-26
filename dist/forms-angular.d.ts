@@ -1,5 +1,6 @@
 /// <reference path="../typings/globals/angular/index.d.ts" />
 /// <reference path="../typings/globals/underscore/index.d.ts" />
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 declare module fng {
     interface IFieldViewInfo {
         name: string;
@@ -20,7 +21,7 @@ declare module fng {
         updateDocument(dataToSave: any, options: any, scope: fng.IFormScope, ctrlState: any): void;
         readRecord($scope: fng.IFormScope, ctrlState: any): any;
         scrollTheList($scope: fng.IFormScope): any;
-        getListData(record: any, fieldName: any, select2List: any): any;
+        getListData(record: any, fieldName: any, select2List: any, listSchema: any): any;
         suffixCleanId(inst: any, suffix: any): any;
         setData(object: any, fieldname: any, element: any, value: any): any;
         setUpSelectOptions(lookupCollection: any, schemaElement: any, $scope: fng.IFormScope, ctrlState: any, handleSchema: any): any;
@@ -93,7 +94,7 @@ declare module fng {
         scrollTheList: any;
         getListData: any;
         dismissError: any;
-        handleHttpError(data: any, status: number): void;
+        handleHttpError(response: any): void;
     }
     interface IBaseFormOptions {
         /**

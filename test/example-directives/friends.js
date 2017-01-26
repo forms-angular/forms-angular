@@ -8,14 +8,15 @@ formsAngular.controller('FriendCtrl', ['$scope', '$location', '$http', function 
   };
 
   $scope.frdShowDetails = function (friend) {
-    $http.get('/api/a_unadorned_mongoose/' + friend.friend).success(function (data) {
+    $http.get('/api/a_unadorned_mongoose/' + friend.friend).then(function (response) {
+      var data = response.data;
       if (data && data.success !== false) {
         $scope.frdPopupName = data.forename + ' ' + data.surname;
         $scope.frdPopupPhone = data.phone;
       } else {
         $scope.frdPopupName = 'This friend does not exist - someone may have deleted the record';
       }
-    }).error(function () {
+    }, function () {
       $scope.frdPopupName = 'Error reading friend details';
       $scope.frdPopupPhone = 'Please try again';
     });

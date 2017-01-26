@@ -260,7 +260,7 @@ module fng.services {
             $scope.conversions[conversionEntry.name].fngajax(fieldValue, conversionEntry, function (updateEntry, value) {
               // Update the master and (preserving pristine if appropriate) the record
               setData(master, updateEntry.name, undefined, value);
-              preservePristine(angular.element('#' + updateEntry.id), function () {
+              preservePristine( angular.element('#' + updateEntry.id), function () {
                 setData($scope.record, updateEntry.name, undefined, value);
               });
             });
@@ -401,31 +401,31 @@ module fng.services {
     }
 
     function handleError($scope: fng.IFormScope) {
-      return function(data:any, status: number) : void {
-        if ([200, 400].indexOf(status) !== -1) {
+      return function(response:any) : void {
+        if ([200, 400].indexOf(response.status) !== -1) {
           var errorMessage = '';
-          for (var errorField in data.errors) {
-            if (data.errors.hasOwnProperty(errorField)) {
+          for (var errorField in response.data.errors) {
+            if (response.data.errors.hasOwnProperty(errorField)) {
               errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
-              switch (data.errors[errorField].type) {
+              switch (response.data.errors[errorField].type) {
                 case 'enum' :
                   errorMessage += 'You need to select from the list of values';
                   break;
                 default:
-                  errorMessage += data.errors[errorField].message;
+                  errorMessage += response.data.errors[errorField].message;
                   break;
               }
               errorMessage += '</li>';
             }
           }
           if (errorMessage.length > 0) {
-            errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
+            errorMessage = response.data.message + '<br /><ul>' + errorMessage + '</ul>';
           } else {
-            errorMessage = data.message || 'Error!  Sorry - No further details available.';
+            errorMessage = response.data.message || 'Error!  Sorry - No further details available.';
           }
           $scope.showError(errorMessage);
         } else {
-          $scope.showError(status + ' ' + JSON.stringify(data));
+          $scope.showError(response.status + ' ' + JSON.stringify(response.data));
         }
       }
     }
@@ -434,7 +434,8 @@ module fng.services {
       readRecord: function readRecord($scope, ctrlState) {
         // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
         SubmissionsService.readRecord($scope.modelName, $scope.id)
-          .success(function (data) {
+          .then(function (response) {
+            let data: any = response.data;
             if (data.success === false) {
               $location.path('/404');
             }
@@ -444,7 +445,7 @@ module fng.services {
               $scope.dataEventFunctions.onAfterRead(data);
             }
             processServerData(data, $scope, ctrlState);
-          }).error($scope.handleHttpError);
+          }, $scope.handleHttpError);
       },
 
       scrollTheList: function scrollTheList($scope) {
@@ -456,7 +457,8 @@ module fng.services {
           skip: pagesLoaded * $scope.pageSize,
           order: $location.$$search.o
         })
-          .success(function (data) {
+          .then(function (response) {
+            let data: any = response.data;
             if (angular.isArray(data)) {
               //  I have seen an intermittent problem where a page is requested twice
               if (pagesLoaded === $scope.pagesLoaded) {
@@ -468,14 +470,13 @@ module fng.services {
             } else {
               $scope.showError(data, 'Invalid query');
             }
-          })
-          .error($scope.handleHttpError);
+          }, $scope.handleHttpError);
       },
 
       // TODO: Do we need model here?  Can we not infer it from scope?
       deleteRecord: function deleteRecord(model, id, $scope, ctrlState) {
         SubmissionsService.deleteRecord(model, id)
-          .success(function () {
+          .then(function () {
             if (typeof $scope.dataEventFunctions.onAfterDelete === 'function') {
               $scope.dataEventFunctions.onAfterDelete(ctrlState.master);
             }
@@ -487,7 +488,8 @@ module fng.services {
         $scope.phase = 'updating';
 
         SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave)
-          .success(function (data) {
+          .then(function (response) {
+            let data: any = response.data;
             if (data.success !== false) {
               if (typeof $scope.dataEventFunctions.onAfterUpdate === 'function') {
                 $scope.dataEventFunctions.onAfterUpdate(data, ctrlState.master);
@@ -504,13 +506,13 @@ module fng.services {
             } else {
               $scope.showError(data);
             }
-          })
-          .error($scope.handleHttpError);
+          }, $scope.handleHttpError);
       },
 
       createNew: function createNew(dataToSave, options, $scope: fng.IFormScope) {
         SubmissionsService.createRecord($scope.modelName, dataToSave)
-          .success(function (data) {
+          .then(function (response) {
+            let data: any = response.data;
             if (data.success !== false) {
               if (typeof $scope.dataEventFunctions.onAfterCreate === 'function') {
                 $scope.dataEventFunctions.onAfterCreate(data);
@@ -523,8 +525,7 @@ module fng.services {
             } else {
               $scope.showError(data);
             }
-          })
-          .error($scope.handleHttpError);
+          }, $scope.handleHttpError);
       },
 
       getListData: getListData,
@@ -538,7 +539,8 @@ module fng.services {
         var idList = $scope[schemaElement.ids] = [];
 
         SchemasService.getSchema(lookupCollection)
-          .success(function (data) {
+          .then(function (response) {
+            let data: any = response.data;
             var listInstructions = [];
             handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState);
 
@@ -550,7 +552,8 @@ module fng.services {
               dataRequest = SubmissionsService.getAll(lookupCollection);
             }
             dataRequest
-              .success(function (data) {
+              .then(function (response) {
+                let data: any = response.data;
                 if (data) {
                   for (var i = 0; i < data.length; i++) {
                     var option = '';
@@ -833,10 +836,10 @@ module fng.services {
       fillFormWithBackendSchema: function fillFormWithBackendSchema($scope, formGeneratorInstance, recordHandlerInstance, ctrlState) {
 
         SchemasService.getSchema($scope.modelName, $scope.formName)
-          .success(function (schema) {
+          .then(function (response) {
+          let schema: any = response.data;
             fillFormFromBackendCustomSchema(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState);
-          })
-          .error($scope.handleHttpError);
+          }, $scope.handleHttpError);
       }
     }
   }

@@ -23,14 +23,15 @@ module fng.directives {
             }
             scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
             if (!scope['text']) {
-              SubmissionsService.getListAttributes(ref, newVal).success(function (data) {
+              SubmissionsService.getListAttributes(ref, newVal).then(function (response) {
+                let data: any = response.data;
                 if (data.success === false) {
                   scope['text'] = data.err;
                 } else {
                   scope['text'] = data.list;
                 }
-              }).error(function (status, err) {
-                scope['text'] = 'Error ' + status + ': ' + err;
+              }, function (response) {
+                scope['text'] = 'Error ' + response.status + ': ' + response.data;
               });
             }
           }

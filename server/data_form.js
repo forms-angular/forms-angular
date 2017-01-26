@@ -12,7 +12,7 @@ var url = require('url');
 var mongoose = require('mongoose');
 var debug = false;
 mongoose.set('debug', debug);
-// mongoose.Promise = global.Promise;
+mongoose.Promise = global.Promise;
 function logTheAPICalls(req, res, next) {
     void (res);
     console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');

@@ -90,7 +90,8 @@ module fng.controllers {
     $scope.$watch('searchTarget', function (newValue) {
       if (newValue && newValue.length > 0) {
         currentRequest = newValue;
-        $http.get('/api/search?q=' + newValue).success(function (data) {
+        $http.get('/api/search?q=' + newValue).then(function (response) {
+          let data: any = response.data;
           // Check that we haven't fired off a subsequent request, in which
           // case we are no longer interested in these results
           if (currentRequest === newValue) {
@@ -106,8 +107,8 @@ module fng.controllers {
               clearSearchResults();
             }
           }
-        }).error(function (data, status) {
-          console.log('Error in searchbox.js : ' + data + ' (status=' + status + ')');
+        }, function (response) {
+          console.log('Error in searchbox.js : ' + response.data + ' (status=' + response.status + ')');
         });
       } else {
         clearSearchResults();

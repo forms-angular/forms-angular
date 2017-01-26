@@ -6,9 +6,9 @@ module fng.controllers {
   export function ModelCtrl($scope, $http, $location, routingService) {
 
     $scope.models = [];
-    $http.get('/api/models').success(function (data) {
-      $scope.models = data;
-    }).error(function () {
+    $http.get('/api/models').then(function (response) {
+      $scope.models = response.data;
+    }, function () {
       $location.path('/404');
     });
 

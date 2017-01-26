@@ -60,9 +60,9 @@ var fng;
         ModelCtrl.$inject = ["$scope", "$http", "$location", "routingService"];
         function ModelCtrl($scope, $http, $location, routingService) {
             $scope.models = [];
-            $http.get('/api/models').success(function (data) {
-                $scope.models = data;
-            }).error(function () {
+            $http.get('/api/models').then(function (response) {
+                $scope.models = response.data;
+            }, function () {
                 $location.path('/404');
             });
             $scope.newUrl = function (model) {
@@ -369,7 +369,8 @@ var fng;
             $scope.$watch('searchTarget', function (newValue) {
                 if (newValue && newValue.length > 0) {
                     currentRequest = newValue;
-                    $http.get('/api/search?q=' + newValue).success(function (data) {
+                    $http.get('/api/search?q=' + newValue).then(function (response) {
+                        var data = response.data;
                         // Check that we haven't fired off a subsequent request, in which
                         // case we are no longer interested in these results
                         if (currentRequest === newValue) {
@@ -386,8 +387,8 @@ var fng;
                                 clearSearchResults();
                             }
                         }
-                    }).error(function (data, status) {
-                        console.log('Error in searchbox.js : ' + data + ' (status=' + status + ')');
+                    }, function (response) {
+                        console.log('Error in searchbox.js : ' + response.data + ' (status=' + response.status + ')');
                     });
                 }
                 else {
@@ -476,15 +477,16 @@ var fng;
                             }
                             scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
                             if (!scope['text']) {
-                                SubmissionsService.getListAttributes(ref, newVal).success(function (data) {
+                                SubmissionsService.getListAttributes(ref, newVal).then(function (response) {
+                                    var data = response.data;
                                     if (data.success === false) {
                                         scope['text'] = data.err;
                                     }
                                     else {
                                         scope['text'] = data.list;
                                     }
-                                }).error(function (status, err) {
-                                    scope['text'] = 'Error ' + status + ': ' + err;
+                                }, function (response) {
+                                    scope['text'] = 'Error ' + response.status + ': ' + response.data;
                                 });
                             }
                         }
@@ -1563,6 +1565,9 @@ var fng;
                     if (config.hashPrefix !== '') {
                         $locationProvider.hashPrefix(config.hashPrefix);
                     }
+                    else if (!config.html5Mode) {
+                        $locationProvider.hashPrefix('');
+                    }
                     switch (config.routing) {
                         case 'ngroute':
                             _routeProvider = $injector.get('$routeProvider');
@@ -1732,6 +1737,7 @@ var fng;
         services.routingService = routingService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
+/// <reference path="../../typings/globals/jquery/index.d.ts" />
 /// <reference path="../../typings/globals/angular/index.d.ts" />
 /// <reference path="../../typings/globals/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
@@ -1992,7 +1998,8 @@ var fng;
                                         var theId = element.val();
                                         if (theId && theId !== '') {
                                             SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
-                                                .success(function (data) {
+                                                .then(function (response) {
+                                                var data = response.data;
                                                 if (data.success === false) {
                                                     $location.path('/404');
                                                 }
@@ -2000,7 +2007,7 @@ var fng;
                                                 recordHandler.preservePristine(element, function () {
                                                     callback(display);
                                                 });
-                                            }).error($scope.handleHttpError);
+                                            }, $scope.handleHttpError);
                                         }
                                     },
                                     ajax: {
@@ -3200,33 +3207,33 @@ var fng;
                 }
             }
             function handleError($scope) {
-                return function (data, status) {
-                    if ([200, 400].indexOf(status) !== -1) {
+                return function (response) {
+                    if ([200, 400].indexOf(response.status) !== -1) {
                         var errorMessage = '';
-                        for (var errorField in data.errors) {
-                            if (data.errors.hasOwnProperty(errorField)) {
+                        for (var errorField in response.data.errors) {
+                            if (response.data.errors.hasOwnProperty(errorField)) {
                                 errorMessage += '<li><b>' + $filter('titleCase')(errorField) + ': </b> ';
-                                switch (data.errors[errorField].type) {
+                                switch (response.data.errors[errorField].type) {
                                     case 'enum':
                                         errorMessage += 'You need to select from the list of values';
                                         break;
                                     default:
-                                        errorMessage += data.errors[errorField].message;
+                                        errorMessage += response.data.errors[errorField].message;
                                         break;
                                 }
                                 errorMessage += '</li>';
                             }
                         }
                         if (errorMessage.length > 0) {
-                            errorMessage = data.message + '<br /><ul>' + errorMessage + '</ul>';
+                            errorMessage = response.data.message + '<br /><ul>' + errorMessage + '</ul>';
                         }
                         else {
-                            errorMessage = data.message || 'Error!  Sorry - No further details available.';
+                            errorMessage = response.data.message || 'Error!  Sorry - No further details available.';
                         }
                         $scope.showError(errorMessage);
                     }
                     else {
-                        $scope.showError(status + ' ' + JSON.stringify(data));
+                        $scope.showError(response.status + ' ' + JSON.stringify(response.data));
                     }
                 };
             }
@@ -3234,7 +3241,8 @@ var fng;
                 readRecord: function readRecord($scope, ctrlState) {
                     // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
                     SubmissionsService.readRecord($scope.modelName, $scope.id)
-                        .success(function (data) {
+                        .then(function (response) {
+                        var data = response.data;
                         if (data.success === false) {
                             $location.path('/404');
                         }
@@ -3244,7 +3252,7 @@ var fng;
                             $scope.dataEventFunctions.onAfterRead(data);
                         }
                         processServerData(data, $scope, ctrlState);
-                    }).error($scope.handleHttpError);
+                    }, $scope.handleHttpError);
                 },
                 scrollTheList: function scrollTheList($scope) {
                     var pagesLoaded = $scope.pagesLoaded;
@@ -3255,7 +3263,8 @@ var fng;
                         skip: pagesLoaded * $scope.pageSize,
                         order: $location.$$search.o
                     })
-                        .success(function (data) {
+                        .then(function (response) {
+                        var data = response.data;
                         if (angular.isArray(data)) {
                             //  I have seen an intermittent problem where a page is requested twice
                             if (pagesLoaded === $scope.pagesLoaded) {
@@ -3269,13 +3278,12 @@ var fng;
                         else {
                             $scope.showError(data, 'Invalid query');
                         }
-                    })
-                        .error($scope.handleHttpError);
+                    }, $scope.handleHttpError);
                 },
                 // TODO: Do we need model here?  Can we not infer it from scope?
                 deleteRecord: function deleteRecord(model, id, $scope, ctrlState) {
                     SubmissionsService.deleteRecord(model, id)
-                        .success(function () {
+                        .then(function () {
                         if (typeof $scope.dataEventFunctions.onAfterDelete === 'function') {
                             $scope.dataEventFunctions.onAfterDelete(ctrlState.master);
                         }
@@ -3285,7 +3293,8 @@ var fng;
                 updateDocument: function updateDocument(dataToSave, options, $scope, ctrlState) {
                     $scope.phase = 'updating';
                     SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave)
-                        .success(function (data) {
+                        .then(function (response) {
+                        var data = response.data;
                         if (data.success !== false) {
                             if (typeof $scope.dataEventFunctions.onAfterUpdate === 'function') {
                                 $scope.dataEventFunctions.onAfterUpdate(data, ctrlState.master);
@@ -3304,12 +3313,12 @@ var fng;
                         else {
                             $scope.showError(data);
                         }
-                    })
-                        .error($scope.handleHttpError);
+                    }, $scope.handleHttpError);
                 },
                 createNew: function createNew(dataToSave, options, $scope) {
                     SubmissionsService.createRecord($scope.modelName, dataToSave)
-                        .success(function (data) {
+                        .then(function (response) {
+                        var data = response.data;
                         if (data.success !== false) {
                             if (typeof $scope.dataEventFunctions.onAfterCreate === 'function') {
                                 $scope.dataEventFunctions.onAfterCreate(data);
@@ -3324,8 +3333,7 @@ var fng;
                         else {
                             $scope.showError(data);
                         }
-                    })
-                        .error($scope.handleHttpError);
+                    }, $scope.handleHttpError);
                 },
                 getListData: getListData,
                 suffixCleanId: suffixCleanId,
@@ -3334,7 +3342,8 @@ var fng;
                     var optionsList = $scope[schemaElement.options] = [];
                     var idList = $scope[schemaElement.ids] = [];
                     SchemasService.getSchema(lookupCollection)
-                        .success(function (data) {
+                        .then(function (response) {
+                        var data = response.data;
                         var listInstructions = [];
                         handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState);
                         var dataRequest;
@@ -3346,7 +3355,8 @@ var fng;
                             dataRequest = SubmissionsService.getAll(lookupCollection);
                         }
                         dataRequest
-                            .success(function (data) {
+                            .then(function (response) {
+                            var data = response.data;
                             if (data) {
                                 for (var i = 0; i < data.length; i++) {
                                     var option = '';
@@ -3608,10 +3618,10 @@ var fng;
                 fillFormFromBackendCustomSchema: fillFormFromBackendCustomSchema,
                 fillFormWithBackendSchema: function fillFormWithBackendSchema($scope, formGeneratorInstance, recordHandlerInstance, ctrlState) {
                     SchemasService.getSchema($scope.modelName, $scope.formName)
-                        .success(function (schema) {
+                        .then(function (response) {
+                        var schema = response.data;
                         fillFormFromBackendCustomSchema(schema, $scope, formGeneratorInstance, recordHandlerInstance, ctrlState);
-                    })
-                        .error($scope.handleHttpError);
+                    }, $scope.handleHttpError);
                 }
             };
         }

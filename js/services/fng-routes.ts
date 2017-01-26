@@ -103,6 +103,8 @@ module fng.services {
         $locationProvider.html5Mode(config.html5Mode);
         if (config.hashPrefix !== '') {
           $locationProvider.hashPrefix(config.hashPrefix);
+        } else if (!config.html5Mode) {
+          $locationProvider.hashPrefix('');
         }
         switch (config.routing) {
           case 'ngroute' :
