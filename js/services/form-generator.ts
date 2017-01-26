@@ -1,3 +1,4 @@
+/// <reference path="../../typings/globals/jquery/index.d.ts" />
 /// <reference path="../../typings/globals/angular/index.d.ts" />
 /// <reference path="../../typings/globals/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
@@ -51,8 +52,8 @@ module fng.services {
           }
         } else if (source.hasOwnProperty(field)) {
           var mongooseType = source[field],
-            mongooseOptions = mongooseType.options || {};
-          var formData = mongooseOptions.form || {};
+            mongooseOptions: any = mongooseType.options || {};
+          var formData: any = mongooseOptions.form || {};
           if (mongooseType.schema && !formData.hidden) {
             if (doRecursion && destForm) {
               var schemaSchema = [];
@@ -114,7 +115,7 @@ module fng.services {
       }
     }
 
-    function handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState) {
+    function handleFieldType(formInstructions: any, mongooseType, mongooseOptions, $scope, ctrlState) {
 
       function performLookupSelect(){
         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
@@ -271,7 +272,8 @@ module fng.services {
                     var theId = element.val();
                     if (theId && theId !== '') {
                       SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
-                        .success(function (data) {
+                        .then(function (response) {
+                          let data: any = response.data;
                           if (data.success === false) {
                             $location.path('/404');
                           }
@@ -279,7 +281,7 @@ module fng.services {
                           recordHandler.preservePristine(element, function () {
                             callback(display);
                           });
-                        }).error($scope.handleHttpError);
+                        }, $scope.handleHttpError);
                       //                                } else {
                       //                                    throw new Error('select2 initSelection called without a value');
                     }

@@ -32,7 +32,7 @@ interface ListField {
 }
 
 mongoose.set('debug', debug);
-// mongoose.Promise = global.Promise;
+mongoose.Promise = <any>global.Promise;
 
 function logTheAPICalls(req, res, next) {
   void(res);

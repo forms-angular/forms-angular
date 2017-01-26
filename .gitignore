@@ -23,6 +23,7 @@ server/**/*.js
 server/**/*.map
 Phantom*/**/*
 
+tscArguments
 test_out/*
 PhantomJS_1.9.8_(Linux_0.0.0)/test_out/unit.xml
 PhantomJS_1.9.8_(Mac_OS_X_0.0.0)/test_out/unit.xml
