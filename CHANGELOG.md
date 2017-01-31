@@ -1,7 +1,12 @@
 # forms-angular
 
-## 0.7.0 to 0.7.1
-* Fix bug with routing to specific tab (such as /#/collection/id/edit/tab1
+## 0.7.0 to 0.8.0
+* Move to Angular 1.6.x
+* Allow adding _id to list fields
+* Fix bug with routing to specific tab (such as /#/collection/id/edit/tab1)
+### BREAKING CHANGES
+* If your application calls recordHandler.handleError (typically from a controller) then you will need
+to pass a response object rather than (data:any, status: number)
 
 ## 0.6.0 to 0.7.0
 * Removed support for Bootstrap 2 (just in time for Bootstrap 4?)
