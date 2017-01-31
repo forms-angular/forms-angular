@@ -3,7 +3,7 @@
   "author": "Mark Chapman <support@forms-angular.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "engines": {
     "node": ">=4.x",
     "npm": ">=3.x"
@@ -32,10 +32,10 @@
   ],
   "dependencies": {
     "body-parser": "1.16.0",
-    "express": "4.14",
+    "express": "4.14.1",
     "method-override": "2.3.7",
     "async": "1.5.2",
-    "mongoose": "4.7.8",
+    "mongoose": "4.8.1",
     "node.extend": "1.1.6",
     "underscore": "1.8.3"
   },
@@ -51,7 +51,7 @@
     "gulp-tsc": "1.2.6",
     "gulp-umd": "0.2.0",
     "jasmine-core": "2.5.2",
-    "karma": "1.4.0",
+    "karma": "1.4.1",
     "karma-jasmine": "1.1.0",
     "karma-junit-reporter": "1.2.0",
     "karma-ng-html2js-preprocessor": "1.0.0",

@@ -1,4 +1,4 @@
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../typings/angularjs/angular.d.ts" />
 var fng;
 (function (fng) {
     var services;
