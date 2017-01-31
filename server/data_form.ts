@@ -100,7 +100,7 @@ DataForm.prototype.getListFields = function (resource : Resource, doc: mongoose.
             if (lookupResource) {
               var hiddenFields = that.generateHiddenFields(lookupResource, false);
               hiddenFields.__v = 0;
-              lookupResource.model.findOne({ _id: doc[aField.field] }).select(hiddenFields).exec( function (err, doc2) {
+              lookupResource.model.findOne({_id: doc[aField.field]}).select(hiddenFields).exec(function (err, doc2) {
                 if (err) {
                   cbm(err);
                 } else {
@@ -108,6 +108,12 @@ DataForm.prototype.getListFields = function (resource : Resource, doc: mongoose.
                 }
               });
             }
+          } else if (aField.params.params === 'timestamp') {
+            var record = doc[aField.field];
+            var timestamp = record.toString().substring(0, 8);
+            var date = new Date(parseInt(timestamp, 16) * 1000);
+            record = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            cbm(null, record);
           }
         } else {
           cbm(null, doc[aField.field]);

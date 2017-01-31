@@ -82,6 +82,13 @@ DataForm.prototype.getListFields = function (resource, doc, cb) {
                             });
                         }
                     }
+                    else if (aField.params.params === 'timestamp') {
+                        var record = doc[aField.field];
+                        var timestamp = record.toString().substring(0, 8);
+                        var date = new Date(parseInt(timestamp, 16) * 1000);
+                        record = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                        cbm(null, record);
+                    }
                 }
                 else {
                     cbm(null, doc[aField.field]);
