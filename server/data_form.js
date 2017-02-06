@@ -1,7 +1,7 @@
 /// <reference path="../typings/globals/node/index.d.ts" />
 /// <reference path="../typings/modules/mongoose/index.d.ts" />
-/// <reference path="../typings/modules/mpromise/index.d.ts" />
 'use strict';
+var Mongoose = require("mongoose");
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
 var _ = require('underscore');
@@ -9,10 +9,7 @@ var util = require('util');
 var extend = require('node.extend');
 var async = require('async');
 var url = require('url');
-var mongoose = require('mongoose');
 var debug = false;
-mongoose.set('debug', debug);
-mongoose.Promise = global.Promise;
 function logTheAPICalls(req, res, next) {
     void (res);
     console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
@@ -31,11 +28,13 @@ function processArgs(options, array) {
     array[0] = options.urlPrefix + array[0];
     return array;
 }
-var DataForm = function (app, options) {
+var DataForm = function (mongoose, app, options) {
     this.app = app;
     app.locals.formsAngular = app.locals.formsAngular || [];
     app.locals.formsAngular.push(this);
     this.mongoose = mongoose;
+    mongoose.set('debug', debug);
+    mongoose.Promise = global.Promise;
     this.options = _.extend({
         urlPrefix: '/api/'
     }, options || {});
@@ -558,7 +557,7 @@ DataForm.prototype.hackVariables = function (obj) {
                 else {
                     var objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
                     if (objectIdTest) {
-                        obj[prop] = new mongoose.Types.ObjectId(objectIdTest[1]);
+                        obj[prop] = new Mongoose.Types.ObjectId(objectIdTest[1]);
                     }
                 }
             }
@@ -569,7 +568,8 @@ DataForm.prototype.hackVariables = function (obj) {
     }
 };
 DataForm.prototype.reportInternal = function (req, resource, schema, options, callback) {
-    var runPipeline, self = this;
+    var runPipeline;
+    var self = this;
     self.doFindFunc(req, resource, function (err, queryObj) {
         if (err) {
             return 'There was a problem with the findFunc for model';

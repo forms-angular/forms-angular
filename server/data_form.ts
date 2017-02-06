@@ -1,8 +1,8 @@
 /// <reference path="../typings/globals/node/index.d.ts" />
 /// <reference path="../typings/modules/mongoose/index.d.ts" />
-/// <reference path="../typings/modules/mpromise/index.d.ts" />
 
 'use strict';
+import * as Mongoose from "mongoose";
 
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
@@ -12,13 +12,12 @@ var util = require('util');
 var extend = require('node.extend');
 var async = require('async');
 var url = require('url');
-import mongoose = require('mongoose');
 
 var debug = false;
 
 interface Resource {
   resourceName: string;
-  model?: mongoose.Model<any>;            // TODO TS Get rid of the ? here
+  model?: Mongoose.Model<any>;            // TODO TS Get rid of the ? here
   options?: any;
 }
 
@@ -30,9 +29,6 @@ interface ListField {
   field: String;
   params? : ListParams;
 }
-
-mongoose.set('debug', debug);
-mongoose.Promise = <any>global.Promise;
 
 function logTheAPICalls(req, res, next) {
   void(res);
@@ -54,11 +50,13 @@ function processArgs(options, array) {
   return array;
 }
 
-var DataForm = function (app, options) {
+var DataForm = function (mongoose, app, options) {
   this.app = app;
   app.locals.formsAngular = app.locals.formsAngular || [];
   app.locals.formsAngular.push(this);
   this.mongoose = mongoose;
+  mongoose.set('debug', debug);
+  mongoose.Promise = <any>global.Promise;
   this.options = _.extend({
     urlPrefix: '/api/'
   }, options || {});
@@ -75,7 +73,7 @@ var DataForm = function (app, options) {
 
 module.exports = exports = DataForm;
 
-DataForm.prototype.getListFields = function (resource : Resource, doc: mongoose.Document, cb) {
+DataForm.prototype.getListFields = function (resource : Resource, doc: Mongoose.Document, cb) {
 
   function getFirstMatchingField(keyList, type?) {
     for (var i = 0; i < keyList.length; i++) {
@@ -625,7 +623,7 @@ DataForm.prototype.hackVariables = function (obj) {
         } else {
           var objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
           if (objectIdTest) {
-            obj[prop] = new mongoose.Types.ObjectId(objectIdTest[1]);
+            obj[prop] = new Mongoose.Types.ObjectId(objectIdTest[1]);
           }
         }
       } else if (_.isObject(obj[prop])) {
@@ -636,8 +634,8 @@ DataForm.prototype.hackVariables = function (obj) {
 };
 
 DataForm.prototype.reportInternal = function (req, resource, schema, options, callback) {
-  var runPipeline,
-    self = this;
+  let runPipeline: any;
+  let self = this;
 
   self.doFindFunc(req, resource, function (err, queryObj) {
     if (err) {
@@ -645,7 +643,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
     } else {
       // Bit crap here switching back and forth to string
       runPipeline = JSON.stringify(schema.pipeline);
-      for (var param in options.query) {
+      for (let param in options.query) {
         if (options.query[param]) {
           if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
             schema.params[param].value = options.query[param];
