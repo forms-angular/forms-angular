@@ -1,6 +1,6 @@
 # forms-angular
 
-## 0.7.0 to 0.8.0
+## 0.7.0 to 0.8.1
 * Move to Angular 1.6.x
 * Allow adding _id to list fields
 * Fix bug with routing to specific tab (such as /#/collection/id/edit/tab1)
