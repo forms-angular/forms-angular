@@ -16,7 +16,7 @@ describe('API', function () {
   before(function (done) {
     app = express();
 
-    fng = new (formsAngular)(app, {urlPrefix: '/api/'});
+    fng = new (formsAngular)(mongoose, app, {urlPrefix: '/api/'});
 
     mongoose.connect('localhost', 'forms-ng_test');
     mongoose.connection.on('error', function () {

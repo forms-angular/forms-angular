@@ -31,15 +31,15 @@
     "RESTful API"
   ],
   "dependencies": {
-    "body-parser": "1.16.0",
-    "express": "4.14.1",
-    "method-override": "2.3.7",
     "async": "1.5.2",
+    "express": "4.14.1",
+    "kerberos":"0.0.22",
     "mongoose": "4.8.1",
     "node.extend": "1.1.6",
     "underscore": "1.8.3"
   },
   "devDependencies": {
+    "body-parser": "1.16.0",
     "del": "2.2.2",
     "gulp": "3.9.1",
     "gulp-angular-templatecache": "2.0.0",

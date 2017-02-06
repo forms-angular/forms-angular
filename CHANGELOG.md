@@ -5,6 +5,15 @@
 * Allow adding _id to list fields
 * Fix bug with routing to specific tab (such as /#/collection/id/edit/tab1)
 ### BREAKING CHANGES
+* The server side of forms angular is now passed a Mongoose instance:
+```
+var formsAngular = require('forms-angular');
+var express = require('express');
+var mongoose = require('mongoose');
+
+var app = express();
+var fng = new (formsAngular)(mongoose, app, {});
+```
 * If your application calls recordHandler.handleError (typically from a controller) then you will need
 to pass a response object rather than (data:any, status: number)
 
