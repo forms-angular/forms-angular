@@ -135,7 +135,7 @@ DataForm.prototype.registerRoutes = function () {
     this.app.get.apply(this.app, processArgs(this.options, [resourceName + id, this.entityGet()]));
     this.app.post.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()])); // You can POST or PUT to update data
     this.app.put.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()]));
-    this.app.delete.apply(this.app, processArgs(this.options, [resourceName + id, this.entityDelete()]));
+    this.app["delete"].apply(this.app, processArgs(this.options, [resourceName + id, this.entityDelete()]));
     // return the List attributes for a record - used by select2
     this.app.get.apply(this.app, processArgs(this.options, [resourceName + id + '/list', this.entityList()]));
 };
@@ -873,7 +873,7 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
                 else {
                     var query = resource.model.find(queryObj);
                     if (idArray.length > 0) {
-                        query = query.where('_id').in(idArray);
+                        query = query.where('_id')["in"](idArray);
                     }
                     query = query.find(findParam).select(hiddenFields);
                     if (limit) {
@@ -1063,3 +1063,4 @@ DataForm.prototype.entityList = function () {
         });
     }, this);
 };
+//# sourceMappingURL=data_form.js.map
