@@ -108,7 +108,7 @@ module fng.controllers {
         }
       } catch (error) {
         // Check to see if error is no such controller - don't care
-        if (!(/is not a function, got undefined/.test(error.message))) {
+        if ((!(/is not a function, got undefined/.test(error.message))) && (!(/\[\$controller:ctrlreg\] The controller with the name/.test(error.message)))) {
           console.log('Unable to instantiate ' + controllerName + ' - ' + error.message);
         }
       }

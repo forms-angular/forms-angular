@@ -1,4 +1,4 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/globals/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -56,7 +56,7 @@ var fng;
                     return $http.get('/api/' + modelName + generateListQuery(options));
                 },
                 deleteRecord: function (model, id) {
-                    return $http.delete('/api/' + model + '/' + id);
+                    return $http["delete"]('/api/' + model + '/' + id);
                 },
                 updateRecord: function (modelName, id, dataToSave) {
                     $cacheFactory.get('$http').remove('/api/' + modelName);

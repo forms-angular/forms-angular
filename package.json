@@ -32,15 +32,18 @@
   ],
   "dependencies": {
     "async": "1.5.2",
-    "express": "4.14.1",
-    "kerberos":"0.0.22",
-    "mongoose": "4.8.1",
     "node.extend": "1.1.6",
     "underscore": "1.8.3"
+  },
+  "peerDependencies": {
+    "express": "4.14.1",
+    "kerberos": "0.0.22",
+    "mongoose": "4.8.1"
   },
   "devDependencies": {
     "body-parser": "1.16.0",
     "del": "2.2.2",
+    "express": "4.14.1",
     "gulp": "3.9.1",
     "gulp-angular-templatecache": "2.0.0",
     "gulp-clean-css": "2.3.2",
@@ -58,6 +61,7 @@
     "karma-phantomjs-launcher": "1.0.2",
     "matchdep": "1.0.1",
     "mocha": "3.2.0",
+    "mongoose": "4.8.1",
     "phantomjs-prebuilt": "2.1.14",
     "run-sequence": "1.2.2",
     "uglify-js": "2.7.5"
