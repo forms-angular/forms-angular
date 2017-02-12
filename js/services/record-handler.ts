@@ -11,7 +11,7 @@ module fng.services {
    */
 
   /*@ngInject*/
-  export function recordHandler($location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) : fng.IRecordHandler {
+  export function recordHandler($http, $location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) : fng.IRecordHandler {
 
     var suffixCleanId = function suffixCleanId(inst, suffix) {
       return (inst.id || 'f_' + inst.name).replace(/\./g, '_') + suffix;
@@ -36,9 +36,15 @@ module fng.services {
         } else {
           workingRec = workingRec[parts[i]];
         }
-        if (angular.isArray(workingRec) && element && element.scope && typeof element.scope === 'function') {
-          // If we come across an array we need to find the correct position, if we have an element
-          workingRec = workingRec[element.scope().$index];
+        if (angular.isArray(workingRec) && typeof element !== 'undefined') {
+          if (element.scope && typeof element.scope === 'function') {
+            // If we come across an array we need to find the correct position, if we have an element
+            workingRec = workingRec[element.scope().$index];
+          } else if (typeof element === 'number') {
+            workingRec = workingRec[element];
+          } else {
+            throw new Error('Unsupported element type in walkTree ' + fieldname)
+          }
         }
         if (!workingRec) {
           break;
@@ -108,15 +114,12 @@ module fng.services {
     // TODO: Think about nested arrays
     // This doesn't handle things like :
     // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
-    var getListData = function getListData(record, fieldName, select2List=null, listSchema=null) {
+    var getListData = function getListData(record, fieldName, listSchema=null) {
       var nests = fieldName.split('.');
       for (var i = 0; i < nests.length; i++) {
         if (record !== undefined && record !== null) {
           record = record[nests[i]];
         }
-      }
-      if (record && select2List.indexOf(nests[i - 1]) !== -1) {
-        record = record.text || record;
       }
       if (record === undefined) {
         record = '';
@@ -181,9 +184,19 @@ module fng.services {
       return result;
     };
 
-    // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
-    // Which is what we need for use in the browser
-    var convertToAngularModel = function (schema, anObject, prefixLength, $scope, master?) {
+    /* Look up a conversion set up by a plugin */
+    function getConversionObject(scope: any, entryName: string, schemaName? : string) : any {
+      let conversions = scope.conversions;
+      if (schemaName) {
+        conversions = conversions[schemaName] || {};
+      }
+      return conversions[entryName];
+    }
+
+
+    // Convert mongodb json to what we use in the browser, for example {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
+    // This will currently only work for a single level of nesting (conversionObject will not go down further without amendment, and offset needs to be an array, at least)
+    var convertToAngularModel = function (schema, anObject, prefixLength, $scope, schemaName? : string, master?, offset?: number) {
       master = master || anObject;
       for (var i = 0; i < schema.length; i++) {
         var schemaEntry = schema[i];
@@ -192,12 +205,12 @@ module fng.services {
         if (schemaEntry.schema) {
           if (fieldValue) {
             for (var j = 0; j < fieldValue.length; j++) {
-              fieldValue[j] = convertToAngularModel(schemaEntry.schema, fieldValue[j], prefixLength + 1 + fieldName.length, $scope, master);
+              fieldValue[j] = convertToAngularModel(schemaEntry.schema, fieldValue[j], prefixLength + 1 + fieldName.length, $scope, fieldName, master, j);
             }
           }
         } else {
           // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
-          var thisField = getListData(anObject, fieldName, $scope.select2List);
+          var thisField = getListData(anObject, fieldName);
           if (schemaEntry.array && simpleArrayNeedsX(schemaEntry) && thisField) {
             for (var k = 0; k < thisField.length; k++) {
               thisField[k] = {x: thisField[k]};
@@ -206,62 +219,25 @@ module fng.services {
 
           // Convert {lookup:'012abcde'} to {lookup:'List description for 012abcde'}
           var idList = $scope[suffixCleanId(schemaEntry, '_ids')];
+          let thisConversion: any;
           if (fieldValue && idList && idList.length > 0) {
             if (fieldName.indexOf('.') !== -1) {
               throw new Error('Trying to directly assign to a nested field 332');
             }  // Not sure that this can happen, but put in a runtime test
             anObject[fieldName] = convertForeignKeys(schemaEntry, fieldValue, $scope[suffixCleanId(schemaEntry, 'Options')], idList);
-          } else if (schemaEntry.select2 && !schemaEntry.select2.fngAjax) {
-            if (fieldValue) {
-              if (schemaEntry.array) {
-                for (var n = 0; n < fieldValue.length; n++) {
-                  $scope[schemaEntry.select2.s2query].query({
-                    term: fieldValue[n].x.text || fieldValue[n].text || fieldValue[n].x || fieldValue[n],
-                    callback: function (array) {
-                      if (array.results.length > 0) {
-                        if (fieldValue[n].x) {
-                          if (fieldName.indexOf('.') !== -1) {
-                            throw new Error('Trying to directly assign to a nested field 342');
-                          }
-                          anObject[fieldName][n].x = array.results[0];
-                        } else {
-                          if (fieldName.indexOf('.') !== -1) {
-                            throw new Error('Trying to directly assign to a nested field 345');
-                          }
-                          anObject[fieldName][n] = array.results[0];
-                        }
-                      }
-                    }
-                  });
-                }
-              } else {
-                $scope[schemaEntry.select2.s2query].query({
-                  term: fieldValue,
-                  callback: function (array) {
-                    if (array.results.length > 0) {
-                      if (fieldName.indexOf('.') !== -1) {
-                        throw new Error('Trying to directly assign to a nested field 357');
-                      }
-                      anObject[fieldName] = array.results[0];
-                    }
-                  }
-                });
-              }
-            }
           } else if (schemaEntry.select2) {
             // Do nothing with these - handled elsewhere (and deprecated)
+            console.log('fng-select2 is deprecated - use fng-ui-select instead');
             void(schemaEntry.select2);
-          } else if (fieldValue &&
-            $scope.conversions[schemaEntry.name] &&
-            $scope.conversions[schemaEntry.name].fngajax &&
-            !$scope.conversions[schemaEntry.name].noconvert
+          } else if (fieldValue && (thisConversion = getConversionObject($scope, fieldName, schemaName)) &&
+            thisConversion.fngajax &&
+            !thisConversion.noconvert
           ) {
-            var conversionEntry = schemaEntry;
-            $scope.conversions[conversionEntry.name].fngajax(fieldValue, conversionEntry, function (updateEntry, value) {
+            thisConversion.fngajax(fieldValue, schemaEntry, function (updateEntry, value) {
               // Update the master and (preserving pristine if appropriate) the record
-              setData(master, updateEntry.name, undefined, value);
+              setData(master, updateEntry.name, offset, value);
               preservePristine( angular.element('#' + updateEntry.id), function () {
-                setData($scope.record, updateEntry.name, undefined, value);
+                setData($scope.record, updateEntry.name, offset, value);
               });
             });
           }
@@ -350,9 +326,10 @@ module fng.services {
     };
 
     var processServerData = function processServerData(recordFromServer, $scope, ctrlState) {
-      ctrlState.master = convertToAngularModel($scope.formSchema, recordFromServer, 0, $scope);
-      $scope.phase = 'ready';
-      $scope.cancel();
+      console.log('in processdata');
+        ctrlState.master = convertToAngularModel($scope.formSchema, recordFromServer, 0, $scope);
+        $scope.phase = 'ready';
+        $scope.cancel();
     };
 
     function fillFormFromBackendCustomSchema(schema, $scope:fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState) {
@@ -365,8 +342,21 @@ module fng.services {
         ctrlState.allowLocationChange = true;
       } else {
         var force = true;
+        if (!$scope.newRecord) {
+          $scope.dropConversionWatcher = $scope.$watchCollection('conversions', function (newValue, oldValue) {
+            if (newValue !== oldValue) {
+              console.log('Converting...',JSON.stringify($scope.originalData,null,2));
+              processServerData($scope.originalData, $scope, ctrlState);
+            }
+          });
+        }
         $scope.$watch('record', function (newValue, oldValue) {
           if (newValue !== oldValue) {
+            if (Object.keys(oldValue).length > 0 && $scope.dropConversionWatcher) {
+              console.log('STOP WATCHING - New Value = ', JSON.stringify(newValue,null,2), 'old Value = ', JSON.stringify(oldValue,null,2));
+              $scope.dropConversionWatcher();  // Don't want to convert changed data
+              $scope.dropConversionWatcher = null;
+            }
             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
           }
         }, true);
@@ -444,6 +434,7 @@ module fng.services {
             if (typeof $scope.dataEventFunctions.onAfterRead === 'function') {
               $scope.dataEventFunctions.onAfterRead(data);
             }
+            $scope.originalData = data;
             processServerData(data, $scope, ctrlState);
           }, $scope.handleHttpError);
       },
@@ -579,11 +570,11 @@ module fng.services {
       preservePristine: preservePristine,
 
       // Reverse the process of convertToAngularModel
-      convertToMongoModel: function convertToMongoModel(schema, anObject, prefixLength, $scope) {
+      convertToMongoModel: function convertToMongoModel(schema, anObject, prefixLength, $scope, schemaName? : string) {
 
-        function convertLookup(lookup, schemaElement) {
+        function convertLookup(lookup, conversionInst) {
           var retVal;
-          if ((schemaElement.select2 && schemaElement.select2.fngAjax) || ($scope.conversions[schemaElement.name] && $scope.conversions[schemaElement.name].fngajax)) {
+          if (conversionInst && conversionInst.fngajax) {
             if (lookup) {
               retVal = lookup.id || lookup;
             }
@@ -595,12 +586,12 @@ module fng.services {
 
         for (var i = 0; i < schema.length; i++) {
           var fieldname = schema[i].name.slice(prefixLength);
-          var thisField = getListData(anObject, fieldname, $scope.select2List);
+          var thisField = getListData(anObject, fieldname);
 
           if (schema[i].schema) {
             if (thisField) {
               for (var j = 0; j < thisField.length; j++) {
-                thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length, $scope);
+                thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length, $scope, fieldname);
               }
             }
           } else {
@@ -614,22 +605,23 @@ module fng.services {
 
             // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
             var idList = $scope[suffixCleanId(schema[i], '_ids')];
+            let thisConversion: any;
             if (idList && idList.length > 0) {
               updateObject(fieldname, anObject, function (value) {
                 return convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i], 'Options')], idList);
               });
-            } else if ($scope.conversions[schema[i].name]) {
+            } else if (thisConversion = getConversionObject($scope, fieldname, schemaName)) {
               var lookup = getData(anObject, fieldname, null);
               var newVal;
               if (schema[i].array) {
                 newVal = [];
                 if (lookup) {
                   for (var n = 0; n < lookup.length; n++) {
-                    newVal[n] = convertLookup(lookup[n], schema[i]);
+                    newVal[n] = convertLookup(lookup[n], thisConversion);
                   }
                 }
               } else {
-                newVal = convertLookup(lookup, schema[i]);
+                newVal = convertLookup(lookup, thisConversion);
               }
               setData(anObject, fieldname, null, newVal);
             }

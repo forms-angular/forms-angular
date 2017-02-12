@@ -116,26 +116,7 @@ module fng.directives {
           switch (fieldInfo.type) {
             case 'select' :
               if (fieldInfo.select2) {
-                common += 'class="fng-select2' + allInputsVars.formControl + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '"';
-                common += (fieldInfo.readonly ? ' readonly' : '');
-                common += (fieldInfo.required ? ' ng-required="true"' : '');
-                common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
-                if (fieldInfo.select2.fngAjax) {
-                  if (cssFrameworkService.framework() === 'bs2') {
-                    value = '<div class="input-append">';
-                    value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
-                    value += '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
-                    value += '</div>';
-                  } else {
-                    value = '<div class="input-group">';
-                    value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
-                    value += '<span class="input-group-addon' + allInputsVars.compactClass + '" data-select2-open="' + idString + '" ';
-                    value += '    ng-click="openSelect2($event)"><i class="glyphicon glyphicon-search"></i></span>';
-                    value += '</div>';
-                  }
-                } else if (fieldInfo.select2) {
-                  value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + common + '>';
-                }
+                value = '<input placeholder="fng-select2 has been removed" readonly>';
               } else {
                 common += (fieldInfo.readonly ? 'disabled ' : '');
                 common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
@@ -464,6 +445,7 @@ module fng.directives {
 
               var callHandleField = true;
               if (info.directive) {
+console.log('We have a directive');
                 var directiveName = info.directive;
                 var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
                 var thisElement = element[0];
