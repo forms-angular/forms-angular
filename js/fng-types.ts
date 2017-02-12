@@ -23,7 +23,7 @@ module fng {
     updateDocument(dataToSave : any, options: any, scope: fng.IFormScope, ctrlState: any) : void;
     readRecord($scope: fng.IFormScope, ctrlState);
     scrollTheList($scope: fng.IFormScope);
-    getListData(record, fieldName, select2List, listSchema);
+    getListData(record, fieldName, listSchema);
     suffixCleanId(inst, suffix);
     setData(object, fieldname, element, value);
     setUpSelectOptions(lookupCollection, schemaElement, $scope: fng.IFormScope, ctrlState, handleSchema);
@@ -76,6 +76,7 @@ module fng {
     activeTabNo?: number;
     topLevelFormName: string;       // The name of the form
     record: any;
+    originalData: any;              // the unconverted data read from the server
     phase: any;
     disableFunctions: any;
     dataEventFunctions: any;
@@ -85,7 +86,6 @@ module fng {
     conversions: any;
     pageSize: any;
     pagesLoaded: any;
-    select2List: any;
     formSchema: Array<IFieldViewInfo>;
 
     //functions
@@ -105,6 +105,7 @@ module fng {
     getListData: any;
     dismissError: any;
     handleHttpError(response: any): void;
+    dropConversionWatcher: () => void;
   }
 
   export interface IBaseFormOptions {

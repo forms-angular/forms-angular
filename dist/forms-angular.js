@@ -187,7 +187,7 @@ var fng;
                 }
                 catch (error) {
                     // Check to see if error is no such controller - don't care
-                    if (!(/is not a function, got undefined/.test(error.message))) {
+                    if ((!(/is not a function, got undefined/.test(error.message))) && (!(/\[\$controller:ctrlreg\] The controller with the name/.test(error.message)))) {
                         console.log('Unable to instantiate ' + controllerName + ' - ' + error.message);
                     }
                 }
@@ -623,28 +623,7 @@ var fng;
                         switch (fieldInfo.type) {
                             case 'select':
                                 if (fieldInfo.select2) {
-                                    common += 'class="fng-select2' + allInputsVars.formControl + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '"';
-                                    common += (fieldInfo.readonly ? ' readonly' : '');
-                                    common += (fieldInfo.required ? ' ng-required="true"' : '');
-                                    common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
-                                    if (fieldInfo.select2.fngAjax) {
-                                        if (cssFrameworkService.framework() === 'bs2') {
-                                            value = '<div class="input-append">';
-                                            value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
-                                            value += '<button class="btn" type="button" data-select2-open="' + idString + '" ng-click="openSelect2($event)"><i class="icon-search"></i></button>';
-                                            value += '</div>';
-                                        }
-                                        else {
-                                            value = '<div class="input-group">';
-                                            value += '<input ui-select2="' + fieldInfo.select2.fngAjax + '" ' + common + '>';
-                                            value += '<span class="input-group-addon' + allInputsVars.compactClass + '" data-select2-open="' + idString + '" ';
-                                            value += '    ng-click="openSelect2($event)"><i class="glyphicon glyphicon-search"></i></span>';
-                                            value += '</div>';
-                                        }
-                                    }
-                                    else if (fieldInfo.select2) {
-                                        value = '<input ui-select2="' + fieldInfo.select2.s2query + '" ' + common + '>';
-                                    }
+                                    value = '<input placeholder="fng-select2 has been removed" readonly>';
                                 }
                                 else {
                                     common += (fieldInfo.readonly ? 'disabled ' : '');
@@ -976,6 +955,7 @@ var fng;
                                 }
                                 var callHandleField = true;
                                 if (info.directive) {
+                                    console.log('We have a directive');
                                     var directiveName = info.directive;
                                     var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
                                     var thisElement = element[0];
@@ -1849,9 +1829,7 @@ var fng;
                     if (!formInstructions.hidden) {
                         recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
                     }
-                    ;
                 }
-                var select2ajaxName;
                 if (mongooseType.caster) {
                     formInstructions.array = true;
                     mongooseType = mongooseType.caster;
@@ -1864,89 +1842,7 @@ var fng;
                     if (mongooseOptions.enum) {
                         formInstructions.type = formInstructions.type || 'select';
                         if (formInstructions.select2) {
-                            $scope.conversions[formInstructions.name] = formInstructions.select2;
-                            // Hacky way to get required styling working on select2 controls
-                            if (mongooseOptions.required) {
-                                $scope.$watch('record.' + formInstructions.name, function (newValue) {
-                                    updateInvalidClasses(newValue, formInstructions.id, formInstructions.select2, ctrlState);
-                                }, true);
-                                // FIXME: use $timeout?
-                                setTimeout(function () {
-                                    updateInvalidClasses($scope.record[formInstructions.name], formInstructions.id, formInstructions.select2, ctrlState);
-                                }, 0);
-                            }
-                            if (formInstructions.select2 === true) {
-                                formInstructions.select2 = {};
-                            }
-                            formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
-                            $scope[formInstructions.select2.s2query] = {
-                                allowClear: !mongooseOptions.required,
-                                initSelection: function (element, callback) {
-                                    function executeCallback() {
-                                        function drillIntoObject(parts, dataVal, fn) {
-                                            if (dataVal) {
-                                                if (parts.length === 0) {
-                                                    fn(dataVal);
-                                                }
-                                                else {
-                                                    if (angular.isArray(dataVal)) {
-                                                        // extract the array offset of the subkey from the element id
-                                                        var workString = element.context.getAttribute('ng-model');
-                                                        var pos = workString.indexOf('.' + parts[0]);
-                                                        workString = workString.slice(0, pos);
-                                                        pos = workString.lastIndexOf('.');
-                                                        workString = workString.slice(pos + 1);
-                                                        workString = /.+\[(.+)\]/.exec(workString);
-                                                        dataVal = dataVal[$scope[workString[1]]];
-                                                    }
-                                                    dataVal = dataVal[parts.shift()];
-                                                    drillIntoObject(parts, dataVal, fn);
-                                                }
-                                            }
-                                        }
-                                        var dataVal = $scope.record;
-                                        if (dataVal) {
-                                            var parts = formInstructions.name.split('.');
-                                            drillIntoObject(parts, dataVal, function (leafVal) {
-                                                setTimeout(updateInvalidClasses(leafVal, formInstructions.id, formInstructions.select2, ctrlState));
-                                                if (leafVal) {
-                                                    if (formInstructions.array) {
-                                                        var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
-                                                        if (leafVal[offset].x) {
-                                                            recordHandler.preservePristine(element, function () {
-                                                                callback(leafVal[offset].x);
-                                                            });
-                                                        }
-                                                    }
-                                                    else {
-                                                        recordHandler.preservePristine(element, function () {
-                                                            callback(leafVal);
-                                                        });
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        else {
-                                            $timeout(executeCallback);
-                                        }
-                                    }
-                                    $timeout(executeCallback);
-                                },
-                                query: function (query) {
-                                    var data = { results: [] }, searchString = query.term.toUpperCase();
-                                    for (var i = 0; i < mongooseOptions.enum.length; i++) {
-                                        if (mongooseOptions.enum[i].toUpperCase().indexOf(searchString) !== -1) {
-                                            data.results.push({ id: i, text: mongooseOptions.enum[i] });
-                                        }
-                                    }
-                                    query.callback(data);
-                                }
-                            };
-                            _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
-                            if (formInstructions.select2 === true) {
-                                formInstructions.select2 = {};
-                            } // In case they have used select2: true syntax
-                            $scope.select2List.push(formInstructions.name);
+                            console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
                         }
                         else {
                             formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
@@ -1972,103 +1868,8 @@ var fng;
                     }
                     else {
                         formInstructions.type = 'select';
-                        // Support both of the syntaxes below
-                        //            team : [ { type: Schema.Types.ObjectId , ref: 'f_nested_schema', form: {select2: {fngAjax: true}}} ],
-                        //            team2:   { type:[Schema.Types.ObjectId], ref: 'f_nested_schema', form: {select2: {fngAjax: true}}},
                         if (formInstructions.select2 || (mongooseOptions.form && mongooseOptions.form.select2)) {
-                            if (!formInstructions.select2) {
-                                formInstructions.select2 = mongooseOptions.form.select2;
-                            }
-                            if (formInstructions.select2 === true) {
-                                formInstructions.select2 = {};
-                            }
-                            $scope.select2List.push(formInstructions.name);
-                            $scope.conversions[formInstructions.name] = formInstructions.select2;
-                            if (formInstructions.select2.fngAjax) {
-                                // create the instructions for select2
-                                select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
-                                // If not required then generate a place holder if none specified (see https://github.com/forms-angular/forms-angular/issues/53)
-                                if (!mongooseOptions.required && !formInstructions.placeHolder) {
-                                    formInstructions.placeHolder = 'Select...';
-                                }
-                                $scope[select2ajaxName] = {
-                                    allowClear: !mongooseOptions.required,
-                                    minimumInputLength: 2,
-                                    initSelection: function (element, callback) {
-                                        var theId = element.val();
-                                        if (theId && theId !== '') {
-                                            SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
-                                                .then(function (response) {
-                                                var data = response.data;
-                                                if (data.success === false) {
-                                                    $location.path('/404');
-                                                }
-                                                var display = { id: theId, text: data.list };
-                                                recordHandler.preservePristine(element, function () {
-                                                    callback(display);
-                                                });
-                                            }, $scope.handleHttpError);
-                                        }
-                                    },
-                                    ajax: {
-                                        url: '/api/search/' + mongooseOptions.ref,
-                                        data: function (term, page) {
-                                            var queryList = {
-                                                q: term,
-                                                pageLimit: 10,
-                                                page: page // page number
-                                            };
-                                            var queryListExtension;
-                                            if (typeof mongooseOptions.form.searchQuery === 'object') {
-                                                queryListExtension = mongooseOptions.form.searchQuery;
-                                            }
-                                            else if (typeof mongooseOptions.form.searchQuery === 'function') {
-                                                queryListExtension = mongooseOptions.form.searchQuery($scope, mongooseOptions);
-                                            }
-                                            if (queryListExtension) {
-                                                _.extend(queryList, queryListExtension);
-                                            }
-                                            return queryList;
-                                        },
-                                        results: function (data) {
-                                            return { results: data.results, more: data.moreCount > 0 };
-                                        }
-                                    }
-                                };
-                                _.extend($scope[select2ajaxName], formInstructions.select2);
-                                formInstructions.select2.fngAjax = select2ajaxName;
-                            }
-                            else {
-                                if (formInstructions.select2 === true) {
-                                    formInstructions.select2 = {};
-                                }
-                                formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
-                                $scope['select2' + formInstructions.select2.s2query] = {
-                                    allowClear: !mongooseOptions.required,
-                                    initSelection: function (element, callback) {
-                                        var myId = element.val();
-                                        if (myId !== '' && $scope[formInstructions.ids].length > 0) {
-                                            var myVal = recordHandler.convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
-                                            var display = { id: myId, text: myVal };
-                                            callback(display);
-                                        }
-                                    },
-                                    query: function (query) {
-                                        var data = { results: [] }, searchString = query.term.toUpperCase();
-                                        for (var i = 0; i < $scope[formInstructions.options].length; i++) {
-                                            if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
-                                                data.results.push({
-                                                    id: $scope[formInstructions.ids][i],
-                                                    text: $scope[formInstructions.options][i]
-                                                });
-                                            }
-                                        }
-                                        query.callback(data);
-                                    }
-                                };
-                                _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
-                                performLookupSelect();
-                            }
+                            console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
                         }
                         else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
                             performLookupSelect();
@@ -2108,19 +1909,9 @@ var fng;
                     formInstructions.required = true;
                 }
                 if (mongooseOptions.readonly) {
-                    formInstructions.readonly = true;
+                    formInstructions['readonly'] = true;
                 }
                 return formInstructions;
-            }
-            function updateInvalidClasses(value, id, select2, ctrlState) {
-                var target = '#' + ((select2) ? 'cg_' : '') + id;
-                var element = angular.element(document.querySelector(target));
-                if (value) {
-                    element.removeClass(ctrlState.fngInvalidRequired);
-                }
-                else {
-                    element.addClass(ctrlState.fngInvalidRequired);
-                }
             }
             function getArrayFieldToExtend(fieldName, $scope) {
                 var fieldParts = fieldName.split('.');
@@ -2181,18 +1972,18 @@ var fng;
                     }
                 }
             };
-            var evaluateConditional = function (condition, data, select2List) {
+            var evaluateConditional = function (condition, data) {
                 function evaluateSide(side) {
                     var result = side;
                     if (typeof side === 'string' && side.slice(0, 1) === '$') {
                         var sideParts = side.split('.');
                         switch (sideParts.length) {
                             case 1:
-                                result = recordHandler.getListData(data, side.slice(1), select2List);
+                                result = recordHandler.getListData(data, side.slice(1));
                                 break;
                             case 2:
                                 // this is a sub schema element, and the appropriate array element has been passed
-                                result = recordHandler.getListData(data, sideParts[1], select2List);
+                                result = recordHandler.getListData(data, sideParts[1]);
                                 break;
                             default:
                                 throw new Error('Unsupported showIf format');
@@ -2230,7 +2021,7 @@ var fng;
                 if (condInst) {
                     handleVar(condInst.lhs);
                     handleVar(condInst.rhs);
-                    if (dependency === 0 && !evaluateConditional(condInst, undefined, $scope.select2List)) {
+                    if (dependency === 0 && !evaluateConditional(condInst, undefined)) {
                         display = false;
                     }
                 }
@@ -2262,7 +2053,7 @@ var fng;
                                         for (j = 0; j < $scope.formSchema.length; j += 1) {
                                             if ($scope.formSchema[j].name === name) {
                                                 element = angular.element(document.querySelector('#cg_' + $scope.formSchema[j].id));
-                                                if (evaluateConditional($scope.formSchema[j].showIf, curValue, $scope.select2List)) {
+                                                if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
                                                     element.removeClass('ng-hide');
                                                 }
                                                 else {
@@ -2301,7 +2092,7 @@ var fng;
                                                                     forceNextTime = false; // Because the sub schema has been rendered we don't need to do this again until the record changes
                                                                 }
                                                                 if (element.length > 0) {
-                                                                    if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k], $scope.select2List)) {
+                                                                    if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
                                                                         element.show();
                                                                     }
                                                                     else {
@@ -2386,7 +2177,6 @@ var fng;
                     $scope.listSchema = [];
                     $scope.recordList = [];
                     $scope.dataDependencies = {};
-                    $scope.select2List = [];
                     $scope.conversions = {};
                     $scope.pageSize = 60;
                     $scope.pagesLoaded = 0;
@@ -2401,7 +2191,7 @@ var fng;
                         return recordHandlerInstance.scrollTheList($scope);
                     };
                     $scope.getListData = function (record, fieldName) {
-                        return recordHandlerInstance.getListData(record, fieldName, $scope.select2List, $scope.listSchema);
+                        return recordHandlerInstance.getListData(record, fieldName, $scope.listSchema);
                     };
                     $scope.setPristine = function (clearErrors) {
                         if (clearErrors) {
@@ -2434,15 +2224,6 @@ var fng;
                     };
                     $scope.remove = function (fieldName, value, $event) {
                         return formGeneratorInstance.remove(fieldName, value, $event, $scope);
-                    };
-                    // Open a select2 control from the appended search button.  OK to use $ here as select2 itself is dependent on jQuery.
-                    $scope.openSelect2 = function (ev) {
-                        $('#' + $(ev.currentTarget).data('select2-open'))['select2']('open');
-                    };
-                    // Useful utility when debugging
-                    $scope.toJSON = function (obj) {
-                        return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2) +
-                            '\n\n*** The toJSON function is deprecated - use the json filter instead ***';
                     };
                     $scope.baseSchema = function () {
                         return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
@@ -2787,6 +2568,7 @@ var fng;
                         }
                     }
                     var buildingBlocks = formMarkupHelper.allInputsVars(scope, info, options, modelString, idString, nameString);
+                    buildingBlocks.modelString = modelString;
                     elementHtml += formMarkupHelper['handle' + (addButtons ? 'Array' : '') + 'InputAndControlDiv'](formMarkupHelper.inputChrome(generateInputControl(buildingBlocks), info, options, buildingBlocks), controlDivClasses, info, options);
                     elementHtml += fieldChrome.closeTag;
                     return elementHtml;
@@ -2829,8 +2611,8 @@ var fng;
          *
          */
         /*@ngInject*/
-        recordHandler.$inject = ["$location", "$window", "$filter", "$timeout", "routingService", "SubmissionsService", "SchemasService"];
-        function recordHandler($location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) {
+        recordHandler.$inject = ["$http", "$location", "$window", "$filter", "$timeout", "routingService", "SubmissionsService", "SchemasService"];
+        function recordHandler($http, $location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) {
             var suffixCleanId = function suffixCleanId(inst, suffix) {
                 return (inst.id || 'f_' + inst.name).replace(/\./g, '_') + suffix;
             };
@@ -2850,9 +2632,17 @@ var fng;
                     else {
                         workingRec = workingRec[parts[i]];
                     }
-                    if (angular.isArray(workingRec) && element && element.scope && typeof element.scope === 'function') {
-                        // If we come across an array we need to find the correct position, if we have an element
-                        workingRec = workingRec[element.scope().$index];
+                    if (angular.isArray(workingRec) && typeof element !== 'undefined') {
+                        if (element.scope && typeof element.scope === 'function') {
+                            // If we come across an array we need to find the correct position, if we have an element
+                            workingRec = workingRec[element.scope().$index];
+                        }
+                        else if (typeof element === 'number') {
+                            workingRec = workingRec[element];
+                        }
+                        else {
+                            throw new Error('Unsupported element type in walkTree ' + fieldname);
+                        }
                     }
                     if (!workingRec) {
                         break;
@@ -2915,17 +2705,13 @@ var fng;
             // TODO: Think about nested arrays
             // This doesn't handle things like :
             // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
-            var getListData = function getListData(record, fieldName, select2List, listSchema) {
-                if (select2List === void 0) { select2List = null; }
+            var getListData = function getListData(record, fieldName, listSchema) {
                 if (listSchema === void 0) { listSchema = null; }
                 var nests = fieldName.split('.');
                 for (var i = 0; i < nests.length; i++) {
                     if (record !== undefined && record !== null) {
                         record = record[nests[i]];
                     }
-                }
-                if (record && select2List.indexOf(nests[i - 1]) !== -1) {
-                    record = record.text || record;
                 }
                 if (record === undefined) {
                     record = '';
@@ -2986,9 +2772,17 @@ var fng;
                 }
                 return result;
             };
-            // Convert {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
-            // Which is what we need for use in the browser
-            var convertToAngularModel = function (schema, anObject, prefixLength, $scope, master) {
+            /* Look up a conversion set up by a plugin */
+            function getConversionObject(scope, entryName, schemaName) {
+                var conversions = scope.conversions;
+                if (schemaName) {
+                    conversions = conversions[schemaName] || {};
+                }
+                return conversions[entryName];
+            }
+            // Convert mongodb json to what we use in the browser, for example {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
+            // This will currently only work for a single level of nesting (conversionObject will not go down further without amendment, and offset needs to be an array, at least)
+            var convertToAngularModel = function (schema, anObject, prefixLength, $scope, schemaName, master, offset) {
                 master = master || anObject;
                 for (var i = 0; i < schema.length; i++) {
                     var schemaEntry = schema[i];
@@ -2997,13 +2791,13 @@ var fng;
                     if (schemaEntry.schema) {
                         if (fieldValue) {
                             for (var j = 0; j < fieldValue.length; j++) {
-                                fieldValue[j] = convertToAngularModel(schemaEntry.schema, fieldValue[j], prefixLength + 1 + fieldName.length, $scope, master);
+                                fieldValue[j] = convertToAngularModel(schemaEntry.schema, fieldValue[j], prefixLength + 1 + fieldName.length, $scope, fieldName, master, j);
                             }
                         }
                     }
                     else {
                         // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
-                        var thisField = getListData(anObject, fieldName, $scope.select2List);
+                        var thisField = getListData(anObject, fieldName);
                         if (schemaEntry.array && simpleArrayNeedsX(schemaEntry) && thisField) {
                             for (var k = 0; k < thisField.length; k++) {
                                 thisField[k] = { x: thisField[k] };
@@ -3011,66 +2805,26 @@ var fng;
                         }
                         // Convert {lookup:'012abcde'} to {lookup:'List description for 012abcde'}
                         var idList = $scope[suffixCleanId(schemaEntry, '_ids')];
+                        var thisConversion = void 0;
                         if (fieldValue && idList && idList.length > 0) {
                             if (fieldName.indexOf('.') !== -1) {
                                 throw new Error('Trying to directly assign to a nested field 332');
                             } // Not sure that this can happen, but put in a runtime test
                             anObject[fieldName] = convertForeignKeys(schemaEntry, fieldValue, $scope[suffixCleanId(schemaEntry, 'Options')], idList);
                         }
-                        else if (schemaEntry.select2 && !schemaEntry.select2.fngAjax) {
-                            if (fieldValue) {
-                                if (schemaEntry.array) {
-                                    for (var n = 0; n < fieldValue.length; n++) {
-                                        $scope[schemaEntry.select2.s2query].query({
-                                            term: fieldValue[n].x.text || fieldValue[n].text || fieldValue[n].x || fieldValue[n],
-                                            callback: function (array) {
-                                                if (array.results.length > 0) {
-                                                    if (fieldValue[n].x) {
-                                                        if (fieldName.indexOf('.') !== -1) {
-                                                            throw new Error('Trying to directly assign to a nested field 342');
-                                                        }
-                                                        anObject[fieldName][n].x = array.results[0];
-                                                    }
-                                                    else {
-                                                        if (fieldName.indexOf('.') !== -1) {
-                                                            throw new Error('Trying to directly assign to a nested field 345');
-                                                        }
-                                                        anObject[fieldName][n] = array.results[0];
-                                                    }
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                                else {
-                                    $scope[schemaEntry.select2.s2query].query({
-                                        term: fieldValue,
-                                        callback: function (array) {
-                                            if (array.results.length > 0) {
-                                                if (fieldName.indexOf('.') !== -1) {
-                                                    throw new Error('Trying to directly assign to a nested field 357');
-                                                }
-                                                anObject[fieldName] = array.results[0];
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        }
                         else if (schemaEntry.select2) {
                             // Do nothing with these - handled elsewhere (and deprecated)
+                            console.log('fng-select2 is deprecated - use fng-ui-select instead');
                             void (schemaEntry.select2);
                         }
-                        else if (fieldValue &&
-                            $scope.conversions[schemaEntry.name] &&
-                            $scope.conversions[schemaEntry.name].fngajax &&
-                            !$scope.conversions[schemaEntry.name].noconvert) {
-                            var conversionEntry = schemaEntry;
-                            $scope.conversions[conversionEntry.name].fngajax(fieldValue, conversionEntry, function (updateEntry, value) {
+                        else if (fieldValue && (thisConversion = getConversionObject($scope, fieldName, schemaName)) &&
+                            thisConversion.fngajax &&
+                            !thisConversion.noconvert) {
+                            thisConversion.fngajax(fieldValue, schemaEntry, function (updateEntry, value) {
                                 // Update the master and (preserving pristine if appropriate) the record
-                                setData(master, updateEntry.name, undefined, value);
+                                setData(master, updateEntry.name, offset, value);
                                 preservePristine(angular.element('#' + updateEntry.id), function () {
-                                    setData($scope.record, updateEntry.name, undefined, value);
+                                    setData($scope.record, updateEntry.name, offset, value);
                                 });
                             });
                         }
@@ -3155,6 +2909,7 @@ var fng;
                 return valuesArray[index];
             };
             var processServerData = function processServerData(recordFromServer, $scope, ctrlState) {
+                console.log('in processdata');
                 ctrlState.master = convertToAngularModel($scope.formSchema, recordFromServer, 0, $scope);
                 $scope.phase = 'ready';
                 $scope.cancel();
@@ -3169,8 +2924,21 @@ var fng;
                 }
                 else {
                     var force = true;
+                    if (!$scope.newRecord) {
+                        $scope.dropConversionWatcher = $scope.$watchCollection('conversions', function (newValue, oldValue) {
+                            if (newValue !== oldValue) {
+                                console.log('Converting...', JSON.stringify($scope.originalData, null, 2));
+                                processServerData($scope.originalData, $scope, ctrlState);
+                            }
+                        });
+                    }
                     $scope.$watch('record', function (newValue, oldValue) {
                         if (newValue !== oldValue) {
+                            if (Object.keys(oldValue).length > 0 && $scope.dropConversionWatcher) {
+                                console.log('STOP WATCHING - New Value = ', JSON.stringify(newValue, null, 2), 'old Value = ', JSON.stringify(oldValue, null, 2));
+                                $scope.dropConversionWatcher(); // Don't want to convert changed data
+                                $scope.dropConversionWatcher = null;
+                            }
                             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
                         }
                     }, true);
@@ -3251,6 +3019,7 @@ var fng;
                         if (typeof $scope.dataEventFunctions.onAfterRead === 'function') {
                             $scope.dataEventFunctions.onAfterRead(data);
                         }
+                        $scope.originalData = data;
                         processServerData(data, $scope, ctrlState);
                     }, $scope.handleHttpError);
                 },
@@ -3380,10 +3149,10 @@ var fng;
                 },
                 preservePristine: preservePristine,
                 // Reverse the process of convertToAngularModel
-                convertToMongoModel: function convertToMongoModel(schema, anObject, prefixLength, $scope) {
-                    function convertLookup(lookup, schemaElement) {
+                convertToMongoModel: function convertToMongoModel(schema, anObject, prefixLength, $scope, schemaName) {
+                    function convertLookup(lookup, conversionInst) {
                         var retVal;
-                        if ((schemaElement.select2 && schemaElement.select2.fngAjax) || ($scope.conversions[schemaElement.name] && $scope.conversions[schemaElement.name].fngajax)) {
+                        if (conversionInst && conversionInst.fngajax) {
                             if (lookup) {
                                 retVal = lookup.id || lookup;
                             }
@@ -3395,11 +3164,11 @@ var fng;
                     }
                     for (var i = 0; i < schema.length; i++) {
                         var fieldname = schema[i].name.slice(prefixLength);
-                        var thisField = getListData(anObject, fieldname, $scope.select2List);
+                        var thisField = getListData(anObject, fieldname);
                         if (schema[i].schema) {
                             if (thisField) {
                                 for (var j = 0; j < thisField.length; j++) {
-                                    thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length, $scope);
+                                    thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length, $scope, fieldname);
                                 }
                             }
                         }
@@ -3412,24 +3181,25 @@ var fng;
                             }
                             // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
                             var idList = $scope[suffixCleanId(schema[i], '_ids')];
+                            var thisConversion = void 0;
                             if (idList && idList.length > 0) {
                                 updateObject(fieldname, anObject, function (value) {
                                     return convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i], 'Options')], idList);
                                 });
                             }
-                            else if ($scope.conversions[schema[i].name]) {
+                            else if (thisConversion = getConversionObject($scope, fieldname, schemaName)) {
                                 var lookup = getData(anObject, fieldname, null);
                                 var newVal;
                                 if (schema[i].array) {
                                     newVal = [];
                                     if (lookup) {
                                         for (var n = 0; n < lookup.length; n++) {
-                                            newVal[n] = convertLookup(lookup[n], schema[i]);
+                                            newVal[n] = convertLookup(lookup[n], thisConversion);
                                         }
                                     }
                                 }
                                 else {
-                                    newVal = convertLookup(lookup, schema[i]);
+                                    newVal = convertLookup(lookup, thisConversion);
                                 }
                                 setData(anObject, fieldname, null, newVal);
                             }
@@ -3780,8 +3550,8 @@ var fng;
 // expose the library
 var formsAngular = fng.formsAngular;
 
-angular.module('formsAngular').run(['$templateCache', function($templateCache) {$templateCache.put('base-analysis.html','<div ng-controller="AnalysisCtrl">\n  <div class="container-fluid page-header report-header">\n    <div ng-class="css(\'rowFluid\')">\n      <div class="header-lhs col-xs-7 span7">\n        <h1>{{ reportSchema.title }}</h1>\n      </div>\n      <div class="header-rhs col-xs-5 span5">\n        <form-input schema="paramSchema" name="paramForm" ng-show="paramSchema" formstyle="horizontalCompact"></form-input>\n      </div>\n    </div>\n  </div>\n  <div class="container-fluid page-body report-body">\n    <error-display></error-display>\n    <div class="row-fluid">\n      <div class="gridStyle" ng-grid="gridOptions"></div>\n    </div>\n  </div>\n</div>\n');
-$templateCache.put('base-edit.html','<div ng-controller="BaseCtrl">\n    <div ng-class="css(\'rowFluid\')" class="page-header edit-header">\n        <div class="header-lhs col-sm-8 span8">\n            <h4>{{modelNameDisplay}} :\n                <span ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span>\n            </h4>\n        </div>\n        <div class="header-rhs col-sm-2 span2">\n            <div form-buttons></div>\n        </div>\n    </div>\n    <div class="container-fluid page-body edit-body">\n        <error-display></error-display>\n        <form-input name="baseForm" schema="baseSchema()" formstyle="compact"></form-input>\n    </div>\n</div>\n');
+angular.module('formsAngular').run(['$templateCache', function($templateCache) {$templateCache.put('base-analysis.html','<div ng-controller="AnalysisCtrl">\n  <div class="container-fluid page-header report-header">\n    <div ng-class="css(\'rowFluid\')">\n      <div class="header-lhs col-xs-7 span7">\n        <h1>{{ reportSchema.title }}</h1>\n      </div>\n      <div class="header-rhs col-xs-5 span5">\n        <form-input schema="paramSchema" name="paramForm" ng-show="paramSchema" formstyle="horizontalCompact"></form-input>\n      </div>\n    </div>\n  </div>\n  <div class="container-fluid page-body report-body">\n    <error-display></error-display>\n    <div class="row-fluid">\n      <div class="gridStyle" ui-grid="gridOptions" ui-grid-selection></div>\n    </div>\n  </div>\n</div>\n');
+$templateCache.put('base-edit.html','<div ng-controller="BaseCtrl">\n    <div ng-class="css(\'rowFluid\')" class="page-header edit-header">\n        <div class="header-lhs col-sm-8 span8">\n            <h4>{{modelNameDisplay}} :\n                <span ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span>\n            </h4>\n        </div>\n        <div class="header-rhs col-sm-2 span2">\n            <div form-buttons></div>\n        </div>\n    </div>\n    <div class="container-fluid page-body edit-body">\n        <error-display></error-display>\n        <form-input name="baseForm" schema="baseSchema()" formstyle="compact"></form-input>\n    </div>\n  {{ record | json }}\n</div>\n');
 $templateCache.put('base-list.html','<div ng-controller="BaseCtrl">\n    <div ng-class="css(\'rowFluid\')" class="page-header list-header">\n        <div class="header-lhs col-sm-8 span8">\n            <h1>{{modelNameDisplay}}</h1>\n        </div>\n        <div class="header-rhs col-sm-2 span2">\n            <a ng-href="{{generateNewUrl()}}"><button id="newBtn" class="btn btn-default"><i class="icon-plus"></i> New</button></a>\n        </div>\n    </div>\n    <div class="page-body list-body">\n        <error-display></error-display>\n        <div ng-class="css(\'rowFluid\')" infinite-scroll="scrollTheList()">\n            <a ng-repeat="record in recordList" ng-href="{{generateEditUrl(record)}}">\n                <div class="list-item">\n                    <div ng-class="css(\'span\',12/listSchema.length)" ng-repeat="field in listSchema">{{getListData(record, field.name)}} </div>\n                </div>\n            </a>\n        </div>\n    </div>\n</div>\n');
 $templateCache.put('error-messages.html','<div ng-message="required">A value is required for this field</div>\n<div ng-message="minlength">Too few characters entered</div>\n<div ng-message="maxlength">Too many characters entered</div>\n<div ng-message="min">That value is too small</div>\n<div ng-message="max">That value is too large</div>\n<div ng-message="email">You need to enter a valid email address</div>\n<div ng-message="pattern">This field does not match the expected pattern</div>\n');
 $templateCache.put('form-button-bs2.html','<div class="form-btn-grp">\n  <div class="btn-group pull-right">\n    <button id="saveButton" class="btn btn-mini btn-primary form-btn" ng-click="save()" ng-disabled="isSaveDisabled()"><i class="icon-ok"></i> Save</button>\n    <button id="cancelButton" class="btn btn-mini btn-warning form-btn" ng-click="cancel()" ng-disabled="isCancelDisabled()"><i class="icon-remove"></i> Cancel</button>\n  </div>\n  <div class="btn-group pull-right">\n    <button id="newButton" class="btn btn-mini btn-success form-btn" ng-click="newClick()" ng-disabled="isNewDisabled()"><i class="icon-plus"></i> New</button>\n    <button id="deleteButton" class="btn btn-mini btn-danger form-btn" ng-click="deleteClick()" ng-disabled="isDeleteDisabled()"><i class="icon-minus"></i> Delete</button>\n  </div>\n</div>\n');

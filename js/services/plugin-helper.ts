@@ -78,7 +78,8 @@ module fng.services {
             }
           }
         }
-        var buildingBlocks = formMarkupHelper.allInputsVars(scope, info, options, modelString, idString, nameString);
+        var buildingBlocks: any = formMarkupHelper.allInputsVars(scope, info, options, modelString, idString, nameString);
+        buildingBlocks.modelString = modelString;
 
         elementHtml += formMarkupHelper['handle' + (addButtons ? 'Array' : '') + 'InputAndControlDiv'](
           formMarkupHelper.inputChrome(

@@ -325,6 +325,7 @@ describe('BaseCtrl', function () {
         '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}, '$conditionalHandlers': {}}
       });
       scope = $rootScope.$new();
+      scope['unitTesting'] = true;
       $location.$$path = '/collection/new';
       ctrl = $controller('BaseCtrl', {$scope: scope});
       $httpBackend.flush();
@@ -341,7 +342,7 @@ describe('BaseCtrl', function () {
   describe('converts models', function () {
     var scope, ctrl;
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location) {
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location, $timeout) {
       $httpBackend = _$httpBackend_;
       $httpBackend.whenGET('/api/schema/collection').respond(
         {
@@ -403,6 +404,8 @@ describe('BaseCtrl', function () {
       scope = $rootScope.$new();
       ctrl = $controller('BaseCtrl', {$scope: scope});
       $httpBackend.flush();
+      $timeout.flush();
+      $timeout.verifyNoPendingTasks();
     }));
 
     describe('mongo to front end', function () {

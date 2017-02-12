@@ -339,7 +339,6 @@ describe('formInput', function () {
         {name: 'name', id: '1', label: 'Name', type: 'text', readonly: true},
         {name: 'description', id: '2', label: 'Desc', type: 'textarea', rows: 10, readonly: true},
         {name: 'eyeColour', 'id': 'f_eyeColour', 'label': 'Eye Colour', 'type': 'select', 'options': 'fEyeColourOptions', readonly: true},
-        {name: 'eyeColour2', 'id': 'f_eyeColour2', 'label': 'Eye Colour2', 'type': 'select', 'options': 'fEyeColourOptions', readonly: true, 'select2': { 's2query': 'select2eyeColour' }},
         {name: 'accepted', 'helpInline': 'Did we take them?','type': 'checkbox', readonly: true, 'id': 'f_accepted', 'label': 'Accepted'},
         {name: 'sex', type: 'radio', 'inlineRadio': true, 'options': 'fSexOptions', 'id': 'f_sex', 'label': 'Sex', readonly: true}
       ];
@@ -357,11 +356,6 @@ describe('formInput', function () {
     it('select', function () {
       var input = angular.element(elm.find('select')[0]);
       expect(input.attr('disabled')).toBe('disabled');
-    });
-
-    it('select2', function () {
-      var input = angular.element(elm.find('input')[1]);
-      expect(input.attr('readonly')).toBe('readonly');
     });
 
     it('checkbox', function () {
@@ -388,7 +382,6 @@ describe('formInput', function () {
         {name: 'name', id: '1', label: 'Name', type: 'text', required: true},
         {name: 'description', id: '2', label: 'Desc', type: 'textarea', rows: 10, required: true},
         {'name': 'eyeColour', 'id': 'f_eyeColour', 'label': 'Eye Colour', 'type': 'select', 'options': 'fEyeColourOptions', required: true},
-        {'name': 'eyeColour2', 'id': 'f_eyeColour2', 'label': 'Eye Colour2', 'type': 'select', 'options': 'fEyeColourOptions', required: true, 'select2': { 's2query': 'select2eyeColour' }},
         {name: 'accepted', 'helpInline': 'Did we take them?','type': 'checkbox', required: true, 'id': 'f_accepted', 'label': 'Accepted'},
         {name: 'sex', type: 'radio', 'inlineRadio': true, 'options': 'fSexOptions', 'id': 'f_sex', 'label': 'Sex', required: true}
       ];
@@ -405,11 +398,6 @@ describe('formInput', function () {
 
     it('select', function () {
       var input = angular.element(elm.find('select')[0]);
-      expect(input.attr('required')).toBe('required');
-    });
-
-    it('select2', function () {
-      var input = angular.element(elm.find('input')[1]);
       expect(input.attr('required')).toBe('required');
     });
 

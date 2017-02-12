@@ -21,7 +21,7 @@ declare module fng {
         updateDocument(dataToSave: any, options: any, scope: fng.IFormScope, ctrlState: any): void;
         readRecord($scope: fng.IFormScope, ctrlState: any): any;
         scrollTheList($scope: fng.IFormScope): any;
-        getListData(record: any, fieldName: any, select2List: any, listSchema: any): any;
+        getListData(record: any, fieldName: any, listSchema: any): any;
         suffixCleanId(inst: any, suffix: any): any;
         setData(object: any, fieldname: any, element: any, value: any): any;
         setUpSelectOptions(lookupCollection: any, schemaElement: any, $scope: fng.IFormScope, ctrlState: any, handleSchema: any): any;
@@ -68,6 +68,7 @@ declare module fng {
         activeTabNo?: number;
         topLevelFormName: string;
         record: any;
+        originalData: any;
         phase: any;
         disableFunctions: any;
         dataEventFunctions: any;
@@ -77,7 +78,6 @@ declare module fng {
         conversions: any;
         pageSize: any;
         pagesLoaded: any;
-        select2List: any;
         formSchema: Array<IFieldViewInfo>;
         baseSchema(): Array<any>;
         setFormDirty: any;
@@ -95,6 +95,7 @@ declare module fng {
         getListData: any;
         dismissError: any;
         handleHttpError(response: any): void;
+        dropConversionWatcher: () => void;
     }
     interface IBaseFormOptions {
         /**
@@ -288,7 +289,7 @@ declare module fng.services {
      * All methods should be state-less
      *
      */
-    function recordHandler($location: any, $window: any, $filter: any, $timeout: any, routingService: any, SubmissionsService: any, SchemasService: any): fng.IRecordHandler;
+    function recordHandler($http: any, $location: any, $window: any, $filter: any, $timeout: any, routingService: any, SubmissionsService: any, SchemasService: any): fng.IRecordHandler;
 }
 declare module fng.services {
     function SchemasService($http: any): {

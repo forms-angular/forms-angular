@@ -122,10 +122,9 @@ module fng.services {
         formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
         if (!formInstructions.hidden) {
           recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
-        };
+        }
       }
 
-      var select2ajaxName;
       if (mongooseType.caster) {
         formInstructions.array = true;
         mongooseType = mongooseType.caster;
@@ -138,93 +137,7 @@ module fng.services {
         if (mongooseOptions.enum) {
           formInstructions.type = formInstructions.type || 'select';
           if (formInstructions.select2) {
-            $scope.conversions[formInstructions.name] = formInstructions.select2;
-
-            // Hacky way to get required styling working on select2 controls
-            if (mongooseOptions.required) {
-
-              $scope.$watch('record.' + formInstructions.name, function (newValue) {
-                updateInvalidClasses(newValue, formInstructions.id, formInstructions.select2, ctrlState);
-              }, true);
-              // FIXME: use $timeout?
-              setTimeout(function () {
-                updateInvalidClasses($scope.record[formInstructions.name], formInstructions.id, formInstructions.select2, ctrlState);
-              }, 0);
-            }
-            if (formInstructions.select2 === true) {
-              formInstructions.select2 = {};
-            }
-            formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
-            $scope[formInstructions.select2.s2query] = {
-              allowClear: !mongooseOptions.required,
-
-              initSelection: function (element, callback) {
-                function executeCallback() {
-
-                  function drillIntoObject(parts, dataVal, fn) {
-                    if (dataVal) {
-                      if (parts.length === 0) {
-                        fn(dataVal);
-                      } else {
-                        if (angular.isArray(dataVal)) {
-                          // extract the array offset of the subkey from the element id
-                          var workString = element.context.getAttribute('ng-model');
-                          var pos = workString.indexOf('.' + parts[0]);
-                          workString = workString.slice(0, pos);
-                          pos = workString.lastIndexOf('.');
-                          workString = workString.slice(pos + 1);
-                          workString = /.+\[(.+)\]/.exec(workString);
-                          dataVal = dataVal[$scope[workString[1]]];
-                        }
-                        dataVal = dataVal[parts.shift()];
-                        drillIntoObject(parts, dataVal, fn);
-                      }
-                    }
-                  }
-
-                  var dataVal = $scope.record;
-                  if (dataVal) {
-                    var parts = formInstructions.name.split('.');
-                    drillIntoObject(parts, dataVal, function (leafVal) {
-                      setTimeout(updateInvalidClasses(leafVal, formInstructions.id, formInstructions.select2, ctrlState));
-                      if (leafVal) {
-                        if (formInstructions.array) {
-                          var offset = parseInt(element.context.id.match('_[0-9].*$')[0].slice(1));
-                          if (leafVal[offset].x) {
-                            recordHandler.preservePristine(element, function () {
-                              callback(leafVal[offset].x);
-                            });
-                          }
-                        } else {
-                          recordHandler.preservePristine(element, function () {
-                            callback(leafVal);
-                          });
-                        }
-                      }
-                    });
-                  } else {
-                    $timeout(executeCallback);
-                  }
-                }
-
-                $timeout(executeCallback);
-              },
-              query: function (query) {
-                var data = {results: []},
-                  searchString = query.term.toUpperCase();
-                for (var i = 0; i < mongooseOptions.enum.length; i++) {
-                  if (mongooseOptions.enum[i].toUpperCase().indexOf(searchString) !== -1) {
-                    data.results.push({id: i, text: mongooseOptions.enum[i]});
-                  }
-                }
-                query.callback(data);
-              }
-            };
-            _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
-            if (formInstructions.select2 === true) {
-              formInstructions.select2 = {};
-            }  // In case they have used select2: true syntax
-            $scope.select2List.push(formInstructions.name);
+            console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
           } else {
             formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
             $scope[formInstructions.options] = mongooseOptions.enum;
@@ -246,104 +159,8 @@ module fng.services {
           delete formInstructions.link;
         } else {
           formInstructions.type = 'select';
-// Support both of the syntaxes below
-//            team : [ { type: Schema.Types.ObjectId , ref: 'f_nested_schema', form: {select2: {fngAjax: true}}} ],
-//            team2:   { type:[Schema.Types.ObjectId], ref: 'f_nested_schema', form: {select2: {fngAjax: true}}},
             if (formInstructions.select2 || (mongooseOptions.form && mongooseOptions.form.select2)) {
-              if (!formInstructions.select2) {
-                formInstructions.select2 = mongooseOptions.form.select2;
-              }
-              if (formInstructions.select2 === true) {
-                formInstructions.select2 = {};
-              }
-              $scope.select2List.push(formInstructions.name);
-              $scope.conversions[formInstructions.name] = formInstructions.select2;
-              if (formInstructions.select2.fngAjax) {
-                // create the instructions for select2
-                select2ajaxName = 'ajax' + formInstructions.name.replace(/\./g, '');
-                // If not required then generate a place holder if none specified (see https://github.com/forms-angular/forms-angular/issues/53)
-                if (!mongooseOptions.required && !formInstructions.placeHolder) {
-                  formInstructions.placeHolder = 'Select...';
-                }
-                $scope[select2ajaxName] = {
-                  allowClear: !mongooseOptions.required,
-                  minimumInputLength: 2,
-                  initSelection: function (element, callback) {
-                    var theId = element.val();
-                    if (theId && theId !== '') {
-                      SubmissionsService.getListAttributes(mongooseOptions.ref, theId)
-                        .then(function (response) {
-                          let data: any = response.data;
-                          if (data.success === false) {
-                            $location.path('/404');
-                          }
-                          var display = {id: theId, text: data.list};
-                          recordHandler.preservePristine(element, function () {
-                            callback(display);
-                          });
-                        }, $scope.handleHttpError);
-                      //                                } else {
-                      //                                    throw new Error('select2 initSelection called without a value');
-                    }
-                  },
-                  ajax: {
-                    url: '/api/search/' + mongooseOptions.ref,
-                    data: function (term, page) { // page is the one-based page number tracked by Select2
-                      var queryList = {
-                        q: term, //search term
-                        pageLimit: 10, // page size
-                        page: page // page number
-                      };
-                      var queryListExtension;
-                      if (typeof mongooseOptions.form.searchQuery === 'object') {
-                        queryListExtension = mongooseOptions.form.searchQuery;
-                      } else if (typeof mongooseOptions.form.searchQuery === 'function') {
-                        queryListExtension = mongooseOptions.form.searchQuery($scope, mongooseOptions);
-                      }
-                      if (queryListExtension) {
-                        _.extend(queryList, queryListExtension);
-                      }
-                      return queryList;
-                    },
-                    results: function (data) {
-                      return {results: data.results, more: data.moreCount > 0};
-                    }
-                  }
-                };
-                _.extend($scope[select2ajaxName], formInstructions.select2);
-                formInstructions.select2.fngAjax = select2ajaxName;
-              } else {
-                if (formInstructions.select2 === true) {
-                  formInstructions.select2 = {};
-                }
-                formInstructions.select2.s2query = 'select2' + formInstructions.name.replace(/\./g, '_');
-                $scope['select2' + formInstructions.select2.s2query] = {
-                  allowClear: !mongooseOptions.required,
-                  initSelection: function (element, callback) {
-                    var myId = element.val();
-                    if (myId !== '' && $scope[formInstructions.ids].length > 0) {
-                      var myVal = recordHandler.convertIdToListValue(myId, $scope[formInstructions.ids], $scope[formInstructions.options], formInstructions.name);
-                      var display = {id: myId, text: myVal};
-                      callback(display);
-                    }
-                  },
-                  query: function (query) {
-                    var data = {results: []},
-                      searchString = query.term.toUpperCase();
-                    for (var i = 0; i < $scope[formInstructions.options].length; i++) {
-                      if ($scope[formInstructions.options][i].toUpperCase().indexOf(searchString) !== -1) {
-                        data.results.push({
-                          id: $scope[formInstructions.ids][i],
-                          text: $scope[formInstructions.options][i]
-                        });
-                      }
-                    }
-                    query.callback(data);
-                  }
-                };
-                _.extend($scope[formInstructions.select2.s2query], formInstructions.select2);
-                performLookupSelect();
-              }
+              console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
             } else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
               performLookupSelect();
             }
@@ -377,19 +194,9 @@ module fng.services {
         formInstructions.required = true;
       }
       if (mongooseOptions.readonly) {
-        formInstructions.readonly = true;
+        formInstructions['readonly'] = true;
       }
       return formInstructions;
-    }
-
-    function updateInvalidClasses(value, id, select2, ctrlState) {
-      var target = '#' + ((select2) ? 'cg_' : '') + id;
-      var element = angular.element(document.querySelector(target));
-      if (value) {
-        element.removeClass(ctrlState.fngInvalidRequired);
-      } else {
-        element.addClass(ctrlState.fngInvalidRequired);
-      }
     }
 
     function getArrayFieldToExtend(fieldName, $scope) {
@@ -454,7 +261,7 @@ module fng.services {
       }
     };
 
-    var evaluateConditional = function (condition, data, select2List) {
+    var evaluateConditional = function (condition, data) {
 
       function evaluateSide(side) {
         var result = side;
@@ -462,11 +269,11 @@ module fng.services {
           var sideParts = side.split('.');
           switch (sideParts.length) {
             case 1:
-              result = recordHandler.getListData(data, side.slice(1), select2List);
+              result = recordHandler.getListData(data, side.slice(1));
               break;
             case 2 :
               // this is a sub schema element, and the appropriate array element has been passed
-              result = recordHandler.getListData(data, sideParts[1], select2List);
+              result = recordHandler.getListData(data, sideParts[1]);
               break;
             default:
               throw new Error('Unsupported showIf format');
@@ -513,7 +320,7 @@ module fng.services {
       if (condInst) {
         handleVar(condInst.lhs);
         handleVar(condInst.rhs);
-        if (dependency === 0 && !evaluateConditional(condInst, undefined, $scope.select2List)) {
+        if (dependency === 0 && !evaluateConditional(condInst, undefined)) {
           display = false;
         }
       }
@@ -548,7 +355,7 @@ module fng.services {
                   for (j = 0; j < $scope.formSchema.length; j += 1) {
                     if ($scope.formSchema[j].name === name) {
                       element = angular.element(document.querySelector('#cg_' + $scope.formSchema[j].id));
-                      if (evaluateConditional($scope.formSchema[j].showIf, curValue, $scope.select2List)) {
+                      if (evaluateConditional($scope.formSchema[j].showIf, curValue)) {
                         element.removeClass('ng-hide');
                       } else {
                         element.addClass('ng-hide');
@@ -584,7 +391,7 @@ module fng.services {
                                 forceNextTime = false;  // Because the sub schema has been rendered we don't need to do this again until the record changes
                               }
                               if (element.length > 0) {
-                                if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k], $scope.select2List)) {
+                                if (evaluateConditional($scope.formSchema[j].schema[l].showIf, curValue[parts[0]][k])) {
                                   element.show();
                                 } else {
                                   element.hide();
@@ -670,7 +477,6 @@ module fng.services {
         $scope.listSchema = [];
         $scope.recordList = [];
         $scope.dataDependencies = {};
-        $scope.select2List = [];
         $scope.conversions = {};
         $scope.pageSize = 60;
         $scope.pagesLoaded = 0;
@@ -690,7 +496,7 @@ module fng.services {
         };
 
         $scope.getListData = function (record, fieldName) {
-          return recordHandlerInstance.getListData( record, fieldName, $scope.select2List, $scope.listSchema);
+          return recordHandlerInstance.getListData( record, fieldName, $scope.listSchema);
         };
 
         $scope.setPristine = function (clearErrors) {
@@ -729,17 +535,6 @@ module fng.services {
 
         $scope.remove = function (fieldName, value, $event) {
           return formGeneratorInstance.remove(fieldName, value, $event, $scope);
-        };
-
-        // Open a select2 control from the appended search button.  OK to use $ here as select2 itself is dependent on jQuery.
-        $scope.openSelect2 = function (ev) {
-          $('#' + $(ev.currentTarget).data('select2-open'))['select2']('open');
-        };
-
-        // Useful utility when debugging
-        $scope.toJSON = function (obj) {
-          return 'The toJSON function is deprecated - use the json filter instead\n\n' + JSON.stringify(obj, null, 2) +
-            '\n\n*** The toJSON function is deprecated - use the json filter instead ***';
         };
 
         $scope.baseSchema = function () {
