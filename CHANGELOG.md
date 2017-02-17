@@ -1,5 +1,11 @@
 # forms-angular
 
+## 0.8.x to 0.9.0
+* Remove support for (long deprecated) [fng-select2](https://github.com/forms-angular/fng-select2) in favour of (improved)
+ [fng-ui-select](https://github.com/forms-angular/fng-ui-select).
+* Use [Angular UI Grid](http://ui-grid.info/) instead of older [ng-grid](https://github.com/angular-ui/ui-grid/tree/2.x) 
+in [fng-reports](https://github.com/forms-angular/fng-reports).
+
 ## 0.7.0 to 0.8.1
 * Move to Angular 1.6.x
 * Allow adding _id to list fields
