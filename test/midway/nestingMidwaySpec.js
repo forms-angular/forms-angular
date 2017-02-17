@@ -346,7 +346,7 @@ describe('nesting', function () {
             'required': false,
             'form': {
               'placeHolder': 'Select eye colour',
-              'select2': {},
+              'directive': 'fng-ui-select',
               'help': 'This control has had an event handler added to it (which looks horrid - sorry!).  See bottom of <a href=\'/#/index#postprocessing\'>home page</a> for details.'
             }
           },
