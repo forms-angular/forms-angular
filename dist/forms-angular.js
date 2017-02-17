@@ -955,7 +955,6 @@ var fng;
                                 }
                                 var callHandleField = true;
                                 if (info.directive) {
-                                    console.log('We have a directive');
                                     var directiveName = info.directive;
                                     var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
                                     var thisElement = element[0];
@@ -2909,7 +2908,6 @@ var fng;
                 return valuesArray[index];
             };
             var processServerData = function processServerData(recordFromServer, $scope, ctrlState) {
-                console.log('in processdata');
                 ctrlState.master = convertToAngularModel($scope.formSchema, recordFromServer, 0, $scope);
                 $scope.phase = 'ready';
                 $scope.cancel();
@@ -2927,7 +2925,6 @@ var fng;
                     if (!$scope.newRecord) {
                         $scope.dropConversionWatcher = $scope.$watchCollection('conversions', function (newValue, oldValue) {
                             if (newValue !== oldValue) {
-                                console.log('Converting...', JSON.stringify($scope.originalData, null, 2));
                                 processServerData($scope.originalData, $scope, ctrlState);
                             }
                         });
@@ -2935,7 +2932,6 @@ var fng;
                     $scope.$watch('record', function (newValue, oldValue) {
                         if (newValue !== oldValue) {
                             if (Object.keys(oldValue).length > 0 && $scope.dropConversionWatcher) {
-                                console.log('STOP WATCHING - New Value = ', JSON.stringify(newValue, null, 2), 'old Value = ', JSON.stringify(oldValue, null, 2));
                                 $scope.dropConversionWatcher(); // Don't want to convert changed data
                                 $scope.dropConversionWatcher = null;
                             }
@@ -3117,7 +3113,6 @@ var fng;
                         handleSchema('Lookup ' + lookupCollection, data, null, listInstructions, '', false, $scope, ctrlState);
                         var dataRequest;
                         if (typeof schemaElement.filter !== 'undefined' && schemaElement.filter) {
-                            console.log('filtering');
                             dataRequest = SubmissionsService.getPagedAndFilteredList(lookupCollection, schemaElement.filter);
                         }
                         else {
@@ -3551,7 +3546,7 @@ var fng;
 var formsAngular = fng.formsAngular;
 
 angular.module('formsAngular').run(['$templateCache', function($templateCache) {$templateCache.put('base-analysis.html','<div ng-controller="AnalysisCtrl">\n  <div class="container-fluid page-header report-header">\n    <div ng-class="css(\'rowFluid\')">\n      <div class="header-lhs col-xs-7 span7">\n        <h1>{{ reportSchema.title }}</h1>\n      </div>\n      <div class="header-rhs col-xs-5 span5">\n        <form-input schema="paramSchema" name="paramForm" ng-show="paramSchema" formstyle="horizontalCompact"></form-input>\n      </div>\n    </div>\n  </div>\n  <div class="container-fluid page-body report-body">\n    <error-display></error-display>\n    <div class="row-fluid">\n      <div class="gridStyle" ui-grid="gridOptions" ui-grid-selection></div>\n    </div>\n  </div>\n</div>\n');
-$templateCache.put('base-edit.html','<div ng-controller="BaseCtrl">\n    <div ng-class="css(\'rowFluid\')" class="page-header edit-header">\n        <div class="header-lhs col-sm-8 span8">\n            <h4>{{modelNameDisplay}} :\n                <span ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span>\n            </h4>\n        </div>\n        <div class="header-rhs col-sm-2 span2">\n            <div form-buttons></div>\n        </div>\n    </div>\n    <div class="container-fluid page-body edit-body">\n        <error-display></error-display>\n        <form-input name="baseForm" schema="baseSchema()" formstyle="compact"></form-input>\n    </div>\n  {{ record | json }}\n</div>\n');
+$templateCache.put('base-edit.html','<div ng-controller="BaseCtrl">\n    <div ng-class="css(\'rowFluid\')" class="page-header edit-header">\n        <div class="header-lhs col-sm-8 span8">\n            <h4>{{modelNameDisplay}} :\n                <span ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span>\n            </h4>\n        </div>\n        <div class="header-rhs col-sm-2 span2">\n            <div form-buttons></div>\n        </div>\n    </div>\n    <div class="container-fluid page-body edit-body">\n        <error-display></error-display>\n        <form-input name="baseForm" schema="baseSchema()" formstyle="compact"></form-input>\n    </div>\n</div>\n');
 $templateCache.put('base-list.html','<div ng-controller="BaseCtrl">\n    <div ng-class="css(\'rowFluid\')" class="page-header list-header">\n        <div class="header-lhs col-sm-8 span8">\n            <h1>{{modelNameDisplay}}</h1>\n        </div>\n        <div class="header-rhs col-sm-2 span2">\n            <a ng-href="{{generateNewUrl()}}"><button id="newBtn" class="btn btn-default"><i class="icon-plus"></i> New</button></a>\n        </div>\n    </div>\n    <div class="page-body list-body">\n        <error-display></error-display>\n        <div ng-class="css(\'rowFluid\')" infinite-scroll="scrollTheList()">\n            <a ng-repeat="record in recordList" ng-href="{{generateEditUrl(record)}}">\n                <div class="list-item">\n                    <div ng-class="css(\'span\',12/listSchema.length)" ng-repeat="field in listSchema">{{getListData(record, field.name)}} </div>\n                </div>\n            </a>\n        </div>\n    </div>\n</div>\n');
 $templateCache.put('error-messages.html','<div ng-message="required">A value is required for this field</div>\n<div ng-message="minlength">Too few characters entered</div>\n<div ng-message="maxlength">Too many characters entered</div>\n<div ng-message="min">That value is too small</div>\n<div ng-message="max">That value is too large</div>\n<div ng-message="email">You need to enter a valid email address</div>\n<div ng-message="pattern">This field does not match the expected pattern</div>\n');
 $templateCache.put('form-button-bs2.html','<div class="form-btn-grp">\n  <div class="btn-group pull-right">\n    <button id="saveButton" class="btn btn-mini btn-primary form-btn" ng-click="save()" ng-disabled="isSaveDisabled()"><i class="icon-ok"></i> Save</button>\n    <button id="cancelButton" class="btn btn-mini btn-warning form-btn" ng-click="cancel()" ng-disabled="isCancelDisabled()"><i class="icon-remove"></i> Cancel</button>\n  </div>\n  <div class="btn-group pull-right">\n    <button id="newButton" class="btn btn-mini btn-success form-btn" ng-click="newClick()" ng-disabled="isNewDisabled()"><i class="icon-plus"></i> New</button>\n    <button id="deleteButton" class="btn btn-mini btn-danger form-btn" ng-click="deleteClick()" ng-disabled="isDeleteDisabled()"><i class="icon-minus"></i> Delete</button>\n  </div>\n</div>\n');

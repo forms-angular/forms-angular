@@ -3,7 +3,7 @@
   "author": "Mark Chapman <support@forms-angular.org>",
   "description": "A form builder that sits on top of Angular.js, Twitter Bootstrap, jQuery UI, Angular-UI, Express and Mongoose.  Opinionated or what?",
   "homepage": "http://forms-angular.org",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "engines": {
     "node": ">=4.x",
     "npm": ">=3.x"
@@ -62,6 +62,7 @@
     "matchdep": "1.0.1",
     "mocha": "3.2.0",
     "mongoose": "4.8.1",
+    "kerberos": "0.0.22",
     "phantomjs-prebuilt": "2.1.14",
     "run-sequence": "1.2.2",
     "uglify-js": "2.7.5"

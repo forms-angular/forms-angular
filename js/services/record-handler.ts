@@ -326,7 +326,6 @@ module fng.services {
     };
 
     var processServerData = function processServerData(recordFromServer, $scope, ctrlState) {
-      console.log('in processdata');
         ctrlState.master = convertToAngularModel($scope.formSchema, recordFromServer, 0, $scope);
         $scope.phase = 'ready';
         $scope.cancel();
@@ -345,7 +344,6 @@ module fng.services {
         if (!$scope.newRecord) {
           $scope.dropConversionWatcher = $scope.$watchCollection('conversions', function (newValue, oldValue) {
             if (newValue !== oldValue) {
-              console.log('Converting...',JSON.stringify($scope.originalData,null,2));
               processServerData($scope.originalData, $scope, ctrlState);
             }
           });
@@ -353,7 +351,6 @@ module fng.services {
         $scope.$watch('record', function (newValue, oldValue) {
           if (newValue !== oldValue) {
             if (Object.keys(oldValue).length > 0 && $scope.dropConversionWatcher) {
-              console.log('STOP WATCHING - New Value = ', JSON.stringify(newValue,null,2), 'old Value = ', JSON.stringify(oldValue,null,2));
               $scope.dropConversionWatcher();  // Don't want to convert changed data
               $scope.dropConversionWatcher = null;
             }
@@ -537,7 +534,6 @@ module fng.services {
 
             var dataRequest;
             if (typeof schemaElement.filter !== 'undefined' && schemaElement.filter) {
-              console.log('filtering');
               dataRequest = SubmissionsService.getPagedAndFilteredList(lookupCollection, schemaElement.filter);
             } else {
               dataRequest = SubmissionsService.getAll(lookupCollection);

@@ -445,7 +445,6 @@ module fng.directives {
 
               var callHandleField = true;
               if (info.directive) {
-console.log('We have a directive');
                 var directiveName = info.directive;
                 var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
                 var thisElement = element[0];
