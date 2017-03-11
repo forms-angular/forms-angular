@@ -27,8 +27,10 @@ module fng.services {
       var parts = fieldname.split('.'),
         higherLevels = parts.length - 1,
         workingRec = object;
-
       for (var i = 0; i < higherLevels; i++) {
+        if (!workingRec) {
+          debugger;
+        }
         if (angular.isArray(workingRec)) {
           workingRec = _.map(workingRec, function (obj) {
             return obj[parts[i]];
@@ -343,7 +345,7 @@ module fng.services {
         var force = true;
         if (!$scope.newRecord) {
           $scope.dropConversionWatcher = $scope.$watchCollection('conversions', function (newValue, oldValue) {
-            if (newValue !== oldValue) {
+            if (newValue !== oldValue && $scope.originalData) {
               processServerData($scope.originalData, $scope, ctrlState);
             }
           });

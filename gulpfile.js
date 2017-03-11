@@ -26,6 +26,14 @@ gulp.task('all', function(callback) {
     callback);
 });
 
+gulp.task('allServer', function(callback) {
+  runSequence(
+    'clean',
+    'compileServerSide',
+    'apiTest',
+    callback);
+});
+
 gulp.task('build', function(callback) {
   runSequence(
     'compile',

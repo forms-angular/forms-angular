@@ -1724,6 +1724,13 @@ var fng;
 (function (fng) {
     var services;
     (function (services) {
+        /**
+         *
+         * Manipulate record items for generating a form
+         *
+         * All methods should be state-less
+         *
+         */
         function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) {
             function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
                 function handletabInfo(tabName, thisInst) {
@@ -2623,6 +2630,9 @@ var fng;
                 // gives us the element of an array (one level down only for now).  Leaving element blank returns the whole array
                 var parts = fieldname.split('.'), higherLevels = parts.length - 1, workingRec = object;
                 for (var i = 0; i < higherLevels; i++) {
+                    if (!workingRec) {
+                        debugger;
+                    }
                     if (angular.isArray(workingRec)) {
                         workingRec = _.map(workingRec, function (obj) {
                             return obj[parts[i]];
@@ -2924,7 +2934,7 @@ var fng;
                     var force = true;
                     if (!$scope.newRecord) {
                         $scope.dropConversionWatcher = $scope.$watchCollection('conversions', function (newValue, oldValue) {
-                            if (newValue !== oldValue) {
+                            if (newValue !== oldValue && $scope.originalData) {
                                 processServerData($scope.originalData, $scope, ctrlState);
                             }
                         });

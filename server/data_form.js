@@ -1,6 +1,7 @@
 /// <reference path="../typings/globals/node/index.d.ts" />
 /// <reference path="../typings/modules/mongoose/index.d.ts" />
 'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
 var Mongoose = require("mongoose");
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
@@ -938,10 +939,19 @@ DataForm.prototype.cleanseRequest = function (req) {
     });
     return reqData;
 };
-DataForm.prototype.generateQueryForEntity = function (resource, id) {
+DataForm.prototype.generateQueryForEntity = function (req, resource, id, cb) {
     var hiddenFields = this.generateHiddenFields(resource, false);
     hiddenFields.__v = 0;
-    return resource.model.findOne({ _id: id }).select(hiddenFields);
+    this.doFindFunc(req, resource, function (err, queryObj) {
+        if (err) {
+            cb(err);
+        }
+        else {
+            var idSel = { _id: id };
+            var crit = queryObj ? extend(queryObj, idSel) : idSel;
+            cb(null, resource.model.findOne(crit).select(hiddenFields));
+        }
+    });
 };
 /*
  * Entity request goes there first
@@ -952,21 +962,31 @@ DataForm.prototype.processEntity = function (req, res, next) {
         next();
         return;
     }
-    this.generateQueryForEntity(req.resource, req.params.id).exec(function (err, doc) {
+    this.generateQueryForEntity(req, req.resource, req.params.id, function (err, query) {
         if (err) {
             return res.send({
                 success: false,
                 err: util.inspect(err)
             });
         }
-        else if (doc == null) {
-            return res.send({
-                success: false,
-                err: 'Record not found'
+        else {
+            query.exec(function (err, doc) {
+                if (err) {
+                    return res.send({
+                        success: false,
+                        err: util.inspect(err)
+                    });
+                }
+                else if (doc == null) {
+                    return res.send({
+                        success: false,
+                        err: 'Record not found'
+                    });
+                }
+                req.doc = doc;
+                next();
             });
         }
-        req.doc = doc;
-        next();
     });
 };
 /**

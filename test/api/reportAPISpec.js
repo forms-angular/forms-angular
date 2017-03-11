@@ -84,7 +84,7 @@ describe('Report API', function () {
     var mockRes = {
       send: function (data) {
         assert.equal(data.report.length, 1);
-        assert.deepEqual(data.report[0], {_id: 'IsAccepted John true 89', count: 1});
+        assert.deepEqual(data.report[0], {_id: 'IsAccepted2 Johan true 89', count: 1});
         done();
       }
     };
@@ -125,7 +125,7 @@ describe('Report API', function () {
         assert.equal(data.report.length, 1);
         assert.equal(data.report[0].surname, 'Smith');
         assert.equal(data.report[0].forename, 'John');
-        assert.equal(data.report[0].teacher, 'IsAccepted John true 89');
+        assert.equal(data.report[0].teacher, 'IsAccepted2 Johan true 89');
         assert.equal(data.report[0].mentor, 'Anderson John');
         done();
       }
@@ -163,7 +163,7 @@ describe('Report API', function () {
     var mockRes = {
       send: function (data) {
         assert.equal(data.report.length, 1);
-        assert.deepEqual(data.report[0], {_id: 'IsAccepted John true 89', count: 1});
+        assert.deepEqual(data.report[0], {_id: 'IsAccepted2 Johan true 89', count: 1});
         done();
       }
     };

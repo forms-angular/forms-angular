@@ -80,7 +80,7 @@ describe('List API', function () {
     };
     var mockRes = {
       send: function (data) {
-        assert.equal(data.list, 'NotAccepted John false 89');
+        assert.equal(data.list, 'IsAccepted1 John true 89');
         done();
       }
     };

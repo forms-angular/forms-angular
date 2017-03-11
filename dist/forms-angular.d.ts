@@ -245,7 +245,7 @@ declare module fng.services {
             closeTag: string;
         };
         label: (scope: any, fieldInfo: any, addButtonMarkup: any, options: any) => string;
-        glyphClass: () => string;
+        glyphClass: () => "icon" | "glyphicon glyphicon";
         allInputsVars: (scope: any, fieldInfo: any, options: any, modelString: any, idString: any, nameString: any) => {
             common: any;
             sizeClassBS3: string;

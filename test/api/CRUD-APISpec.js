@@ -86,7 +86,7 @@ describe('API', function () {
           aData = results['aData'];
           aPtr = aData.find(function(obj) {return obj.surname === 'TestPerson1'});
           bData = results['bData'];
-          bPtr = bData.find(function(obj) {return obj.surname === 'IsAccepted'});
+          bPtr = bData.find(function(obj) {return obj.surname === 'IsAccepted1'});
           done();
         }
       );
@@ -138,7 +138,7 @@ describe('API', function () {
       var mockReq = {
         url: '/b_using_options',
         params: {resourceName: 'b_using_options'},
-        body: {'surname': 'TestCreate', 'accepted': false},
+        body: {'surname': 'TestCreate', 'accepted': true},
         ip: '192.168.99.99'
       };
       var mockRes = {
@@ -146,7 +146,7 @@ describe('API', function () {
           assert(data._id, 'Must return the id');
           id = data._id;
           assert.equal(data.surname, 'TestCreate');
-          assert.equal(data.accepted, false);
+          assert.equal(data.accepted, true);
           assert.equal(data.ipAddress, '192.168.99.99');
           done();
         }
@@ -250,11 +250,66 @@ describe('API', function () {
     });
   });
 
+  describe('Filtering records', function () {
+
+    var id;
+
+    it('should create a record', function (done) {
+      var mockReq = {
+        url: '/b_using_options',
+        params: {resourceName: 'b_using_options'},
+        body: {'surname': 'TestCreate', 'forename': 'Alice', 'accepted': false},
+        ip: '192.168.99.99'
+      };
+      var mockRes = {
+        send: function (data) {
+          assert(data._id, 'Must return the id');
+          id = data._id;
+          assert.equal(data.surname, 'TestCreate');
+          assert.equal(data.accepted, false);
+          assert.equal(data.ipAddress, '192.168.99.99');
+          done();
+        }
+      };
+      fng.collectionPost()(mockReq, mockRes);
+    });
+
+    it('should not update a record', function (done) {
+      var mockReq = {
+        url: '/b_using_options/' + id,
+        params: {resourceName: 'b_using_options', id: id},
+        body: {'forename': 'Alfie'}
+      };
+      var mockRes = {
+        send: function (data) {
+          assert.equal(data.success, false);
+          done();
+        }
+      };
+      fng.entityPut()(mockReq, mockRes);
+    });
+
+    it('should not delete a record', function (done) {
+      var mockReq = {
+        url: '/b_using_options/' + id,
+        params: {resourceName: 'b_using_options', id: id}
+      };
+      var mockRes = {
+        send: function (data) {
+          assert(!data.success, 'Was allowed to delete document');
+          done();
+        }
+      };
+      fng.entityDelete()(mockReq, mockRes);
+    });
+
+  });
+
   describe('Search API', function () {
 
     it('should find a single match', function (done) {
       var mockReq = {
-        url: '/search?q=IsA'
+        url: '/search?q=IsAccepted1'
       };
       var mockRes = {
         send: function (data) {
@@ -281,7 +336,7 @@ describe('API', function () {
 
     it('should not find records that do not meet find function', function (done) {
       var mockReq = {
-        url: '/search?q=Not'
+        url: '/search?q=Jones'
       };
       var mockRes = {
         send: function (data) {
