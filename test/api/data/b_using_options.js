@@ -1,7 +1,7 @@
 [
     {
         _id: ObjectId("519a6075b320153869b175e0"),
-        surname: "NotAccepted",
+        surname: "IsAccepted1",
         forename: "John",
         address: {
             line1: "4 High Street",
@@ -9,7 +9,7 @@
             postcode: "AB2 3ES"},
         email: "someone@somewhere.com",
         weight: 124,
-        accepted: false,
+        accepted: true,
         dateOfBirth: "04 Nov 1998",
         eyeColour: "Green",
         hairColour: "Black",
@@ -20,8 +20,8 @@
     },
     {
         _id: ObjectId("519a6075b320153869b155e0"),
-        surname: "IsAccepted",
-        forename: "John",
+        surname: "IsAccepted2",
+        forename: "Johan",
         address: {
             line1: "4 High Street",
             town: "Anytown",
@@ -38,7 +38,7 @@
     },
     {
         _id: ObjectId("519a6075b440153869b155e0"),
-        surname: "Jones",
+        surname: "Jones-NotAccepted",
         forename: "Alan",
         address: {
             line1: "14 High Street",
@@ -50,7 +50,7 @@
         eyeColour: "Brown",
         login: "AlanJ",
         passwordHash: "sha1$22b5fc3b$1$60a33af349b5a95cc0ab3f29b4c95a819d944e75",
-        accepted: true,
+        accepted: false,
         freeText: "Here is some tex blah blah",
         interviewScore: 93
     }

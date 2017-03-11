@@ -1018,10 +1018,19 @@ DataForm.prototype.cleanseRequest = function (req) {
   return reqData;
 };
 
-DataForm.prototype.generateQueryForEntity = function (resource, id) {
+DataForm.prototype.generateQueryForEntity = function (req, resource, id, cb) {
   var hiddenFields = this.generateHiddenFields(resource, false);
   hiddenFields.__v = 0;
-  return resource.model.findOne({_id: id}).select(hiddenFields);
+
+  this.doFindFunc(req, resource, function (err, queryObj) {
+    if (err) {
+      cb(err);
+    } else {
+      let idSel = {_id: id};
+      let crit = queryObj ? extend(queryObj,idSel) : idSel;
+      cb(null, resource.model.findOne(crit).select(hiddenFields));
+    }
+  });
 };
 
 /*
@@ -1034,21 +1043,30 @@ DataForm.prototype.processEntity = function (req,res,next) {
     return;
   }
 
-  this.generateQueryForEntity(req.resource, req.params.id).exec(function (err, doc) {
+  this.generateQueryForEntity(req, req.resource, req.params.id, function(err, query) {
     if (err) {
       return res.send({
         success: false,
         err: util.inspect(err)
       });
-    }
-    else if (doc == null) {
-      return res.send({
-        success: false,
-        err: 'Record not found'
+    } else {
+      query.exec(function (err, doc) {
+        if (err) {
+          return res.send({
+            success: false,
+            err: util.inspect(err)
+          });
+        }
+        else if (doc == null) {
+          return res.send({
+            success: false,
+            err: 'Record not found'
+          });
+        }
+        req.doc = doc;
+        next();
       });
     }
-    req.doc = doc;
-    next();
   });
 };
 
@@ -1059,6 +1077,7 @@ DataForm.prototype.processEntity = function (req,res,next) {
  */
 DataForm.prototype.entityGet = function () {
   return _.bind(function (req, res, next) {
+
     this.processEntity(req,res,function() {
       if (!req.resource) {
         return next();
@@ -1086,6 +1105,7 @@ DataForm.prototype.replaceHiddenFields = function (record, data) {
 DataForm.prototype.entityPut = function () {
   return _.bind(function (req, res, next) {
     var that = this;
+
     this.processEntity(req,res, function() {
       if (!req.resource) {
         next();
@@ -1118,6 +1138,7 @@ DataForm.prototype.entityPut = function () {
 
 DataForm.prototype.entityDelete = function () {
   return _.bind(function (req, res, next) {
+
     this.processEntity(req,res,function() {
       if (!req.resource) {
         next();
