@@ -1042,7 +1042,6 @@ DataForm.prototype.processEntity = function (req,res,next) {
     next();
     return;
   }
-
   this.generateQueryForEntity(req, req.resource, req.params.id, function(err, query) {
     if (err) {
       return res.send({
