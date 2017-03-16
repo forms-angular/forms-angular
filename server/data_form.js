@@ -1,6 +1,6 @@
 'use strict';
 exports.__esModule = true;
-var Mongoose = require("mongoose");
+/// <reference path="../node_modules/@types/mongoose/index.d.ts" />
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
 var _ = require('underscore');
@@ -556,7 +556,7 @@ DataForm.prototype.hackVariables = function (obj) {
                 else {
                     var objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
                     if (objectIdTest) {
-                        obj[prop] = new Mongoose.Types.ObjectId(objectIdTest[1]);
+                        obj[prop] = new this.mongoose.Schema.Types.ObjectId(objectIdTest[1]);
                     }
                 }
             }

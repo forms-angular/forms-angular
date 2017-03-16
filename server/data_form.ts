@@ -1,5 +1,7 @@
 'use strict';
-import * as Mongoose from "mongoose";
+import {Model, Document} from "mongoose";
+/// <reference path="../node_modules/@types/mongoose/index.d.ts" />
+
 
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
@@ -14,7 +16,7 @@ var debug = false;
 
 interface Resource {
   resourceName: string;
-  model?: Mongoose.Model<any>;            // TODO TS Get rid of the ? here
+  model?: Model<any>;            // TODO TS Get rid of the ? here
   options?: any;
 }
 
@@ -70,7 +72,7 @@ var DataForm = function (mongoose, app, options) {
 
 module.exports = exports = DataForm;
 
-DataForm.prototype.getListFields = function (resource : Resource, doc: Mongoose.Document, cb) {
+DataForm.prototype.getListFields = function (resource : Resource, doc: Document, cb) {
 
   function getFirstMatchingField(keyList, type?) {
     for (var i = 0; i < keyList.length; i++) {
@@ -620,7 +622,7 @@ DataForm.prototype.hackVariables = function (obj) {
         } else {
           var objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
           if (objectIdTest) {
-            obj[prop] = new Mongoose.Types.ObjectId(objectIdTest[1]);
+            obj[prop] = new this.mongoose.Schema.Types.ObjectId(objectIdTest[1]);
           }
         }
       } else if (_.isObject(obj[prop])) {
