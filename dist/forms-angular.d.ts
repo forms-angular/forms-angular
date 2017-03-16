@@ -1,6 +1,7 @@
-/// <reference path="../typings/globals/angular/index.d.ts" />
-/// <reference path="../typings/globals/underscore/index.d.ts" />
-/// <reference path="../typings/globals/jquery/index.d.ts" />
+/// <reference path="../node_modules/@types/angular/index.d.ts" />
+/// <reference path="../node_modules/@types/underscore/index.d.ts" />
+/// <reference path="../node_modules/@types/jquery/index.d.ts" />
+/// <reference types="angular" />
 declare module fng {
     interface IFieldViewInfo {
         name: string;
@@ -308,6 +309,6 @@ declare module fng.services {
     };
 }
 declare module fng {
-    var formsAngular: ng.IModule;
+    var formsAngular: angular.IModule;
 }
-declare var formsAngular: ng.IModule;
+declare var formsAngular: angular.IModule;

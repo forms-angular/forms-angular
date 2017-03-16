@@ -1,5 +1,5 @@
-/// <reference path="../../typings/globals/angular/index.d.ts" />
-/// <reference path="../../typings/globals/underscore/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 
 module fng.directives {

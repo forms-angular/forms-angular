@@ -1,6 +1,3 @@
-/// <reference path="../typings/globals/node/index.d.ts" />
-/// <reference path="../typings/modules/mongoose/index.d.ts" />
-
 'use strict';
 import * as Mongoose from "mongoose";
 
