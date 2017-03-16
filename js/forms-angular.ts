@@ -1,4 +1,4 @@
-/// <reference path="../typings/globals/angular/index.d.ts" />
+/// <reference path="../node_modules/@types/angular/index.d.ts" />
 /// <reference path="controllers/base.ts" />
 /// <reference path="controllers/saveChangesModal.ts" />
 /// <reference path="controllers/model.ts" />

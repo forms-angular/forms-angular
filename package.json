@@ -41,6 +41,10 @@
     "mongoose": "4.8.1"
   },
   "devDependencies": {
+    "@types/angular": "^1.6.3",
+    "@types/jquery": "^2.0.41",
+    "@types/node": "^6.0.65",
+    "@types/underscore": "^1.8.0",
     "body-parser": "1.16.0",
     "del": "2.2.2",
     "express": "4.14.1",
@@ -59,14 +63,13 @@
     "karma-junit-reporter": "1.2.0",
     "karma-ng-html2js-preprocessor": "1.0.0",
     "karma-phantomjs-launcher": "1.0.2",
+    "kerberos": "0.0.22",
     "matchdep": "1.0.1",
     "mocha": "3.2.0",
     "mongoose": "4.8.1",
-    "kerberos": "0.0.22",
     "phantomjs-prebuilt": "2.1.14",
     "run-sequence": "1.2.2",
     "uglify-js": "2.7.5"
   },
   "license": "MIT"
 }
-

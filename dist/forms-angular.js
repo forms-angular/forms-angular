@@ -1,5 +1,5 @@
-/// <reference path="../typings/globals/angular/index.d.ts" />
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../node_modules/@types/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -30,7 +30,7 @@ var fng;
         controllers.BaseCtrl = BaseCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var controllers;
@@ -51,7 +51,7 @@ var fng;
         controllers.SaveChangesModalCtrl = SaveChangesModalCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var controllers;
@@ -75,7 +75,7 @@ var fng;
         controllers.ModelCtrl = ModelCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var controllers;
@@ -284,7 +284,7 @@ var fng;
         controllers.NavCtrl = NavCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var controllers;
@@ -402,7 +402,7 @@ var fng;
         controllers.SearchCtrl = SearchCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var directives;
@@ -429,7 +429,7 @@ var fng;
         directives.modelControllerDropdown = modelControllerDropdown;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var directives;
@@ -450,7 +450,7 @@ var fng;
         directives.errorDisplay = errorDisplay;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var directives;
@@ -500,8 +500,8 @@ var fng;
         directives.fngLink = fngLink;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
-/// <reference path="../../typings/globals/underscore/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -1204,7 +1204,7 @@ var fng;
         directives.formInput = formInput;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var directives;
@@ -1220,7 +1220,7 @@ var fng;
         directives.formButtons = formButtons;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../controllers/search-ctrl.ts" />
 var fng;
 (function (fng) {
@@ -1238,7 +1238,7 @@ var fng;
         directives.globalSearch = globalSearch;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var filters;
@@ -1256,7 +1256,7 @@ var fng;
         filters.camelCase = camelCase;
     })(filters = fng.filters || (fng.filters = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var filters;
@@ -1285,7 +1285,7 @@ var fng;
         filters.titleCase = titleCase;
     })(filters = fng.filters || (fng.filters = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -1357,7 +1357,7 @@ var fng;
         services.addAllService = addAllService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -1425,7 +1425,7 @@ var fng;
         services.cssFrameworkService = cssFrameworkService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -1444,7 +1444,7 @@ var fng;
         services.$data = $data;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -1716,9 +1716,9 @@ var fng;
         services.routingService = routingService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/jquery/index.d.ts" />
-/// <reference path="../../typings/globals/angular/index.d.ts" />
-/// <reference path="../../typings/globals/underscore/index.d.ts" />
+/// <reference path="../../node_modules/@types/jquery/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -2241,7 +2241,7 @@ var fng;
         formGenerator.$inject = ["$location", "$timeout", "$filter", "SubmissionsService", "routingService", "recordHandler"];
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -2467,7 +2467,7 @@ var fng;
         services.formMarkupHelper = formMarkupHelper;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -2489,7 +2489,7 @@ var fng;
         services.inputSizeHelper = inputSizeHelper;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -2603,8 +2603,8 @@ var fng;
         services.pluginHelper = pluginHelper;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
-/// <reference path="../../typings/globals/underscore/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/underscore/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -3403,7 +3403,7 @@ var fng;
         services.recordHandler = recordHandler;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -3420,7 +3420,7 @@ var fng;
         services.SchemasService = SchemasService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../typings/globals/angular/index.d.ts" />
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
     var services;
@@ -3494,7 +3494,7 @@ var fng;
         services.SubmissionsService = SubmissionsService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../typings/globals/angular/index.d.ts" />
+/// <reference path="../node_modules/@types/angular/index.d.ts" />
 /// <reference path="controllers/base.ts" />
 /// <reference path="controllers/saveChangesModal.ts" />
 /// <reference path="controllers/model.ts" />
