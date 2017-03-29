@@ -1889,7 +1889,9 @@ var fng;
                         }
                         else {
                             formInstructions.type = 'text';
-                            formInstructions.add = 'ui-date ui-date-format datepicker-popup-fix ';
+                            formInstructions.add = formInstructions.add || '';
+                            formInstructions.add += ' ui-date ui-date-format ';
+                            // formInstructions.add += ' ui-date ui-date-format datepicker-popup-fix ';
                         }
                     }
                 }
