@@ -37,8 +37,8 @@
   },
   "peerDependencies": {
     "express": "4.14.1",
-    "kerberos": "0.0.22",
-    "mongoose": "4.8.1"
+    "kerberos": "0.0.23",
+    "mongoose": "4.9.8"
   },
   "devDependencies": {
     "@types/angular": "^1.6.3",
@@ -58,15 +58,15 @@
     "gulp-tsc": "1.2.6",
     "gulp-umd": "0.2.0",
     "jasmine-core": "2.5.2",
-    "karma": "1.4.1",
+    "karma": "1.7.0",
     "karma-jasmine": "1.1.0",
     "karma-junit-reporter": "1.2.0",
     "karma-ng-html2js-preprocessor": "1.0.0",
-    "karma-phantomjs-launcher": "1.0.2",
-    "kerberos": "0.0.22",
+    "karma-phantomjs-launcher": "1.0.4",
+    "kerberos": "0.0.23",
     "matchdep": "1.0.1",
     "mocha": "3.2.0",
-    "mongoose": "4.8.1",
+    "mongoose": "4.9.8",
     "phantomjs-prebuilt": "2.1.14",
     "run-sequence": "1.2.2",
     "uglify-js": "2.7.5"
