@@ -1900,10 +1900,10 @@ var fng;
                 }
                 else if (mongooseType.instance === 'Number') {
                     formInstructions.type = 'number';
-                    if (mongooseOptions.min) {
+                    if (mongooseOptions.min !== undefined) {
                         formInstructions.add = 'min="' + mongooseOptions.min + '" ' + (formInstructions.add || '');
                     }
-                    if (mongooseOptions.max) {
+                    if (mongooseOptions.max !== undefined) {
                         formInstructions.add = 'max="' + mongooseOptions.max + '" ' + (formInstructions.add || '');
                     }
                     if (formInstructions.step) {
