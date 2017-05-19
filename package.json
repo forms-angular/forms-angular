@@ -33,7 +33,7 @@
   "dependencies": {
     "async": "1.5.2",
     "node.extend": "1.1.6",
-    "underscore": "1.8.3"
+    "lodash": "4.17.4"
   },
   "peerDependencies": {
     "express": "4.14.1",
