@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../node_modules/@types/mongoose/index.d.ts" />
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
-var _ = require('underscore');
+var _ = require('lodash');
 var util = require('util');
 var extend = require('node.extend');
 var async = require('async');
@@ -173,7 +173,7 @@ DataForm.prototype.addResource = function (resourceName, model, options) {
         this.searchFunc = async.forEachSeries;
     }
     if (this.searchFunc === async.forEachSeries) {
-        this.resources.splice(_.sortedIndex(this.resources, resource, function (obj) {
+        this.resources.splice(_.sortedIndexBy(this.resources, resource, function (obj) {
             return obj.options.searchImportance || 99;
         }), 0, resource);
     }
@@ -280,7 +280,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                             resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
                             resultObject.resourceTab = translate(resultObject.resourceTab, item.resource.options.localisationData, 'resourceTab');
                         }
-                        results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
+                        results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
                         cbdoc(null);
                     }
                     for (resultPos = results.length - 1; resultPos >= 0; resultPos--) {
@@ -296,7 +296,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                         // remove it from current position
                         results.splice(resultPos, 1);
                         // and re-insert where appropriate
-                        results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
+                        results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
                         cbdoc(null);
                     }
                     else {
