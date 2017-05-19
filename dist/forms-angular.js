@@ -501,7 +501,7 @@ var fng;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../../node_modules/@types/underscore/index.d.ts" />
+/// <reference path="../../node_modules/@types/lodash/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -1718,7 +1718,7 @@ var fng;
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/jquery/index.d.ts" />
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../../node_modules/@types/underscore/index.d.ts" />
+/// <reference path="../../node_modules/@types/lodash/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
@@ -2606,7 +2606,7 @@ var fng;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../../node_modules/@types/underscore/index.d.ts" />
+/// <reference path="../../node_modules/@types/lodash/index.d.ts" />
 /// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {

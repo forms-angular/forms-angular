@@ -6,7 +6,7 @@ import {Model, Document} from "mongoose";
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
 
-var _ = require('underscore');
+var _ = require('lodash');
 var util = require('util');
 var extend = require('node.extend');
 var async = require('async');
