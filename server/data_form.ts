@@ -202,7 +202,7 @@ DataForm.prototype.addResource = function (resourceName, model, options) {
     this.searchFunc = async.forEachSeries;
   }
   if (this.searchFunc === async.forEachSeries) {
-    this.resources.splice(_.sortedIndex(this.resources, resource, function (obj) {
+    this.resources.splice(_.sortedIndexBy(this.resources, resource, function (obj) {
       return obj.options.searchImportance || 99;
     }), 0, resource);
   } else {
@@ -327,7 +327,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                 resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
                 resultObject.resourceTab = translate(resultObject.resourceTab, item.resource.options.localisationData, 'resourceTab');
               }
-              results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
+              results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
               cbdoc(null);
             }
 
@@ -344,7 +344,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
               // remove it from current position
               results.splice(resultPos, 1);
               // and re-insert where appropriate
-              results.splice(_.sortedIndex(results, resultObject, calcResultValue), 0, resultObject);
+              results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
               cbdoc(null);
             } else {
               // Otherwise add them new...
