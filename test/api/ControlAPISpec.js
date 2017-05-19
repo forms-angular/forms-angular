@@ -6,7 +6,7 @@ var express = require('express');
 var async = require('async');
 var path = require('path');
 var fs = require('fs');
-var _ = require('underscore');
+var _ = require('lodash');
 var exec = require('child_process').exec;
 var mongoose = require('mongoose');
 
