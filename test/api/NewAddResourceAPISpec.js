@@ -5,7 +5,7 @@ var formsAngular = require('../../server/data_form.js');
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
-var _ = require('underscore');
+var _ = require('lodash');
 var mongoose = require('mongoose');
 
 describe('mongoose collection name API', function () {
