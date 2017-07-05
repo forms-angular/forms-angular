@@ -119,7 +119,7 @@ module fng.services {
     var getListData = function getListData(record, fieldName, listSchema=null) {
       var nests = fieldName.split('.');
       for (var i = 0; i < nests.length; i++) {
-        if (record !== undefined && record !== null) {
+        if (record !== undefined && record !== null && nests && nests[i]) {
           record = record[nests[i]];
         }
       }
@@ -178,10 +178,12 @@ module fng.services {
 
     var simpleArrayNeedsX = function (aSchema) {
       var result = false;
-      if (aSchema.type === 'text') {
-        result = true;
-      } else if (aSchema.needsX || ((aSchema.type === 'select') && !aSchema.ids && !aSchema.directive)) {
-        result = true;
+      if (!aSchema.directive) {
+        if (aSchema.type === 'text') {
+          result = true;
+        } else if (aSchema.needsX || ((aSchema.type === 'select') && !aSchema.ids)) {
+          result = true;
+        }
       }
       return result;
     };
