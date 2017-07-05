@@ -84,6 +84,21 @@ module fng.controllers {
 
       controllerName += 'Ctrl';
       locals.$scope = $data.modelControllers[level] = $scope.$new();
+
+      let addMenuOptions = function (array) {
+        angular.forEach(array, function (value) {
+          if (value.divider) {
+            needDivider = true;
+          } else if (value[addThis]) {
+            if (needDivider) {
+              needDivider = false;
+              $scope.items.push({divider: true});
+            }
+            $scope.items.push(value);
+          }
+        });
+      };
+
       try {
         $controller(controllerName, locals);
         if ($scope.routing.newRecord) {
@@ -94,17 +109,12 @@ module fng.controllers {
           addThis = 'listing';
         }
         if (angular.isObject(locals.$scope.contextMenu)) {
-          angular.forEach(locals.$scope.contextMenu, function (value) {
-            if (value.divider) {
-              needDivider = true;
-            } else if (value[addThis]) {
-              if (needDivider) {
-                needDivider = false;
-                $scope.items.push({divider: true});
-              }
-              $scope.items.push(value);
-            }
-          });
+          addMenuOptions(locals.$scope.contextMenu);
+          if (locals.$scope.contextMenuPromise) {
+            locals.$scope.contextMenuPromise.then(
+              (array) => addMenuOptions(array)
+            )
+          }
         }
       } catch (error) {
         // Check to see if error is no such controller - don't care
