@@ -159,6 +159,20 @@ var fng;
                 var locals = {}, addThis;
                 controllerName += 'Ctrl';
                 locals.$scope = $data.modelControllers[level] = $scope.$new();
+                var addMenuOptions = function (array) {
+                    angular.forEach(array, function (value) {
+                        if (value.divider) {
+                            needDivider = true;
+                        }
+                        else if (value[addThis]) {
+                            if (needDivider) {
+                                needDivider = false;
+                                $scope.items.push({ divider: true });
+                            }
+                            $scope.items.push(value);
+                        }
+                    });
+                };
                 try {
                     $controller(controllerName, locals);
                     if ($scope.routing.newRecord) {
@@ -171,18 +185,10 @@ var fng;
                         addThis = 'listing';
                     }
                     if (angular.isObject(locals.$scope.contextMenu)) {
-                        angular.forEach(locals.$scope.contextMenu, function (value) {
-                            if (value.divider) {
-                                needDivider = true;
-                            }
-                            else if (value[addThis]) {
-                                if (needDivider) {
-                                    needDivider = false;
-                                    $scope.items.push({ divider: true });
-                                }
-                                $scope.items.push(value);
-                            }
-                        });
+                        addMenuOptions(locals.$scope.contextMenu);
+                        if (locals.$scope.contextMenuPromise) {
+                            locals.$scope.contextMenuPromise.then(function (array) { return addMenuOptions(array); });
+                        }
                     }
                 }
                 catch (error) {
@@ -2720,7 +2726,7 @@ var fng;
                 if (listSchema === void 0) { listSchema = null; }
                 var nests = fieldName.split('.');
                 for (var i = 0; i < nests.length; i++) {
-                    if (record !== undefined && record !== null) {
+                    if (record !== undefined && record !== null && nests && nests[i]) {
                         record = record[nests[i]];
                     }
                 }
@@ -2775,11 +2781,13 @@ var fng;
             }
             var simpleArrayNeedsX = function (aSchema) {
                 var result = false;
-                if (aSchema.type === 'text') {
-                    result = true;
-                }
-                else if (aSchema.needsX || ((aSchema.type === 'select') && !aSchema.ids && !aSchema.directive)) {
-                    result = true;
+                if (!aSchema.directive) {
+                    if (aSchema.type === 'text') {
+                        result = true;
+                    }
+                    else if (aSchema.needsX || ((aSchema.type === 'select') && !aSchema.ids)) {
+                        result = true;
+                    }
                 }
                 return result;
             };
