@@ -178,10 +178,13 @@ module fng.services {
 
     var simpleArrayNeedsX = function (aSchema) {
       var result = false;
-      if (!aSchema.directive) {
+
+      if (aSchema.needsX) {
+        result = true;
+      } else if (!aSchema.directive) {
         if (aSchema.type === 'text') {
           result = true;
-        } else if (aSchema.needsX || ((aSchema.type === 'select') && !aSchema.ids)) {
+        } else if (aSchema.type === 'select' && !aSchema.ids) {
           result = true;
         }
       }
