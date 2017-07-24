@@ -549,7 +549,8 @@ module fng.services {
                   for (var i = 0; i < data.length; i++) {
                     var option = '';
                     for (var j = 0; j < listInstructions.length; j++) {
-                      option += data[i][listInstructions[j].name] + ' ';
+                      let thisVal: string = data[i][listInstructions[j].name];
+                      option += thisVal ? thisVal + ' ' : '';
                     }
                     option = option.trim();
                     var pos = _.sortedIndex(optionsList, option);
