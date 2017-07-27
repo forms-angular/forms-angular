@@ -75,7 +75,7 @@ describe('Select.', function () {
       expect(input.length).toBe(5);
 
       var option = angular.element(input[0]);
-      expect(option.text()).toBe('');
+      expect(option.text()).toBe('Select a value');
 
       option = angular.element(input[4]);
       expect(option.text()).toBe('Hazel');

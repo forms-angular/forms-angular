@@ -98,6 +98,9 @@ module fng.services {
         if (newVal) {
           setData($scope.record, schemaElement.name, undefined, newVal);
         }
+        if (schemaElement.required) {
+          angular.element('#' + schemaElement.id + ' .disableMe').prop('disabled', true);
+        }
       }
     };
 
