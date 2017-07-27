@@ -624,7 +624,8 @@ var fng;
                         var allInputsVars = formMarkupHelper.allInputsVars(scope, fieldInfo, options, modelString, idString, nameString);
                         var common = allInputsVars.common;
                         var value;
-                        var requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
+                        isRequired = isRequired || fieldInfo.required;
+                        var requiredStr = isRequired ? ' required' : '';
                         var enumInstruction;
                         switch (fieldInfo.type) {
                             case 'select':
@@ -635,7 +636,14 @@ var fng;
                                     common += (fieldInfo.readonly ? 'disabled ' : '');
                                     common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                                     value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
-                                    if (!isRequired) {
+                                    if (isRequired) {
+                                        /*
+                                          Tell the user to select a value
+                                          This becomes disabled in updateRecordWithLookupValues (setting disabled now causes $pristine to be unset, which conflicts with the condition in updateRecordWithLookupValues)
+                                        */
+                                        value += '<option class="disableMe" value="">Select a value</option>';
+                                    }
+                                    else {
                                         value += '<option></option>';
                                     }
                                     if (angular.isArray(fieldInfo.options)) {
@@ -2709,6 +2717,9 @@ var fng;
                     if (newVal) {
                         setData($scope.record, schemaElement.name, undefined, newVal);
                     }
+                    if (schemaElement.required) {
+                        angular.element('#' + schemaElement.id + ' .disableMe').prop('disabled', true);
+                    }
                 }
             };
             // Split a field name into the next level and all following levels
@@ -2781,11 +2792,14 @@ var fng;
             }
             var simpleArrayNeedsX = function (aSchema) {
                 var result = false;
-                if (!aSchema.directive) {
+                if (aSchema.needsX) {
+                    result = true;
+                }
+                else if (!aSchema.directive) {
                     if (aSchema.type === 'text') {
                         result = true;
                     }
-                    else if (aSchema.needsX || ((aSchema.type === 'select') && !aSchema.ids)) {
+                    else if (aSchema.type === 'select' && !aSchema.ids) {
                         result = true;
                     }
                 }
