@@ -72,12 +72,9 @@ describe('Select.', function () {
       expect(input.val()).toBe('Brown');
 
       input = input.find('option');
-      expect(input.length).toBe(5);
+      expect(input.length).toBe(4);
 
-      var option = angular.element(input[0]);
-      expect(option.text()).toBe('Select a value');
-
-      option = angular.element(input[4]);
+      var option = angular.element(input[3]);
       expect(option.text()).toBe('Hazel');
     });
 
@@ -159,4 +156,3 @@ describe('Select.', function () {
   });
 
 });
-

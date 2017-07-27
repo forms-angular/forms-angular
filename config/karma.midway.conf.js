@@ -19,6 +19,9 @@ module.exports = function(config) {
           'test/midway/**/*.js'
         ],
 
+        client: {
+          captureConsole: true
+        },
         autoWatch : true,
         usePolling: true,
 
