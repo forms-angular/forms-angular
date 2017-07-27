@@ -110,7 +110,8 @@ module fng.directives {
           var allInputsVars = formMarkupHelper.allInputsVars(scope, fieldInfo, options, modelString, idString, nameString);
           var common = allInputsVars.common;
           var value;
-          var requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
+          isRequired = isRequired || fieldInfo.required;
+          var requiredStr = isRequired ? ' required' : '';
           var enumInstruction:IEnumInstruction;
 
           switch (fieldInfo.type) {
@@ -121,7 +122,13 @@ module fng.directives {
                 common += (fieldInfo.readonly ? 'disabled ' : '');
                 common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
-                if (!isRequired) {
+                if (isRequired) {
+                  /*
+                    Tell the user to select a value
+                    This becomes disabled in updateRecordWithLookupValues (setting disabled now causes $pristine to be unset, which conflicts with the condition in updateRecordWithLookupValues)
+                  */
+                  value += '<option class="disableMe" value="">Select a value</option>';
+                } else {
                   value += '<option></option>';
                 }
                 if (angular.isArray(fieldInfo.options)) {
