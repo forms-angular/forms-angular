@@ -2410,8 +2410,10 @@ var fng;
                     if (cssFrameworkService.framework() === 'bs3' && isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
                         value = '<div class="bs3-input ' + markupVars.sizeClassBS3 + '">' + value + '</div>';
                     }
-                    if (fieldInfo.helpInline) {
-                        value += '<span class="' + (cssFrameworkService.framework() === 'bs2' ? 'help-inline' : 'help-block') + '">' + fieldInfo.helpInline + '</span>';
+                    // Hack to cope with inline help in directives
+                    var inlineHelp = (fieldInfo.helpInline || '') + (fieldInfo.helpinline || '');
+                    if (inlineHelp.length > 0) {
+                        value += '<span class="' + (cssFrameworkService.framework() === 'bs2' ? 'help-inline' : 'help-block') + '">' + inlineHelp + '</span>';
                     }
                     // If we have chosen
                     value += '<div ng-if="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$dirty" class="help-block">' +
@@ -2538,7 +2540,7 @@ var fng;
                                 options[prop.slice(6).toLowerCase()] = deserialize(attr[prop]);
                             }
                             else if (directiveName && prop.slice(0, directiveNameLength) === directiveName) {
-                                directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = deserialize(attr[prop]);
+                                directiveOptions[_.kebabCase(prop.slice(directiveNameLength))] = deserialize(attr[prop]);
                             }
                         }
                     }
