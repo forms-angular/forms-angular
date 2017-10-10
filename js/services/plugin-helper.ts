@@ -33,7 +33,7 @@ module fng.services {
             } else if (prop.slice(0, 6) === 'fngOpt') {
               options[prop.slice(6).toLowerCase()] = deserialize(attr[prop]);
             } else if (directiveName && prop.slice(0, directiveNameLength) === directiveName) {
-              directiveOptions[prop.slice(directiveNameLength).toLowerCase()] = deserialize(attr[prop]);
+              directiveOptions[_.kebabCase(prop.slice(directiveNameLength))] = deserialize(attr[prop]);
             }
           }
         }
