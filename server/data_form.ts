@@ -255,7 +255,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
 
   for (var i = 0; i < resourceCount; i++) {
     var resource = resourcesToSearch[i];
-    if (resource.options.searchImportance !== false) {
+    if (resourceCount === 1 || resource.options.searchImportance !== false) {
       var schema = resource.model.schema;
       var indexedFields = [];
       for (var j = 0; j < schema._indexes.length; j++) {
