@@ -659,9 +659,21 @@ module fng.services {
           $scope.showError(args.body, args.title);
         });
 
-        $scope.showError = function (errString, alertTitle) {
+        $scope.showError = function (error, alertTitle) {
           $scope.alertTitle = alertTitle ? alertTitle : 'Error!';
-          $scope.errorMessage = errString;
+          if (typeof error === 'string') {
+            $scope.errorMessage = error;
+          } else if (error.message && typeof error.message === 'string') {
+            $scope.errorMessage = error.message;
+          } else if (error.data && error.data.message) {
+            $scope.errorMessage = error.data.message;
+          } else {
+            try {
+              $scope.errorMessage = JSON.stringify(error);
+            } catch(e) {
+              $scope.errorMessage = error;
+            }
+          }
         };
 
         $scope.dismissError = function () {
