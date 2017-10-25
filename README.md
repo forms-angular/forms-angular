@@ -5,6 +5,7 @@
 
 [![Build Status](https://travis-ci.org/forms-angular/forms-angular.png?branch=master)](https://travis-ci.org/forms-angular/forms-angular)
 [![Dependency Status](https://david-dm.org/forms-angular/forms-angular.png)](https://david-dm.org/forms-angular/forms-angular.png)
+[![Downloads](https://img.shields.io/npm/dt/forms-angular.svg)](https://img.shields.io/npm/dt/forms-angular.svg)
 
 See the documentation at http://www.forms-angular.org
 
