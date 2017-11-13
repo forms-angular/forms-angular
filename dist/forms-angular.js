@@ -1015,7 +1015,9 @@ var fng;
                                                     }
                                                     break;
                                                 default:
-                                                    newElement += ' fng-fld-' + prop + '="' + info[prop].toString().replace(/"/g, '&quot;') + '"';
+                                                    if (info[prop]) {
+                                                        newElement += ' fng-fld-' + prop + '="' + info[prop].toString().replace(/"/g, '&quot;') + '"';
+                                                    }
                                                     break;
                                             }
                                         }
@@ -1885,7 +1887,7 @@ var fng;
                         if (formInstructions.select2 || (mongooseOptions.form && mongooseOptions.form.select2)) {
                             console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
                         }
-                        else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
+                        else if (!formInstructions.directive || (!formInstructions.noLookup && (!formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax))) {
                             performLookupSelect();
                         }
                     }
@@ -2991,6 +2993,9 @@ var fng;
                             catch (e) {
                                 console.log('Error parsing specified record : ' + e.message);
                             }
+                        }
+                        if (typeof $scope.dataEventFunctions.onInitialiseNewRecord === 'function') {
+                            $scope.dataEventFunctions.onInitialiseNewRecord(ctrlState.master);
                         }
                         $scope.phase = 'ready';
                         $scope.cancel();

@@ -388,6 +388,9 @@ module fng.services {
               console.log('Error parsing specified record : ' + e.message);
             }
           }
+          if (typeof $scope.dataEventFunctions.onInitialiseNewRecord === 'function') {
+            $scope.dataEventFunctions.onInitialiseNewRecord(ctrlState.master);
+          }
           $scope.phase = 'ready';
           $scope.cancel();
         }

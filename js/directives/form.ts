@@ -500,7 +500,9 @@ module fng.directives {
                         }
                         break;
                       default:
-                        newElement += ' fng-fld-' + prop + '="' + info[prop].toString().replace(/"/g, '&quot;') + '"';
+                        if (info[prop]) {
+                          newElement += ' fng-fld-' + prop + '="' + info[prop].toString().replace(/"/g, '&quot;') + '"';
+                        }
                         break;
                     }
                   }
