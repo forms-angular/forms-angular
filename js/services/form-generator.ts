@@ -161,7 +161,7 @@ module fng.services {
           formInstructions.type = 'select';
             if (formInstructions.select2 || (mongooseOptions.form && mongooseOptions.form.select2)) {
               console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
-            } else if (!formInstructions.directive || !formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax) {
+            } else if (!formInstructions.directive || (!formInstructions.noLookup && (!formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax))) {
               performLookupSelect();
             }
         }
