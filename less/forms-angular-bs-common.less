@@ -121,6 +121,10 @@ form {
     margin: 5px 0;
   }
 
+  input.ng-invalid:not(.ng-invalid-required):focus {
+    border: solid 1px red;
+  }
+
   input[type="checkbox"].ng-invalid-required:before, span:first-child input[type="radio"].ng-invalid-required:before {
     content:"*";
     font-weight: bold;
@@ -130,10 +134,6 @@ form {
 
   input.ng-invalid-required, select.fng-invalid-required,  select.ng-invalid-required, textarea.ng-invalid-required {
     background-color: rgba(255, 0, 0, 0.10);
-  }
-
-  input.ng-invalid:focus {
-    border: solid 1px red;
   }
 
   option {
