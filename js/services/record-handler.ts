@@ -325,6 +325,9 @@ module fng.services {
     };
 
     var convertIdToListValue = function convertIdToListValue(id, idsArray, valuesArray, fname) {
+      if (typeof id === 'Object') {
+        id = id.id;
+      }
       var index = idsArray.indexOf(id);
       if (index === -1) {
         throw new Error('convertIdToListValue: Invalid data - id ' + id + ' not found in ' + idsArray + ' processing ' + fname);
