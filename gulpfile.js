@@ -3,6 +3,8 @@ var runSequence = require('run-sequence');
 var del = require('del');
 var Server = require('karma').Server;
 var typeScriptCompiler = require('gulp-tsc');
+var uglify = require('gulp-uglify');
+var pump = require('pump');
 
 var browserSources = [
   'js/**/*.ts'
@@ -137,23 +139,30 @@ gulp.task('apiTest', function () {
 //});
 //
 
-gulp.task('uglify', function() {
-  var fs = require('fs');
-  var uglifyJs = require('uglify-js');
-
-  var code = fs.readFileSync('dist/forms-angular.js', 'utf8');
-
-  var parsed = uglifyJs.parse(code);
-  parsed.figure_out_scope();
-
-  var compressed = parsed.transform(uglifyJs.Compressor());
-  compressed.figure_out_scope();
-  compressed.compute_char_frequency();
-  compressed.mangle_names();
-
-  var finalCode = compressed.print_to_string();
-
-  fs.writeFileSync('dist/forms-angular.min.js', finalCode);
+gulp.task('uglify', function(cb) {
+  pump([
+      gulp.src('dist/forms-angular.js'),
+      uglify(),
+      gulp.dest('dist')
+    ],
+    cb
+  );
+  // var fs = require('fs');
+  // var uglifyJs = require('uglify-js');
+  //
+  // var code = fs.readFileSync('dist/forms-angular.js', 'utf8');
+  //
+  // var parsed = uglifyJs.parse(code);
+  // parsed.figure_out_scope();
+  //
+  // var compressed = parsed.transform(uglifyJs.Compressor());
+  // compressed.figure_out_scope();
+  // compressed.compute_char_frequency();
+  // compressed.mangle_names();
+  //
+  // var finalCode = compressed.print_to_string();
+  //
+  // fs.writeFileSync('dist/forms-angular.min.js', finalCode);
 });
 
 
