@@ -285,10 +285,13 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
   var that = this,
     results = [],
     moreCount = 0,
-    searchCriteria;
+    searchCriteria,
+    multiMatchPossible = searchFor.includes(' '),
+    modifiedSearchStr = multiMatchPossible ? searchFor.split(' ').join('|') : searchFor;
 
   // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
-  searchCriteria = {$regex: '^(' + searchFor.split(' ').join('|') + ')', $options: 'i'};
+
+  searchCriteria = {$regex: '^(' + modifiedSearchStr + ')', $options: 'i'};
 
   this.searchFunc(
     searches,
@@ -340,7 +343,10 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
               resultObject = {};
               extend(resultObject, results[resultPos]);
               // If they have already matched then improve their weighting
-              resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 1);
+              // TODO: if the search string is B F currently Benjamin Barker scores same as Benjamin Franklin)
+              if (multiMatchPossible) {
+                resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 1);
+              }
               // remove it from current position
               results.splice(resultPos, 1);
               // and re-insert where appropriate
