@@ -210,7 +210,6 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
         sortString += padLeft(obj.searchImportance || 99, 2);
         sortString += padLeft(obj.weighting || 9999, 4);
         sortString += obj.text;
-        console.log(sortString);
         return sortString;
     }
     if (filter) {
@@ -293,6 +292,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                         resultObject = {};
                         extend(resultObject, results[resultPos]);
                         // If they have already matched then improve their weighting
+                        // TODO: if the search string is B F currently Benjamin Barker scores same as Benjamin Franklin)
                         if (multiMatchPossible) {
                             resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 1);
                         }

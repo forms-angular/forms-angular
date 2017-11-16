@@ -2930,7 +2930,7 @@ var fng;
                 }
             };
             var convertIdToListValue = function convertIdToListValue(id, idsArray, valuesArray, fname) {
-                if (typeof id === 'Object') {
+                if (typeof (id) === 'object') {
                     id = id.id;
                 }
                 var index = idsArray.indexOf(id);
