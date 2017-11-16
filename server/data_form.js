@@ -1,6 +1,5 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-/// <reference path="../node_modules/@types/mongoose/index.d.ts" />
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
 var _ = require('lodash');
@@ -41,10 +40,8 @@ var DataForm = function (mongoose, app, options) {
     this.searchFunc = async.forEach;
     this.registerRoutes();
     this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
-    if (this.options.JQMongoFileUploader) {
-        var JqUploadModule = this.options.JQMongoFileUploader.module || require('fng-jq-upload').Controller;
-        this.fileUploader = new JqUploadModule(this, processArgs, this.options.JQMongoFileUploader);
-        void (this.fileUploader); // suppress warning
+    for (var plugin in this.options.plugins) {
+        this[plugin] = new this.options.plugins[plugin].module(this, processArgs, this.options.plugins[plugin].options);
     }
 };
 module.exports = exports = DataForm;
@@ -66,16 +63,16 @@ DataForm.prototype.getListFields = function (resource, doc, cb) {
             if (typeof doc[aField.field] !== 'undefined') {
                 if (aField.params) {
                     if (aField.params.ref) {
-                        var lookupResource = that.getResource(resource.model.schema['paths'][aField.field].options.ref);
-                        if (lookupResource) {
-                            var hiddenFields = that.generateHiddenFields(lookupResource, false);
+                        var lookupResource_1 = that.getResource(resource.model.schema['paths'][aField.field].options.ref);
+                        if (lookupResource_1) {
+                            var hiddenFields = that.generateHiddenFields(lookupResource_1, false);
                             hiddenFields.__v = 0;
-                            lookupResource.model.findOne({ _id: doc[aField.field] }).select(hiddenFields).exec(function (err, doc2) {
+                            lookupResource_1.model.findOne({ _id: doc[aField.field] }).select(hiddenFields).exec(function (err, doc2) {
                                 if (err) {
                                     cbm(err);
                                 }
                                 else {
-                                    that.getListFields(lookupResource, doc2, cbm);
+                                    that.getListFields(lookupResource_1, doc2, cbm);
                                 }
                             });
                         }
@@ -244,7 +241,8 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
             }
         }
     }
-    var that = this, results = [], moreCount = 0, searchCriteria, multiMatchPossible = searchFor.includes(' '), modifiedSearchStr = multiMatchPossible ? searchFor.split(' ').join('|') : searchFor;
+    var that = this;
+    var results = [], moreCount = 0, searchCriteria, multiMatchPossible = searchFor.includes(' '), modifiedSearchStr = multiMatchPossible ? searchFor.split(' ').join('|') : searchFor;
     // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
     searchCriteria = { $regex: '^(' + modifiedSearchStr + ')', $options: 'i' };
     this.searchFunc(searches, function (item, cb) {
@@ -492,7 +490,8 @@ DataForm.prototype.report = function () {
         if (!(req.resource = this.getResource(req.params.resourceName))) {
             return next();
         }
-        var reportSchema, self = this, urlParts = url.parse(req.url, true);
+        var self = this;
+        var reportSchema, urlParts = url.parse(req.url, true);
         if (req.params.reportName) {
             reportSchema = req.resource.model.schema.statics['report'](req.params.reportName, req);
         }
@@ -519,9 +518,11 @@ DataForm.prototype.report = function () {
                     }
                 }
             }
-            reportSchema = { pipeline: [
+            reportSchema = {
+                pipeline: [
                     { $project: fields }
-                ], drilldown: req.params.resourceName + '/|_id|/edit' };
+                ], drilldown: req.params.resourceName + '/|_id|/edit'
+            };
         }
         // Replace parameters in pipeline
         var schemaCopy = {};
@@ -624,10 +625,10 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
                     resource.model.aggregate(runPipeline, cb);
                 }
             };
-            var translations = []; // array of form {ref:'lookupname',translations:[{value:xx, display:'  '}]}
+            var translations_1 = []; // array of form {ref:'lookupname',translations:[{value:xx, display:'  '}]}
             // if we need to do any column translations add the function to the tasks list
             if (schema.columnTranslations) {
-                toDo.applyTranslations = ['runAggregation', function (cb, results) {
+                toDo.applyTranslations = ['runAggregation', function (results, cb) {
                         function doATranslate(column, theTranslation) {
                             results['runAggregation'].forEach(function (resultRow) {
                                 var valToTranslate = resultRow[column.field];
@@ -643,7 +644,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
                                 doATranslate(columnTranslation, columnTranslation);
                             }
                             if (columnTranslation.ref) {
-                                var theTranslation = _.find(translations, function (translation) {
+                                var theTranslation = _.find(translations_1, function (translation) {
                                     return (translation.ref === columnTranslation.ref);
                                 });
                                 if (theTranslation) {
@@ -673,19 +674,21 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
                                         var lookup = ref;
                                         return function (cb) {
                                             var translateObject = { ref: lookup.resourceName, translations: [] };
-                                            translations.push(translateObject);
+                                            translations_1.push(translateObject);
                                             lookup.model.find({}, {}, { lean: true }, function (err, findResults) {
                                                 if (err) {
                                                     cb(err);
                                                 }
                                                 else {
                                                     // TODO - this ref func can probably be done away with now that list fields can have ref
-                                                    var j = 0;
-                                                    async.whilst(function () { return j < findResults.length; }, function (cbres) {
-                                                        var theResult = findResults[j];
-                                                        translateObject.translations[j] = translateObject.translations[j] || {};
-                                                        var theTranslation = translateObject.translations[j];
-                                                        j++;
+                                                    var j_1 = 0;
+                                                    async.whilst(function () {
+                                                        return j_1 < findResults.length;
+                                                    }, function (cbres) {
+                                                        var theResult = findResults[j_1];
+                                                        translateObject.translations[j_1] = translateObject.translations[j_1] || {};
+                                                        var theTranslation = translateObject.translations[j_1];
+                                                        j_1++;
                                                         self.getListFields(lookup, theResult, function (err, description) {
                                                             if (err) {
                                                                 cbres(err);
@@ -718,7 +721,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
                     }
                 }
                 if (callFuncs) {
-                    toDo['callFunctions'] = ['runAggregation', function (cb, results) {
+                    toDo['callFunctions'] = ['runAggregation', function (results, cb) {
                             async.each(results.runAggregation, function (row, cb) {
                                 for (var i = 0; i < schema.columnTranslations.length; i++) {
                                     var thisColumnTranslation = schema.columnTranslations[i];
@@ -821,10 +824,10 @@ DataForm.prototype.collectionGet = function () {
             if (aggregationParam) {
                 this.hackVariablesInPipeline(aggregationParam);
             }
-            var self = this;
+            var self_1 = this;
             this.filteredFind(req.resource, req, aggregationParam, findParam, orderParam, limitParam, skipParam, function (err, docs) {
                 if (err) {
-                    return self.renderError(err, null, req, res, next);
+                    return self_1.renderError(err, null, req, res, next);
                 }
                 else {
                     res.send(docs);
@@ -845,7 +848,8 @@ DataForm.prototype.doFindFunc = function (req, resource, cb) {
     }
 };
 DataForm.prototype.filteredFind = function (resource, req, aggregationParam, findParam, sortOrder, limit, skip, callback) {
-    var that = this, hiddenFields = this.generateHiddenFields(resource, false);
+    var that = this;
+    var hiddenFields = this.generateHiddenFields(resource, false);
     function doAggregation(cb) {
         if (aggregationParam) {
             resource.model.aggregate(aggregationParam, function (err, aggregationResults) {
@@ -1037,11 +1041,11 @@ DataForm.prototype.entityPut = function () {
                 req.doc[name] = (value === '') ? undefined : value;
             });
             if (req.resource.options.hide !== undefined) {
-                var hiddenFields = that.generateHiddenFields(req.resource, true);
-                hiddenFields._id = false;
-                req.resource.model.findById(req.doc._id, hiddenFields, { lean: true }, function (err, data) {
+                var hiddenFields_1 = that.generateHiddenFields(req.resource, true);
+                hiddenFields_1._id = false;
+                req.resource.model.findById(req.doc._id, hiddenFields_1, { lean: true }, function (err, data) {
                     that.replaceHiddenFields(req.doc, data);
-                    that.saveAndRespond(req, res, hiddenFields);
+                    that.saveAndRespond(req, res, hiddenFields_1);
                 });
             }
             else {
