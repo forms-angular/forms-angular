@@ -210,6 +210,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
         sortString += padLeft(obj.searchImportance || 99, 2);
         sortString += padLeft(obj.weighting || 9999, 4);
         sortString += obj.text;
+        console.log(sortString);
         return sortString;
     }
     if (filter) {
@@ -244,9 +245,9 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
             }
         }
     }
-    var that = this, results = [], moreCount = 0, searchCriteria;
+    var that = this, results = [], moreCount = 0, searchCriteria, multiMatchPossible = searchFor.includes(' '), modifiedSearchStr = multiMatchPossible ? searchFor.split(' ').join('|') : searchFor;
     // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
-    searchCriteria = { $regex: '^(' + searchFor.split(' ').join('|') + ')', $options: 'i' };
+    searchCriteria = { $regex: '^(' + modifiedSearchStr + ')', $options: 'i' };
     this.searchFunc(searches, function (item, cb) {
         var searchDoc = {};
         if (filter) {
@@ -292,7 +293,9 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                         resultObject = {};
                         extend(resultObject, results[resultPos]);
                         // If they have already matched then improve their weighting
-                        resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 1);
+                        if (multiMatchPossible) {
+                            resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 1);
+                        }
                         // remove it from current position
                         results.splice(resultPos, 1);
                         // and re-insert where appropriate
