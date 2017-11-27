@@ -48,6 +48,17 @@ gulp.task('build', function(callback) {
     callback);
 });
 
+gulp.task('debugBuild', function(callback) {
+  runSequence(
+    'compile',
+    'templates',
+    'concatTemplates',
+    'annotate',
+    'tidy',
+    'less',
+    callback);
+});
+
 gulp.task('compile', function(callback) {
   runSequence(
     'compileServerSide',

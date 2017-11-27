@@ -156,7 +156,7 @@ DataForm.prototype.getListFields = function (resource: Resource, doc: Document, 
  * Registers all REST routes with the provided `app` object.
  */
 DataForm.prototype.registerRoutes = function () {
-  const search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id'
+  const search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id';
   this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
 
   this.app.get.apply(this.app, processArgs(this.options, [search + resourceName, this.search()]));
