@@ -164,7 +164,7 @@ module fng {
                                     // the web app that have nothing to do with CRUD forms
     fixedRoutes?: Array<IBuiltInRoute>;
     templateFolder?: string;        // The folder where the templates for base-list, base-edit and base-analysis live.  Internal templates used by default.  For pre 0.7.0 behaviour use 'partials/'
-    add2fngRoutes?: any;            // An object to add to the generated routes.  One user case would be to add {authenticate: true}
+    add2fngRoutes?: any;            // An object to add to the generated routes.  One use case would be to add {authenticate: true}
                                     // so that the client authenticates for certain routes
 
     variantsForDemoWebsite? : any;  // Just for demo website

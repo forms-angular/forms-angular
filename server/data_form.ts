@@ -28,7 +28,7 @@ interface ListField {
 }
 
 interface IFngPlugin {
-  module: (fng: any, expressApp: any, options: FngOptions) => void;
+  plugin: (fng: any, expressApp: any, options: FngOptions) => void;
   options: any;
 }
 
@@ -47,7 +47,7 @@ function logTheAPICalls(req, res, next) {
   next();
 }
 
-function processArgs(options, array) {
+function processArgs(options: any, array: Array<any>) : Array<any>{
   if (options.authentication) {
     let authArray = _.isArray(options.authentication) ? options.authentication : [options.authentication];
     for (let i = authArray.length - 1; i >= 0; i--) {
@@ -75,12 +75,18 @@ const DataForm = function (mongoose, app, options: FngOptions) {
   this.searchFunc = async.forEach;
   this.registerRoutes();
   this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
-  for (let plugin in this.options.plugins) {
-    this[plugin] = new this.options.plugins[plugin].module(this, processArgs, this.options.plugins[plugin].options);
+  for (let pluginName in this.options.plugins) {
+    let pluginObj: IFngPlugin = this.options.plugins[pluginName];
+    this[pluginName] = pluginObj.plugin(this, processArgs, pluginObj.options);
   }
 };
 
 module.exports = exports = DataForm;
+
+DataForm.prototype.extractTimestampFromMongoID = function (record: any) : Date {
+  let timestamp = record.toString().substring(0, 8);
+  return new Date(parseInt(timestamp, 16) * 1000);
+};
 
 DataForm.prototype.getListFields = function (resource: Resource, doc: Document, cb) {
 
@@ -116,11 +122,8 @@ DataForm.prototype.getListFields = function (resource: Resource, doc: Document, 
               });
             }
           } else if (aField.params.params === 'timestamp') {
-            let record = doc[aField.field];
-            let timestamp = record.toString().substring(0, 8);
-            let date = new Date(parseInt(timestamp, 16) * 1000);
-            record = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-            cbm(null, record);
+            let date = this.extractTimestampFromMongoID(doc[aField.field]);
+            cbm(null, date.toLocaleDateString() + ' ' + date.toLocaleTimeString());
           }
         } else {
           cbm(null, doc[aField.field]);
@@ -225,6 +228,12 @@ DataForm.prototype.addResource = function (resourceName, model, options) {
 DataForm.prototype.getResource = function (name) {
   return _.find(this.resources, function (resource) {
     return resource.resourceName === name;
+  });
+};
+
+DataForm.prototype.getResourceFromCollection = function (name) {
+  return _.find(this.resources, function (resource) {
+    return resource.model.collection.collectionName === name;
   });
 };
 
