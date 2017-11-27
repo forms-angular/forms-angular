@@ -163,27 +163,30 @@ module fng.services {
                   }
                 }
 
-                var locationParts = locationSplit.length;
+                let locationParts = locationSplit.length;
                 if (locationSplit[1] === 'analyse') {
                   lastObject.analyse = true;
                   lastObject.modelName = locationSplit[2];
                   lastObject.reportSchemaName = locationParts >= 4 ? locationSplit[3] : null;
                 } else {
                   lastObject.modelName = locationSplit[1];
-                  var lastParts = [locationSplit[locationParts - 1], locationSplit[locationParts - 2]];
-                  var newPos = lastParts.indexOf('new');
-                  var editPos;
+                  let lastParts = [locationSplit[locationParts - 1], locationSplit[locationParts - 2]];
+                  let newPos = lastParts.indexOf('new');
+                  let actionPos;
                   if (newPos === -1) {
-                    editPos = lastParts.indexOf('edit');
-                    if (editPos !== -1) {
-                      locationParts -= (2 + editPos);
+                    actionPos = postActions.reduce((previousValue, currentValue) => {
+                      let pos = lastParts.indexOf(currentValue);
+                      return pos > -1 ? pos : previousValue
+                    }, -1);
+                    if (actionPos !== -1) {
+                      locationParts -= (2 + actionPos);
                       lastObject.id = locationSplit[locationParts];
                     }
                   } else {
                     lastObject.newRecord = true;
                     locationParts -= (1 + newPos);
                   }
-                  if (editPos === 1 || newPos === 1) {
+                  if (actionPos === 1 || newPos === 1) {
                     lastObject.tab = lastParts[0];
                   }
                   if (locationParts > 2) {
@@ -192,6 +195,7 @@ module fng.services {
                 }
               }
               return lastObject;
+
             };
 ///**
 // * DominicBoettger wrote:
