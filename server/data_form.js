@@ -40,11 +40,16 @@ var DataForm = function (mongoose, app, options) {
     this.searchFunc = async.forEach;
     this.registerRoutes();
     this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
-    for (var plugin in this.options.plugins) {
-        this[plugin] = new this.options.plugins[plugin].module(this, processArgs, this.options.plugins[plugin].options);
+    for (var pluginName in this.options.plugins) {
+        var pluginObj = this.options.plugins[pluginName];
+        this[pluginName] = pluginObj.plugin(this, processArgs, pluginObj.options);
     }
 };
 module.exports = exports = DataForm;
+DataForm.prototype.extractTimestampFromMongoID = function (record) {
+    var timestamp = record.toString().substring(0, 8);
+    return new Date(parseInt(timestamp, 16) * 1000);
+};
 DataForm.prototype.getListFields = function (resource, doc, cb) {
     function getFirstMatchingField(keyList, type) {
         for (var i = 0; i < keyList.length; i++) {
@@ -78,11 +83,8 @@ DataForm.prototype.getListFields = function (resource, doc, cb) {
                         }
                     }
                     else if (aField.params.params === 'timestamp') {
-                        var record = doc[aField.field];
-                        var timestamp = record.toString().substring(0, 8);
-                        var date = new Date(parseInt(timestamp, 16) * 1000);
-                        record = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-                        cbm(null, record);
+                        var date = this.extractTimestampFromMongoID(doc[aField.field]);
+                        cbm(null, date.toLocaleDateString() + ' ' + date.toLocaleTimeString());
                     }
                 }
                 else {
@@ -181,6 +183,11 @@ DataForm.prototype.addResource = function (resourceName, model, options) {
 DataForm.prototype.getResource = function (name) {
     return _.find(this.resources, function (resource) {
         return resource.resourceName === name;
+    });
+};
+DataForm.prototype.getResourceFromCollection = function (name) {
+    return _.find(this.resources, function (resource) {
+        return resource.model.collection.collectionName === name;
     });
 };
 DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeResourceInResults, limit, callback) {
@@ -1088,3 +1095,4 @@ DataForm.prototype.entityList = function () {
         });
     }, this);
 };
+//# sourceMappingURL=data_form.js.map

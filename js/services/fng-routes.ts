@@ -14,6 +14,8 @@ module fng.services {
       prefix: ''            // How do we want to prefix our routes?  If not empty string then first character must be slash (which is added if not)
     };
 
+    var postActions: Array<string> = ['edit'];
+
     var builtInRoutes:Array<fng.IBuiltInRoute> = [
       {
         route: '/analyse/:model/:reportSchemaName',
@@ -94,6 +96,22 @@ module fng.services {
       return urlStr;
     }
 
+    function _setUpRoutes(fixedRoutes:Array<fng.IBuiltInRoute>, fngRoutes:Array<fng.IBuiltInRoute>) {
+      switch (config.routing) {
+        case 'ngroute' :
+          _routeProvider = $injector.get('$routeProvider');
+          if (fixedRoutes) {_setUpNgRoutes(fixedRoutes)}
+          _setUpNgRoutes(fngRoutes, config.prefix, config.add2fngRoutes);
+          break;
+        case 'uirouter' :
+          _stateProvider = $injector.get('$stateProvider');
+          if (fixedRoutes) {_setUpUIRoutes(config.fixedRoutes);}
+          _setUpUIRoutes(fngRoutes, config.prefix, config.add2fngRoutes);
+          break;
+      }
+    }
+
+
     return {
       start: function (options:fng.IRoutingConfig) {
         angular.extend(config, options);
@@ -106,22 +124,13 @@ module fng.services {
         } else if (!config.html5Mode) {
           $locationProvider.hashPrefix('');
         }
-        switch (config.routing) {
-          case 'ngroute' :
-            _routeProvider = $injector.get('$routeProvider');
-            if (config.fixedRoutes) {
-              _setUpNgRoutes(config.fixedRoutes);
-            }
-            _setUpNgRoutes(builtInRoutes, config.prefix, options.add2fngRoutes);
-            break;
-          case 'uirouter' :
-            _stateProvider = $injector.get('$stateProvider');
-            if (config.fixedRoutes) {
-              _setUpUIRoutes(config.fixedRoutes);
-            }
-            _setUpUIRoutes(builtInRoutes, config.prefix, options.add2fngRoutes);
-            break;
-        }
+        _setUpRoutes(config.fixedRoutes, builtInRoutes);
+      },
+      addRoutes: function(fixedRoutes:Array<fng.IBuiltInRoute>, fngRoutes:Array<fng.IBuiltInRoute>) {
+        _setUpRoutes( fixedRoutes, fngRoutes);
+      },
+      registerAction: function(action: string) {
+        postActions.push(action);
       },
       $get: function () {
         return {

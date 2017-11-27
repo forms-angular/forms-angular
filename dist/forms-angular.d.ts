@@ -224,6 +224,8 @@ declare module fng.services {
 declare module fng.services {
     function routingService($injector: any, $locationProvider: any): {
         start: (options: IRoutingConfig) => void;
+        addRoutes: (fixedRoutes: IBuiltInRoute[], fngRoutes: IBuiltInRoute[]) => void;
+        registerAction: (action: string) => void;
         $get: () => {
             router: () => string;
             prefix: () => string;
