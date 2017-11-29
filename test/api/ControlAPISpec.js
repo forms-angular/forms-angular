@@ -40,7 +40,13 @@ describe('original API', function () {
     async.each(fs.readdirSync(dataPath), function (file, callback) {
       var fname = dataPath + '/' + file;
       if (fs.statSync(fname).isFile()) {
-        exec('mongoimport --db forms-ng_test --drop --collection ' + file.slice(0, 1) + 's --jsonArray < ' + fname, callback);
+        exec('mongoimport --db forms-ng_test --drop --collection ' + file.slice(0, 1) + 's --jsonArray < ' + fname, function(error, stdout, stderr) {
+          if (error !== null) {
+            callback('Error executing ' + command + ' : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
+          } else {
+            callback();
+          }
+        });
       }
     }, function (err) {
       if (err) {
