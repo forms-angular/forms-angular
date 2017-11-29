@@ -1180,18 +1180,34 @@ DataForm.prototype.entityPut = function () {
 DataForm.prototype.entityDelete = function () {
   return _.bind(function (req, res, next) {
 
+    function internalRemove(doc) {
+      doc.remove(function (err) {
+        if (err) {
+          return res.send({success: false});
+        }
+        return res.send({success: true});
+      });
+    }
+
     this.processEntity(req, res, function () {
       if (!req.resource) {
         next();
         return;
       }
 
-      req.doc.remove(function (err) {
-        if (err) {
-          return res.send({success: false});
-        }
-        return res.send({success: true});
-      });
+      let doc = req.doc;
+      if (typeof req.resource.options.onRemove === 'function') {
+
+        req.resource.options.onRemove(doc, req, function (err) {
+          if (err) {
+            throw err;
+          }
+          internalRemove(doc);
+        });
+      } else {
+        internalRemove(doc);
+      }
+
     });
   }, this);
 };
