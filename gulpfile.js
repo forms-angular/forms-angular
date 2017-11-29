@@ -28,6 +28,14 @@ gulp.task('all', function(callback) {
     callback);
 });
 
+gulp.task('default', function(callback) {
+  runSequence(
+    'clean',
+    'build',
+    'test',
+    callback);
+});
+
 gulp.task('allServer', function(callback) {
   runSequence(
     'clean',
