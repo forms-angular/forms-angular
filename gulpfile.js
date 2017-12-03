@@ -162,7 +162,7 @@ gulp.task('uglify', function(cb) {
   pump([
       gulp.src('dist/forms-angular.js'),
       uglify(),
-      gulp.dest('dist')
+      gulp.dest('dist/forms-angular.min.js')
     ],
     cb
   );
