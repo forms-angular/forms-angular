@@ -1,5 +1,16 @@
 # forms-angular
 
+## 0.11.0
+* Menu options can now be added after a promise is resolved by creating a contextMenuPromise on the controller $scope which resolves to a contextMenu array.
+* Added new registerAction method on the routing service (used by the fng-audit plugin)
+* Replaced underscore with lodash
+* Numerous small fixes (mostly to code that interacts with plugins)
+* Improved styling of invalid fields
+ 
+
+## 0.10.x
+Skipped to keep version numbers in sync with plugins
+
 ## 0.8.x to 0.9.0
 * Remove support for (long deprecated) [fng-select2](https://github.com/forms-angular/fng-select2) in favour of (improved)
  [fng-ui-select](https://github.com/forms-angular/fng-ui-select).
