@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var runSequence = require('run-sequence');
 var del = require('del');
+var rename = require('gulp-rename');
 var Server = require('karma').Server;
 var typeScriptCompiler = require('gulp-tsc');
 var uglify = require('gulp-uglify');
@@ -51,6 +52,7 @@ gulp.task('build', function(callback) {
     'concatTemplates',
     'annotate',
     'tidy',
+    'saveDebug',
     'uglify',
     'less',
     callback);
@@ -158,11 +160,18 @@ gulp.task('apiTest', function () {
 //});
 //
 
+gulp.task('saveDebug', function () {
+  gulp.src('dist/forms-angular.js')
+    .pipe(rename('forms-angular.debug.js'))
+    .pipe(gulp.dest('dist'));
+});
+
+
 gulp.task('uglify', function(cb) {
   pump([
       gulp.src('dist/forms-angular.js'),
       uglify(),
-      gulp.dest('dist/forms-angular.min.js')
+      gulp.dest('dist')
     ],
     cb
   );

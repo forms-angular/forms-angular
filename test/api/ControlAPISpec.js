@@ -21,9 +21,10 @@ describe('original API', function () {
 
     mongoose.connect('mongodb://localhost/forms-ng_test', {
       useMongoClient: true,
-      server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-      replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-      options: { keepAlive: 1, connectTimeoutMS: 30000, reconnectTries: 30, reconnectInterval: 5000 }
+      keepAlive: 1,
+      connectTimeoutMS: 30000,
+      reconnectTries: 30,
+      reconnectInterval: 5000
     });
     mongoose.connection.on('error', function () {
       console.error('connection error', arguments);
