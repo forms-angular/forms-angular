@@ -52,8 +52,8 @@ gulp.task('build', function(callback) {
     'concatTemplates',
     'annotate',
     'tidy',
-    'saveDebug',
     'uglify',
+    'saveDebug',
     'less',
     callback);
 });
@@ -161,8 +161,8 @@ gulp.task('apiTest', function () {
 //
 
 gulp.task('saveDebug', function () {
-  gulp.src('dist/forms-angular.js')
-    .pipe(rename('forms-angular.debug.js'))
+  gulp.src('dist/min/forms-angular.js')
+    .pipe(rename('forms-angular.min.js'))
     .pipe(gulp.dest('dist'));
 });
 
@@ -171,7 +171,7 @@ gulp.task('uglify', function(cb) {
   pump([
       gulp.src('dist/forms-angular.js'),
       uglify(),
-      gulp.dest('dist')
+      gulp.dest('dist/min')
     ],
     cb
   );
