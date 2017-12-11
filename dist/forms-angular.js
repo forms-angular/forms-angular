@@ -1,413 +1,3 @@
-/// <reference path="../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../fng-types.ts" />
-var fng;
-(function (fng) {
-    var controllers;
-    (function (controllers) {
-        /*@ngInject*/
-        BaseCtrl.$inject = ["$scope", "$rootScope", "$location", "$filter", "$uibModal", "$data", "routingService", "formGenerator", "recordHandler"];
-        function BaseCtrl($scope, $rootScope, $location, $filter, $uibModal, $data, routingService, formGenerator, recordHandler) {
-            var sharedStuff = $data;
-            var ctrlState = {
-                master: {},
-                fngInvalidRequired: 'fng-invalid-required',
-                allowLocationChange: true // Set when the data arrives..
-            };
-            angular.extend($scope, routingService.parsePathFunc()($location.$$path));
-            $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
-            $rootScope.$broadcast('fngFormLoadStart', $scope);
-            formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
-            recordHandler.decorateScope($scope, $uibModal, recordHandler, ctrlState);
-            recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
-            // Tell the 'model controllers' that they can start fiddling with basescope
-            for (var i = 0; i < sharedStuff.modelControllers.length; i++) {
-                if (sharedStuff.modelControllers[i].onBaseCtrlReady) {
-                    sharedStuff.modelControllers[i].onBaseCtrlReady($scope);
-                }
-            }
-        }
-        controllers.BaseCtrl = BaseCtrl;
-    })(controllers = fng.controllers || (fng.controllers = {}));
-})(fng || (fng = {}));
-/// <reference path="../../node_modules/@types/angular/index.d.ts" />
-var fng;
-(function (fng) {
-    var controllers;
-    (function (controllers) {
-        /*@ngInject*/
-        SaveChangesModalCtrl.$inject = ["$scope", "$uibModalInstance"];
-        function SaveChangesModalCtrl($scope, $uibModalInstance) {
-            $scope.yes = function () {
-                $uibModalInstance.close(true);
-            };
-            $scope.no = function () {
-                $uibModalInstance.close(false);
-            };
-            $scope.cancel = function () {
-                $uibModalInstance.dismiss('cancel');
-            };
-        }
-        controllers.SaveChangesModalCtrl = SaveChangesModalCtrl;
-    })(controllers = fng.controllers || (fng.controllers = {}));
-})(fng || (fng = {}));
-/// <reference path="../../node_modules/@types/angular/index.d.ts" />
-var fng;
-(function (fng) {
-    var controllers;
-    (function (controllers) {
-        /*@ngInject*/
-        ModelCtrl.$inject = ["$scope", "$http", "$location", "routingService"];
-        function ModelCtrl($scope, $http, $location, routingService) {
-            $scope.models = [];
-            $http.get('/api/models').then(function (response) {
-                $scope.models = response.data;
-            }, function () {
-                $location.path('/404');
-            });
-            $scope.newUrl = function (model) {
-                return routingService.buildUrl(model + '/new');
-            };
-            $scope.listUrl = function (model) {
-                return routingService.buildUrl(model);
-            };
-        }
-        controllers.ModelCtrl = ModelCtrl;
-    })(controllers = fng.controllers || (fng.controllers = {}));
-})(fng || (fng = {}));
-/// <reference path="../../node_modules/@types/angular/index.d.ts" />
-var fng;
-(function (fng) {
-    var controllers;
-    (function (controllers) {
-        /*@ngInject*/
-        NavCtrl.$inject = ["$scope", "$data", "$location", "$filter", "$controller", "routingService", "cssFrameworkService"];
-        function NavCtrl($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
-            $scope.items = [];
-            /* isCollapsed and showShortcuts are used to control how the menu is displayed in a responsive environment and whether the shortcut keystrokes help should be displayed */
-            $scope.isCollapsed = true;
-            $scope.showShortcuts = false;
-            $scope.shortcuts = [
-                { key: '?', act: 'Show shortcuts' },
-                { key: '/', act: 'Jump to search' },
-                { key: 'Ctrl+Shift+S', act: 'Save the current record' },
-                { key: 'Ctrl+Shift+Esc', act: 'Cancel changes on the current record' },
-                { key: 'Ctrl+Shift+Ins', act: 'Create a new record' },
-                { key: 'Ctrl+Shift+X', act: 'Delete the current record' }
-            ];
-            $scope.markupShortcut = function (keys) {
-                return '<span class="key">' + keys.split('+').join('</span> + <span class="key">') + '</span>';
-            };
-            $scope.globalShortcuts = function (event) {
-                function deferredBtnClick(id) {
-                    var btn = document.getElementById(id);
-                    if (btn) {
-                        if (!btn.disabled) {
-                            setTimeout(function () {
-                                btn.click();
-                            });
-                        }
-                        event.preventDefault();
-                    }
-                }
-                function filter(event) {
-                    var tagName = (event.target || event.srcElement).tagName;
-                    return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
-                }
-                //console.log(event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.metaKey);
-                if (event.keyCode === 191 && (filter(event) || (event.ctrlKey && !event.altKey && !event.metaKey))) {
-                    if (event.ctrlKey || !event.shiftKey) {
-                        var searchInput = document.getElementById('searchinput');
-                        if (searchInput) {
-                            searchInput.focus();
-                            event.preventDefault();
-                        }
-                    }
-                    else {
-                        $scope.showShortcuts = true;
-                    }
-                }
-                else if (event.keyCode === 83 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
-                    deferredBtnClick('saveButton'); // Ctrl+Shift+S saves changes
-                }
-                else if (event.keyCode === 27 && ((event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) || $scope.showShortcuts)) {
-                    if (event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
-                        deferredBtnClick('cancelButton'); // Ctrl+Shift+Esc cancels updates
-                    }
-                    else {
-                        $scope.showShortcuts = false;
-                    }
-                }
-                else if (event.keyCode === 45 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
-                    deferredBtnClick('newButton'); // Ctrl+Shift+Ins creates New record
-                }
-                else if (event.keyCode === 88 && event.ctrlKey && event.shiftKey && event.altKey && !event.metaKey) {
-                    deferredBtnClick('deleteButton'); // Ctrl+Shift+X deletes record
-                }
-            };
-            $scope.css = function (fn, arg) {
-                var result;
-                if (typeof cssFrameworkService[fn] === 'function') {
-                    result = cssFrameworkService[fn](arg);
-                }
-                else {
-                    result = 'error text-error';
-                }
-                return result;
-            };
-            function loadControllerAndMenu(controllerName, level, needDivider) {
-                var locals = {}, addThis;
-                controllerName += 'Ctrl';
-                locals.$scope = $data.modelControllers[level] = $scope.$new();
-                var addMenuOptions = function (array) {
-                    angular.forEach(array, function (value) {
-                        if (value.divider) {
-                            needDivider = true;
-                        }
-                        else if (value[addThis]) {
-                            if (needDivider) {
-                                needDivider = false;
-                                $scope.items.push({ divider: true });
-                            }
-                            $scope.items.push(value);
-                        }
-                    });
-                };
-                try {
-                    $controller(controllerName, locals);
-                    if ($scope.routing.newRecord) {
-                        addThis = 'creating';
-                    }
-                    else if ($scope.routing.id) {
-                        addThis = 'editing';
-                    }
-                    else {
-                        addThis = 'listing';
-                    }
-                    if (angular.isObject(locals.$scope.contextMenu)) {
-                        addMenuOptions(locals.$scope.contextMenu);
-                        if (locals.$scope.contextMenuPromise) {
-                            locals.$scope.contextMenuPromise.then(function (array) { return addMenuOptions(array); });
-                        }
-                    }
-                }
-                catch (error) {
-                    // Check to see if error is no such controller - don't care
-                    if ((!(/is not a function, got undefined/.test(error.message))) && (!(/\[\$controller:ctrlreg\] The controller with the name/.test(error.message)))) {
-                        console.log('Unable to instantiate ' + controllerName + ' - ' + error.message);
-                    }
-                }
-            }
-            $scope.$on('$locationChangeSuccess', function () {
-                $scope.routing = routingService.parsePathFunc()($location.$$path);
-                $scope.items = [];
-                if ($scope.routing.analyse) {
-                    $scope.contextMenu = 'Report';
-                    $scope.items = [
-                        {
-                            broadcast: 'exportToPDF',
-                            text: 'PDF'
-                        },
-                        {
-                            broadcast: 'exportToCSV',
-                            text: 'CSV'
-                        }
-                    ];
-                }
-                else if ($scope.routing.modelName) {
-                    angular.forEach($data.modelControllers, function (value) {
-                        value.$destroy();
-                    });
-                    $data.modelControllers = [];
-                    $data.record = {};
-                    $data.disableFunctions = {};
-                    $data.dataEventFunctions = {};
-                    delete $data.dropDownDisplay;
-                    delete $data.modelNameDisplay;
-                    // Now load context menu.  For /person/client/:id/edit we need
-                    // to load PersonCtrl and PersonClientCtrl
-                    var modelName = $filter('titleCase')($scope.routing.modelName, true);
-                    var needDivider = false;
-                    loadControllerAndMenu(modelName, 0, needDivider);
-                    if ($scope.routing.formName) {
-                        loadControllerAndMenu(modelName + $filter('titleCase')($scope.routing.formName, true), 1, needDivider);
-                    }
-                    $scope.contextMenu = $data.dropDownDisplay || $data.modelNameDisplay || $filter('titleCase')($scope.routing.modelName, false);
-                }
-            });
-            $scope.doClick = function (index, event) {
-                var option = angular.element(event.target);
-                var item = $scope.items[index];
-                if (item.divider || option.parent().hasClass('disabled')) {
-                    event.preventDefault();
-                }
-                else if (item.broadcast) {
-                    $scope.$broadcast(item.broadcast);
-                }
-                else {
-                    // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
-                    var args = item.args || [], fn = item.fn;
-                    switch (args.length) {
-                        case 0:
-                            fn();
-                            break;
-                        case 1:
-                            fn(args[0]);
-                            break;
-                        case 2:
-                            fn(args[0], args[1]);
-                            break;
-                        case 3:
-                            fn(args[0], args[1], args[2]);
-                            break;
-                        case 4:
-                            fn(args[0], args[1], args[2], args[3]);
-                            break;
-                    }
-                }
-            };
-            $scope.isHidden = function (index) {
-                return $scope.items[index].isHidden ? $scope.items[index].isHidden() : false;
-            };
-            $scope.isDisabled = function (index) {
-                return $scope.items[index].isDisabled ? $scope.items[index].isDisabled() : false;
-            };
-            $scope.buildUrl = function (path) {
-                return routingService.buildUrl(path);
-            };
-            $scope.dropdownClass = function (index) {
-                var item = $scope.items[index];
-                var thisClass = '';
-                if (item.divider) {
-                    thisClass = 'divider';
-                }
-                else if ($scope.isDisabled(index)) {
-                    thisClass = 'disabled';
-                }
-                return thisClass;
-            };
-        }
-        controllers.NavCtrl = NavCtrl;
-    })(controllers = fng.controllers || (fng.controllers = {}));
-})(fng || (fng = {}));
-/// <reference path="../../node_modules/@types/angular/index.d.ts" />
-var fng;
-(function (fng) {
-    var controllers;
-    (function (controllers) {
-        /*@ngInject*/
-        SearchCtrl.$inject = ["$scope", "$http", "$location", "routingService"];
-        function SearchCtrl($scope, $http, $location, routingService) {
-            var currentRequest = '';
-            var _isNotMobile;
-            _isNotMobile = (function () {
-                var check = false;
-                (function (a) {
-                    /* tslint:disable:max-line-length */
-                    if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) {
-                        /* tslint:enable:max-line-length */
-                        check = true;
-                    }
-                })(navigator.userAgent || navigator.vendor || window['opera']);
-                return !check;
-            })();
-            $scope.searchPlaceholder = _isNotMobile ? 'Ctrl + / to Search' : 'Search';
-            $scope.handleKey = function (event) {
-                if (event.keyCode === 27 && $scope.searchTarget && $scope.searchTarget.length > 0) {
-                    $scope.searchTarget = '';
-                }
-                else if ($scope.results.length > 0) {
-                    switch (event.keyCode) {
-                        case 38:
-                            // up arrow pressed
-                            if ($scope.focus > 0) {
-                                $scope.setFocus($scope.focus - 1);
-                            }
-                            if (typeof event.preventDefault === 'function') {
-                                event.preventDefault();
-                            }
-                            break;
-                        case 40:
-                            // down arrow pressed
-                            if ($scope.results.length > $scope.focus + 1) {
-                                $scope.setFocus($scope.focus + 1);
-                            }
-                            if (typeof event.preventDefault === 'function') {
-                                event.preventDefault();
-                            }
-                            break;
-                        case 13:
-                            if ($scope.focus != null) {
-                                $scope.selectResult($scope.focus);
-                            }
-                            break;
-                    }
-                }
-            };
-            $scope.setFocus = function (index) {
-                if ($scope.focus !== null) {
-                    delete $scope.results[$scope.focus].focussed;
-                }
-                $scope.results[index].focussed = true;
-                $scope.focus = index;
-            };
-            $scope.selectResult = function (resultNo) {
-                var result = $scope.results[resultNo];
-                var newURL = routingService.prefix() + '/' + result.resource + '/' + result.id + '/edit';
-                if (result.resourceTab) {
-                    newURL += '/' + result.resourceTab;
-                }
-                $location.url(newURL);
-            };
-            $scope.resultClass = function (index) {
-                var resultClass = 'search-result';
-                if ($scope.results && $scope.results[index].focussed) {
-                    resultClass += ' focus';
-                }
-                return resultClass;
-            };
-            var clearSearchResults = function () {
-                $scope.moreCount = 0;
-                $scope.errorClass = '';
-                $scope.results = [];
-                $scope.focus = null;
-            };
-            $scope.$watch('searchTarget', function (newValue) {
-                if (newValue && newValue.length > 0) {
-                    currentRequest = newValue;
-                    $http.get('/api/search?q=' + newValue).then(function (response) {
-                        var data = response.data;
-                        // Check that we haven't fired off a subsequent request, in which
-                        // case we are no longer interested in these results
-                        if (currentRequest === newValue) {
-                            if ($scope.searchTarget.length > 0) {
-                                $scope.results = data.results;
-                                $scope.moreCount = data.moreCount;
-                                if (data.results.length > 0) {
-                                    $scope.errorClass = '';
-                                    $scope.setFocus(0);
-                                }
-                                $scope.errorClass = $scope.results.length === 0 ? 'error has-error' : '';
-                            }
-                            else {
-                                clearSearchResults();
-                            }
-                        }
-                    }, function (response) {
-                        console.log('Error in searchbox.js : ' + response.data + ' (status=' + response.status + ')');
-                    });
-                }
-                else {
-                    clearSearchResults();
-                }
-            }, true);
-            $scope.$on('$routeChangeStart', function () {
-                $scope.searchTarget = '';
-            });
-        }
-        controllers.SearchCtrl = SearchCtrl;
-    })(controllers = fng.controllers || (fng.controllers = {}));
-})(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
 var fng;
 (function (fng) {
@@ -506,6 +96,23 @@ var fng;
         directives.fngLink = fngLink;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+var fng;
+(function (fng) {
+    var directives;
+    (function (directives) {
+        /*@ngInject*/
+        formButtons.$inject = ["cssFrameworkService"];
+        function formButtons(cssFrameworkService) {
+            return {
+                restrict: 'A',
+                templateUrl: 'form-button-' + cssFrameworkService.framework() + '.html'
+            };
+        }
+        directives.formButtons = formButtons;
+    })(directives = fng.directives || (fng.directives = {}));
+})(fng || (fng = {}));
+/// <reference path="../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../../node_modules/@types/lodash/index.d.ts" />
 /// <reference path="../fng-types.ts" />
@@ -1220,15 +827,144 @@ var fng;
     var directives;
     (function (directives) {
         /*@ngInject*/
-        formButtons.$inject = ["cssFrameworkService"];
-        function formButtons(cssFrameworkService) {
+        function fngNakedDate() {
             return {
                 restrict: 'A',
-                templateUrl: 'form-button-' + cssFrameworkService.framework() + '.html'
+                require: 'ngModel',
+                link: function postlink(scope, element, attrs, ngModel) {
+                    ngModel.$parsers.push(function (value) {
+                        if (value) {
+                            return value.toString();
+                        }
+                    });
+                    ngModel.$formatters.push(function (value) {
+                        if (value) {
+                            return new Date(value);
+                        }
+                    });
+                }
             };
         }
-        directives.formButtons = formButtons;
+        directives.fngNakedDate = fngNakedDate;
     })(directives = fng.directives || (fng.directives = {}));
+})(fng || (fng = {}));
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+var fng;
+(function (fng) {
+    var controllers;
+    (function (controllers) {
+        /*@ngInject*/
+        SearchCtrl.$inject = ["$scope", "$http", "$location", "routingService"];
+        function SearchCtrl($scope, $http, $location, routingService) {
+            var currentRequest = '';
+            var _isNotMobile;
+            _isNotMobile = (function () {
+                var check = false;
+                (function (a) {
+                    /* tslint:disable:max-line-length */
+                    if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) {
+                        /* tslint:enable:max-line-length */
+                        check = true;
+                    }
+                })(navigator.userAgent || navigator.vendor || window['opera']);
+                return !check;
+            })();
+            $scope.searchPlaceholder = _isNotMobile ? 'Ctrl + / to Search' : 'Search';
+            $scope.handleKey = function (event) {
+                if (event.keyCode === 27 && $scope.searchTarget && $scope.searchTarget.length > 0) {
+                    $scope.searchTarget = '';
+                }
+                else if ($scope.results.length > 0) {
+                    switch (event.keyCode) {
+                        case 38:
+                            // up arrow pressed
+                            if ($scope.focus > 0) {
+                                $scope.setFocus($scope.focus - 1);
+                            }
+                            if (typeof event.preventDefault === 'function') {
+                                event.preventDefault();
+                            }
+                            break;
+                        case 40:
+                            // down arrow pressed
+                            if ($scope.results.length > $scope.focus + 1) {
+                                $scope.setFocus($scope.focus + 1);
+                            }
+                            if (typeof event.preventDefault === 'function') {
+                                event.preventDefault();
+                            }
+                            break;
+                        case 13:
+                            if ($scope.focus != null) {
+                                $scope.selectResult($scope.focus);
+                            }
+                            break;
+                    }
+                }
+            };
+            $scope.setFocus = function (index) {
+                if ($scope.focus !== null) {
+                    delete $scope.results[$scope.focus].focussed;
+                }
+                $scope.results[index].focussed = true;
+                $scope.focus = index;
+            };
+            $scope.selectResult = function (resultNo) {
+                var result = $scope.results[resultNo];
+                var newURL = routingService.prefix() + '/' + result.resource + '/' + result.id + '/edit';
+                if (result.resourceTab) {
+                    newURL += '/' + result.resourceTab;
+                }
+                $location.url(newURL);
+            };
+            $scope.resultClass = function (index) {
+                var resultClass = 'search-result';
+                if ($scope.results && $scope.results[index].focussed) {
+                    resultClass += ' focus';
+                }
+                return resultClass;
+            };
+            var clearSearchResults = function () {
+                $scope.moreCount = 0;
+                $scope.errorClass = '';
+                $scope.results = [];
+                $scope.focus = null;
+            };
+            $scope.$watch('searchTarget', function (newValue) {
+                if (newValue && newValue.length > 0) {
+                    currentRequest = newValue;
+                    $http.get('/api/search?q=' + newValue).then(function (response) {
+                        var data = response.data;
+                        // Check that we haven't fired off a subsequent request, in which
+                        // case we are no longer interested in these results
+                        if (currentRequest === newValue) {
+                            if ($scope.searchTarget.length > 0) {
+                                $scope.results = data.results;
+                                $scope.moreCount = data.moreCount;
+                                if (data.results.length > 0) {
+                                    $scope.errorClass = '';
+                                    $scope.setFocus(0);
+                                }
+                                $scope.errorClass = $scope.results.length === 0 ? 'error has-error' : '';
+                            }
+                            else {
+                                clearSearchResults();
+                            }
+                        }
+                    }, function (response) {
+                        console.log('Error in searchbox.js : ' + response.data + ' (status=' + response.status + ')');
+                    });
+                }
+                else {
+                    clearSearchResults();
+                }
+            }, true);
+            $scope.$on('$routeChangeStart', function () {
+                $scope.searchTarget = '';
+            });
+        }
+        controllers.SearchCtrl = SearchCtrl;
+    })(controllers = fng.controllers || (fng.controllers = {}));
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../controllers/search-ctrl.ts" />
@@ -1909,11 +1645,21 @@ var fng;
                         if (formInstructions.readonly) {
                             formInstructions.type = 'text';
                         }
+                        else if (formInstructions.directive) {
+                            formInstructions.type = 'text'; // Think they all use date
+                        }
                         else {
-                            formInstructions.type = 'text';
-                            formInstructions.add = formInstructions.add || '';
-                            formInstructions.add += ' ui-date ui-date-format ';
-                            // formInstructions.add += ' ui-date ui-date-format datepicker-popup-fix ';
+                            try {
+                                formInstructions.add = formInstructions.add || '';
+                                var testDatePickerInstalled = angular.module('ui.date').requires;
+                                formInstructions.type = 'text';
+                                formInstructions.add += ' ui-date ui-date-format ';
+                                // formInstructions.add += ' ui-date ui-date-format datepicker-popup-fix ';
+                            }
+                            catch (e) {
+                                formInstructions.type = 'date';
+                                formInstructions.add += ' fng-naked-date="x" ';
+                            }
                         }
                     }
                 }
@@ -2175,15 +1921,15 @@ var fng;
                         }
                         // Cannot assume that directives will use the same methods
                         if (form) {
-                            var field = form[name];
-                            if (field && field.$invalid) {
-                                if (field.$dirty) {
+                            var field_1 = form[name];
+                            if (field_1 && field_1.$invalid) {
+                                if (field_1.$dirty) {
                                     result = true;
                                 }
                                 else {
                                     // with pristine fields, they have to have some sort of invalidity other than ng-invalid-required
-                                    angular.forEach(field.$validators, function (obj, key) {
-                                        if (key !== 'required' && field.$error[key]) {
+                                    angular.forEach(field_1.$validators, function (obj, key) {
+                                        if (key !== 'required' && field_1.$error[key]) {
                                             result = true;
                                         }
                                     });
@@ -3548,6 +3294,297 @@ var fng;
         services.SubmissionsService = SubmissionsService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+/// <reference path="../fng-types.ts" />
+var fng;
+(function (fng) {
+    var controllers;
+    (function (controllers) {
+        /*@ngInject*/
+        BaseCtrl.$inject = ["$scope", "$rootScope", "$location", "$filter", "$uibModal", "$data", "routingService", "formGenerator", "recordHandler"];
+        function BaseCtrl($scope, $rootScope, $location, $filter, $uibModal, $data, routingService, formGenerator, recordHandler) {
+            var sharedStuff = $data;
+            var ctrlState = {
+                master: {},
+                fngInvalidRequired: 'fng-invalid-required',
+                allowLocationChange: true // Set when the data arrives..
+            };
+            angular.extend($scope, routingService.parsePathFunc()($location.$$path));
+            $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
+            $rootScope.$broadcast('fngFormLoadStart', $scope);
+            formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
+            recordHandler.decorateScope($scope, $uibModal, recordHandler, ctrlState);
+            recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
+            // Tell the 'model controllers' that they can start fiddling with basescope
+            for (var i = 0; i < sharedStuff.modelControllers.length; i++) {
+                if (sharedStuff.modelControllers[i].onBaseCtrlReady) {
+                    sharedStuff.modelControllers[i].onBaseCtrlReady($scope);
+                }
+            }
+        }
+        controllers.BaseCtrl = BaseCtrl;
+    })(controllers = fng.controllers || (fng.controllers = {}));
+})(fng || (fng = {}));
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+var fng;
+(function (fng) {
+    var controllers;
+    (function (controllers) {
+        /*@ngInject*/
+        SaveChangesModalCtrl.$inject = ["$scope", "$uibModalInstance"];
+        function SaveChangesModalCtrl($scope, $uibModalInstance) {
+            $scope.yes = function () {
+                $uibModalInstance.close(true);
+            };
+            $scope.no = function () {
+                $uibModalInstance.close(false);
+            };
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        }
+        controllers.SaveChangesModalCtrl = SaveChangesModalCtrl;
+    })(controllers = fng.controllers || (fng.controllers = {}));
+})(fng || (fng = {}));
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+var fng;
+(function (fng) {
+    var controllers;
+    (function (controllers) {
+        /*@ngInject*/
+        ModelCtrl.$inject = ["$scope", "$http", "$location", "routingService"];
+        function ModelCtrl($scope, $http, $location, routingService) {
+            $scope.models = [];
+            $http.get('/api/models').then(function (response) {
+                $scope.models = response.data;
+            }, function () {
+                $location.path('/404');
+            });
+            $scope.newUrl = function (model) {
+                return routingService.buildUrl(model + '/new');
+            };
+            $scope.listUrl = function (model) {
+                return routingService.buildUrl(model);
+            };
+        }
+        controllers.ModelCtrl = ModelCtrl;
+    })(controllers = fng.controllers || (fng.controllers = {}));
+})(fng || (fng = {}));
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
+var fng;
+(function (fng) {
+    var controllers;
+    (function (controllers) {
+        /*@ngInject*/
+        NavCtrl.$inject = ["$scope", "$data", "$location", "$filter", "$controller", "routingService", "cssFrameworkService"];
+        function NavCtrl($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
+            $scope.items = [];
+            /* isCollapsed and showShortcuts are used to control how the menu is displayed in a responsive environment and whether the shortcut keystrokes help should be displayed */
+            $scope.isCollapsed = true;
+            $scope.showShortcuts = false;
+            $scope.shortcuts = [
+                { key: '?', act: 'Show shortcuts' },
+                { key: '/', act: 'Jump to search' },
+                { key: 'Ctrl+Shift+S', act: 'Save the current record' },
+                { key: 'Ctrl+Shift+Esc', act: 'Cancel changes on the current record' },
+                { key: 'Ctrl+Shift+Ins', act: 'Create a new record' },
+                { key: 'Ctrl+Shift+X', act: 'Delete the current record' }
+            ];
+            $scope.markupShortcut = function (keys) {
+                return '<span class="key">' + keys.split('+').join('</span> + <span class="key">') + '</span>';
+            };
+            $scope.globalShortcuts = function (event) {
+                function deferredBtnClick(id) {
+                    var btn = document.getElementById(id);
+                    if (btn) {
+                        if (!btn.disabled) {
+                            setTimeout(function () {
+                                btn.click();
+                            });
+                        }
+                        event.preventDefault();
+                    }
+                }
+                function filter(event) {
+                    var tagName = (event.target || event.srcElement).tagName;
+                    return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+                }
+                //console.log(event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.metaKey);
+                if (event.keyCode === 191 && (filter(event) || (event.ctrlKey && !event.altKey && !event.metaKey))) {
+                    if (event.ctrlKey || !event.shiftKey) {
+                        var searchInput = document.getElementById('searchinput');
+                        if (searchInput) {
+                            searchInput.focus();
+                            event.preventDefault();
+                        }
+                    }
+                    else {
+                        $scope.showShortcuts = true;
+                    }
+                }
+                else if (event.keyCode === 83 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+                    deferredBtnClick('saveButton'); // Ctrl+Shift+S saves changes
+                }
+                else if (event.keyCode === 27 && ((event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) || $scope.showShortcuts)) {
+                    if (event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+                        deferredBtnClick('cancelButton'); // Ctrl+Shift+Esc cancels updates
+                    }
+                    else {
+                        $scope.showShortcuts = false;
+                    }
+                }
+                else if (event.keyCode === 45 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+                    deferredBtnClick('newButton'); // Ctrl+Shift+Ins creates New record
+                }
+                else if (event.keyCode === 88 && event.ctrlKey && event.shiftKey && event.altKey && !event.metaKey) {
+                    deferredBtnClick('deleteButton'); // Ctrl+Shift+X deletes record
+                }
+            };
+            $scope.css = function (fn, arg) {
+                var result;
+                if (typeof cssFrameworkService[fn] === 'function') {
+                    result = cssFrameworkService[fn](arg);
+                }
+                else {
+                    result = 'error text-error';
+                }
+                return result;
+            };
+            function loadControllerAndMenu(controllerName, level, needDivider) {
+                var locals = {}, addThis;
+                controllerName += 'Ctrl';
+                locals.$scope = $data.modelControllers[level] = $scope.$new();
+                var addMenuOptions = function (array) {
+                    angular.forEach(array, function (value) {
+                        if (value.divider) {
+                            needDivider = true;
+                        }
+                        else if (value[addThis]) {
+                            if (needDivider) {
+                                needDivider = false;
+                                $scope.items.push({ divider: true });
+                            }
+                            $scope.items.push(value);
+                        }
+                    });
+                };
+                try {
+                    $controller(controllerName, locals);
+                    if ($scope.routing.newRecord) {
+                        addThis = 'creating';
+                    }
+                    else if ($scope.routing.id) {
+                        addThis = 'editing';
+                    }
+                    else {
+                        addThis = 'listing';
+                    }
+                    if (angular.isObject(locals.$scope.contextMenu)) {
+                        addMenuOptions(locals.$scope.contextMenu);
+                        if (locals.$scope.contextMenuPromise) {
+                            locals.$scope.contextMenuPromise.then(function (array) { return addMenuOptions(array); });
+                        }
+                    }
+                }
+                catch (error) {
+                    // Check to see if error is no such controller - don't care
+                    if ((!(/is not a function, got undefined/.test(error.message))) && (!(/\[\$controller:ctrlreg\] The controller with the name/.test(error.message)))) {
+                        console.log('Unable to instantiate ' + controllerName + ' - ' + error.message);
+                    }
+                }
+            }
+            $scope.$on('$locationChangeSuccess', function () {
+                $scope.routing = routingService.parsePathFunc()($location.$$path);
+                $scope.items = [];
+                if ($scope.routing.analyse) {
+                    $scope.contextMenu = 'Report';
+                    $scope.items = [
+                        {
+                            broadcast: 'exportToPDF',
+                            text: 'PDF'
+                        },
+                        {
+                            broadcast: 'exportToCSV',
+                            text: 'CSV'
+                        }
+                    ];
+                }
+                else if ($scope.routing.modelName) {
+                    angular.forEach($data.modelControllers, function (value) {
+                        value.$destroy();
+                    });
+                    $data.modelControllers = [];
+                    $data.record = {};
+                    $data.disableFunctions = {};
+                    $data.dataEventFunctions = {};
+                    delete $data.dropDownDisplay;
+                    delete $data.modelNameDisplay;
+                    // Now load context menu.  For /person/client/:id/edit we need
+                    // to load PersonCtrl and PersonClientCtrl
+                    var modelName = $filter('titleCase')($scope.routing.modelName, true);
+                    var needDivider = false;
+                    loadControllerAndMenu(modelName, 0, needDivider);
+                    if ($scope.routing.formName) {
+                        loadControllerAndMenu(modelName + $filter('titleCase')($scope.routing.formName, true), 1, needDivider);
+                    }
+                    $scope.contextMenu = $data.dropDownDisplay || $data.modelNameDisplay || $filter('titleCase')($scope.routing.modelName, false);
+                }
+            });
+            $scope.doClick = function (index, event) {
+                var option = angular.element(event.target);
+                var item = $scope.items[index];
+                if (item.divider || option.parent().hasClass('disabled')) {
+                    event.preventDefault();
+                }
+                else if (item.broadcast) {
+                    $scope.$broadcast(item.broadcast);
+                }
+                else {
+                    // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
+                    var args = item.args || [], fn = item.fn;
+                    switch (args.length) {
+                        case 0:
+                            fn();
+                            break;
+                        case 1:
+                            fn(args[0]);
+                            break;
+                        case 2:
+                            fn(args[0], args[1]);
+                            break;
+                        case 3:
+                            fn(args[0], args[1], args[2]);
+                            break;
+                        case 4:
+                            fn(args[0], args[1], args[2], args[3]);
+                            break;
+                    }
+                }
+            };
+            $scope.isHidden = function (index) {
+                return $scope.items[index].isHidden ? $scope.items[index].isHidden() : false;
+            };
+            $scope.isDisabled = function (index) {
+                return $scope.items[index].isDisabled ? $scope.items[index].isDisabled() : false;
+            };
+            $scope.buildUrl = function (path) {
+                return routingService.buildUrl(path);
+            };
+            $scope.dropdownClass = function (index) {
+                var item = $scope.items[index];
+                var thisClass = '';
+                if (item.divider) {
+                    thisClass = 'divider';
+                }
+                else if ($scope.isDisabled(index)) {
+                    thisClass = 'disabled';
+                }
+                return thisClass;
+            };
+        }
+        controllers.NavCtrl = NavCtrl;
+    })(controllers = fng.controllers || (fng.controllers = {}));
+})(fng || (fng = {}));
 /// <reference path="../node_modules/@types/angular/index.d.ts" />
 /// <reference path="controllers/base.ts" />
 /// <reference path="controllers/saveChangesModal.ts" />
@@ -3592,6 +3629,7 @@ var fng;
         .directive('formInput', fng.directives.formInput)
         .directive('formButtons', fng.directives.formButtons)
         .directive('globalSearch', fng.directives.globalSearch)
+        .directive('fngNakedDate', fng.directives.fngNakedDate)
         .filter('camelCase', fng.filters.camelCase)
         .filter('titleCase', fng.filters.titleCase)
         .service('addAllService', fng.services.addAllService)

@@ -8,7 +8,11 @@ var uglify = require('gulp-uglify');
 var pump = require('pump');
 
 var browserSources = [
-  'js/**/*.ts'
+  'js/controller/*.ts',
+  'js/directives/*.ts',
+  'js/filters/*.ts',
+  'js/services/*.ts',
+  'js/*.ts'
 ];
 var testFiles = []; // Declared in the karma.conf.js
 var rootDir = process.cwd();
@@ -54,6 +58,7 @@ gulp.task('build', function(callback) {
     'tidy',
     'uglify',
     'saveDebug',
+    'cleanMin',
     'less',
     callback);
 });
@@ -100,6 +105,10 @@ gulp.task('compileServerSide', function() {
 
 gulp.task('clean', function() {
   return del(distDirectory, function(err,paths) {console.log('Cleared ' + paths.join(' '));});
+});
+
+gulp.task('cleanMin', function() {
+  return del(distDirectory + '/min', function(err,paths) {console.log('Cleared ' + paths.join(' '));});
 });
 
 gulp.task('annotate', function() {

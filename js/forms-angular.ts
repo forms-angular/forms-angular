@@ -43,6 +43,7 @@ module fng {
   .directive('formInput',fng.directives.formInput)
   .directive('formButtons',fng.directives.formButtons)
   .directive('globalSearch',fng.directives.globalSearch)
+  .directive('fngNakedDate',fng.directives.fngNakedDate)
   .filter('camelCase', fng.filters.camelCase)
   .filter('titleCase', fng.filters.titleCase)
   .service('addAllService', fng.services.addAllService)

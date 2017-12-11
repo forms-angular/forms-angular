@@ -168,11 +168,19 @@ module fng.services {
         if (!formInstructions.type) {
           if (formInstructions.readonly) {
             formInstructions.type = 'text';
+          } else if (formInstructions.directive) {
+            formInstructions.type = 'text';     // Think they all use date
           } else {
-            formInstructions.type = 'text';
-            formInstructions.add = formInstructions.add || '';
-            formInstructions.add += ' ui-date ui-date-format ';
-            // formInstructions.add += ' ui-date ui-date-format datepicker-popup-fix ';
+            try {
+              formInstructions.add = formInstructions.add || '';
+              let testDatePickerInstalled = angular.module('ui.date').requires;
+              formInstructions.type = 'text';
+              formInstructions.add += ' ui-date ui-date-format ';
+              // formInstructions.add += ' ui-date ui-date-format datepicker-popup-fix ';
+            } catch(e) {
+              formInstructions.type = 'date';
+              formInstructions.add += ' fng-naked-date="x" ';
+            }
           }
         }
       } else if (mongooseType.instance.toLowerCase() === 'boolean') {
@@ -439,15 +447,15 @@ module fng.services {
       },
 
       hasError: function hasError(formName, name, index, $scope) {
-        var result = false;
+        let result = false;
         if ($scope) {
-          var form = $scope[$scope.topLevelFormName];
+          let form = $scope[$scope.topLevelFormName];
           if (formName !== 'null') {
             form = form[formName.replace('$index', index)];
           }
           // Cannot assume that directives will use the same methods
           if (form) {
-            var field = form[name];
+            let field = form[name];
             if (field && field.$invalid) {
               if (field.$dirty) {
                 result = true;
