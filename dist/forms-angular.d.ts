@@ -1,6 +1,18 @@
 /// <reference path="../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../node_modules/@types/lodash/index.d.ts" />
 /// <reference types="angular" />
+declare module fng.directives {
+    function modelControllerDropdown(): angular.IDirective;
+}
+declare module fng.directives {
+    function errorDisplay(): angular.IDirective;
+}
+declare module fng.directives {
+    function fngLink(routingService: any, SubmissionsService: any): angular.IDirective;
+}
+declare module fng.directives {
+    function formButtons(cssFrameworkService: any): angular.IDirective;
+}
 declare module fng {
     interface IFieldViewInfo {
         name: string;
@@ -159,35 +171,14 @@ declare module fng {
         variant?: string;
     }
 }
-declare module fng.controllers {
-    function BaseCtrl($scope: fng.IFormScope, $rootScope: any, $location: any, $filter: any, $uibModal: any, $data: any, routingService: any, formGenerator: any, recordHandler: any): void;
-}
-declare module fng.controllers {
-    function SaveChangesModalCtrl($scope: any, $uibModalInstance: any): void;
-}
-declare module fng.controllers {
-    function ModelCtrl($scope: any, $http: any, $location: any, routingService: any): void;
-}
-declare module fng.controllers {
-    function NavCtrl($scope: any, $data: any, $location: any, $filter: any, $controller: any, routingService: any, cssFrameworkService: any): void;
-}
-declare module fng.controllers {
-    function SearchCtrl($scope: any, $http: any, $location: any, routingService: any): void;
-}
-declare module fng.directives {
-    function modelControllerDropdown(): angular.IDirective;
-}
-declare module fng.directives {
-    function errorDisplay(): angular.IDirective;
-}
-declare module fng.directives {
-    function fngLink(routingService: any, SubmissionsService: any): angular.IDirective;
-}
 declare module fng.directives {
     function formInput($compile: any, $rootScope: any, $filter: any, $data: any, $timeout: any, cssFrameworkService: any, formGenerator: any, formMarkupHelper: any): angular.IDirective;
 }
 declare module fng.directives {
-    function formButtons(cssFrameworkService: any): angular.IDirective;
+    function fngNakedDate(): angular.IDirective;
+}
+declare module fng.controllers {
+    function SearchCtrl($scope: any, $http: any, $location: any, routingService: any): void;
 }
 declare module fng.directives {
     function globalSearch(cssFrameworkService: any): angular.IDirective;
@@ -308,6 +299,18 @@ declare module fng.services {
         updateRecord: (modelName: any, id: any, dataToSave: any) => any;
         createRecord: (modelName: any, dataToSave: any) => any;
     };
+}
+declare module fng.controllers {
+    function BaseCtrl($scope: fng.IFormScope, $rootScope: any, $location: any, $filter: any, $uibModal: any, $data: any, routingService: any, formGenerator: any, recordHandler: any): void;
+}
+declare module fng.controllers {
+    function SaveChangesModalCtrl($scope: any, $uibModalInstance: any): void;
+}
+declare module fng.controllers {
+    function ModelCtrl($scope: any, $http: any, $location: any, routingService: any): void;
+}
+declare module fng.controllers {
+    function NavCtrl($scope: any, $data: any, $location: any, $filter: any, $controller: any, routingService: any, cssFrameworkService: any): void;
 }
 declare module fng {
     var formsAngular: angular.IModule;
