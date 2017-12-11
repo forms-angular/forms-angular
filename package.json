@@ -5,8 +5,8 @@
   "homepage": "http://forms-angular.org",
   "version": "0.11.0",
   "engines": {
-    "node": ">=4.x",
-    "npm": ">=3.x"
+    "node": ">=8.x",
+    "npm": ">=5.x"
   },
   "scripts": {
     "test": "scripts/testrun.sh"
