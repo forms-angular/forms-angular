@@ -2836,6 +2836,15 @@ var fng;
                     }
                 };
             }
+            function handleIncomingData(data, $scope, ctrlState) {
+                ctrlState.allowLocationChange = false;
+                $scope.phase = 'reading';
+                if (typeof $scope.dataEventFunctions.onAfterRead === 'function') {
+                    $scope.dataEventFunctions.onAfterRead(data);
+                }
+                $scope.originalData = data;
+                processServerData(data, $scope, ctrlState);
+            }
             return {
                 readRecord: function readRecord($scope, ctrlState) {
                     // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
@@ -2845,13 +2854,7 @@ var fng;
                         if (data.success === false) {
                             $location.path('/404');
                         }
-                        ctrlState.allowLocationChange = false;
-                        $scope.phase = 'reading';
-                        if (typeof $scope.dataEventFunctions.onAfterRead === 'function') {
-                            $scope.dataEventFunctions.onAfterRead(data);
-                        }
-                        $scope.originalData = data;
-                        processServerData(data, $scope, ctrlState);
+                        handleIncomingData(data, $scope, ctrlState);
                     }, $scope.handleHttpError);
                 },
                 scrollTheList: function scrollTheList($scope) {
@@ -2906,7 +2909,7 @@ var fng;
                                 $window.location = options.redirect;
                             }
                             else {
-                                processServerData(data, $scope, ctrlState);
+                                handleIncomingData(data, $scope, ctrlState);
                                 $scope.setPristine(false);
                             }
                         }
@@ -3440,7 +3443,7 @@ var fng;
         function NavCtrl($scope, $location, $filter, routingService, cssFrameworkService) {
             function clearContextMenu() {
                 $scope.items = [];
-                $scope.contextMenu;
+                $scope.contextMenu = undefined;
             }
             clearContextMenu();
             /* isCollapsed and showShortcuts are used to control how the menu is displayed in a responsive environment and whether the shortcut keystrokes help should be displayed */
