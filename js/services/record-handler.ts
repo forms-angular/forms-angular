@@ -430,6 +430,16 @@ module fng.services {
       }
     }
 
+    function handleIncomingData(data, $scope, ctrlState) {
+      ctrlState.allowLocationChange = false;
+      $scope.phase = 'reading';
+      if (typeof $scope.dataEventFunctions.onAfterRead === 'function') {
+        $scope.dataEventFunctions.onAfterRead(data);
+      }
+      $scope.originalData = data;
+      processServerData(data, $scope, ctrlState);
+    }
+
     return {
       readRecord: function readRecord($scope, ctrlState) {
         // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
@@ -439,13 +449,7 @@ module fng.services {
             if (data.success === false) {
               $location.path('/404');
             }
-            ctrlState.allowLocationChange = false;
-            $scope.phase = 'reading';
-            if (typeof $scope.dataEventFunctions.onAfterRead === 'function') {
-              $scope.dataEventFunctions.onAfterRead(data);
-            }
-            $scope.originalData = data;
-            processServerData(data, $scope, ctrlState);
+            handleIncomingData(data, $scope, ctrlState);
           }, $scope.handleHttpError);
       },
 
@@ -501,7 +505,7 @@ module fng.services {
                 }
                 $window.location = options.redirect;
               } else {
-                processServerData(data, $scope, ctrlState);
+                handleIncomingData(data, $scope, ctrlState);
                 $scope.setPristine(false);
               }
             } else {
