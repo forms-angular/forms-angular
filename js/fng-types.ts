@@ -52,6 +52,7 @@ module fng {
     The scope which contains form data
    */
   export interface IFormScope extends angular.IScope {
+    sharedData: any;
     modelNameDisplay : string;
     modelName: string;
     formName: string;

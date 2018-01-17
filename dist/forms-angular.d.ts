@@ -57,6 +57,7 @@ declare module fng {
         decorateScope($scope: fng.IFormScope, formGeneratorInstance: any, recordHandlerInstance: fng.IRecordHandler, sharedStuff: any): any;
     }
     interface IFormScope extends angular.IScope {
+        sharedData: any;
         modelNameDisplay: string;
         modelName: string;
         formName: string;
@@ -172,7 +173,7 @@ declare module fng {
     }
 }
 declare module fng.directives {
-    function formInput($compile: any, $rootScope: any, $filter: any, $data: any, $timeout: any, cssFrameworkService: any, formGenerator: any, formMarkupHelper: any): angular.IDirective;
+    function formInput($compile: any, $rootScope: any, $filter: any, $timeout: any, cssFrameworkService: any, formGenerator: any, formMarkupHelper: any): angular.IDirective;
 }
 declare module fng.directives {
     function fngNakedDate(): angular.IDirective;
@@ -205,11 +206,8 @@ declare module fng.services {
     };
 }
 declare module fng.services {
-    function $data(): {
-        record: {};
-        disableFunctions: {};
-        dataEventFunctions: {};
-        modelControllers: any[];
+    function fngModelCtrlService($controller: any): {
+        loadControllerAndMenu: (sharedData: any, controllerName: any, level: any, needDivider: any, localScope: any) => void;
     };
 }
 declare module fng.services {
@@ -301,7 +299,7 @@ declare module fng.services {
     };
 }
 declare module fng.controllers {
-    function BaseCtrl($scope: fng.IFormScope, $rootScope: any, $location: any, $filter: any, $uibModal: any, $data: any, routingService: any, formGenerator: any, recordHandler: any): void;
+    function BaseCtrl($scope: fng.IFormScope, $rootScope: any, $location: any, $filter: any, $uibModal: any, fngModelCtrlService: any, routingService: any, formGenerator: any, recordHandler: any): void;
 }
 declare module fng.controllers {
     function SaveChangesModalCtrl($scope: any, $uibModalInstance: any): void;
@@ -310,7 +308,7 @@ declare module fng.controllers {
     function ModelCtrl($scope: any, $http: any, $location: any, routingService: any): void;
 }
 declare module fng.controllers {
-    function NavCtrl($scope: any, $data: any, $location: any, $filter: any, $controller: any, routingService: any, cssFrameworkService: any): void;
+    function NavCtrl($scope: any, $location: any, $filter: any, routingService: any, cssFrameworkService: any): void;
 }
 declare module fng {
     var formsAngular: angular.IModule;

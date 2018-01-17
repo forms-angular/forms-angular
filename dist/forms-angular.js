@@ -120,7 +120,7 @@ var fng;
 (function (fng) {
     var directives;
     (function (directives) {
-        formInput.$inject = ["$compile", "$rootScope", "$filter", "$data", "$timeout", "cssFrameworkService", "formGenerator", "formMarkupHelper"];
+        formInput.$inject = ["$compile", "$rootScope", "$filter", "$timeout", "cssFrameworkService", "formGenerator", "formMarkupHelper"];
         var tabsSetupState;
         (function (tabsSetupState) {
             tabsSetupState[tabsSetupState["Y"] = 0] = "Y";
@@ -128,7 +128,7 @@ var fng;
             tabsSetupState[tabsSetupState["Forced"] = 2] = "Forced";
         })(tabsSetupState || (tabsSetupState = {}));
         /*@ngInject*/
-        function formInput($compile, $rootScope, $filter, $data, $timeout, cssFrameworkService, formGenerator, formMarkupHelper) {
+        function formInput($compile, $rootScope, $filter, $timeout, cssFrameworkService, formGenerator, formMarkupHelper) {
             return {
                 restrict: 'EA',
                 link: function (scope, element, attrs) {
@@ -729,14 +729,16 @@ var fng;
                                 element.replaceWith($compile(elementHtml)(scope));
                                 // If there are subkeys we need to fix up ng-model references when record is read
                                 // If we have modelControllers we need to let them know when we have form + data
-                                if (subkeys.length > 0 || $data.modelControllers.length > 0) {
+                                var sharedData = scope[attrs.shared || 'sharedData'];
+                                var modelControllers_1 = sharedData ? sharedData.modelControllers : [];
+                                if (subkeys.length > 0 || modelControllers_1.length > 0) {
                                     var unwatch2 = scope.$watch('phase', function (newValue) {
                                         if (newValue === 'ready') {
                                             unwatch2();
                                             // Tell the 'model controllers' that the form and data are there
-                                            for (var i = 0; i < $data.modelControllers.length; i++) {
-                                                if ($data.modelControllers[i].onAllReady) {
-                                                    $data.modelControllers[i].onAllReady(scope);
+                                            for (var i = 0; i < modelControllers_1.length; i++) {
+                                                if (modelControllers_1[i].onAllReady) {
+                                                    modelControllers_1[i].onAllReady(scope);
                                                 }
                                             }
                                             // For each one of the subkeys sets in the form we need to fix up ng-model references
@@ -1172,22 +1174,62 @@ var fng;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
+/// <reference path="../fng-types.ts" />
 var fng;
 (function (fng) {
     var services;
     (function (services) {
         /*@ngInject*/
-        function $data() {
-            var sharedData = {
-                // The record from BaseCtrl
-                record: {},
-                disableFunctions: {},
-                dataEventFunctions: {},
-                modelControllers: []
+        function fngModelCtrlService($controller) {
+            return {
+                loadControllerAndMenu: function (sharedData, controllerName, level, needDivider, localScope) {
+                    var locals = {}, addThis;
+                    controllerName += 'Ctrl';
+                    locals.$scope = sharedData.modelControllers[level] = localScope;
+                    var parentScope = localScope.$parent;
+                    var addMenuOptions = function (array) {
+                        angular.forEach(array, function (value) {
+                            if (value.divider) {
+                                needDivider = true;
+                            }
+                            else if (value[addThis]) {
+                                if (needDivider) {
+                                    needDivider = false;
+                                    parentScope.items.push({ divider: true });
+                                }
+                                parentScope.items.push(value);
+                            }
+                        });
+                    };
+                    try {
+                        $controller(controllerName, locals);
+                        if (parentScope.newRecord) {
+                            addThis = 'creating';
+                        }
+                        else if (parentScope.id) {
+                            addThis = 'editing';
+                        }
+                        else {
+                            addThis = 'listing';
+                        }
+                        if (angular.isObject(locals.$scope.contextMenu)) {
+                            addMenuOptions(locals.$scope.contextMenu);
+                            if (locals.$scope.contextMenuPromise) {
+                                locals.$scope.contextMenuPromise.then(function (array) { return addMenuOptions(array); });
+                            }
+                        }
+                    }
+                    catch (error) {
+                        // Check to see if error is no such controller - don't care
+                        if ((!(/is not a function, got undefined/.test(error.message))) && (!(/\[\$controller:ctrlreg\] The controller with the name/.test(error.message)))) {
+                            console.log('Unable to instantiate ' + controllerName + ' - ' + error.message);
+                        }
+                    }
+                }
             };
-            return sharedData;
         }
-        services.$data = $data;
+        services.fngModelCtrlService = fngModelCtrlService;
+        fngModelCtrlService.$inject = ["$controller"];
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
@@ -1942,11 +1984,11 @@ var fng;
                     }
                     return result;
                 },
-                decorateScope: function decorateScope($scope, formGeneratorInstance, recordHandlerInstance, sharedStuff) {
-                    $scope.record = sharedStuff.record;
+                decorateScope: function decorateScope($scope, formGeneratorInstance, recordHandlerInstance, sharedData) {
+                    $scope.record = sharedData.record;
                     $scope.phase = 'init';
-                    $scope.disableFunctions = sharedStuff.disableFunctions;
-                    $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
+                    $scope.disableFunctions = sharedData.disableFunctions;
+                    $scope.dataEventFunctions = sharedData.dataEventFunctions;
                     $scope.topLevelFormName = undefined;
                     $scope.formSchema = [];
                     $scope.tabs = [];
@@ -1956,7 +1998,7 @@ var fng;
                     $scope.conversions = {};
                     $scope.pageSize = 60;
                     $scope.pagesLoaded = 0;
-                    sharedStuff.baseScope = $scope;
+                    sharedData.baseScope = $scope;
                     $scope.generateEditUrl = function (obj) {
                         return formGeneratorInstance.generateEditUrl(obj, $scope);
                     };
@@ -3301,26 +3343,44 @@ var fng;
     var controllers;
     (function (controllers) {
         /*@ngInject*/
-        BaseCtrl.$inject = ["$scope", "$rootScope", "$location", "$filter", "$uibModal", "$data", "routingService", "formGenerator", "recordHandler"];
-        function BaseCtrl($scope, $rootScope, $location, $filter, $uibModal, $data, routingService, formGenerator, recordHandler) {
-            var sharedStuff = $data;
+        BaseCtrl.$inject = ["$scope", "$rootScope", "$location", "$filter", "$uibModal", "fngModelCtrlService", "routingService", "formGenerator", "recordHandler"];
+        function BaseCtrl($scope, $rootScope, $location, $filter, $uibModal, fngModelCtrlService, routingService, formGenerator, recordHandler) {
+            $scope.sharedData = {
+                record: {},
+                disableFunctions: {},
+                dataEventFunctions: {},
+                modelControllers: []
+            };
             var ctrlState = {
                 master: {},
                 fngInvalidRequired: 'fng-invalid-required',
                 allowLocationChange: true // Set when the data arrives..
             };
             angular.extend($scope, routingService.parsePathFunc()($location.$$path));
-            $scope.modelNameDisplay = sharedStuff.modelNameDisplay || $filter('titleCase')($scope.modelName);
+            // Load context menu.  For /person/client/:id/edit we need
+            // to load PersonCtrl and PersonClientCtrl
+            var titleCaseModelName = $filter('titleCase')($scope.modelName, true);
+            var needDivider = false;
+            fngModelCtrlService.loadControllerAndMenu($scope.sharedData, titleCaseModelName, 0, needDivider, $scope.$new());
+            if ($scope.formName) {
+                fngModelCtrlService.loadControllerAndMenu($scope.sharedData, titleCaseModelName + $filter('titleCase')($scope.formName, true), 1, needDivider, $scope.$new());
+            }
+            $rootScope.$broadcast('fngControllersLoaded', $scope.sharedData, $scope.modelName);
+            $scope.modelNameDisplay = $scope.sharedData.modelNameDisplay || $filter('titleCase')($scope.modelName);
             $rootScope.$broadcast('fngFormLoadStart', $scope);
-            formGenerator.decorateScope($scope, formGenerator, recordHandler, sharedStuff);
+            formGenerator.decorateScope($scope, formGenerator, recordHandler, $scope.sharedData);
             recordHandler.decorateScope($scope, $uibModal, recordHandler, ctrlState);
             recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
             // Tell the 'model controllers' that they can start fiddling with basescope
-            for (var i = 0; i < sharedStuff.modelControllers.length; i++) {
-                if (sharedStuff.modelControllers[i].onBaseCtrlReady) {
-                    sharedStuff.modelControllers[i].onBaseCtrlReady($scope);
+            for (var i = 0; i < $scope.sharedData.modelControllers.length; i++) {
+                if ($scope.sharedData.modelControllers[i].onBaseCtrlReady) {
+                    $scope.sharedData.modelControllers[i].onBaseCtrlReady($scope);
                 }
             }
+            $scope.$on('$destroy', function () {
+                $scope.sharedData.modelControllers.forEach(function (value) { return value.$destroy(); });
+                $rootScope.$broadcast('fngControllersUnloaded');
+            });
         }
         controllers.BaseCtrl = BaseCtrl;
     })(controllers = fng.controllers || (fng.controllers = {}));
@@ -3376,9 +3436,13 @@ var fng;
     var controllers;
     (function (controllers) {
         /*@ngInject*/
-        NavCtrl.$inject = ["$scope", "$data", "$location", "$filter", "$controller", "routingService", "cssFrameworkService"];
-        function NavCtrl($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
-            $scope.items = [];
+        NavCtrl.$inject = ["$scope", "$location", "$filter", "routingService", "cssFrameworkService"];
+        function NavCtrl($scope, $location, $filter, routingService, cssFrameworkService) {
+            function clearContextMenu() {
+                $scope.items = [];
+                $scope.contextMenu;
+            }
+            clearContextMenu();
             /* isCollapsed and showShortcuts are used to control how the menu is displayed in a responsive environment and whether the shortcut keystrokes help should be displayed */
             $scope.isCollapsed = true;
             $scope.showShortcuts = false;
@@ -3450,85 +3514,11 @@ var fng;
                 }
                 return result;
             };
-            function loadControllerAndMenu(controllerName, level, needDivider) {
-                var locals = {}, addThis;
-                controllerName += 'Ctrl';
-                locals.$scope = $data.modelControllers[level] = $scope.$new();
-                var addMenuOptions = function (array) {
-                    angular.forEach(array, function (value) {
-                        if (value.divider) {
-                            needDivider = true;
-                        }
-                        else if (value[addThis]) {
-                            if (needDivider) {
-                                needDivider = false;
-                                $scope.items.push({ divider: true });
-                            }
-                            $scope.items.push(value);
-                        }
-                    });
-                };
-                try {
-                    $controller(controllerName, locals);
-                    if ($scope.routing.newRecord) {
-                        addThis = 'creating';
-                    }
-                    else if ($scope.routing.id) {
-                        addThis = 'editing';
-                    }
-                    else {
-                        addThis = 'listing';
-                    }
-                    if (angular.isObject(locals.$scope.contextMenu)) {
-                        addMenuOptions(locals.$scope.contextMenu);
-                        if (locals.$scope.contextMenuPromise) {
-                            locals.$scope.contextMenuPromise.then(function (array) { return addMenuOptions(array); });
-                        }
-                    }
-                }
-                catch (error) {
-                    // Check to see if error is no such controller - don't care
-                    if ((!(/is not a function, got undefined/.test(error.message))) && (!(/\[\$controller:ctrlreg\] The controller with the name/.test(error.message)))) {
-                        console.log('Unable to instantiate ' + controllerName + ' - ' + error.message);
-                    }
-                }
-            }
-            $scope.$on('$locationChangeSuccess', function () {
-                $scope.routing = routingService.parsePathFunc()($location.$$path);
-                $scope.items = [];
-                if ($scope.routing.analyse) {
-                    $scope.contextMenu = 'Report';
-                    $scope.items = [
-                        {
-                            broadcast: 'exportToPDF',
-                            text: 'PDF'
-                        },
-                        {
-                            broadcast: 'exportToCSV',
-                            text: 'CSV'
-                        }
-                    ];
-                }
-                else if ($scope.routing.modelName) {
-                    angular.forEach($data.modelControllers, function (value) {
-                        value.$destroy();
-                    });
-                    $data.modelControllers = [];
-                    $data.record = {};
-                    $data.disableFunctions = {};
-                    $data.dataEventFunctions = {};
-                    delete $data.dropDownDisplay;
-                    delete $data.modelNameDisplay;
-                    // Now load context menu.  For /person/client/:id/edit we need
-                    // to load PersonCtrl and PersonClientCtrl
-                    var modelName = $filter('titleCase')($scope.routing.modelName, true);
-                    var needDivider = false;
-                    loadControllerAndMenu(modelName, 0, needDivider);
-                    if ($scope.routing.formName) {
-                        loadControllerAndMenu(modelName + $filter('titleCase')($scope.routing.formName, true), 1, needDivider);
-                    }
-                    $scope.contextMenu = $data.dropDownDisplay || $data.modelNameDisplay || $filter('titleCase')($scope.routing.modelName, false);
-                }
+            $scope.$on('fngControllersLoaded', function (evt, sharedData, modelName) {
+                $scope.contextMenu = sharedData.dropDownDisplay || sharedData.modelNameDisplay || $filter('titleCase')(modelName, false);
+            });
+            $scope.$on('fngControllersUnloaded', function (evt) {
+                clearContextMenu();
             });
             $scope.doClick = function (index, event) {
                 var option = angular.element(event.target);
@@ -3601,7 +3591,7 @@ var fng;
 /// <reference path="filters/titlecase.ts" />
 /// <reference path="services/add-all.ts" />
 /// <reference path="services/css-framework.ts" />
-/// <reference path="services/data.ts" />
+/// <reference path="services/fng-model-controller.ts" />
 /// <reference path="services/fng-routes.ts" />
 /// <reference path="services/form-generator.ts" />
 /// <reference path="services/form-markup-helper.ts" />
@@ -3635,7 +3625,7 @@ var fng;
         .service('addAllService', fng.services.addAllService)
         .provider('cssFrameworkService', fng.services.cssFrameworkService)
         .provider('routingService', fng.services.routingService)
-        .factory('$data', fng.services.$data)
+        .factory('fngModelCtrlService', fng.services.fngModelCtrlService)
         .factory('formGenerator', fng.services.formGenerator)
         .factory('formMarkupHelper', fng.services.formMarkupHelper)
         .factory('inputSizeHelper', fng.services.inputSizeHelper)

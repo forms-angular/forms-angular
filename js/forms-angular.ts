@@ -14,7 +14,7 @@
 /// <reference path="filters/titlecase.ts" />
 /// <reference path="services/add-all.ts" />
 /// <reference path="services/css-framework.ts" />
-/// <reference path="services/data.ts" />
+/// <reference path="services/fng-model-controller.ts" />
 /// <reference path="services/fng-routes.ts" />
 /// <reference path="services/form-generator.ts" />
 /// <reference path="services/form-markup-helper.ts" />
@@ -49,7 +49,7 @@ module fng {
   .service('addAllService', fng.services.addAllService)
   .provider('cssFrameworkService', fng.services.cssFrameworkService)
   .provider('routingService', fng.services.routingService)
-  .factory('$data', fng.services.$data)
+  .factory('fngModelCtrlService', fng.services.fngModelCtrlService)
   .factory('formGenerator', fng.services.formGenerator)
   .factory('formMarkupHelper', fng.services.formMarkupHelper)
   .factory('inputSizeHelper', fng.services.inputSizeHelper)
