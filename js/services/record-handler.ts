@@ -116,31 +116,34 @@ module fng.services {
     // TODO: Think about nested arrays
     // This doesn't handle things like :
     // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
-    var getListData = function getListData(record, fieldName, listSchema=null) {
+    var getListData = function getListData($scope, record, fieldName, listSchema=null) {
+      var retVal = record;
       var nests = fieldName.split('.');
       for (var i = 0; i < nests.length; i++) {
-        if (record !== undefined && record !== null && nests && nests[i]) {
-          record = record[nests[i]];
+        if (retVal !== undefined && retVal !== null && nests && nests[i]) {
+          retVal = retVal[nests[i]];
         }
       }
-      if (record === undefined) {
-        record = '';
+      if (retVal === undefined) {
+        retVal = '';
       }
 
-      if (record && listSchema) {
+      if (retVal && listSchema) {
         // Convert list fields as per instructions in params (ideally should be the same as what is found in data_form getListFields
         var schemaElm  = _.find(listSchema, elm => (elm['name'] === fieldName));
         if (schemaElm) {
           switch (schemaElm['params']) {
             case 'timestamp' :
-              var timestamp = record.toString().substring(0,8);
+              var timestamp = retVal.toString().substring(0,8);
               var date = new Date( parseInt( timestamp, 16 ) * 1000 );
-              record = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+              retVal = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
               break;
+            default:
+              retVal = $scope.dataEventFunctions[schemaElm['params']](record);
           }
         }
       }
-      return record;
+      return retVal;
     };
 
     function updateObject(aFieldName, portion, fn) {
@@ -217,7 +220,7 @@ module fng.services {
           }
         } else {
           // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
-          var thisField = getListData(anObject, fieldName);
+          var thisField = getListData($scope, anObject, fieldName);
           if (schemaEntry.array && simpleArrayNeedsX(schemaEntry) && thisField) {
             for (var k = 0; k < thisField.length; k++) {
               thisField[k] = {x: thisField[k]};
@@ -600,7 +603,7 @@ module fng.services {
 
         for (var i = 0; i < schema.length; i++) {
           var fieldname = schema[i].name.slice(prefixLength);
-          var thisField = getListData(anObject, fieldname);
+          var thisField = getListData($scope, anObject, fieldname);
 
           if (schema[i].schema) {
             if (thisField) {
