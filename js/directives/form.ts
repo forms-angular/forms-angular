@@ -7,7 +7,7 @@ module fng.directives {
   enum tabsSetupState {Y, N, Forced}
 
   /*@ngInject*/
-  export function formInput($compile, $rootScope, $filter, $data, $timeout, cssFrameworkService, formGenerator, formMarkupHelper):angular.IDirective {
+  export function formInput($compile, $rootScope, $filter, $timeout, cssFrameworkService, formGenerator, formMarkupHelper):angular.IDirective {
     return {
       restrict: 'EA',
       link: function (scope:fng.IFormScope, element, attrs:fng.IFormAttrs) {
@@ -606,15 +606,17 @@ module fng.directives {
               element.replaceWith($compile(elementHtml)(scope));
               // If there are subkeys we need to fix up ng-model references when record is read
               // If we have modelControllers we need to let them know when we have form + data
-              if (subkeys.length > 0 || $data.modelControllers.length > 0) {
+              let sharedData = scope[attrs.shared || 'sharedData'];
+              let modelControllers = sharedData ? sharedData.modelControllers : [];
+              if (subkeys.length > 0 || modelControllers.length > 0) {
                 var unwatch2 = scope.$watch('phase', function (newValue) {
                   if (newValue === 'ready') {
                     unwatch2();
 
                     // Tell the 'model controllers' that the form and data are there
-                    for (var i = 0; i < $data.modelControllers.length; i++) {
-                      if ($data.modelControllers[i].onAllReady) {
-                        $data.modelControllers[i].onAllReady(scope);
+                    for (var i = 0; i < modelControllers.length; i++) {
+                      if (modelControllers[i].onAllReady) {
+                        modelControllers[i].onAllReady(scope);
                       }
                     }
 

@@ -475,11 +475,11 @@ module fng.services {
         return result;
       },
 
-      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedStuff) {
-        $scope.record = sharedStuff.record;
+      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedData) {
+        $scope.record = sharedData.record;
         $scope.phase = 'init';
-        $scope.disableFunctions = sharedStuff.disableFunctions;
-        $scope.dataEventFunctions = sharedStuff.dataEventFunctions;
+        $scope.disableFunctions = sharedData.disableFunctions;
+        $scope.dataEventFunctions = sharedData.dataEventFunctions;
         $scope.topLevelFormName = undefined;
         $scope.formSchema = [];
         $scope.tabs = [];
@@ -490,7 +490,7 @@ module fng.services {
         $scope.pageSize = 60;
         $scope.pagesLoaded = 0;
 
-        sharedStuff.baseScope = $scope;
+        sharedData.baseScope = $scope;
 
         $scope.generateEditUrl = function (obj) {
           return formGeneratorInstance.generateEditUrl(obj, $scope);

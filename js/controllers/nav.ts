@@ -3,9 +3,14 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function NavCtrl($scope, $data, $location, $filter, $controller, routingService, cssFrameworkService) {
+  export function NavCtrl($scope, $location, $filter, routingService, cssFrameworkService) {
 
-    $scope.items = [];
+    function clearContextMenu() {
+      $scope.items = [];
+      $scope.contextMenu = undefined;
+    }
+
+    clearContextMenu();
 
     /* isCollapsed and showShortcuts are used to control how the menu is displayed in a responsive environment and whether the shortcut keystrokes help should be displayed */
     $scope.isCollapsed = true;
@@ -79,90 +84,12 @@ module fng.controllers {
       return result;
     };
 
-    function loadControllerAndMenu(controllerName, level, needDivider) {
-      var locals: any = {}, addThis;
+    $scope.$on('fngControllersLoaded', function(evt, sharedData, modelName) {
+      $scope.contextMenu = sharedData.dropDownDisplay || sharedData.modelNameDisplay || $filter('titleCase')(modelName, false);
+    });
 
-      controllerName += 'Ctrl';
-      locals.$scope = $data.modelControllers[level] = $scope.$new();
-
-      let addMenuOptions = function (array) {
-        angular.forEach(array, function (value) {
-          if (value.divider) {
-            needDivider = true;
-          } else if (value[addThis]) {
-            if (needDivider) {
-              needDivider = false;
-              $scope.items.push({divider: true});
-            }
-            $scope.items.push(value);
-          }
-        });
-      };
-
-      try {
-        $controller(controllerName, locals);
-        if ($scope.routing.newRecord) {
-          addThis = 'creating';
-        } else if ($scope.routing.id) {
-          addThis = 'editing';
-        } else {
-          addThis = 'listing';
-        }
-        if (angular.isObject(locals.$scope.contextMenu)) {
-          addMenuOptions(locals.$scope.contextMenu);
-          if (locals.$scope.contextMenuPromise) {
-            locals.$scope.contextMenuPromise.then(
-              (array) => addMenuOptions(array)
-            )
-          }
-        }
-      } catch (error) {
-        // Check to see if error is no such controller - don't care
-        if ((!(/is not a function, got undefined/.test(error.message))) && (!(/\[\$controller:ctrlreg\] The controller with the name/.test(error.message)))) {
-          console.log('Unable to instantiate ' + controllerName + ' - ' + error.message);
-        }
-      }
-    }
-
-    $scope.$on('$locationChangeSuccess', function () {
-
-      $scope.routing = routingService.parsePathFunc()($location.$$path);
-
-      $scope.items = [];
-
-      if ($scope.routing.analyse) {
-        $scope.contextMenu = 'Report';
-        $scope.items = [
-          {
-            broadcast: 'exportToPDF',
-            text: 'PDF'
-          },
-          {
-            broadcast: 'exportToCSV',
-            text: 'CSV'
-          }
-        ];
-      } else if ($scope.routing.modelName) {
-
-        angular.forEach($data.modelControllers, function (value) {
-          value.$destroy();
-        });
-        $data.modelControllers = [];
-        $data.record = {};
-        $data.disableFunctions = {};
-        $data.dataEventFunctions = {};
-        delete $data.dropDownDisplay;
-        delete $data.modelNameDisplay;
-        // Now load context menu.  For /person/client/:id/edit we need
-        // to load PersonCtrl and PersonClientCtrl
-        var modelName = $filter('titleCase')($scope.routing.modelName, true);
-        var needDivider = false;
-        loadControllerAndMenu(modelName, 0, needDivider);
-        if ($scope.routing.formName) {
-          loadControllerAndMenu(modelName + $filter('titleCase')($scope.routing.formName, true), 1, needDivider);
-        }
-        $scope.contextMenu = $data.dropDownDisplay || $data.modelNameDisplay || $filter('titleCase')($scope.routing.modelName, false);
-      }
+    $scope.$on('fngControllersUnloaded', function(evt) {
+      clearContextMenu();
     });
 
     $scope.doClick = function (index, event) {
