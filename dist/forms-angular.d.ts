@@ -33,7 +33,7 @@ declare module fng {
         updateDocument(dataToSave: any, options: any, scope: fng.IFormScope, ctrlState: any): void;
         readRecord($scope: fng.IFormScope, ctrlState: any): any;
         scrollTheList($scope: fng.IFormScope): any;
-        getListData(record: any, fieldName: any, listSchema: any): any;
+        getListData($scope: fng.IFormScope, record: any, fieldName: any, listSchema: any): any;
         suffixCleanId(inst: any, suffix: any): any;
         setData(object: any, fieldname: any, element: any, value: any): any;
         setUpSelectOptions(lookupCollection: any, schemaElement: any, $scope: fng.IFormScope, ctrlState: any, handleSchema: any): any;

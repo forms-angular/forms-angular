@@ -23,7 +23,7 @@ module fng {
     updateDocument(dataToSave : any, options: any, scope: fng.IFormScope, ctrlState: any) : void;
     readRecord($scope: fng.IFormScope, ctrlState);
     scrollTheList($scope: fng.IFormScope);
-    getListData(record, fieldName, listSchema);
+    getListData($scope: fng.IFormScope, record, fieldName, listSchema);
     suffixCleanId(inst, suffix);
     setData(object, fieldname, element, value);
     setUpSelectOptions(lookupCollection, schemaElement, $scope: fng.IFormScope, ctrlState, handleSchema);
