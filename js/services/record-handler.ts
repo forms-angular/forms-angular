@@ -133,6 +133,8 @@ module fng.services {
         var schemaElm  = _.find(listSchema, elm => (elm['name'] === fieldName));
         if (schemaElm) {
           switch (schemaElm['params']) {
+            case undefined :
+              break;
             case 'timestamp' :
               var timestamp = retVal.toString().substring(0,8);
               var date = new Date( parseInt( timestamp, 16 ) * 1000 );
