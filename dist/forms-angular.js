@@ -2545,6 +2545,8 @@ var fng;
                     var schemaElm = _.find(listSchema, function (elm) { return (elm['name'] === fieldName); });
                     if (schemaElm) {
                         switch (schemaElm['params']) {
+                            case undefined:
+                                break;
                             case 'timestamp':
                                 var timestamp = retVal.toString().substring(0, 8);
                                 var date = new Date(parseInt(timestamp, 16) * 1000);
