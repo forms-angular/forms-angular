@@ -624,7 +624,7 @@ describe('formInput', function () {
       input = angular.element(elm.find('input')[4]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input.attr('id')).toBe('f_eyeColour');
+      expect(input.attr('id')).toBe('3-f_eyeColour');
       expect(input.attr('value')).toBe('Hazel');
       expect(input.parent().text()).toMatch('Hazel');
     });
@@ -652,7 +652,7 @@ describe('formInput', function () {
       input = angular.element(elm.find('input')[4]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input.attr('id')).toBe('f_eyeColour');
+      expect(input.attr('id')).toBe('3-f_eyeColour');
       expect(input.attr('value')).toBe('ha');
       expect(input.parent().text()).toMatch('Hazel');
     });
@@ -680,7 +680,7 @@ describe('formInput', function () {
       input = angular.element(elm.find('input')[4]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input.attr('id')).toBe('f_eyeColour');
+      expect(input.attr('id')).toBe('3-f_eyeColour');
       expect(input.attr('value')).toBe('ha');
       expect(input.parent().text()).toMatch('ha');
     });
@@ -707,7 +707,7 @@ describe('formInput', function () {
       input = angular.element(elm.find('input')[4]);
       expect(input).toHaveClass('ng-pristine');
       expect(input).toHaveClass('ng-valid');
-      expect(input.attr('id')).toBe('f_eyeColour');
+      expect(input.attr('id')).toBe('3-f_eyeColour');
       expect(input.attr('value')).toBe('Hazel');
     });
 
