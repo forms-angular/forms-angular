@@ -290,9 +290,12 @@ var fng;
                                 if (angular.isArray(fieldInfo.options)) {
                                     if (options.subschema) {
                                         common = common.replace('name="', 'name="{{$index}}-');
+                                        common = common.replace('id="', 'id="{{$index}}-');
                                     }
-                                    angular.forEach(fieldInfo.options, function (optValue) {
-                                        value += '<input ' + common + 'type="radio"';
+                                    var thisCommon_1;
+                                    angular.forEach(fieldInfo.options, function (optValue, idx) {
+                                        thisCommon_1 = common.replace('id="', 'id="' + idx + '-');
+                                        value += '<input ' + thisCommon_1 + 'type="radio"';
                                         value += ' value="' + optValue + '">' + optValue;
                                         if (separateLines) {
                                             value += '<br />';
@@ -302,10 +305,13 @@ var fng;
                                 else {
                                     var tagType = separateLines ? 'div' : 'span';
                                     if (options.subschema) {
-                                        common = common.replace('$index', '$parent.$index').replace('name="', 'name="{{$parent.$index}}-');
+                                        common = common.replace('$index', '$parent.$index')
+                                            .replace('name="', 'name="{{$parent.$index}}-')
+                                            .replace('id="', 'id="{{$parent.$index}}-');
                                     }
                                     enumInstruction = generateEnumInstructions();
-                                    value += '<' + tagType + ' ng-repeat="option in ' + enumInstruction.repeat + '"><input ' + common + ' type="radio" value="{{' + enumInstruction.value + '}}"> {{';
+                                    value += '<' + tagType + ' ng-repeat="option in ' + enumInstruction.repeat + '">';
+                                    value += '<input ' + common.replace('id="', 'id="{{$index}}-') + ' type="radio" value="{{' + enumInstruction.value + '}}"> {{';
                                     value += enumInstruction.label || enumInstruction.value;
                                     value += ' }} </' + tagType + '> ';
                                 }
