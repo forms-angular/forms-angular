@@ -1,12 +1,19 @@
 # forms-angular
 
-## 0.11.0
+## 0.12.0
+* Added $scope.prepareForSave API which enables easier persistence from forms not under the controller of baseCtrl (forms in modal dialogs, for example).
+* Handle date fields properly without a plugin
+* Fix duplicate ids in _select_ elements  
+### BREAKING CHANGES
+* Removed $data service (global stash).  In almost all places $data.xx can be replaced by $scope.sharedData.xx
+
+## 0.11.0 - 8 Dec 2017
 * Menu options can now be added after a promise is resolved by creating a contextMenuPromise on the controller $scope which resolves to a contextMenu array.
 * Added new registerAction method on the routing service (used by the fng-audit plugin)
 * Replaced underscore with lodash
 * Numerous small fixes (mostly to code that interacts with plugins)
 * Improved styling of invalid fields
- 
+
 
 ## 0.10.x
 Skipped to keep version numbers in sync with plugins

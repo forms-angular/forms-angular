@@ -3094,40 +3094,53 @@ var fng;
                         delete $scope.errorMessage;
                         delete $scope.alertTitle;
                     };
-                    $scope.save = function (options) {
-                        options = options || {};
+                    $scope.prepareForSave = function (cb) {
                         //Convert the lookup values into ids
                         var dataToSave = recordHandlerInstance.convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0, $scope);
                         if ($scope.id) {
                             if (typeof $scope.dataEventFunctions.onBeforeUpdate === 'function') {
                                 $scope.dataEventFunctions.onBeforeUpdate(dataToSave, ctrlState.master, function (err) {
                                     if (err) {
-                                        $scope.showError(err);
+                                        cb(err);
                                     }
                                     else {
-                                        recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
+                                        cb(null, dataToSave);
                                     }
                                 });
                             }
                             else {
-                                recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
+                                cb(null, dataToSave);
                             }
                         }
                         else {
                             if (typeof $scope.dataEventFunctions.onBeforeCreate === 'function') {
                                 $scope.dataEventFunctions.onBeforeCreate(dataToSave, function (err) {
                                     if (err) {
-                                        $scope.showError(err);
+                                        cb(err);
                                     }
                                     else {
-                                        recordHandlerInstance.createNew(dataToSave, options, $scope);
+                                        cb(null, dataToSave);
                                     }
                                 });
                             }
                             else {
-                                recordHandlerInstance.createNew(dataToSave, options, $scope);
+                                cb(null, dataToSave);
                             }
                         }
+                    };
+                    $scope.save = function (options) {
+                        options = options || {};
+                        $scope.prepareForSave(function (err, dataToSave) {
+                            if (err) {
+                                $scope.showError(err);
+                            }
+                            else if ($scope.id) {
+                                recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
+                            }
+                            else {
+                                recordHandlerInstance.createNew(dataToSave, options, $scope);
+                            }
+                        });
                     };
                     $scope.newClick = function () {
                         routingService.redirectTo()('new', $scope, $location);
