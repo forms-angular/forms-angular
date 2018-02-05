@@ -60,6 +60,7 @@ module fng {
     showError: any;
     alertTitle: any;
     errorMessage: any;
+    prepareForSave: (cb: (error: string, dataToSave?: any) => void) => void;
     save: any;
     newRecord: boolean;
     id: any;
