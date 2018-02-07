@@ -56,9 +56,6 @@ declare module fng {
         hasError(formName: any, name: any, index: any, $scope: fng.IFormScope): any;
         decorateScope($scope: fng.IFormScope, formGeneratorInstance: any, recordHandlerInstance: fng.IRecordHandler, sharedStuff: any): any;
     }
-    interface IPrepareForSaveCB {
-        (error: string, dataToSave?: any): void;
-    }
     interface IFormScope extends angular.IScope {
         sharedData: any;
         modelNameDisplay: string;
@@ -68,7 +65,7 @@ declare module fng {
         showError: any;
         alertTitle: any;
         errorMessage: any;
-        prepareForSave: (cb: IPrepareForSaveCB) => void;
+        prepareForSave: (cb: (error: string, dataToSave?: any) => void) => void;
         save: any;
         newRecord: boolean;
         id: any;
