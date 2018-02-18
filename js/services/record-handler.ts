@@ -1,6 +1,4 @@
-/// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../../node_modules/@types/lodash/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types" />
 
 module fng.services {
   /**
@@ -453,8 +451,9 @@ module fng.services {
             let data: any = response.data;
             if (data.success === false) {
               $location.path('/404');
+            } else {
+              handleIncomingData(data, $scope, ctrlState);
             }
-            handleIncomingData(data, $scope, ctrlState);
           }, $scope.handleHttpError);
       },
 
@@ -674,7 +673,7 @@ module fng.services {
           $scope.showError(args.body, args.title);
         });
 
-        $scope.showError = function (error, alertTitle) {
+        $scope.showError = function (error: any, alertTitle? : string) {
           $scope.alertTitle = alertTitle ? alertTitle : 'Error!';
           if (typeof error === 'string') {
             $scope.errorMessage = error;
@@ -730,7 +729,9 @@ module fng.services {
           options = options || {};
           $scope.prepareForSave((err, dataToSave) => {
             if (err) {
-              $scope.showError(err);
+              if (err !== '_update_handled_') {
+                $scope.showError(err);
+              }
             } else if ($scope.id) {
               recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
             } else {
@@ -777,28 +778,36 @@ module fng.services {
 
         $scope.deleteClick = function () {
           if ($scope.record._id) {
-            var modalInstance = $uibModal.open({
-              template: '<div class="modal-header">' +
-              '   <h3>Delete Item</h3>' +
-              '</div>' +
-              '<div class="modal-body">' +
-              '   <p>Are you sure you want to delete this record?</p>' +
-              '</div>' +
-              '<div class="modal-footer">' +
-              '    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>' +
-              '    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>' +
-              '</div>',
-              controller: 'SaveChangesModalCtrl',
-              backdrop: 'static'
-            });
+            let confirmDelete: Promise<boolean>;
+            if ($scope.unconfirmedDelete) {
+              confirmDelete = Promise.resolve(true);
+            } else {
+              let modalInstance = $uibModal.open({
+                template: '<div class="modal-header">' +
+                '   <h3>Delete Item</h3>' +
+                '</div>' +
+                '<div class="modal-body">' +
+                '   <p>Are you sure you want to delete this record?</p>' +
+                '</div>' +
+                '<div class="modal-footer">' +
+                '    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>' +
+                '    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>' +
+                '</div>',
+                controller: 'SaveChangesModalCtrl',
+                backdrop: 'static'
+              });
+              confirmDelete = modalInstance.result;
+            }
 
-            modalInstance.result.then(
+            confirmDelete.then(
               function (result) {
                 if (result) {
                   if (typeof $scope.dataEventFunctions.onBeforeDelete === 'function') {
                     $scope.dataEventFunctions.onBeforeDelete(ctrlState.master, function (err) {
                       if (err) {
-                        $scope.showError(err);
+                        if (err !== '_delete_handled_') {
+                          $scope.showError(err);
+                        }
                       } else {
                         recordHandlerInstance.deleteRecord($scope.modelName, $scope.id, $scope, ctrlState);
                       }

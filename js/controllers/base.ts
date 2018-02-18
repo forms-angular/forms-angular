@@ -1,5 +1,5 @@
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types.d.ts" />
 
 module fng.controllers {
 

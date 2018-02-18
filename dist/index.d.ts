@@ -1,13 +1,37 @@
-/// <reference path="../node_modules/@types/angular/index.d.ts" />
+declare namespace fng {
 
-module fng {
-
+  // Schema passed from server - derived from Mongoose schema
   export interface IFieldViewInfo {
     name: string;
-    schema: Array<IFieldViewInfo>;
-    array: boolean;
-    id? : string;
+    schema?: Array<IFieldViewInfo>;
+    array?: boolean;
     showIf? : any;
+    showWhen? : string;
+    directive?: string;
+    required?: boolean;
+    step? : number;
+    noLookup? : boolean;
+    readonly? : boolean;
+    help? : string;
+    size? : string;
+  }
+
+  // Schema used internally on client - often derived from IFieldViewInfo pased from server
+  export interface IFormInstruction extends IFieldViewInfo {
+    id? : string;   // id of generated DOM element
+    type?: 'string' | 'text' | 'textarea' | 'number' | 'select' | 'link' | 'date' | 'checkbox' | 'password';
+    rows? : number
+    label: string;
+    options?: any;
+    ids?: any;
+    hidden?: boolean;
+    tab?: string;
+    add? : string;
+    ref? : string;
+    link? : any;
+    linkText?: string;
+    form?: string;           // the form that is linked to
+    select2? : any;          // deprecated
   }
 
   export interface IEnumInstruction {
@@ -57,7 +81,7 @@ module fng {
     modelName: string;
     formName: string;
     cancel(): any;
-    showError: any;
+    showError: (error: any, alertTitle? : string) => void;
     alertTitle: any;
     errorMessage: any;
     prepareForSave: (cb: (error: string, dataToSave?: any) => void) => void;
@@ -71,6 +95,7 @@ module fng {
     isNewDisabled: any;
     isSaveDisabled: any;
     disabledText: any;
+    unconfirmedDelete: boolean;
     getVal: any;
 
     tabs?: Array<any>;              // In the case of forms that contain a tab set
@@ -88,7 +113,7 @@ module fng {
     conversions: any;
     pageSize: any;
     pagesLoaded: any;
-    formSchema: Array<IFieldViewInfo>;
+    formSchema: IFormInstruction[];
 
     //functions
     baseSchema() : Array<any>;
@@ -108,6 +133,11 @@ module fng {
     dismissError: any;
     handleHttpError(response: any): void;
     dropConversionWatcher: () => void;
+  }
+
+  export interface IModelController extends IFormScope {
+    onBaseCtrlReady? : (baseScope: IFormScope) => void;   // Optional callback after form is instantiated
+    onAllReady? : (baseScope: IFormScope) => void;        // Optional callback after form is instantiated and populated
   }
 
   export interface IBaseFormOptions {

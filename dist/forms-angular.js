@@ -112,10 +112,9 @@ var fng;
         directives.formButtons = formButtons;
     })(directives = fng.directives || (fng.directives = {}));
 })(fng || (fng = {}));
-/// <reference path="../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../../node_modules/@types/lodash/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types" />
 var fng;
 (function (fng) {
     var directives;
@@ -1180,7 +1179,7 @@ var fng;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types" />
 var fng;
 (function (fng) {
     var services;
@@ -1239,7 +1238,7 @@ var fng;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types" />
 var fng;
 (function (fng) {
     var services;
@@ -1523,9 +1522,7 @@ var fng;
         services.routingService = routingService;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../../node_modules/@types/lodash/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types" />
 var fng;
 (function (fng) {
     var services;
@@ -2060,7 +2057,7 @@ var fng;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types" />
 var fng;
 (function (fng) {
     var services;
@@ -2423,9 +2420,7 @@ var fng;
         services.pluginHelper = pluginHelper;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
-/// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../../node_modules/@types/lodash/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types" />
 var fng;
 (function (fng) {
     var services;
@@ -2865,7 +2860,9 @@ var fng;
                         if (data.success === false) {
                             $location.path('/404');
                         }
-                        handleIncomingData(data, $scope, ctrlState);
+                        else {
+                            handleIncomingData(data, $scope, ctrlState);
+                        }
                     }, $scope.handleHttpError);
                 },
                 scrollTheList: function scrollTheList($scope) {
@@ -3132,7 +3129,9 @@ var fng;
                         options = options || {};
                         $scope.prepareForSave(function (err, dataToSave) {
                             if (err) {
-                                $scope.showError(err);
+                                if (err !== '_update_handled_') {
+                                    $scope.showError(err);
+                                }
                             }
                             else if ($scope.id) {
                                 recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
@@ -3176,26 +3175,35 @@ var fng;
                     });
                     $scope.deleteClick = function () {
                         if ($scope.record._id) {
-                            var modalInstance = $uibModal.open({
-                                template: '<div class="modal-header">' +
-                                    '   <h3>Delete Item</h3>' +
-                                    '</div>' +
-                                    '<div class="modal-body">' +
-                                    '   <p>Are you sure you want to delete this record?</p>' +
-                                    '</div>' +
-                                    '<div class="modal-footer">' +
-                                    '    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>' +
-                                    '    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>' +
-                                    '</div>',
-                                controller: 'SaveChangesModalCtrl',
-                                backdrop: 'static'
-                            });
-                            modalInstance.result.then(function (result) {
+                            var confirmDelete = void 0;
+                            if ($scope.unconfirmedDelete) {
+                                confirmDelete = Promise.resolve(true);
+                            }
+                            else {
+                                var modalInstance = $uibModal.open({
+                                    template: '<div class="modal-header">' +
+                                        '   <h3>Delete Item</h3>' +
+                                        '</div>' +
+                                        '<div class="modal-body">' +
+                                        '   <p>Are you sure you want to delete this record?</p>' +
+                                        '</div>' +
+                                        '<div class="modal-footer">' +
+                                        '    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>' +
+                                        '    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>' +
+                                        '</div>',
+                                    controller: 'SaveChangesModalCtrl',
+                                    backdrop: 'static'
+                                });
+                                confirmDelete = modalInstance.result;
+                            }
+                            confirmDelete.then(function (result) {
                                 if (result) {
                                     if (typeof $scope.dataEventFunctions.onBeforeDelete === 'function') {
                                         $scope.dataEventFunctions.onBeforeDelete(ctrlState.master, function (err) {
                                             if (err) {
-                                                $scope.showError(err);
+                                                if (err !== '_delete_handled_') {
+                                                    $scope.showError(err);
+                                                }
                                             }
                                             else {
                                                 recordHandlerInstance.deleteRecord($scope.modelName, $scope.id, $scope, ctrlState);
@@ -3364,7 +3372,7 @@ var fng;
     })(services = fng.services || (fng.services = {}));
 })(fng || (fng = {}));
 /// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types.d.ts" />
 var fng;
 (function (fng) {
     var controllers;
