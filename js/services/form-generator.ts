@@ -1,6 +1,4 @@
-/// <reference path="../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../../node_modules/@types/lodash/index.d.ts" />
-/// <reference path="../fng-types.ts" />
+/// <reference path="../fng-types" />
 
 module fng.services {
   /**
@@ -13,6 +11,7 @@ module fng.services {
 
   /*@ngInject*/
   import IFormController = angular.IFormController;
+  import IFormInstruction = fng.IFormInstruction;
 
 
   export function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) : IFormGenerator {
@@ -114,7 +113,7 @@ module fng.services {
       }
     }
 
-    function handleFieldType(formInstructions: any, mongooseType, mongooseOptions, $scope, ctrlState) {
+    function handleFieldType(formInstructions: IFormInstruction, mongooseType, mongooseOptions, $scope, ctrlState) {
 
       function performLookupSelect(){
         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');

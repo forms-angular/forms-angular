@@ -58,6 +58,7 @@ gulp.task('build', function(callback) {
     'tidy',
     'uglify',
     'saveDebug',
+    'copyTypes',
     'cleanMin',
     'less',
     callback);
@@ -160,15 +161,6 @@ gulp.task('apiTest', function () {
     .pipe(require('gulp-mocha')({reporter: 'dot'}));
 });
 
-//gulp.task('test:watch', function() {
-//  return gulp.src(testFiles)
-//    .pipe(karma({
-//      configFile: 'karma.conf.js',
-//      action: 'watch'
-//    }));
-//});
-//
-
 gulp.task('saveDebug', function () {
   gulp.src('dist/min/forms-angular.js')
     .pipe(rename('forms-angular.min.js'))
@@ -184,24 +176,13 @@ gulp.task('uglify', function(cb) {
     ],
     cb
   );
-  // var fs = require('fs');
-  // var uglifyJs = require('uglify-js');
-  //
-  // var code = fs.readFileSync('dist/forms-angular.js', 'utf8');
-  //
-  // var parsed = uglifyJs.parse(code);
-  // parsed.figure_out_scope();
-  //
-  // var compressed = parsed.transform(uglifyJs.Compressor());
-  // compressed.figure_out_scope();
-  // compressed.compute_char_frequency();
-  // compressed.mangle_names();
-  //
-  // var finalCode = compressed.print_to_string();
-  //
-  // fs.writeFileSync('dist/forms-angular.min.js', finalCode);
 });
 
+gulp.task('copyTypes', function () {
+  gulp.src('./js/fng-types.d.ts')
+    .pipe(rename('index.d.ts'))
+    .pipe(gulp.dest(distDirectory));
+});
 
 gulp.task('templates', function() {
   var templateCache = require('gulp-angular-templatecache');
@@ -211,22 +192,6 @@ gulp.task('templates', function() {
     .pipe(templateCache({standalone: false, module: 'formsAngular'}))
     .pipe(gulp.dest(distDirectory));
 });
-
-//var umdHelper = function(browserSources, directory) {
-//  var umd = require('gulp-umd');
-//
-//  return gulp
-//    .src(browserSources)
-//    .pipe(umd({
-//      exports: function(file) {
-//        return 'formsAngular';
-//      },
-//      namespace: function(file) {
-//        return 'formsAngular';
-//      }
-//    }))
-//    .pipe(gulp.dest(directory));
-//};
 
 gulp.task('less', function () {
   var less = require('gulp-less');
