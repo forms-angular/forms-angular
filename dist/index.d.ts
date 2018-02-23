@@ -1,4 +1,5 @@
-declare namespace fng {
+declare module fng {
+  var formsAngular: angular.IModule;
 
   // Schema passed from server - derived from Mongoose schema
   export interface IFieldViewInfo {
@@ -215,3 +216,5 @@ declare namespace fng {
   }
 
 }
+
+declare var formsAngular: angular.IModule;
