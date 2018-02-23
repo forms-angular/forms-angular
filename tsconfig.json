@@ -2,6 +2,11 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
+    "lib": [
+      "ES5",
+      "ES2015",
+      "DOM"
+    ],
     "sourceMap": true
   },
   "exclude": [

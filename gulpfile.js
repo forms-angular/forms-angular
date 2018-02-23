@@ -87,8 +87,12 @@ gulp.task('compileClientSide', function() {
     .src(browserSources)
     .pipe(typeScriptCompiler({
       module: 'amd',
-      declaration: true, // Generate *.d.ts declarations file as well
       emitError: false,
+      lib: [
+        "ES5",
+        "ES2015",
+        "DOM"
+      ],
       out: 'forms-angular.js',
       target: 'ES5'
     }))
