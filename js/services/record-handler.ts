@@ -390,6 +390,16 @@ module fng.services {
           if ($location.$$search.r) {
             try {
               ctrlState.master = JSON.parse($location.$$search.r);
+
+              // Although this is a new record we are making it dirty from the url so we need to $setDirty
+              $scope.$on('fngCancel', () => {
+                setTimeout(() => {
+                  if ($scope[$scope.topLevelFormName]) {
+                    $scope[$scope.topLevelFormName].$setDirty();
+                  }
+                }, 2);  // Has to fire after the setPristime timeout.
+              });
+
             } catch (e) {
               console.log('Error parsing specified record : ' + e.message);
             }
