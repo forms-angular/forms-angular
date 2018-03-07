@@ -2795,15 +2795,11 @@ var fng;
                     else {
                         // New record
                         ctrlState.master = {};
-                        if ($location.$$search.r) {
+                        var passedRecord = $scope.initialiseNewRecord || $location.$$search.r;
+                        if (passedRecord) {
                             try {
-                                ctrlState.master = JSON.parse($location.$$search.r);
+                                ctrlState.master = JSON.parse(passedRecord);
                                 // Although this is a new record we are making it dirty from the url so we need to $setDirty
-                                // let elm;
-                                // Object.keys(ctrlState.master).forEach((key) => {
-                                //   elm = elm || angular.element('#cg_f_' + key);
-                                // });
-                                // elm.inheritedData('$formController').$setDirty();
                                 $scope.$on('fngCancel', function () {
                                     setTimeout(function () {
                                         if ($scope[$scope.topLevelFormName]) {

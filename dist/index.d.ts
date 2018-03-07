@@ -88,6 +88,7 @@ declare module fng {
     prepareForSave: (cb: (error: string, dataToSave?: any) => void) => void;
     save: any;
     newRecord: boolean;
+    initialiseNewRecord?: any;
     id: any;
     newClick: any;
     deleteClick: any;

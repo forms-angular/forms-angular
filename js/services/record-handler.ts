@@ -387,9 +387,10 @@ module fng.services {
         } else {
           // New record
           ctrlState.master = {};
-          if ($location.$$search.r) {
+          let passedRecord = $scope.initialiseNewRecord || $location.$$search.r;
+          if (passedRecord) {
             try {
-              ctrlState.master = JSON.parse($location.$$search.r);
+              ctrlState.master = JSON.parse(passedRecord);
 
               // Although this is a new record we are making it dirty from the url so we need to $setDirty
               $scope.$on('fngCancel', () => {
