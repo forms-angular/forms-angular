@@ -188,7 +188,13 @@ describe('API', function () {
   describe('Secure fields', function () {
 
     it('should not be transmitted in a listing', function (done) {
-      var mockReq = {url: 'c_subdoc_example', params: {resourceName: 'c_subdoc_example', id: '519aaaaab320153869b175e0'}};
+      var mockReq = {
+        url: 'c_subdoc_example',
+        params: {
+          resourceName: 'c_subdoc_example',
+          id: '519aaaaab320153869b175e0'
+        }
+      };
       var mockRes = {
         send: function (data) {
           assert.equal(data.length, 2);
@@ -309,7 +315,10 @@ describe('API', function () {
 
     it('should find a single match', function (done) {
       var mockReq = {
-        url: '/search?q=IsAccepted1'
+        url: '/search',
+        query: {
+          q:'IsAccepted1'
+        }
       };
       var mockRes = {
         send: function (data) {
@@ -322,7 +331,10 @@ describe('API', function () {
 
     it('should find two matches', function (done) {
       var mockReq = {
-        url: '/search?q=Test'
+        url: '/search',
+        query: {
+          q:'Test'
+        }
       };
       var mockRes = {
         send: function (data) {
@@ -336,7 +348,10 @@ describe('API', function () {
 
     it('should not find records that do not meet find function', function (done) {
       var mockReq = {
-        url: '/search?q=Jones'
+        url: '/search',
+        query: {
+          q:'Jones'
+        }
       };
       var mockRes = {
         send: function (data) {
@@ -349,7 +364,10 @@ describe('API', function () {
 
     it('shoucd ..ld not find records indexed on a no-search field', function (done) {
       var mockReq = {
-        url: '/search?q=ReportingIndex'
+        url: '/search',
+        query: {
+          q:'ReportingIndex'
+        }
       };
       var mockRes = {
         send: function (data) {
@@ -363,7 +381,10 @@ describe('API', function () {
 
     it('should support searchOrder option', function (done) {
       var mockReq = {
-        url: '/search?q=Smi'
+        url: '/search',
+        query: {
+          q:'Smi'
+        }
       };
       var mockRes = {
         send: function (data) {
@@ -379,7 +400,10 @@ describe('API', function () {
 
     it('should find a record from a partial initial string', function (done) {
       var mockReq = {
-        url: '/search?q=ann'
+        url: '/search',
+        query: {
+          q:'ann'
+        }
       };
       var mockRes = {
         send: function (data) {
@@ -396,7 +420,10 @@ describe('API', function () {
 
     it('should find a record from multiple partial initial strings', function (done) {
       var mockReq = {
-        url: '/search?q=smi john04',
+        url: '/search',
+        query: {
+          q:'smi john04'
+        },
         route: {path : '/api/search'}
       };
       var mockRes = {
@@ -412,7 +439,10 @@ describe('API', function () {
 
     it('should not repeat a record in the results', function (done) {
       var mockReq = {
-        url: '/search?q=smith04 john04',
+        url: '/search',
+        query: {
+          q:'smith04 john04'
+        },
         route: {path : '/api/search'}
       };
       var mockRes = {
@@ -428,7 +458,10 @@ describe('API', function () {
 
     it('should support searchResultFormat option', function (done) {
       var mockReq = {
-        url: '/search?q=Br',
+        url: '/search',
+        query: {
+          q:'Br'
+        },
         route: {path : '/api/search'}
       };
       var mockRes = {
@@ -448,7 +481,10 @@ describe('API', function () {
 
     it('Should filter', function (done) {
       var mockReq = {
-        url: '/f_nested_schema?f={"exams.subject":"Physics"}',
+        url: '/f_nested_schema',
+        query: {
+          f: '{"exams.subject":"Physics"}'
+        },
         params : {resourceName : 'f_nested_schema'}
       };
       var mockRes = {
@@ -462,8 +498,10 @@ describe('API', function () {
 
     it('Should aggregate and return appropriate records', function (done) {
       var mockReq = {
-        url: '/api/f_nested_schema?a=[{"$unwind":"$exams"},{"$sort":{"exams.score":1}},{"$group":{"_id":{"id":"$_id"},' +
-          '"bestSubject":{"$last":"$exams.subject"}}},{"$match":{"bestSubject":"English"}},{"$project":{"_id":"$_id.id"}}]',
+        url: '/api/f_nested_schema',
+        query: {
+          a: '[{"$unwind":"$exams"},{"$sort":{"exams.score":1}},{"$group":{"_id":{"id":"$_id"},"bestSubject":{"$last":"$exams.subject"}}},{"$match":{"bestSubject":"English"}},{"$project":{"_id":"$_id.id"}}]'
+        },
         params: {resourceName: 'f_nested_schema'}
       };
       var mockRes = {
@@ -479,9 +517,13 @@ describe('API', function () {
 
     it('Should combine aggregation and filtering', function (done) {
       var mockReq = {
-        url: '/api/f_nested_schema?f={"_id":"51c583d5b5c51226db418f15"}&a=[{"$unwind":"$exams"},{"$sort":{"exams.score":1}},' +
+        url: '/api/f_nested_schema',
+        query: {
+          f:'{"_id":"51c583d5b5c51226db418f15"}',
+          a: '[{"$unwind":"$exams"},{"$sort":{"exams.score":1}},' +
         '{"$group":{"_id":{"id":"$_id"},"bestSubject":{"$last":"$exams.subject"}}},{"$match":{"bestSubject":"English"}},' +
-        '{"$project":{"_id":"$_id.id"}}]',
+        '{"$project":{"_id":"$_id.id"}}]'
+        },
         params : {resourceName: 'f_nested_schema'}
       };
       var mockRes = {
