@@ -6,7 +6,6 @@ var _ = require('lodash');
 var util = require('util');
 var extend = require('node.extend');
 var async = require('async');
-var url = require('url');
 var debug = false;
 function logTheAPICalls(req, res, next) {
     void (res);
@@ -191,7 +190,10 @@ DataForm.prototype.getResourceFromCollection = function (name) {
     });
 };
 DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeResourceInResults, limit, callback) {
-    var searches = [], resourceCount = resourcesToSearch.length, urlParts = url.parse(req.url, true), searchFor = urlParts.query.q, filter = urlParts.query.f;
+    if (typeof req.query === 'undefined') {
+        req.query = {};
+    }
+    var searches = [], resourceCount = resourcesToSearch.length, searchFor = req.query.q || '', filter = req.query.f;
     function translate(string, array, context) {
         if (array) {
             var translation = _.find(array, function (fromTo) {
@@ -498,17 +500,20 @@ DataForm.prototype.report = function () {
             return next();
         }
         var self = this;
-        var reportSchema, urlParts = url.parse(req.url, true);
+        if (typeof req.query === 'undefined') {
+            req.query = {};
+        }
+        var reportSchema;
         if (req.params.reportName) {
             reportSchema = req.resource.model.schema.statics['report'](req.params.reportName, req);
         }
-        else if (urlParts.query.r) {
-            switch (urlParts.query.r[0]) {
+        else if (req.query.r) {
+            switch (req.query.r[0]) {
                 case '[':
-                    reportSchema = { pipeline: JSON.parse(urlParts.query.r) };
+                    reportSchema = { pipeline: JSON.parse(req.query.r) };
                     break;
                 case '{':
-                    reportSchema = JSON.parse(urlParts.query.r);
+                    reportSchema = JSON.parse(req.query.r);
                     break;
                 default:
                     return self.renderError(new Error('Invalid "r" parameter'), null, req, res, next);
@@ -535,7 +540,7 @@ DataForm.prototype.report = function () {
         var schemaCopy = {};
         extend(schemaCopy, reportSchema);
         schemaCopy.params = schemaCopy.params || [];
-        self.reportInternal(req, req.resource, schemaCopy, urlParts, function (err, result) {
+        self.reportInternal(req, req.resource, schemaCopy, function (err, result) {
             if (err) {
                 self.renderError(err, null, req, res, next);
             }
@@ -577,9 +582,12 @@ DataForm.prototype.hackVariables = function (obj) {
         }
     }
 };
-DataForm.prototype.reportInternal = function (req, resource, schema, options, callback) {
+DataForm.prototype.reportInternal = function (req, resource, schema, callback) {
     var runPipeline;
     var self = this;
+    if (typeof req.query === 'undefined') {
+        req.query = {};
+    }
     self.doFindFunc(req, resource, function (err, queryObj) {
         if (err) {
             return 'There was a problem with the findFunc for model';
@@ -587,10 +595,10 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
         else {
             // Bit crap here switching back and forth to string
             runPipeline = JSON.stringify(schema.pipeline);
-            for (var param in options.query) {
-                if (options.query[param]) {
+            for (var param in req.query) {
+                if (req.query[param]) {
                     if (param !== 'r') {
-                        schema.params[param].value = options.query[param];
+                        schema.params[param].value = req.query[param];
                     }
                 }
             }
@@ -820,13 +828,15 @@ DataForm.prototype.collectionGet = function () {
         if (!req.resource) {
             return next();
         }
-        var urlParts = url.parse(req.url, true);
+        if (typeof req.query === 'undefined') {
+            req.query = {};
+        }
         try {
-            var aggregationParam = urlParts.query.a ? JSON.parse(urlParts.query.a) : null;
-            var findParam = urlParts.query.f ? JSON.parse(urlParts.query.f) : {};
-            var limitParam = urlParts.query.l ? JSON.parse(urlParts.query.l) : 0;
-            var skipParam = urlParts.query.s ? JSON.parse(urlParts.query.s) : 0;
-            var orderParam = urlParts.query.o ? JSON.parse(urlParts.query.o) : req.resource.options.listOrder;
+            var aggregationParam = req.query.a ? JSON.parse(req.query.a) : null;
+            var findParam = req.query.f ? JSON.parse(req.query.f) : {};
+            var limitParam = req.query.l ? JSON.parse(req.query.l) : 0;
+            var skipParam = req.query.s ? JSON.parse(req.query.s) : 0;
+            var orderParam = req.query.o ? JSON.parse(req.query.o) : req.resource.options.listOrder;
             // Dates in aggregation must be Dates
             if (aggregationParam) {
                 this.hackVariablesInPipeline(aggregationParam);
@@ -1109,4 +1119,3 @@ DataForm.prototype.entityList = function () {
         });
     }, this);
 };
-//# sourceMappingURL=data_form.js.map

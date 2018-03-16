@@ -60,7 +60,8 @@ describe('Report API', function () {
 
   it('handles pipeline request', function (done) {
     var mockReq = {
-      url: '/report/g_conditional_fields?r={"pipeline":{"$group":{"_id":"x","count":{"$sum":1}}}}',
+      url: '/report/g_conditional_fields',
+      query: {r:'{"pipeline":{"$group":{"_id":"x","count":{"$sum":1}}}}'},
       params: {resourceName: 'g_conditional_fields'}
     };
     var mockRes = {
@@ -75,9 +76,10 @@ describe('Report API', function () {
 
   it('handles complex pipeline request', function (done) {
     var mockReq = {
-      url: 'report/e_referencing_another_collection?r={"pipeline":[{"$group":{"_id":"$teacher","count":{"$' +
+      url: 'report/e_referencing_another_collection',
+      query: {r:'{"pipeline":[{"$group":{"_id":"$teacher","count":{"$' +
         'sum":1}}}],"title":"Class Sizes","columnDefs":[{"field":"_id","displayName":"Teacher"},{"field":"' +
-        'count","displayName":"Number in Class"}],"columnTranslations":[{"field":"_id","ref":"b_using_options"}]}',
+        'count","displayName":"Number in Class"}],"columnTranslations":[{"field":"_id","ref":"b_using_options"}]}'},
       params: {resourceName: 'e_referencing_another_collection'}
     };
     var mockRes = {
@@ -116,7 +118,8 @@ describe('Report API', function () {
       'columnTranslations': [{'field': 'teacher', 'ref': 'b_using_options'}, {'field': 'mentor', 'ref': 'c_subdoc_example'}]
     };
     var mockReq = {
-      url: 'report/e_referencing_another_collection?r=' + JSON.stringify(reportSpec),
+      url: 'report/e_referencing_another_collection',
+      query: {r : JSON.stringify(reportSpec)},
       params: {resourceName: 'e_referencing_another_collection'}
     };
     var mockRes = {
@@ -171,11 +174,12 @@ describe('Report API', function () {
 
   it('handles invalid lookup table error', function (done) {
     var mockReq = {
-      url: 'report/e_referencing_another_collection?r={"pipeline":[{"$group":{"' +
+      url: 'report/e_referencing_another_collection',
+      query: {r: '{"pipeline":[{"$group":{"' +
         '_id":"$teacher","count":{"$sum":1}}}],"title":"Class Sizes","columnDefs' +
         '":[{"field":"_id","displayName":"Teacher"},{"field":"count","displayName":"' +
         'Number in Class"}],"columnTranslations":[{"field":"_id","ref":"b_usissng_options' +
-        '"}]}',
+        '"}]}'},
       params : {resourceName: 'g_conditional_fields'}
     };
     var mockRes = {
@@ -207,7 +211,8 @@ describe('Report API', function () {
 
   it('supports selection by query text parameter', function (done) {
     var mockReq = {
-      url: 'report/g_conditional_fields/totalforonesex?sex=F',
+      query: {sex: 'F'},
+      url: 'report/g_conditional_fields/totalforonesex',
       params : {
         resourceName: 'g_conditional_fields',
         reportName: 'totalforonesex'
@@ -225,7 +230,10 @@ describe('Report API', function () {
 
   it('supports selection by numeric parameter', function (done) {
     var mockReq = {
-      url: 'report/g_conditional_fields/selectbynumber?number_param=11',
+      url: 'report/g_conditional_fields/selectbynumber',
+      query:{
+        number_param:11
+      },
       params : {
         resourceName: 'g_conditional_fields',
         reportName: 'selectbynumber'
@@ -261,7 +269,10 @@ describe('Report API', function () {
 
   it('prevents access to secure fields', function (done) {
     var mockReq = {
-      url: 'report/b_using_options?r=[{"$project":{"passwordHash":1}}]',
+      url: 'report/b_using_options',
+      query: {
+        r: '[{"$project":{"passwordHash":1}}]'
+      },
       params : {
         resourceName: 'b_using_options'
       }

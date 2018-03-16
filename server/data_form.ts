@@ -8,7 +8,6 @@ const _ = require('lodash');
 const util = require('util');
 const extend = require('node.extend');
 const async = require('async');
-const url = require('url');
 
 let debug = false;
 
@@ -238,11 +237,11 @@ DataForm.prototype.getResourceFromCollection = function (name) {
 };
 
 DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeResourceInResults, limit, callback) {
+  if (typeof req.query === 'undefined') { req.query = {}; }
   let searches = [],
     resourceCount = resourcesToSearch.length,
-    urlParts = url.parse(req.url, true),
-    searchFor = urlParts.query.q,
-    filter = urlParts.query.f;
+    searchFor = req.query.q || '',
+    filter = req.query.f;
 
   function translate(string, array, context) {
     if (array) {
@@ -581,18 +580,19 @@ DataForm.prototype.report = function () {
     }
 
     const self = this;
-    let reportSchema,
-      urlParts = url.parse(req.url, true);
+    if (typeof req.query === 'undefined') { req.query = {}; }
+
+    let reportSchema;
 
     if (req.params.reportName) {
       reportSchema = req.resource.model.schema.statics['report'](req.params.reportName, req);
-    } else if (urlParts.query.r) {
-      switch (urlParts.query.r[0]) {
+    } else if (req.query.r) {
+      switch (req.query.r[0]) {
         case '[':
-          reportSchema = {pipeline: JSON.parse(urlParts.query.r)};
+          reportSchema = {pipeline: JSON.parse(req.query.r)};
           break;
         case '{':
-          reportSchema = JSON.parse(urlParts.query.r);
+          reportSchema = JSON.parse(req.query.r);
           break;
         default:
           return self.renderError(new Error('Invalid "r" parameter'), null, req, res, next);
@@ -620,7 +620,7 @@ DataForm.prototype.report = function () {
     extend(schemaCopy, reportSchema);
     schemaCopy.params = schemaCopy.params || [];
 
-    self.reportInternal(req, req.resource, schemaCopy, urlParts, function (err, result) {
+    self.reportInternal(req, req.resource, schemaCopy, function (err, result) {
       if (err) {
         self.renderError(err, null, req, res, next);
       } else {
@@ -662,9 +662,10 @@ DataForm.prototype.hackVariables = function (obj) {
   }
 };
 
-DataForm.prototype.reportInternal = function (req, resource, schema, options, callback) {
+DataForm.prototype.reportInternal = function (req, resource, schema, callback) {
   let runPipeline: any;
   let self = this;
+  if (typeof req.query === 'undefined') { req.query = {}; }
 
   self.doFindFunc(req, resource, function (err, queryObj) {
     if (err) {
@@ -672,10 +673,10 @@ DataForm.prototype.reportInternal = function (req, resource, schema, options, ca
     } else {
       // Bit crap here switching back and forth to string
       runPipeline = JSON.stringify(schema.pipeline);
-      for (let param in options.query) {
-        if (options.query[param]) {
+      for (let param in req.query) {
+        if (req.query[param]) {
           if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
-            schema.params[param].value = options.query[param];
+            schema.params[param].value = req.query[param];
           }
         }
       }
@@ -916,14 +917,14 @@ DataForm.prototype.collectionGet = function () {
     if (!req.resource) {
       return next();
     }
+    if (typeof req.query === 'undefined') { req.query = {}; }
 
-    const urlParts = url.parse(req.url, true);
     try {
-      const aggregationParam = urlParts.query.a ? JSON.parse(urlParts.query.a) : null;
-      const findParam = urlParts.query.f ? JSON.parse(urlParts.query.f) : {};
-      const limitParam = urlParts.query.l ? JSON.parse(urlParts.query.l) : 0;
-      const skipParam = urlParts.query.s ? JSON.parse(urlParts.query.s) : 0;
-      const orderParam = urlParts.query.o ? JSON.parse(urlParts.query.o) : req.resource.options.listOrder;
+      const aggregationParam = req.query.a ? JSON.parse(req.query.a) : null;
+      const findParam = req.query.f ? JSON.parse(req.query.f) : {};
+      const limitParam = req.query.l ? JSON.parse(req.query.l) : 0;
+      const skipParam = req.query.s ? JSON.parse(req.query.s) : 0;
+      const orderParam = req.query.o ? JSON.parse(req.query.o) : req.resource.options.listOrder;
 
       // Dates in aggregation must be Dates
       if (aggregationParam) {
