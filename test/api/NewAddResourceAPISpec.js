@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert');
-var formsAngular = require('../../server/data_form.js');
+var formsAngular = require('../../dist/server/data_form.js');
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
