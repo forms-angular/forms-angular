@@ -133,6 +133,7 @@ describe('Links', function () {
         //
         it('should have a link', function () {
           var anchor = elm.find('a');
+          console.log(anchor);
           expect(anchor.attr('href')).toMatch('\/Person\/myschema\/123456789\/edit$');
           expect(anchor.text()).toBe('My link text');
         });

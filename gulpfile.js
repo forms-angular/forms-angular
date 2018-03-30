@@ -8,11 +8,11 @@ var uglify = require('gulp-uglify');
 var pump = require('pump');
 
 var browserSources = [
-  'js/controller/*.ts',
-  'js/directives/*.ts',
-  'js/filters/*.ts',
-  'js/services/*.ts',
-  'js/*.ts'
+  'src/client/js/controller/*.ts',
+  'src/client/js/directives/*.ts',
+  'src/client/js/filters/*.ts',
+  'src/client/js/services/*.ts',
+  'src/client/js/*.ts'
 ];
 var testFiles = []; // Declared in the karma.conf.js
 var rootDir = process.cwd();
@@ -96,16 +96,16 @@ gulp.task('compileClientSide', function() {
       out: 'forms-angular.js',
       target: 'ES5'
     }))
-    .pipe(gulp.dest(distDirectory));
+    .pipe(gulp.dest(distDirectory + '/client'));
 });
 
 gulp.task('compileServerSide', function() {
   return gulp
-    .src('server/*.ts')
+    .src('src/server/*.ts')
     .pipe(typeScriptCompiler({
       target: 'ES5'
     }))
-    .pipe(gulp.dest('./server'));
+    .pipe(gulp.dest(distDirectory + '/server'));
 });
 
 gulp.task('clean', function() {
@@ -113,28 +113,28 @@ gulp.task('clean', function() {
 });
 
 gulp.task('cleanMin', function() {
-  return del(distDirectory + '/min', function(err,paths) {console.log('Cleared ' + paths.join(' '));});
+  return del(distDirectory + '/client/min', function(err,paths) {console.log('Cleared ' + paths.join(' '));});
 });
 
 gulp.task('annotate', function() {
   var ngAnnotate = require('gulp-ng-annotate');
 
-  return gulp.src(distDirectory + '/forms-angular.js')
+  return gulp.src(distDirectory + '/client/forms-angular.js')
     .pipe(ngAnnotate())
-    .pipe(gulp.dest(distDirectory));
+    .pipe(gulp.dest(distDirectory + '/client'));
 });
 
 gulp.task('concatTemplates', function() {
 
   var concat = require('gulp-concat');
 
-  return gulp.src(distDirectory + '/*.js')
+  return gulp.src(distDirectory + '/client/*.js')
     .pipe(concat('forms-angular.js'))
-    .pipe(gulp.dest('./dist/'));
+    .pipe(gulp.dest('./dist/client'));
 });
 
 gulp.task('tidy', function() {
-  return del([distDirectory + '/templates.js'], function(err,paths) {console.log('Cleared ' + paths.join(' '));});
+  return del([distDirectory + '/client/templates.js'], function(err,paths) {console.log('Cleared ' + paths.join(' '));});
 });
 
 gulp.task('test', function(callback) {
@@ -147,14 +147,14 @@ gulp.task('test', function(callback) {
 
 gulp.task('karmaTest', function(done) {
   new Server({
-    configFile: rootDir + '/config/karma.conf.js',
+    configFile: rootDir + '/test/karma.conf.js',
     singleRun: true
   }, done).start();
 });
 
 gulp.task('midwayTest', function(done) {
   new Server({
-    configFile: rootDir + '/config/karma.midway.conf.js',
+    configFile: rootDir + '/test/karma.midway.conf.js',
     singleRun: true
   }, done).start();
 });
@@ -166,35 +166,34 @@ gulp.task('apiTest', function () {
 });
 
 gulp.task('saveDebug', function () {
-  gulp.src('dist/min/forms-angular.js')
+  gulp.src(distDirectory + '/client/min/forms-angular.js')
     .pipe(rename('forms-angular.min.js'))
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest(distDirectory + '/client'));
 });
-
 
 gulp.task('uglify', function(cb) {
   pump([
-      gulp.src('dist/forms-angular.js'),
+      gulp.src(distDirectory + '/client/forms-angular.js'),
       uglify(),
-      gulp.dest('dist/min')
+      gulp.dest(distDirectory + '/client/min')
     ],
     cb
   );
 });
 
 gulp.task('copyTypes', function () {
-  gulp.src('./js/fng-types.d.ts')
+  gulp.src('./src/client/js/fng-types.d.ts')
     .pipe(rename('index.d.ts'))
-    .pipe(gulp.dest(distDirectory));
+    .pipe(gulp.dest(distDirectory + '/client'));
 });
 
 gulp.task('templates', function() {
   var templateCache = require('gulp-angular-templatecache');
 
   return gulp
-    .src('template/**/*.html')
+    .src('src/client/template/**/*.html')
     .pipe(templateCache({standalone: false, module: 'formsAngular'}))
-    .pipe(gulp.dest(distDirectory));
+    .pipe(gulp.dest(distDirectory + '/client'));
 });
 
 gulp.task('less', function () {
@@ -202,8 +201,8 @@ gulp.task('less', function () {
   var minifyCSS = require('gulp-clean-css');
   var path = require('path');
 
-  return gulp.src('less/forms-angular-with-*.less')
+  return gulp.src('src/client/less/forms-angular-with-*.less')
     .pipe(less({}))
     .pipe(minifyCSS())
-    .pipe(gulp.dest(distDirectory));
+    .pipe(gulp.dest(distDirectory + '/client'));
 });

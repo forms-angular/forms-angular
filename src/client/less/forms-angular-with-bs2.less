@@ -1,0 +1,16 @@
+// Use this to generate a CSS file that includes Twitter Bootstrap v2
+@import "../../../node_modules/bootstrap-2-3-2/less/bootstrap.less";
+
+// See Marc Robichaud's answer on http://stackoverflow.com/questions/26628309/less-v2-does-not-compile-twitters-bootstrap-2-x
+#grid {
+  .core  {
+    .span(@gridColumns) {
+      width: (@gridColumnWidth * @gridColumns) + (@gridGutterWidth * (@gridColumns - 1));
+    }
+  }
+};
+
+@import "forms-angular-bs-common";
+@icon-font-path: "../fonts/glyphicons/";
+@import "../../../node_modules/bootstrap-2-3-2/less/responsive";
+@import "forms-angular-bs2-specific";
