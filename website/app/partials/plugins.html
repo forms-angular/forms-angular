@@ -1,0 +1,273 @@
+<div ng-class="css('rowFluid')">
+  <div class="visible-lg visible-desktop col-md-3 span3">
+  </div>
+  <div class="col-sm-9 span9 page-header">
+    <h1>Plugins</h1>
+    <p>Extend forms-angular by using plugins.</p>
+  </div>
+</div>
+
+<div class="container-fluid" ng-controller="DemoCtrl">
+  <div ng-class="css('rowFluid')">
+    <div class="visible-lg visible-desktop col-md-3 span3">
+      <affix></affix>
+    </div>
+
+    <div class="col-sm-9 span9 affix-section">
+      <p>If you want to add some bells and whistles to your sites you can extend forms-angular by using the plugins.
+        These generally depend on other libraries, which are often quite large, so the will increase the size of your
+        pages (sometimes significantly).</p>
+      <p>If you are using the Yeoman generator (see <a ng-href="{{buildUrl('getting-started')}}">here</a>)
+        then the relevant packages will be installed for you. If you are building your application by hand you will need
+        to run</p>
+      <pre>npm install {plugin-name}</pre>
+      <p>The plugin names (which all begin fng-) are given in brackets at the top of each section of this page.</p>
+
+      <section id="reports" name="Reports" affix-scroll>
+        <h3>Reporting (<a href="https://github.com/forms-angular/fng-reports">fng-reports</a>)</h3>
+
+        <p>With the reporting plugin installed, simple reports can be produced by navigating to URLs of the format
+          <strong>/#/analyse/:model</strong> - see example
+          <a
+            ng-href="{{buildUrl('analyse/b_enhanced_schema')}}">here</a>.</p>
+
+        <p>More useful reports can be run by passing an <a
+          href="http://docs.mongodb.org/manual/core/aggregation-pipeline/">aggregation
+          pipeline</a>
+          to the server using the format <strong>/#/analyse/:model?r=[pipeline]</strong> - for example
+          <a
+            ng-href="{{buildUrl('analyse/g_conditional_field?r=%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D')}}">/#/analyse/g_conditional_field?r=[{"$group":{"_id":"$sex","count":{"$sum":1}}}]</a>
+          produces a breakdown of the men and women in a collection.</p>
+
+        <p>Reports can be enhanced by passing an object containing the pipeline as a property, along with a
+          number of
+          options:</p>
+        <ul>
+          <li><strong>title</strong> this option allows a title to be specified. The default is the model
+            name. Current values of <a href="#/plugins#drilldown">params</a> can be inserted into the title using the
+            syntax |(paramname)| within the title.
+          </li>
+          <li><strong>columnDefs</strong> an array of column instruction objects which determines the output
+            order and
+            appearance.
+            For full details see <a href="https://github.com/angular-ui/ui-grid/wiki/Defining-columns">the
+              ui-grid
+              documentation</a>
+            but the most common uses are:
+            <ul>
+              <li><strong>field</strong> the name of the field in the model.</li>
+              <li><strong>displayName</strong> (optional) the column heading.</li>
+              <li><strong>width</strong> (optional) the desired display width.</li>
+              <li><strong>align</strong> (optional - default left) the desired text alignment. If present
+                must be one
+                of left, right, centre, center.
+              </li>
+              <li><strong>cellClass</strong> (optional) a CSS class to be added to the cell.</li>
+              <li><strong>cellFilter</strong> (optional) an Angular filter (such as <em>number</em> or
+                <em>currency</em> to be applied to the value.
+              </li>
+              <li><strong>totalsRow</strong> (optional - <strong>an extension to ui-grid</strong>) a text
+                value
+                (generally "Total") or <em>$SUM</em></li>
+            </ul>
+          <li><strong>columnTranslations</strong> an array of objects giving instructions for translating
+            returned data.
+            The objects are made up as follows:
+            <ul>
+              <li><strong>field</strong> (mandatory) the name of the results column to translate</li>
+              <li><strong>fn</strong> a function(row,callback) which modifies a row of the results set and
+                then calls the callback.
+                There is an example in <a ng-href="{{buildUrl('models/g_conditional_field.js')}}">this file</a> (search
+                for "functiondemo")
+              </li>
+              <li><strong>translations</strong> an array of value&rarr;display mappings, such as <strong>[{value:'M',
+                display:'Male'},{value:'F', display:'Female'}]</strong></li>
+              <li><strong>ref</strong> the name of a Mongoose model to use to look up the current value
+                against
+                (returning a concatenation of the fields with a truthy <strong>list</strong> key)
+              </li>
+            </ul>
+            If there is more than one of <strong>fn</strong>, <strong>translations</strong> and
+            <strong>ref</strong> they are performed in that order.
+          </li>
+          <li id="drilldown"><strong>drilldown</strong> a url that clicking on the row will navigate to. A |fieldname|
+            will
+            be replaced
+            with the value of the fieldname in the current row. For example a report
+            listing one row per item might have a drilldown of <em>model/|_id|/edit</em> as seen in <a
+              ng-href="{{buildUrl('analyse/g_conditional_field/totals')}}">this</a> report. A |(paramname)|
+            will also be subtituted by the current value of a <a href="#/plugins#drilldown">param</a>.
+          </li>
+          <li id="params"><strong>params</strong> contains an array of parameters that can be used in the pipeline,
+            normally in a
+            $match such as {$match:{sex:("sex")}}. Parameters can have the following properties:
+            <ul>
+              <li><strong>value</strong> is the (mandatory) value used for the query when the page is
+                first generated
+              </li>
+              <li><strong>type</strong> can be <em>'text'</em> (default), <em>'number'</em> or <em>'select'</em>.
+                In
+                the case of <em>'select'</em> values must be defined for
+              </li>
+              <li><strong>label</strong> allows you to override the default input label</li>
+              <li><strong>size</strong> sets <a
+                href="http://twitter.github.io/bootstrap/base-css.html#forms">input control
+                width</a> (but you need to take account of the form size - already a fairly small part of the whole
+                windiw width).
+                Options are: mini, small, medium (default), large, xlarge, xxlarge and block-level.
+              </li>
+
+              <li><strong>enum</strong> an array of values to populate a select input</li>
+              <li><strong>required</strong> should set to true if the query cannot be run without the
+                parameter
+              </li>
+              <li><strong>noInput</strong> can be set to true to prevent the parameter being prompted for.
+                Normally
+                used in conjunction with
+              </li>
+              <li><strong>conversionExpression</strong> an angular expression which generates and / or
+                formats the
+                parameter at runtime.
+                For example
+                <pre>param + ' ' + record.surname | uppercase</pre>
+                would concatenate the values fom the current parameter
+                and the surname parameter and convert them to uppercase.
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <p>Use of date parameters is quite tricky. The following works (quotes omitted for clarity):</p>
+<pre>reportSchema = {
+    pipeline: [
+        { '$match': {$and : [{birth : {$lt:"(periodFinish)"}},{birth : {$gt:"(periodStart)"}}]}},
+        {$group:{_id:'People',count:{$sum:1}}
+    ],
+    params: {
+        periodStart: {value: "1800-01-01T00:00:00.000Z", type: 'text', add: 'ui-date ui-date-format ', conversionExpression: "param | date:'yyyy-MM-ddThh:mm:ss.sssZ'"},
+        periodFinish: {value: "2099-01-01T00:00:00.000Z", type: 'text', add: 'ui-date ui-date-format ', conversionExpression: "param | date:'yyyy-MM-ddThh:mm:ss.sssZ'"}
+        }
+};
+</pre>
+
+        <p>Using these options the report above can be <a
+          ng-href="{{buildUrl('analyse/g_conditional_field?r=%7B%22pipeline%22:%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D%5D,%22title%22:%22Breakdown%20By%20Sex%22,%22columnDefs%22:%5B%7B%22field%22:%22_id%22,%22displayName%22:%22Sex%22%7D,%7B%22field%22:%22count%22,%22displayName%22:%22No%20of%20Applicants%22%7D%5D%7D')}}">tidied
+          up</a>.</p>
+
+        <p>If you looked at the link to that last report you would have realised that using the URL to specify a
+          report
+          format
+          quickly becomes unmanageable. A neater alternative is to put the options into an object which is
+          served up via a
+          static in the model file - see <a ng-href="models/g_conditional_field.js">here</a> for
+          <a ng-href="{{buildUrl('analyse/g_conditional_field/breakdownbysex')}}">some</a>
+          <a id="linkfortest" ng-href="{{buildUrl('analyse/g_conditional_field/totalforonesex')}}">examples</a>.</p>
+      </section>
+      <section id="ui-select" name="Enhanced Select" affix-scroll>
+        <h3>Enhanced Select (<a href="https://github.com/forms-angular/fng-ui-select">fng-ui-select</a>)</h3>
+        <p>This plugin enables the use of the <a href="https://github.com/angular-ui/ui-select/">ui-select</a>
+          component.
+          As well as being better looking than the default &lt;select&gt; component, it can be used for AJAX
+          lookups that cut down the amount of data that needs to be transferred. You can see a simple example
+          in the hair colour field in <a ng-href="{{buildUrl('b_enhanced_schema/new')}}">this</a> example. The teacher
+          field in <a ng-href="{{buildUrl('e_referencing_another_collection/new')}}">this</a> example uses an AJAX
+          call to the server to return records from another collection.</p>
+      </section>
+      <section id="file-uploads" name="File Uploads" affix-scroll>
+        <h3>File Uploads (<a href="https://github.com/forms-angular/fng-jq-upload">fng-jq-upload</a>)</h3>
+        <p>This plugin is a wrapper for BlueImp <a href="https://blueimp.github.io/jQuery-File-Upload/">jquery-file-upload</a>
+          and allows files to be easily attached to your Mongo DB collections.</p>
+        <p>This plugin is used for the Photo and CV fields of <a ng-href="{{buildUrl('b_enhanced_schema/new')}}">this</a>
+          example.</p>
+      </section>
+      <section id="fng-audit" name="Audit Trail" affix-scroll>
+        <h3>Audit Trail (<a href="https://github.com/forms-angular/fng-audit">fng-audit</a>)</h3>
+        <p>This plugin enables changes to documents to be tracked and displayed.  One of the example collections on this site
+          has the audit trail enabled.  You can see this history of one item <a href="{{buildUrl('a_unadorned_schema/5a1ef4332346b74dfb0e2663/history')}}">here</a></p>
+      </section>
+      <section id="datepicker" name="Date and datetime Pickers" affix-scroll>
+        <h3>Date and Datetime Pickers</h3>
+        <h5><a href="https://github.com/forms-angular/fng-bootstrap-date">fng-bootstrap-date</a></h5>
+        <p>This plugin uses DatePickerPopup from angular-ui-bootstrap (which is already a dependency).  You can see the plugin in action
+          in the Application Received field of <a ng-href="{{buildUrl('b_enhanced_schema/new')}}">this</a> example.</p>
+        <h5><a href="https://github.com/forms-angular/fng-bootstrap-datetime">fng-bootstrap-datetime</a></h5>
+        <p>This plugin uses DatePickerPopup and TimePicker from angular-ui-bootstrap (which is already a dependency), along with
+          <a href="https://github.com/zhaber/angular-js-bootstrap-datetimepicker">angular-ui-bootstrap-datetimepicker</a>.  You can see the plugin in action
+          in the Interview Date field of <a ng-href="{{buildUrl('b_enhanced_schema/new')}}">this</a> example.</p>
+        <h5><a href="https://github.com/forms-angular/fng-ui-date">fng-ui-date</a></h5>
+        <p>This plugin enables the use of the <a href="http://jqueryui.com/datepicker/">jQuery-UI date picker</a>. You
+          can see an example in the date of
+          birth field in <a ng-href="{{buildUrl('b_enhanced_schema/new')}}">this</a> example.</p>
+      </section>
+      <section id="editor" name="Editor" affix-scroll>
+        <h3>Editor (<a href="https://github.com/forms-angular/fng-ckeditor">fng-ckeditor</a>)</h3>
+        <p>This plugin enables the use of the <a href="http://ckeditor.com/">CK editor</a>. You can see an example
+          in the formatted text field in <a ng-href="{{buildUrl('b_enhanced_schema/new')}}">this</a> example.</p>
+      </section>
+      <section id="colour-picker" name="Colour Picker" affix-scroll>
+        <h3>Colour Picker (<a href="https://github.com/forms-angular/fng-colour-picker">fng-colour-picker</a>)</h3>
+        <p>This plugin is a wrapper for <a href="https://github.com/ruhley/angular-color-picker">angular-color-picker</a>
+          and allows colours to be selected.</p>
+        <p>This plugin is used for the Favourite Colur field of <a ng-href="{{buildUrl('b_enhanced_schema/new')}}">this</a>
+          example.</p>
+      </section>
+      <section id="rollyourown" name="Roll Your Own" affix-scroll>
+        <h3>Roll Your Own plugin</h3>
+        <p>Use the existing plugins as a jumping off point to write your own.</p>
+        <p>If you want to write an input directive you can get a big start by using the pluginHelper service. If you had
+          a schema element</p>
+        <pre>aField: {type: String, required: true, form: {directive: 'fng-my-input-directive', size: 'xlarge'}}</pre>
+        <p>Then you could generate a simple input (with standard label etc) with the following directive:</p>
+              <pre>app.directive('fngMyInputDirective', function ($compile, pluginHelper) {
+    return {
+      restrict: 'E',
+      link: function (scope, element, attr) {
+        var processedAttr = pluginHelper.extractFromAttr(attr);
+        var elementHtml = pluginHelper.buildInputMarkup(
+          scope,
+          attr.model,
+          processedAttr.info,
+          processedAttr.options,
+          function(buildingBlocks) {return '&lt;input type="text" ' + buildingBlocks.common + '&gt;'}
+        );
+        element.replaceWith($compile(elementHtml)(scope));
+      }
+    }
+  });</pre>
+        <p>The model and id are part of the buildingBlocks.common property. Have a look at the formMarkupHelper service
+          to see what else is available. To access more capability you could call directly on formMarkupHelper like
+          this:</p>
+              <pre>  app.directive('fngMyInputDirective', function ($compile, pluginHelper, formMarkupHelper) {
+    return {
+      restrict: 'E',
+      link: function (scope, element, attr) {
+        var processedAttr = pluginHelper.extractFromAttr(attr);
+        var requiredStr = processedAttr.info.required ? ' required' : '';
+        var elementHtml = pluginHelper.buildInputMarkup(
+          scope,
+          attr.model,
+          processedAttr.info,
+          processedAttr.options,
+          function(buildingBlocks) {
+            return formMarkupHelper.generateSimpleInput(
+              buildingBlocks.common + formMarkupHelper.addTextInputMarkup(
+                buildingBlocks,
+                processedAttr.info,
+                requiredStr
+              ),
+              processedAttr.info,
+              processedAttr.options
+            )
+          }
+        );
+        element.replaceWith($compile(elementHtml)(scope));
+      }
+    }
+  });
+</pre>
+        <p>This is a good place to start building your own directives - perhaps for more visual date/time input, stock ticker or
+          whatever.</p>
+      </section>
+
+    </div>
+  </div>
+</div>

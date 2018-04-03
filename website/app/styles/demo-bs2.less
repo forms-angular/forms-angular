@@ -1,0 +1,29 @@
+
+@import "../../node_modules/bootstrap/less/bootstrap.less";
+@import "bootswatch-cerulean-2.3.2.less";
+@import "variables-cerulean-2.3.2.less";
+
+// See Marc Robichaud's answer on http:/stackoverflow.com/questions/26628309/less-v2-does-not-compile-twitters-bootstrap-2-x
+#grid {
+  .core  {
+    .span(@gridColumns) {
+      width: (@gridColumnWidth * @gridColumns) + (@gridGutterWidth * (@gridColumns - 1));
+    }
+  }
+};
+
+@import "../../../src/client/less/forms-angular-bs-common.less";
+@import "../../node_modules/bootstrap/less/responsive";
+@import "../../../src/client/less/forms-angular-bs2-specific";
+@import "demo-bs-common.less";
+@import "demo-bs2-only.less";
+@import "../../node_modules/components-font-awesome/less/variables.less";
+@FontAwesomePath:    "node_modules/components-font-awesome/font";
+@icon-font-path:     "node_modules/components-font-awesome/font/";
+@import "../../node_modules/components-font-awesome/less/mixins.less";
+@import "../../node_modules/components-font-awesome/less/path.less";
+@import "../../node_modules/components-font-awesome/less/core.less";
+@import "../../node_modules/components-font-awesome/less/bootstrap.less";
+@import "../../node_modules/components-font-awesome/less/extras.less";
+@import "../../node_modules/components-font-awesome/less/icons.less";
+
