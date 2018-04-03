@@ -1,0 +1,63 @@
+<div class="ghb">
+  <a href="https://github.com/forms-angular/forms-angular"><img src="/images/forkme_right_darkblue_121621.png" style="position: fixed; right: 0; top: 0; z-index: 1032;"></a>
+</div>
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container-fluid" ng-cloak>
+      <div class="visible-lg visible-desktop pull-right col-md-2 span2"></div>
+      <!-- Leave some space for github flash -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse" ng-click="isCollapsed = !isCollapsed">
+          <span class="glyphicon glyphicon-bar icon-bar"></span>
+          <span class="glyphicon glyphicon-bar icon-bar"></span>
+          <span class="glyphicon glyphicon-bar icon-bar"></span>
+        </button>
+        <div class="pull-left">
+          <a class="navbar-brandpluslogo brandpluslogo" ng-href="{{buildUrl('/')}}"><img src="/images/Home_icon_black-45.png" alt="Click on logo to go to home page" class="img-responsive"/></a>
+        </div>
+        <global-search class="global-search"></global-search>
+      </div>   <!-- navbar-header -->
+      <div class="navbar-collapse collapse nav-collapse" uib-collapse="isCollapsed">
+        <ul class="nav navbar-nav">
+          <li><a ng-href="{{buildUrl('get-started')}}">Get Started</a></li>
+          <li><a ng-href="{{buildUrl('schemas')}}">Schemas</a></li>
+          <li><a ng-href="{{buildUrl('forms')}}">Forms</a></li>
+          <li><a ng-href="{{buildUrl('plugins')}}">Plugins</a></li>
+          <li><a ng-href="{{buildUrl('examples')}}">Examples</a></li>
+          <li uib-dropdown><a uib-dropdown-toggle>More <span class="caret"></span></a>
+            <ul class="uib-dropdown-menu dropdown-menu">
+              <li><a class="dropdown-option" ng-href="{{buildUrl('api-docs')}}">API Documentation</a></li>
+              <li><a class="dropdown-option" href="https://gitter.im/forms-angular/forms-angular" target="_blank">Chat
+                Room</a></li>
+              <li><a class="dropdown-option" href="https://twitter.com/formsangular" target="_blank">Twitter</a></li>
+              <li><a class="dropdown-option" href="https://github.com/forms-angular/forms-angular/issues?state=open"
+                     target="_blank">Issues</a></li>
+              <li><a class="dropdown-option" href="https://github.com/forms-angular/forms-angular/releases"
+                     target="_blank">Changelog</a></li>
+              <li><a class="dropdown-option" ng-href="{{buildUrl('in-the-wild')}}">Who Uses It?</a></li>
+              <li><a class="dropdown-option" ng-href="{{buildUrl('supported-by')}}">Supported By...</a></li>
+            </ul>
+          </li>
+          <model-controller-dropdown />
+        </ul>
+        <!--** OFFLINE **-->
+        <div class="pull-right ghb" style="padding-top: 14px;">
+          <iframe src="https://ghbtns.com/github-btn.html?user=forms-angular&repo=forms-angular&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
+          <iframe src="https://ghbtns.com/github-btn.html?user=forms-angular&repo=forms-angular&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
+        </div>
+
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- container-fluid -->
+  </div>
+</div>
+<div ng-show="showShortcuts" class="span6 offset3 alert alert-info shortcut-panel">
+  <h2>Keyboard Shortcuts</h2>
+  <table class="table">
+    <tr ng-repeat="shortcut in shortcuts">
+      <td ng-bind-html="markupShortcut(shortcut.key)"></td> <td>{{shortcut.act}}</td>
+    </tr>
+  </table>
+  <p>Press <span class="key">Esc</span> to hide</p>
+</div>

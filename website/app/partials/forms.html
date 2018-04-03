@@ -1,0 +1,381 @@
+<div ng-class="css('rowFluid')">
+  <div class="visible-lg visible-desktop col-md-3 span3">
+  </div>
+  <div class="col-sm-9 span9 page-header">
+        <h1>Forms</h1>
+        Finding, editing and reporting on data
+    </div>
+</div>
+
+<div class="container-fluid" ng-controller="DemoCtrl">
+<div ng-class="css('rowFluid')">
+<div class="visible-lg visible-desktop col-sm-3 span3">
+    <affix></affix>
+</div>
+
+<div class="affix-section span9 col-sm-9">
+<p>Forms angular comes with a small number of built-in forms that can be used to meet a vast number of requirements.  They all use RESTful routes
+    and handle querying and updating the server.  Alternatively you can build your own forms using the directives provided by forms-angular.</p>
+
+<section id="styling" name="Styling" affix-scroll><h3>Styling</h3>
+    <p><strong>forms-angular</strong> uses <a href="http://getbootstrap.com/">Twitter Bootstrap</a> to lay out the forms.
+    Mostly due to historical accident, versions <a href="http://getbootstrap.com/2.3.2">2.3.2</a>
+    and <a href="http://getbootstrap.com/">3.3.5</a> are supported by forms-angular (though only the latter is
+    supported by the maintainers of Twitter bootstrap).  By default
+    2.3.2 compliant markup is generated - you can switch to 3.3.5 by configuring the library as follows:</p>
+    <pre><code>formsAngular.config(['cssFrameworkServiceProvider', function (cssFrameworkService) {
+  cssFrameworkService.setOptions({framework: 'bs3'});
+}]);</code></pre>
+
+</section>
+<section id="routes" name="Routes" affix-scroll><h3>Routes</h3>
+    <p>For each model the following routes are supported:</p>
+
+    <ul>
+        <li><strong>/#/:model</strong> which lists the documents in the collection, with links to the form for editing them</li>
+        <li><strong>/#/:model/new</strong> which enables the user to create a new document using the default form for the collection.  It is also possible to override the
+        default values for new records passing the desired record as follows: <code>/#/:model/new?r={"field1":"value1","field2":"value2"}</code></li>
+        <li><strong>/#/:model/:id/edit</strong> which enables the user to edit a document</li>
+        <li><strong>/#/:model/:id/edit/:tab</strong> which enables the user to edit a document, opening a tabbed form at a specified tab</li>
+    </ul>
+
+    <p>These routes are set up by making a call such as:<pre><code>myDemoApp.config(['formRoutesProvider', function (formRoutes) {
+  formRoutes.start({
+    routing: 'ngroute',
+    fixedRoutes: [
+      {route:'/index', options:{templateUrl: 'partials/landing-page.html'}},
+      {route:'/get-started', options:{templateUrl: 'partials/get-started.html'}},
+      {route: '/a-model/new', options: {templateUrl: 'partials/custom-new.html'}},            // example view override
+      {route: '/a-model/:id/edit', options: {templateUrl: 'partials/custom-edit.html'}},      // example view override
+    ]
+  }]);</code></pre>which specifies that we are using ngRoute for our routing (ui-router is also supported) and declares
+  several routes explicitly, two of which over-ride the built-in routes for <strong>a-model</strong>.</p>
+
+  <p>For registered models other than a-model, and for the other a-model routes the system creates routes automatically and use built-in
+  templates - see details in the <a href="{{ buildUrl('forms#input-form') }} ">Input Form</a> and
+  <a href="{{ buildUrl('forms#listing-form') }} ">Listing form</a>.</p>
+
+  The built-in templates can be over-ridden by creating your own templates and adding a <code>templateFolder</code> property
+    to the object passed to <code>formRoutes.start()</code>.  The
+    <a href="https://github.com/forms-angular/forms-angular/blob/master/template/base-edit.html"><code>base-edit.html</code></a> and
+    <a href="https://github.com/forms-angular/forms-angular/blob/master/template/base-list.html"><code>base-list.html</code></a> both need
+    to be overridden (as does the
+    <a href="https://github.com/forms-angular/forms-angular/blob/master/template/base-analysis.html"><code>base-analysis.html</code></a>
+    if the <a href="{{ buildUrl('plugins#reports')}}">fng-reports plugin</a> is used).</p>
+
+    <p>If you prefer HTML5Mode (which gives routes without the /#) then you can also use the<code><pre>
+  html5Mode: true,
+  hashPrefix: '!'
+</code></pre> properties.</p>
+<p>if you are using HTML5Mode ensure that your index.html file has<pre><code>&lt;base href="/"&gt;</code></pre>
+    in the header.</p>
+<p>Whatever options are used, forms-angular will create the correct routes using <pre><code>urlService.buildUrl(path)</code></pre>
+    which will add in hashes and prefixes to the path as required.  This service can be used in your application so that
+you can easily switch between modes without having to manually change all the internal links.</p>
+</section>
+
+<section id="input-form" name="Input Form" affix-scroll>
+<h3>Input Form</h3>
+<p>The <strong>form-input</strong> directive expands the schema into nice looking
+    data capture form, but that is only a small part of the story.
+    The <a href="https://github.com/forms-angular/forms-angular/blob/master/template/base-edit.html">
+    built-in edit form</a> also gives you:</p>
+<ul>
+    <li>Header section showing the key fields from the record.</li>
+    <li><p>Buttons to perform the usual Save, Cancel, New and Delete operations.  forms-angular handles all
+        the back-end stuff for you.  There a number of keyboard short cuts that can be used in the forms. Hit <span class="key">?</span> to find out more.</p>
+        <p>The form button customisation is currently limited to over-riding the default enabled state of the buttons by
+            defining
+            functions in a controller for the model (or model and form). See <a href="/scripts/controllers/d-array-example.js">here</a> for an
+            example.</p></li>
+    <li>Error message section, which displays error messages when (for example) some server-side validation fails when updating something.</li>
+</ul>
+  <p>You can specify an alternative edit form for an individual model or override all built-in models as shown in the <a href="{{ buildUrl('forms#routes')}}">Routes</a> section above.</p>
+</section>
+
+<section id="listing" name="Listing Form" affix-scroll>
+<h3>Listing Form</h3>
+
+<p>The listing routes (of the format <strong>/#/:model</strong>) are used to build a page
+    containing a list of documents in the collection, showing the <a ng-href="{{buildUrl('schemas#list-fields')}}">list fields</a>.  You can
+    specify a sort order by adding a <strong>listOrder</strong> value to the model as shown in <a href="/models/g_conditional_field.js">this</a> model.
+    Alternatively you can specify a sort order at run-time using the o parameter as in <a ng-href="{{buildUrl('f_nested_schema?o=%7B%22forename%22:1%7D')}}">this</a> example.
+</p>
+
+<p>Listing routes support filters, such as</p>
+
+<a ng-href="{{buildUrl('b_enhanced_schema?f=%7B%22surname%22:%22Smith%22%7D')}}">
+    <pre>/#/b_enhanced_schema?f={"surname":"Smith"}</pre>
+</a>
+
+<p>and calls to the aggregation framework, provided they project to an array of docs that contains an _id property
+    which is used
+    to select from the model. For example the (rather unpalatable)</p>
+<a ng-href="{{buildUrl('f_nested_schema?a=%5B%7B%22%24unwind%22%3A%22%24exams%22%7D%2C%7B%22%24sort%22%3A%7B%22exams.score%22%3A1%7D%7D%2C%7B%22%24group%22%3A%7B%22_id%22%3A%7B%22id%22%3A%22%24_id%22%7D%2C%22bestSubject%22%3A%7B%22%24last%22%3A%22%24exams.subject%22%7D%7D%7D%2C%7B%22%24match%22%3A%7B%22bestSubject%22%3A%22English%22%7D%7D%2C%7B%22%24project%22%3A%7B%22_id%22%3A%22%24_id.id%22%7D%7D%5D')}}">
+    <pre>/#/f_nested_schema?a=[{"$unwind":"$exams"},{"$sort":{"exams.score":1}},{"$group":{"_id":{"id":"$_id"},"bestSubject":{"$last":"$exams.subject"}}},{"$match":{"bestSubject":"English"}},{"$project":{"_id":"$_id.id"}}]</pre>
+</a>
+
+<p>selects all students who did better in their English exam than any other subject. To find out how to use the
+    aggregation framework refer to the <a href="http://docs.mongodb.org/manual/core/aggregation/">MongoDB docs</a>.
+</p>
+
+<p>These can be combined (though there appears to be a problem unless the filter precedes the aggregation).</p>
+
+<p>By default the list order is the MongoDB natural order. The default list order for a table can be set by
+    specifying a <strong>listOrder</strong> option in the model definition (see <a href="/models/g_conditional_field.js">g_conditional_field</a> for an example).</p>
+</section>
+<section id="search" name="Search" affix-scroll>
+    <h3>Search</h3>
+    <p>The smallest form is the search form, in the navbar at the top of this page. It is implemented as a directive - <strong>global-search</strong>.
+        When you enter text into it the controller makes a call to the server which looks for matching data by searching the indexed
+        fields in each model for values starting with the search string.</p>
+
+    <p>There are a number of options that can be added to model exports to modify the search behaviour. Examples can be
+        found
+        in the model definitions files for <a href="/models/f_nested_schema.js">f_nested_schema</a> and <a href="/models/g_conditional_field.js">g_conditional_field</a>.</p>
+    <ul>
+        <li><strong>searchImportance</strong> can be <strong>false</strong> (which suppresses the model from appearing in general search results - ie searches with no model specified)
+            or a value from 0 to 99 (default) that can be used to determine the order
+            of table searches. There is an example in <a href="/models/g_conditional_field.js">this</a> model.
+        </li>
+        <li><strong>searchOrder</strong> can be used to set the default ordering of the search results within a model.
+            There is an example in <a href="/models/g_conditional_field.js">this</a> model.
+            It is normally used in conjunction with searchImportance.
+        </li>
+        <li><strong>searchResultFormat</strong> allows fine control of the display of search results. It points to a
+            function which returns an object which must contain the following:
+            <ul>
+                <li><strong>resource</strong> the model name (or model/customForm) that the search result will link to</li>
+                <li><strong>resourceText</strong> the display name for the resource</li>
+                <li><strong>id</strong> the id to link to</li>
+                <li><strong>weighting</strong> is a value from 0 to 9999 (default) that specifies the sort ordering</li>
+                <li><strong>text</strong> the display text for the item</li>
+            </ul>
+            and may additionally contain
+          <ul>
+            <li><strong>resourceTab</strong> the tab within the target form that should be added to the URLe</li>
+            <li><strong>additional</strong> additional display text for the item (used as a pop-up when present)</li>
+          </ul>
+            Both the resource, resourceText and resourceTab can be localised by a line of code like
+            <pre><code>DataFormHandler.getResource('person').options.localisationData = [{from: 'person/customer', to: 'person/client', context: 'resource'},{from:'Customer', to:'Client', context: 'resourceText'}];</code></pre>
+        </li>
+    </ul>
+
+    A truthy <strong>noSearch</strong> key means index on a schema type is not used in the searchBox searches.
+    A use case for this would be an index that is used in reports for grouping which has no meaning in a search.
+
+    The top 10 search results appear below the search form, where the ordering is by a string built up as follows:
+    <ul>
+        <li>One digit 'hit weighting' where a record that has matched one string in the search query scores 9,
+            a record that has had two matches scores 8 etc.</li>
+        <li>Two digit searchImportance</li>
+        <li>Four digit weighting</li>
+        <li>The display text</li>
+    </ul>
+</section>
+
+
+<section id="form-input-directive" name="form-input Directive" affix-scroll>
+    <h3>The form-input Directive</h3>
+
+    <p>The form-input directive, which is the core component of forms-angular, takes one mandatory attribute - schema -
+        which is documented at the top of the <a ng-href="{{buildUrl('schemas')}}">page</a> and some optional attributes.</p>
+
+    <p>The optional attributes that can be passed for form-input are:</p>
+    <ul>
+        <li><strong>formstyle</strong> this attribute can take the values <strong>vertical</strong>, <strong>horizontal</strong>,
+            <strong>inline</strong> and <strong>horizontalCompact</strong>.  The first three generate the markup for a Twitter Bootstrap style and the last slightly modified style. <strong>vertical</strong>
+            generates markup that works with the default form style, and the others need classes adding as follows:
+          <br />
+          <br />
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td>
+                    <p class="lead">horizontalCompact / compact (default)</p>
+                    <img src="/images/horizontalCompact.png" alt="Example of horizonalCompact layout">
+                  </p>
+                </tr>
+                <tr class="info">
+                  <td>This layout generates forms that use the Bootstrap <strong>form-horizontal</strong> class and the
+                    forms-angular <strong>compact</strong> class (which mostly decreases vertical padding).</td>
+                </tr>
+              </tbody>
+            </table>
+          <table class="table table-bordered">
+            <tbody>
+            <tr>
+              <td>
+                <p class="lead">vertical</p>
+                <img src="/images/vertical.png" alt="Example of vertical layout">
+              </td>
+            </tr>
+            <tr class="info">
+              <td>This layout generates forms that use the default Bootstrap form styling.</td>
+            </tr>
+            </tbody>
+          </table>
+          <table class="table table-bordered">
+            <tbody>
+            <tr>
+              <td>
+                <p class="lead">horizontal</p>
+                <img src="/images/horizontal.png" alt="Example of horizontal layout">
+              </td>
+            </tr>
+            <tr class="info">
+              <td>This layout also generates forms that use Bootstrap <strong>form-horizontal</strong> class, but in this
+                case do not change it.</td>
+            </tr>
+            </tbody>
+          </table>
+          <table class="table table-bordered">
+            <tbody>
+            <tr>
+              <td>
+                <p class="lead">inline</p>
+                <img src="/images/inline.png" alt="Example of inline layout">
+              </td>
+            </tr>
+            <tr class="info">
+              <td>This layout generates forms that use Bootstrap <strong>form-inline</strong> class.  This layout is not
+                supported for Array fields.</td>
+            </tr>
+            </tbody>
+          </table>
+
+            <p>Forms and sub forms that are created by the directive will have these classes added in the appropriate place.</p></li>
+        <li><strong>model</strong> the object in the scope to be bound to the model controller.  Specifying
+            the model inhibits the generation of the <strong>form</strong> tag unless the <strong>forceform</strong> attribute is set to true</li>
+        <li><strong>name</strong> the name to be given to the form</li>
+        <li><strong>forceform</strong> can be set to true to force the generation of the <strong>form</strong>
+            attribute under circumstances where it would generally not be generated (generally if a model attribute is used)</li>
+        <li><strong>noautofocus</strong> can be set to true if you don't want the first field to receive focus</li>
+        <!--TODO complete this list            -->
+    </ul>
+</section>
+
+<section id="client-side-customisation" name="Client Side Customization" affix-scroll>
+    <h3>Client Side Customization</h3>
+
+    <p>Additional functionality can be added by using "model controllers" which have the name of
+        a model followed by <strong>Ctrl</strong> (or the name of the model followed by the name of
+        the custom form followed by Ctrl. There is an sample model controller <a href="/scripts/controllers/b_enhanced_schema.js">here</a>
+        which is used in the examples in this section. The NavCtrl controller handles the model controllers, so don't remove
+        it.  There are two points during the creation of a form when the model controllers are called:</p>
+      <ol>
+        <li><strong>When the BaseCtrl scope is available.</strong> Sometimes it is useful to have model controllers access the base controller, which is created after them.  The best way to
+    do this is to add a <em>$scope.onBaseCtrlReady = function (baseScope)</em> to the model controller.</li>
+        <li><strong>When the form is generated and the data is available.</strong> This allows the model controllers to modify the form in ways that
+          depend on the value of the data.  This is done by adding a <em>$scope.onAllReady = function (baseScope)</em> to the model controller.</li>
+      </ol>
+
+    <h5 id="naming">Naming</h5>
+    <p>The BaseCtrl scope has a variable called <strong>modelNameDisplay</strong> which is used in several places in the
+        demo app. It defaults to the model name in title case, but can be over-ridden in the model controller.</p>
+
+    <h5>Menu</h5>
+
+    <p>The <b><model-controller-dropdown /></b> directive can be added to a <b>ul.navbar-nav</b> to add a dynamic dropdown menu
+        populated by the model controllers (see an example <a ng-href="{{buildUrl('b_enhanced_schema')}}">here</a>)
+        The options can be configured to appear when records are being listed, edited or created. The top level text is
+        taken from the model controller's <strong>dropDownDisplay</strong> variable, if present. If not present it will
+        fall back to the modelNameDisplay (see above) and if that is not present the model name.</p>
+
+    <p>Sometimes menu options only apply to a subset of records in a collection.  In this case they can be hidden by
+        specifying an <strong>isHidden($index)</strong> function or disabled using an <strong>isDisabled($index)</strong>
+        function.  For example to hide the option when a field has a certain value:</p>
+
+        <pre><code>$scope.contextMenu = [{
+  text: 'Do something',
+  fn : function() {// some code},
+  isHidden: function() {
+    return $scope.record._id ? $scope.record.field === 'value' : true;
+  },
+    ...
+}];</code></pre>
+
+    <p>A divider can be added to a menu:</p>
+        <pre><code>$scope.contextMenu = [{
+  divider: true
+  },
+  ...
+}];</code></pre>
+
+    <h5 id="postprocessing">Post form-input generation processing</h5>
+
+    <p>The form-input directive broadcasts a <strong>formInputDone</strong> message when it has
+        processed a control. This can be acted on by the model controller. In our <a ng-href="{{buildUrl('b_enhanced_schema/new')}}">example</a> we
+        add a change handler to a select2 control which changes background color of a control group
+        when the eye colour is changed.  Try it, and then see how it is done at the bottom of
+        <a href="/scripts/controllers/b_enhanced_schema.js">this</a> controller.</p>
+
+    <h5>Client side data events</h5>
+
+    <p>There are hooks before and after CRUD events as follows:</p>
+    <ul>
+      <li>onInitialiseNewRecord function(data) - called as the new object is instantiated on the client after any application of the r query parameter (see <a href="/#/forms#routes">new route</a> above)</li>
+      <li>onBeforeRead function(id, callback(err))</li>
+      <li>onAfterRead function(data)</li>
+      <li>onBeforeCreate function(data, callback(err)) - called before a new record is added to the collection</li>
+      <li>onAfterCreate function(data)</li>
+      <li>onBeforeUpdate function(data, old, callback(err))</li>
+      <li>onAfterUpdate function(data, old)</li>
+      <li>onBeforeDelete function(old, callback(err))</li>
+      <li>onAfterDelete function(old)</li>
+    </ul>
+    <p>In all onBefore... cases passing an error back will stop the event completing. There is a trivial example of
+      how a data event hook might be used in <a href="/scripts/controllers/d-array-example.js">this</a> controller, which shows
+      how such event handlers are set up.  In the case of the onBeforeCreate or onBeforeUpdate events the update/create
+      can be handled within the function by passing back the special err of '_update_handled_'.  In these cases it will
+      usually be helpful to call <code>baseScope.prepareForSave(cb: (error: string, dataToSave?: any) => void): void</code>
+      to convert the client-side model into the format that needs to be written back to MongoDb.
+    </p>
+
+    <p>You can also call onRecordChange function(data, old) which is useful for updating calculated fields etc.</p>
+
+    <h5>Adding additional attributes to all elements.</h5>
+    <p>It is possible to apply additional attributes to all elements of a certain type by passing it once in the form-input declaration. The available types are Control Group, Field or Label.</p>
+    <p>This can be achieved in two ways. Either as an attribute of the form-input element:</p>
+    <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with parameters'"</span>&gt;</pre>
+    <p>or via the controller by making it an attribute of scope: <pre><span>$scope.addAllGroup="injected-attribute"</span></pre></p>
+    <p>The three versions of this are:</p>
+    <ul>
+        <li>add-all-group="injected-attribute"</li>
+        <li>add-all-field="injected-attribute"</li>
+        <li>add-all-label="injected-attribute"</li>
+    </ul>
+    <p>For example if wished to inject a directive called 'hide-on-empty' to every individual control group then you would add:</p>
+    <pre>add-all-group="hide-on-empty"</pre>
+    <p>to the form-input declaration.</p>
+    <p>If declared in a controller then it will be applied to all child controllers. If declared in the form-input element
+        the scope is limited to the individual form's scope. In this way a single declaration at the root scope is seem by all controllers.</p>
+    <p>Due to the parse method, in order declare multiple classes each class must be prefixed with 'class=' e.g.</p>
+    <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with parameters' class=myclass class=my-second-class"</span>&gt;</pre>
+
+</section>
+
+<section id="server-side-customisation" name="Server Side Customization" affix-scroll>
+    <h3>Server Side Customization</h3>
+
+    <h5>Server side data events</h5>
+
+    <p>On the server side there are hooks around data events as follows:</p>
+    <ul>
+      <li>findFunc function(req, callback(err, query)) applies a filter to records returned by the server. A common
+          use case is to restrict a user to only see their own records.
+      </li>
+      <li>onSave function(doc, req, callback(err)) is a pre save hook that allows access to the record and the
+          environment. A common use case is to apply 'fine-grain' authentication, or to add additional pseudo-fields (such as user)
+          to the document for use with the audit plugin.
+      </li>
+      <li>onRemove function(doc, req, callback(err)) is a pre remove hook that allows access to the record and the
+        environment.
+      </li>
+    </ul>
+    <p>There are examples of both in <a href="/models/b_enhanced_schema.js">this</a> model</p>
+</section>
+
+</div>
+</div>
+</div>

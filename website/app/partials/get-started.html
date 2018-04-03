@@ -1,0 +1,163 @@
+<div ng-class="css('rowFluid')">
+    <div class="page-header">
+        <h1>Getting Started</h1>
+    </div>
+</div>
+<div ng-controller="DemoCtrl">
+    <div ng-class="css('rowFluid')">
+        <div class="span10 offset1">
+          <section id="oneclick" name="One Click" affix-scroll>
+            <h3>The One Click Method</h3>
+            <p>Click <a href="https://forms-angular.glitch.me/#/" target="_blank"> here</a> to open an example that you can play with (remix) in Glitch.</p>
+          </section>
+          <section id="moreclicks" name="More Clicks" affix-scroll>
+            <h3>The More-Than-One Click Methods</h3>
+
+            <p>These (longer) instructions will take you through the process of creating your first forms-angular application, which will consist of an input form for
+              a simple model, a listing showing data already on file and a search form.  once we have done that, we will use the Yeoman
+              generator to create a form that shows a few of the plugins that are available with forms-angular.<p>
+
+            <p>Some of the preparation is common to both methods (if you are already a MEAN stack developer you can skip this bit, as you will have these programs installed).<p>
+            <p>Please note: the "just a few minutes" in the title starts from <em>after</em> these are installed!</p>
+            <ul>
+              <li>Install <a href="http://nodejs.org">Node JS</a> and <a href="http://www.mongodb.org">MongoDB</a> (installation depends
+                on operating system)</li>
+            </ul>
+          </section>
+
+            <section id="manual" name="Manual" affix-scroll>
+              <h3>The Manual Method</h3>
+
+              <section id="server" name="server" affix-scroll>
+                <h4>The server side code</h4>
+                <p>First create a directory named <code>myapp</code>, change to it and run <code>npm init</code>. Then install
+                 the dependencies, by running the command <code>npm install forms-angular express body-parser method-override mongoose --save-exact</code></p>
+
+                <p>Next run <code>bower init</code> then install the bower dependencies: <code>bower install forms-angular angular-route --save-exact</code></p>
+
+                <p>Next create the following file:</p>
+                <code>server.js</code>
+                <pre><code ng-prism ng-include="'quick-start/server.js'" class="language-javascript"></code></pre>
+
+                <p>Create a folder called <code>models</code> and in it create this file:</p>
+                <code>models/application.js</code>
+                <pre><code ng-prism ng-include="'quick-start/models/applicant.js'" class="language-javascript"></code></pre>
+                <p>That is all we need for our simple server - now we will move on to the browser side.</p>
+              </section>
+
+              <section id="client" name="client" affix-scroll>
+                <h4>The client side code</h4>
+                <p>Return to the <code>myapp</code> folder to create a folder called <code>app</code>.  we need to create four
+                  files in it:</p>
+                <p><code>app/index.html</code> mostly just tells the browser to loads stylesheets and javascript libraries,
+                  but it also tells angular to load the navbar and the view.</p>
+
+                <pre><code class="language-markup">&lt;!doctype html>
+&lt;head>
+  &lt;title>Forms-Angular Quick Start&lt;/title>
+  &lt;link rel="stylesheet" href="/forms-angular/dist/forms-angular-with-bs3.css" />
+&lt;/head>
+&lt;body ng-app="quickStartApp" ng-controller="NavCtrl" ng-keyup="globalShortcuts($event)" style="padding-top: 60px;">
+&lt;div ng-include="'/navbar.html'">&lt;/div>
+&lt;div ng-view>&lt;/div>
+
+&lt;script src="/angular/angular.js">&lt;/script>
+&lt;script src="/angular-route/angular-route.js">&lt;/script>
+&lt;script src="/angular-sanitize/angular-sanitize.js">&lt;/script>
+&lt;script src="/angular-messages/angular-messages.js">&lt;/script>
+&lt;script src="/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js">&lt;/script>
+&lt;script src="/underscore/underscore.js">&lt;/script>
+&lt;script src="/ngInfiniteScroll/build/ng-infinite-scroll.js">&lt;/script>
+&lt;script src="/angular-elastic/elastic.js">&lt;/script>
+&lt;script src="/forms-angular/dist/forms-angular.js">&lt;/script>
+&lt;script src="/main.js">&lt;/script>
+&lt;/body>
+&lt;/html>
+</code></pre>
+
+                <p><code>app/navbar.html</code> gives us a page header that includes a search box.  It also gives us a keyboard shortcut popup.
+                  Most of the file is Bootstrap related markup</p>
+                <pre><code class="language-markup">
+&lt;div class="navbar navbar-default navbar-fixed-top">
+  &lt;div class="container-fluid" ng-cloak>
+    &lt;div class="navbar-header">
+      &lt;div class="pull-left">
+        &lt;a ng-href="{{buildUrl('/')}}">
+          &lt;span style="font-size:xx-large">&lt;strong>forms-angular&lt;/strong> quick start&lt;/span>
+          &lt;global-search class="global-search">&lt;/global-search>
+        &lt;/a>
+      &lt;/div>
+    &lt;/div>
+  &lt;/div>
+&lt;/div>
+</code></pre>
+
+                <p><code>app/landing-page.html</code> is hopefully self explanatory</p>
+                <pre><code ng-include="'quick-start/app/landing-page.html'" class="language-markup" ng-prism></code></pre>
+
+                <code>app/main.js</code> is the only bit of code we have to write on the browser
+                <pre><code ng-prism ng-include="'quick-start/app/main.js'" class="language-javascript"></code></pre>
+              </section>
+
+              To run the app from <code>myapp</code> type <code>node server.js</code> and then visit localhost:3000 in your browser.
+
+            </section>
+            <section id="yeoman" name="Yeoman" affix-scroll>
+            <h3>Using the Yeoman Generator</h3>
+
+              Now we are going to create a slightly more rounded app, with menus and a simple report with several features
+              including outputting to PDF.  The options will be reached through a simple menu.  We will also
+              have the option of using some enhanced input controls which are loaded through plugins</p>
+
+              <p>If you want a sneak preview of what the input form will look like when
+                you have finished take a look at one of the <a ng-href="{{buildUrl('examples')}}">examples</a> - there
+                is a simple input form <a ng-href="{{buildUrl('a_unadorned_schema/new')}}">here</a>
+                and a more feature-filled one <a ng-href="{{buildUrl('b_enhanced_schema/new')}}">here</a>.  Alternatively you could
+                watch the video below that shows the whole process - from starting up a new server to having a running forms-angular
+                app in just six minutes.  The remaining nine minutes of the video gives a quick explanation of the code.</p>
+              <iframe width="560" height="315" src="https://www.youtube.com/embed/CjA0vFiujrY" frameborder="0" allowfullscreen></iframe>
+              <!--TODO:
+              Get rid of the "override the name" on the second example-->
+
+            <section id="prepare" name="Prepare" affix-scroll>
+
+                <h4>Prepare</h4>
+                <p>(if you need to - you may already have these applications / packages installed)</p>
+                <ul>
+                    <li>Install <a href="http://git-scm.com/downloads">Git</a> (installation depends
+                        on operating system)</li>
+                    <li>Install <a href="http://yeoman.io">Yeoman</a> - <code>npm install -g yo</code>
+                    </li>
+                    <li>Install <a href="http://bower.io">Bower</a> - <code>npm install -g bower</code></li>
+                    <li>(If you are going to use the file upload plugin with image files) Install <a href="http://www.imagemagick.org/script/index.php">imagemagick</a> - <code>npm install -g imagemagick</code></li>
+                </ul>
+
+                <p>If you are just having a play you can do all the above on a new server (for the video we used an Ubuntu 14.04 x64 based server from
+                    <a href="https://www.digitalocean.com/?refcode=e6e0021274c9">Digital Ocean</a>)
+                    you can do the above steps with the following commands</p>
+                <pre><code>apt-get update && apt-get install -y mongodb git make g++ imagemagick
+git clone https://github.com/tj/n.git && cd n && make install  && n stable</code></pre>
+              <p>Note that you may need <strong>sudo</strong> before some of the commands above.</p>
+            </section>
+            <section id="create" name="Create" affix-scroll>
+                <h4>Create</h4>
+                <p>At the command line, in the folder you want your application to reside in, do:</p>
+                <pre><code>npm install -g yo bower generator-fng grunt-cli && yo fng</code></pre>
+                <p>Follow the onscreen prompts to customise your application.  Note that this command must <strong>not</strong>
+                  be run with sudo (see <a href="https://docs.npmjs.com/getting-started/fixing-npm-permissions" target="_blank">
+                  this</a> page for how to install global packages as a user).</p>
+            </section>
+            <section id="run" name="Run" affix-scroll>
+                <h4>Run</h4>
+                <p><code>grunt serve</code></p>
+                <p>Grunt will open the application in your browser.  It should look something like this:</p>
+                <img src="/images/generated-app.png" alt="Screen shot of landing page of generated application"/>
+                <p>If grunt fails for some reason you may be able to see the generated app by running it directly:</p>
+                <p><code>node server/app.js</code></p>
+                <p>Do Applicants | New to see the form that forms-angular has generated from the schema at
+                    <code>lib/fng-models/applicant.js</code>.  You are on your way!</p>
+            </section>
+            </section>
+        </div>
+    </div>
+</div>

@@ -16,7 +16,7 @@
     "test": "gulp test",
     "build": "gulp build"
   },
-  "files":[
+  "files": [
     "dist"
   ],
   "main": "dist/server/data_form.js",
