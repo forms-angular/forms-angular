@@ -245,11 +245,9 @@ describe('validation', function () {
         $httpBackend.flush();
         $compile(elm)(scope);
         scope.$digest();
-        examsSection = angular.element(elm.find('form').children())[2];
-        body = angular.element(angular.element(examsSection).children())[1];
-        exam = angular.element(angular.element(body).children())[0];
-        date = angular.element(angular.element(angular.element(exam).children())[2]);
-        postcode = angular.element(angular.element(angular.element(exam).children())[3]);
+        var elms = elm.find('ol').find('il').find('div').children();
+        postcode = angular.element(elms[3]);
+        date = angular.element(elms[2]);
       }));
 
       it('has class has-error for pattern validation fail', function () {

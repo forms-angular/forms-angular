@@ -155,6 +155,7 @@ var fng;
                                 }
                                 break;
                             case 'link':
+                                debugger;
                                 value = '<fng-link model="' + modelString + '" ref="' + fieldInfo.ref + '"';
                                 if (fieldInfo.form) {
                                     value += ' form="' + fieldInfo.form + '"';
@@ -365,15 +366,24 @@ var fng;
                                         console.log('Attempts at supporting deep nesting have been removed - will hopefully be re-introduced at a later date');
                                     }
                                     else {
+                                        /* Array header */
+                                        var model = (options.model || 'record') + '.' + info.name;
                                         template += '<div class="schema-head">' + info.label;
                                         if (info.unshift) {
                                             template += '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
                                                 '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                                         }
-                                        template += '</div>' +
-                                            '<div ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
+                                        template += '</div>';
+                                        if (info.sortable) {
+                                            template += "<ol ui-sortable ng-model=\"" + model + "\">";
+                                        }
+                                        else {
+                                            template += '<ol>';
+                                        }
+                                        /* Array body */
+                                        template += '<il ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
                                             convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
-                                            ' ng-repeat="subDoc in ' + (options.model || 'record') + '.' + info.name + ' track by $index">' +
+                                            ' ng-repeat="subDoc in ' + model + ' track by $index">' +
                                             '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">';
                                         if (!info.noRemove || info.customSubDoc) {
                                             template += '   <div class="sub-doc-btns">';
@@ -393,7 +403,9 @@ var fng;
                                             subschemaroot: info.name
                                         });
                                         template += '   </div>' +
-                                            '</div>';
+                                            '</il>';
+                                        /* Array footer */
+                                        template += '</ol>';
                                         if (!info.noAdd || info.customFooter) {
                                             template += '<div class = "schema-foot">';
                                             if (info.customFooter) {

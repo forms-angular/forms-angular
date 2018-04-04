@@ -6,6 +6,7 @@ var websiteApp = angular.module('websiteApp', [
   'ui.date',
   'ui.grid',
   'ui.grid.selection',
+  'ui.sortable',
   'ngCkeditor',
   'fng.uiSelect',
   'uploadModule',

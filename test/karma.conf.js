@@ -35,29 +35,29 @@ module.exports = function(config) {
 
       browsers : ['Firefox', 'ChromeHeadless'],
 
-        // use dots reporter, as travis terminal does not support escaping sequences
-        // possible values: 'dots', 'progress'
-        // CLI --reporters progress
-        reporters: ['progress', 'junit'],
+      // use dots reporter, as travis terminal does not support escaping sequences
+      // possible values: 'dots', 'progress'
+      // CLI --reporters progress
+      reporters: ['progress', 'junit'],
 
-        junitReporter:  {
-            outputDir: 'test_out',
-            outputFile: 'test_out/unit.xml',
-            suite: 'unit'
-        },
-        plugins: [
-            'karma-jasmine',
-            'karma-chrome-launcher',
-            'karma-firefox-launcher',
-            'karma-ng-html2js-preprocessor',
-            'karma-junit-reporter'
-        ],
-        ngHtml2JsPreprocessor: {
-            // strip this from the file path
-            stripPrefix: 'src/client/'
-        },
-        preprocessors: {
-            'src/client/template/*.html': 'ng-html2js'
-        }
+      junitReporter:  {
+          outputDir: 'test_out',
+          outputFile: 'test_out/unit.xml',
+          suite: 'unit'
+      },
+      plugins: [
+          'karma-jasmine',
+          'karma-chrome-launcher',
+          'karma-firefox-launcher',
+          'karma-ng-html2js-preprocessor',
+          'karma-junit-reporter'
+      ],
+      ngHtml2JsPreprocessor: {
+          // strip this from the file path
+          stripPrefix: 'src/client/'
+      },
+      preprocessors: {
+          'src/client/template/*.html': 'ng-html2js'
+      }
     });
 };
