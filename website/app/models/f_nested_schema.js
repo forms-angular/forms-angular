@@ -16,9 +16,7 @@ var ExamsSchema = new Schema({
 var FSchema = new Schema({
   surname: {type: String, index: true, required: true, list: {}},
   forename: {type: String, index: true, list: true},
-  exams: [ExamsSchema]    // defaults to horizontal compact form
-  // or
-  //exams: {type: [ExamsSchema], form: {formStyle: 'inline'}}
+  exams: {type: [ExamsSchema], form: {sortable: true}}
 });
 
 var F;

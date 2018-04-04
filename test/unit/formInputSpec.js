@@ -110,8 +110,7 @@ describe('formInput', function () {
         var thisElm = angular.element(elm.find('div')[7]);
         expect(thisElm).toHaveClass('schema-head');
         expect(thisElm.text()).toBe('Exams');
-
-        thisElm = angular.element(elm.find('div')[26]);
+        thisElm = angular.element(elm.find('div')[24]);
         expect(thisElm).toHaveClass('schema-foot');
 
         thisElm = thisElm.find('button');
@@ -120,9 +119,9 @@ describe('formInput', function () {
         thisElm = elm.find('div');
         expect(thisElm).toHaveClassCount('sub-doc', 2);
 
-        thisElm = angular.element(elm.find('div')[8]);
+        thisElm = angular.element(elm.find('il')[0]);
         expect(thisElm.attr('id')).toBe('f_examsList_0');
-        thisElm = angular.element(elm.find('div')[17]);
+        thisElm = angular.element(elm.find('il')[1]);
         expect(thisElm.attr('id')).toBe('f_examsList_1');
 
         thisElm = elm.find('input');
@@ -837,13 +836,13 @@ describe('formInput', function () {
     });
 
     it('on nested field', function () {
-      var cg = angular.element(elm.find('div')[11]);
+      var cg = angular.element(elm.find('div')[10]);
       expect(cg.attr('id')).toBe('cg_f_exams_subject');
       expect(cg.attr('ng-show')).toBe('record.boolean===true');
     });
 
     it('dependent on nested field', function () {
-      var cg = angular.element(elm.find('div')[13]);
+      var cg = angular.element(elm.find('div')[12]);
       expect(cg.attr('id')).toBe('cg_f_exams_retakeDate');
       expect(cg.attr('ng-show')).toBe('record.exams[$index].result===\'fail\'');
     });
