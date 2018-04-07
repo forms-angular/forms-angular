@@ -883,6 +883,14 @@ module fng.services {
           //}
         };
 
+        $scope.sortableOptions = {
+          update: function() {
+            if ($scope.topLevelFormName) {
+              $scope[$scope.topLevelFormName].$setDirty();
+            }
+          }
+        };
+
       },
 
       fillFormFromBackendCustomSchema: fillFormFromBackendCustomSchema,
