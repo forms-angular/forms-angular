@@ -45,10 +45,16 @@ form {
     }
   }
 
-  .schema-head, .sub-doc, .schema-foot {
-    background-color: @wellBackground;
-    border: 1px solid darken(@wellBackground, 7%);
-    .border-radius(@baseBorderRadius);
+  .schema-head {
+    padding: 0 0 0 180px;
+  }
+  .schema-foot {
+    padding: 0 0 0 180px;
+  }
+
+  ol.sub-doc li {
+      border: 1px solid darken(@wellBackground, 7%);
+      .border-radius(@baseBorderRadius);
   }
 
   .form-inline > .sub-doc {

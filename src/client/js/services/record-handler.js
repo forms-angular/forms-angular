@@ -852,6 +852,13 @@ var fng;
                         //      throw new Error('Invalid expression in getVal(): ' + expression);
                         //}
                     };
+                    $scope.sortableOptions = {
+                        update: function () {
+                            if ($scope.topLevelFormName) {
+                                $scope[$scope.topLevelFormName].$setDirty();
+                            }
+                        }
+                    };
                 },
                 fillFormFromBackendCustomSchema: fillFormFromBackendCustomSchema,
                 fillFormWithBackendSchema: function fillFormWithBackendSchema($scope, formGeneratorInstance, recordHandlerInstance, ctrlState) {

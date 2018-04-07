@@ -243,10 +243,15 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
                 <li><strong>rhs</strong> (right hand side) the other value to be compared.  Details as for lhs.</li>
             </ul>
         </li>
-        <li><strong>noAdd</strong> inhibits an Add button being generated for arrays.</li>
+        <li><strong>noAdd</strong> if set to <strong>true</strong>, inhibits an Add button being generated for arrays.  Alternatively can be set to an
+            expression which hides the Add button if it yields a truthty result</li>
         <li><strong>unshift</strong> (for arrays of sub documents) puts an add button in the sub schema header which allows insertion of
           new sub documents at the beginning of the array.</li>
-        <li><strong>noRemove</strong> inhibits a Remove button being generated for array elements.</li>
+        <li><strong>sortable</strong> (for arrays of sub documents) allow drag and drop sorting - requires ui-sortable and elements of jquery-ui.  See
+            <a href="https://github.com/angular-ui/ui-sortable" target="_blank">here</a> for details.</li>
+        <li><strong>noRemove</strong> if set to <strong>true</strong>, inhibits a Remove button being generated for array elements.  Alternatively can be set to an
+            expression which hides the Add button if it yields a truthty result</li>
+        <li><strong>remove</strong> remove button for array elements has Remove as label (default is 'x' since 0.12).</li>
         <li><strong>add</strong> allows arbitrary attributes to be added to the input tag.</li>
         <li><strong>class</strong> allows arbitrary classes to be added to the input tag.</li>
         <li><strong>inlineRadio</strong> (only valid when type is radio) should be set to true to present all radio button options in a single line</li>
@@ -255,6 +260,7 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
             <em>schema</em> replaced with the current element - so <em>add</em> can be used to pass data into directives).</li>
         <li><strong>noLookup</strong>, which can only be used in confunction with <em>directive</em>, inhibits the forms-angular client from looking up the possible values for a
           'lookup' field (when the directive has a an alternative way of handling things)</li>
+        <li><strong>customHeader</strong> (only valid on a sub document) allows you to specify custom HTML (which may include directives) for the header of a group of sub docs</li>
         <li><strong>customSubDoc</strong> (only valid on a sub document) allows you to specify custom HTML (which may include directives) for the sub doc</li>
         <li><strong>customFooter</strong> (only valid on a sub document) allows you to specify custom HTML (which may include directives) for the footer of a group of sub docs</li>
         <li><strong>formstyle</strong> (only valid on a sub schema) sets style of sub form. See <a ng-href="{{buildUrl('forms#form-styles')}}">form style section</a> for options.

@@ -99,6 +99,7 @@ declare module fng {
     disabledText: any;
     unconfirmedDelete: boolean;
     getVal: any;
+    sortableOptions: any;
 
     tabs?: Array<any>;              // In the case of forms that contain a tab set
     tab?: string;                   // title of the active tab - from the route

@@ -90,35 +90,27 @@ form {
     }
   }
 
-  .schema-head, .sub-doc, .schema-foot {
-    min-height: 20px;
-    margin-bottom: 20px;
-    .box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
-    blockquote {
-      border-color: #ddd;
-      border-color: rgba(0,0,0,.15);
-    }
-  }
-
   .schema-head {
     margin-top: 8px;
-    margin-bottom: 5px;
-    border: 1px solid #ddd;
-    padding: 4px 180px;
+    font-weight: bold;
   }
-  .sub-doc {
-    padding: 5px 5px 2px 0;
-    width: 97%;   // which will get rid of scroll bar under most circumstances
-    margin-bottom: 3px;
+  ol.sub-doc {
+    padding: 0;
+    margin: 0;
     position: relative;
+    li {
+      display: block;
+      margin: 2px 0;
+      padding-top: 3px;
+    }
   }
   .sub-doc-btns {
     position: absolute;
     right: 8px;
   }
   .schema-foot {
-    padding: 5px 180px;
-    margin: 5px 0;
+    margin-top: 0;
+    margin-bottom: 5px;
   }
 
   input.ng-invalid:not(.ng-invalid-required):focus {

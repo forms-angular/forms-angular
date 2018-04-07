@@ -59,6 +59,7 @@ gulp.task('build', function(callback) {
     'uglify',
     'saveDebug',
     'copyTypes',
+    'copyLess',
     'cleanMin',
     'less',
     callback);
@@ -184,6 +185,11 @@ gulp.task('uglify', function(cb) {
 gulp.task('copyTypes', function () {
   gulp.src('./src/client/js/fng-types.d.ts')
     .pipe(rename('index.d.ts'))
+    .pipe(gulp.dest(distDirectory + '/client'));
+});
+
+gulp.task('copyLess', function () {
+  gulp.src('./src/client/less/*.less')
     .pipe(gulp.dest(distDirectory + '/client'));
 });
 

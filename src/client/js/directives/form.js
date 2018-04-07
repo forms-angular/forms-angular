@@ -366,35 +366,54 @@ var fng;
                                         console.log('Attempts at supporting deep nesting have been removed - will hopefully be re-introduced at a later date');
                                     }
                                     else {
-                                        /* Array header */
                                         var model = (options.model || 'record') + '.' + info.name;
-                                        template += '<div class="schema-head">' + info.label;
-                                        if (info.unshift) {
-                                            template += '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
-                                                '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
-                                        }
-                                        template += '</div>';
-                                        if (info.sortable) {
-                                            template += "<ol ui-sortable ng-model=\"" + model + "\">";
+                                        /* Array header */
+                                        if (typeof info.customHeader == 'string') {
+                                            template += info.customHeader;
                                         }
                                         else {
-                                            template += '<ol>';
+                                            var topButton = '';
+                                            if (info.unshift) {
+                                                topButton = '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
+                                                    '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
+                                            }
+                                            if (cssFrameworkService.framework() === 'bs3') {
+                                                template += '<div class="row"><div class="schema-head col-sm-offset-3">' + info.label + topButton + '</div></div>';
+                                            }
+                                            else {
+                                                template += '<div class="schema-head">' + info.label + topButton + '</div>';
+                                            }
                                         }
                                         /* Array body */
-                                        template += '<il ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
+                                        template += '<ol class="sub-doc"' + (info.sortable ? " ui-sortable=\"sortableOptions\" ng-model=\"" + model + "\"" : '') + '>';
+                                        template += '<li ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
                                             convertFormStyleToClass(info.formStyle) + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
-                                            ' ng-repeat="subDoc in ' + model + ' track by $index">' +
-                                            '   <div class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : 'row') + ' sub-doc">';
+                                            ' ng-repeat="subDoc in ' + model + ' track by $index">';
+                                        if (cssFrameworkService.framework() === 'bs2') {
+                                            template += '<div class="row-fluid sub-doc">';
+                                        }
                                         if (!info.noRemove || info.customSubDoc) {
                                             template += '   <div class="sub-doc-btns">';
-                                            if (info.customSubDoc) {
+                                            if (typeof info.customSubDoc == 'string') {
                                                 template += info.customSubDoc;
                                             }
                                             if (!info.noRemove) {
-                                                template += '<button name="remove_' + info.id + '_btn" class="remove-btn btn btn-mini btn-default btn-xs form-btn" ng-click="remove(\'' + info.name + '\',$index,$event)">' +
-                                                    '<i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove</button>';
+                                                template += '<button name="remove_' + info.id + '_btn" ng-click="remove(\'' + info.name + '\', $index, $event)"';
+                                                if (info.remove) {
+                                                    template += ' class="remove-btn btn btn-mini btn-default btn-xs form-btn"><i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove';
+                                                }
+                                                else {
+                                                    template += ' style="position: relative; z-index: 20;" type="button" class="close pull-right">';
+                                                    if (cssFrameworkService.framework() === 'bs3') {
+                                                        template += '<span aria-hidden="true">×</span><span class="sr-only">Close</span>';
+                                                    }
+                                                    else {
+                                                        template += '<span>×</span>';
+                                                    }
+                                                }
+                                                template += '</button>';
                                             }
-                                            template += '  </div> ';
+                                            template += '</div> ';
                                         }
                                         template += processInstructions(info.schema, false, {
                                             subschema: 'true',
@@ -402,20 +421,27 @@ var fng;
                                             model: options.model,
                                             subschemaroot: info.name
                                         });
-                                        template += '   </div>' +
-                                            '</il>';
-                                        /* Array footer */
+                                        if (cssFrameworkService.framework() === 'bs2') {
+                                            template += '   </div>';
+                                        }
+                                        template += '</li>';
                                         template += '</ol>';
-                                        if (!info.noAdd || info.customFooter) {
-                                            template += '<div class = "schema-foot">';
-                                            if (info.customFooter) {
-                                                template += info.customFooter;
+                                        /* Array footer */
+                                        if (!info.noAdd || typeof info.customFooter == 'string') {
+                                            var footer = '';
+                                            if (typeof info.customFooter == 'string') {
+                                                footer = info.customFooter;
                                             }
                                             if (!info.noAdd) {
-                                                template += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="add(\'' + info.name + '\',$event)">' +
+                                                footer += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add(\'' + info.name + '\',$event)">' +
                                                     '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
                                             }
-                                            template += '</div>';
+                                            if (cssFrameworkService.framework() === 'bs3') {
+                                                template += '<div class="row"><div class="schema-foot col-sm-offset-3">' + footer + '</div></div>';
+                                            }
+                                            else {
+                                                template += '<div class = "schema-foot ">' + footer + '</div>';
+                                            }
                                         }
                                     }
                                 }
