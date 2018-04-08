@@ -23,7 +23,7 @@ var fng;
                 var parts = fieldname.split('.'), higherLevels = parts.length - 1, workingRec = object;
                 for (var i = 0; i < higherLevels; i++) {
                     if (!workingRec) {
-                        debugger;
+                        throw new Error("walkTree failed: Object = " + object + ", fieldname = " + fieldname + ", i = " + i);
                     }
                     if (angular.isArray(workingRec)) {
                         workingRec = _.map(workingRec, function (obj) {
@@ -103,9 +103,6 @@ var fng;
                 }
                 return result;
             }
-            // TODO: Think about nested arrays
-            // This doesn't handle things like :
-            // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
             var getListData = function getListData($scope, record, fieldName, listSchema) {
                 if (listSchema === void 0) { listSchema = null; }
                 var retVal = record;
@@ -446,6 +443,20 @@ var fng;
                         if (data.success === false) {
                             $location.path('/404');
                         }
+                        else if (response.master) {
+                            ctrlState.allowLocationChange = false;
+                            $scope.phase = 'ready';
+                            $scope.record = angular.copy(response.data);
+                            ctrlState.master = angular.copy(response.master);
+                            if (response.changed) {
+                                $timeout(function () {
+                                    $scope[$scope.topLevelFormName].$setDirty();
+                                });
+                            }
+                            else {
+                                $timeout($scope.setPristine);
+                            }
+                        }
                         else {
                             handleIncomingData(data, $scope, ctrlState);
                         }
@@ -731,7 +742,22 @@ var fng;
                         routingService.redirectTo()('new', $scope, $location);
                     };
                     $scope.$on('$locationChangeStart', function (event, next) {
-                        if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
+                        var changed = !$scope.isCancelDisabled();
+                        var curPath = window.location.href.split('/');
+                        var nextPath = next.split('/');
+                        var tabChangeOnly = true;
+                        var i = 0;
+                        do {
+                            i += 1;
+                            if (curPath[i] !== nextPath[i]) {
+                                tabChangeOnly = false;
+                            }
+                        } while (tabChangeOnly && curPath[i] !== 'edit');
+                        if (tabChangeOnly) {
+                            // let dataToReturn = recordHandlerInstance.convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0, $scope);
+                            SubmissionsService.setUpForTabChange($scope.modelName, $scope.id, $scope.record, ctrlState.master, changed);
+                        }
+                        else if (!ctrlState.allowLocationChange && changed) {
                             event.preventDefault();
                             var modalInstance = $uibModal.open({
                                 template: '<div class="modal-header">' +

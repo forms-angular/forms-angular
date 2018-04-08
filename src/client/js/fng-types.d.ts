@@ -100,7 +100,7 @@ declare module fng {
     unconfirmedDelete: boolean;
     getVal: any;
     sortableOptions: any;
-
+    tabDeselect: any;
     tabs?: Array<any>;              // In the case of forms that contain a tab set
     tab?: string;                   // title of the active tab - from the route
     activeTabNo?: number;
