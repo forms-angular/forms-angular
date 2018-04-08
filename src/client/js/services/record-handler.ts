@@ -27,7 +27,7 @@ module fng.services {
         workingRec = object;
       for (var i = 0; i < higherLevels; i++) {
         if (!workingRec) {
-          debugger;
+          throw new Error(`walkTree failed: Object = ${object}, fieldname = ${fieldname}, i = ${i}`);
         }
         if (angular.isArray(workingRec)) {
           workingRec = _.map(workingRec, function (obj) {
@@ -111,9 +111,6 @@ module fng.services {
       return result;
     }
 
-    // TODO: Think about nested arrays
-    // This doesn't handle things like :
-    // {a:"hhh",b:[{c:[1,2]},{c:[3,4]}]}
     var getListData = function getListData($scope, record, fieldName, listSchema=null) {
       var retVal = record;
       var nests = fieldName.split('.');

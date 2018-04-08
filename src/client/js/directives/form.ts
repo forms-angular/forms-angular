@@ -148,7 +148,6 @@ module fng.directives {
               }
               break;
             case 'link' :
-              debugger;
               value = '<fng-link model="' + modelString + '" ref="' + fieldInfo.ref + '"';
               if (fieldInfo.form) {
                 value += ' form="' + fieldInfo.form + '"';

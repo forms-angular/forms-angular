@@ -49,7 +49,7 @@ module fng.services {
         isHorizontalStyle: isHorizontalStyle,
 
         fieldChrome: function fieldChrome(scope, info, options) {
-          var classes = '';
+          var classes = info.classes || '';
           var template = '';
           var closeTag = '';
           var insert = '';
@@ -67,7 +67,7 @@ module fng.services {
 
 
           if (cssFrameworkService.framework() === 'bs3') {
-            classes = 'form-group';
+            classes += ' form-group';
             if (options.formstyle === 'vertical' && info.size !== 'block-level') {
               template += '<div class="row">';
               classes += ' col-sm-' + inputSizeHelper.sizeAsNumber(info.size);
