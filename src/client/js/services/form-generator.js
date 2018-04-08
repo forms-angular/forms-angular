@@ -525,6 +525,11 @@ var fng;
                     $scope.baseSchema = function () {
                         return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
                     };
+                    $scope.tabDeselect = function ($event, $selectedIndex) {
+                        if (!$scope.newRecord) {
+                            $location.path($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + $scope.record._id + '/edit/' + $event.target.text);
+                        }
+                    };
                 }
             };
         }

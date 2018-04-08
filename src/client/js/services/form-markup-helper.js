@@ -42,7 +42,7 @@ var fng;
             return {
                 isHorizontalStyle: isHorizontalStyle,
                 fieldChrome: function fieldChrome(scope, info, options) {
-                    var classes = '';
+                    var classes = info.classes || '';
                     var template = '';
                     var closeTag = '';
                     var insert = '';
@@ -57,7 +57,7 @@ var fng;
                     }
                     insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
                     if (cssFrameworkService.framework() === 'bs3') {
-                        classes = 'form-group';
+                        classes += ' form-group';
                         if (options.formstyle === 'vertical' && info.size !== 'block-level') {
                             template += '<div class="row">';
                             classes += ' col-sm-' + inputSizeHelper.sizeAsNumber(info.size);

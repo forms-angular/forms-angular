@@ -155,7 +155,6 @@ var fng;
                                 }
                                 break;
                             case 'link':
-                                debugger;
                                 value = '<fng-link model="' + modelString + '" ref="' + fieldInfo.ref + '"';
                                 if (fieldInfo.form) {
                                     value += ' form="' + fieldInfo.form + '"';
@@ -272,7 +271,7 @@ var fng;
                                         }
                                     }
                                     if (tabNo >= 0) {
-                                        result.before = '<uib-tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"';
+                                        result.before = '<uib-tab deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"';
                                         if (tabNo > 0) {
                                             result.before += 'active="tabs[' + tabNo + '].active"';
                                         }
@@ -397,8 +396,8 @@ var fng;
                                             if (typeof info.customSubDoc == 'string') {
                                                 template += info.customSubDoc;
                                             }
-                                            if (!info.noRemove) {
-                                                template += '<button name="remove_' + info.id + '_btn" ng-click="remove(\'' + info.name + '\', $index, $event)"';
+                                            if (info.noRemove !== true) {
+                                                template += "<button " + (info.noRemove ? 'ng-hide="' + info.noRemove + '"' : '') + " name=\"remove_" + info.id + "_btn\" ng-click=\"remove('" + info.name + "', $index, $event)\"";
                                                 if (info.remove) {
                                                     template += ' class="remove-btn btn btn-mini btn-default btn-xs form-btn"><i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove';
                                                 }
@@ -427,14 +426,13 @@ var fng;
                                         template += '</li>';
                                         template += '</ol>';
                                         /* Array footer */
-                                        if (!info.noAdd || typeof info.customFooter == 'string') {
+                                        if (info.noAdd !== true || typeof info.customFooter == 'string') {
                                             var footer = '';
                                             if (typeof info.customFooter == 'string') {
                                                 footer = info.customFooter;
                                             }
-                                            if (!info.noAdd) {
-                                                footer += '<button id="add_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add(\'' + info.name + '\',$event)">' +
-                                                    '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
+                                            if (info.noAdd !== true) {
+                                                footer += "<button " + (info.noAdd ? 'ng-hide="' + info.noAdd + '"' : '') + " id=\"add_" + info.id + "_btn\" class=\"add-btn btn btn-default btn-xs btn-mini\" ng-click=\"add('" + info.name + "',$event)\">\n                                   <i class=\"' + formMarkupHelper.glyphClass() + '-plus\"></i> \n                                   Add\n                                 </button>";
                                             }
                                             if (cssFrameworkService.framework() === 'bs3') {
                                                 template += '<div class="row"><div class="schema-foot col-sm-offset-3">' + footer + '</div></div>';

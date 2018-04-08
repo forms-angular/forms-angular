@@ -459,6 +459,19 @@ module fng.services {
             let data: any = response.data;
             if (data.success === false) {
               $location.path('/404');
+            } else if (response.master) {
+
+              ctrlState.allowLocationChange = false;
+              $scope.phase = 'ready';
+              $scope.record = angular.copy(response.data);
+              ctrlState.master = angular.copy(response.master);
+              if (response.changed) {
+                $timeout(() => {
+                  $scope[$scope.topLevelFormName].$setDirty();
+                });
+              } else {
+                $timeout($scope.setPristine);
+              }
             } else {
               handleIncomingData(data, $scope, ctrlState);
             }
@@ -753,7 +766,21 @@ module fng.services {
         };
 
         $scope.$on('$locationChangeStart', function (event, next) {
-          if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
+          let changed = !$scope.isCancelDisabled();
+          let curPath = window.location.href.split('/');
+          let nextPath = next.split('/');
+          let tabChangeOnly = true;
+          let i = 0;
+          do {
+            i += 1;
+            if (curPath[i] !== nextPath[i]) {
+              tabChangeOnly = false;
+            }
+          } while (tabChangeOnly && curPath[i] !== 'edit');
+          if (tabChangeOnly) {
+            // let dataToReturn = recordHandlerInstance.convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0, $scope);
+            SubmissionsService.setUpForTabChange($scope.modelName, $scope.id, $scope.record, ctrlState.master, changed);
+          } else if (!ctrlState.allowLocationChange && changed) {
             event.preventDefault();
             var modalInstance = $uibModal.open({
               template: '<div class="modal-header">' +
@@ -772,9 +799,9 @@ module fng.services {
             });
 
             modalInstance.result.then(
-              function (result) {
+              function(result) {
                 if (result) {
-                  $scope.save({redirect: next, allowChange: true});    // save changes
+                  $scope.save({ redirect: next, allowChange: true });    // save changes
                 } else {
                   ctrlState.allowLocationChange = true;
                   $window.location = next;
