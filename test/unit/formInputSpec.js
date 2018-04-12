@@ -92,7 +92,7 @@ describe('formInput', function () {
         scope.formSchema = [
           {'name': 'surname', 'id': 'f_surname', 'label': 'Surname', 'type': 'text'},
           {'name': 'forename', 'id': 'f_forename', 'label': 'Forename', 'type': 'text'},
-          {'name': 'exams', 'id': 'f_exams', 'label': 'Exams', 'schema': [
+          {'name': 'exams', 'id': 'f_exams', 'label': 'Exams', 'remove':true, 'schema': [
             {'name': 'exams.subject', 'id': 'f_exams.subject', 'label': 'Subject', 'type': 'text'},
             {'name': 'exams.score', 'id': 'f_exams.score', 'label': 'Score', 'type': 'number'}
           ]}
@@ -107,7 +107,7 @@ describe('formInput', function () {
       }));
 
       it('has Exams section', function () {
-        var thisElm = angular.element(elm.find('div')[7]);
+        var thisElm = angular.element(elm.find('div')[8]);
         expect(thisElm).toHaveClass('schema-head');
         expect(thisElm.text()).toBe('Exams');
         thisElm = angular.element(elm.find('div')[24]);
@@ -116,12 +116,12 @@ describe('formInput', function () {
         thisElm = thisElm.find('button');
         expect((thisElm).text()).toMatch(/Add/);
 
-        thisElm = elm.find('div');
-        expect(thisElm).toHaveClassCount('sub-doc', 2);
+        thisElm = elm.find('li');
+        expect(thisElm).toHaveClassCount('form-horizontal', 2);
 
-        thisElm = angular.element(elm.find('il')[0]);
+        thisElm = angular.element(elm.find('li')[0]);
         expect(thisElm.attr('id')).toBe('f_examsList_0');
-        thisElm = angular.element(elm.find('il')[1]);
+        thisElm = angular.element(elm.find('li')[1]);
         expect(thisElm.attr('id')).toBe('f_examsList_1');
 
         thisElm = elm.find('input');
@@ -160,8 +160,8 @@ describe('formInput', function () {
       });
 
       it('has amended Exams section foot', function () {
-        var thisElm = elm.find('.schema-foot');
-        expect(thisElm.length).toBe(0);
+        var thisElm = elm.find('div');
+        expect(thisElm).toHaveClassCount('schema-foot', 0);
       });
 
       it('has amended Exams section buttons', function () {
@@ -170,8 +170,8 @@ describe('formInput', function () {
       });
 
       it('has amended Exams section subdoc', function () {
-        var thisElm = elm.find('div');
-        expect(thisElm).toHaveClassCount('sub-doc', 2);
+        var thisElm = elm.find('li');
+        expect(thisElm).toHaveClassCount('form-horizontal', 2);
       });
 
     });
