@@ -151,6 +151,7 @@ describe('validation', function () {
       var examsSection;
       var body;
       var exam;
+      var elm;
       var date;
       var postcode;
 
@@ -245,17 +246,18 @@ describe('validation', function () {
         $httpBackend.flush();
         $compile(elm)(scope);
         scope.$digest();
-        var elms = elm.find('ol').find('il').find('div').children();
-        postcode = angular.element(elms[3]);
-        date = angular.element(elms[2]);
+        date = angular.element(elm.find('ol').find('li').children('div')['2']);
+        postcode = angular.element(elm.find('ol').find('li').children('div')['3']);
       }));
 
       it('has class has-error for pattern validation fail', function () {
+        expect(postcode.text()).toMatch(/Postcode/);
         expect(postcode).toHaveClass('has-error');
         expect(postcode).toHaveClass('form-group');
       });
 
       it('has class has-error for edited required field', function () {
+        expect(date.text()).toMatch(/Exam Date/);
         expect(date).not.toHaveClass('has-error');
         expect(date).toHaveClass('form-group');
         var input = angular.element(date.find('input'));
@@ -393,9 +395,7 @@ describe('validation', function () {
 
     });
 
-
   });
-
 
 });
 

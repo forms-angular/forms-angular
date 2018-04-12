@@ -32,12 +32,13 @@ module.exports = function(config) {
               '--headless',
               '--disable-gpu',
               // Without a remote debugging port, Google Chrome exits immediately.
-              '--remote-debugging-port=9222',
-            ],
+              '--remote-debugging-port=9222'
+            ]
           }
         },
 
-        browsers : ['Firefox', 'ChromeHeadless'],
+        browsers : ['ChromeHeadless'],
+        // browsers : ['Firefox', 'ChromeHeadless'],
 
         // use dots reporter, as travis terminal does not support escaping sequences
         // possible values: 'dots', 'progress'

@@ -150,6 +150,11 @@ describe('nesting', function () {
                 'auto': true
               }
             }
+          },
+          'options': {
+            'form': {
+              'remove': true
+            }
           }
         },
         'assistants': {
