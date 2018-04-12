@@ -33,7 +33,8 @@ module.exports = function(config) {
         }
       },
 
-      browsers : ['Firefox', 'ChromeHeadless'],
+      browsers : ['ChromeHeadless'],
+      // browsers : ['Firefox', 'ChromeHeadless'],
 
       // use dots reporter, as travis terminal does not support escaping sequences
       // possible values: 'dots', 'progress'
