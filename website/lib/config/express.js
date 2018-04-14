@@ -30,6 +30,7 @@ module.exports = function(app) {
       next();
     });
 
+    app.use(express.static(path.join(config.root, '.')));
     app.use(express.static(path.join(config.root, '.tmp')));
     app.use(express.static(path.join(config.root, 'app')));
     app.use(express.static(path.join(config.root, 'dist')));
