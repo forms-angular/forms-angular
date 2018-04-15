@@ -551,7 +551,7 @@ module fng.services {
 
         $scope.tabDeselect = function($event, $selectedIndex) {
           if (!$scope.newRecord) {
-            $location.path($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + $scope.record._id + '/edit/' + $event.target.text);
+            $location.path(routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + $scope.record._id + '/edit/' + $event.target.text));
           }
         }
       }
