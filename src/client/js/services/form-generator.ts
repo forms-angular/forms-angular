@@ -548,12 +548,12 @@ module fng.services {
         $scope.baseSchema = function () {
           return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
         };
-
-        $scope.tabDeselect = function($event, $selectedIndex) {
-          if (!$scope.newRecord) {
-            $location.path(routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + $scope.record._id + '/edit/' + $event.target.text));
-          }
-        }
+// TODO Figure out tab history updates (check for other tab-history-todos)
+        // $scope.tabDeselect = function($event, $selectedIndex) {
+        //   if (!$scope.newRecord) {
+        //     $location.path(routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + $scope.record._id + '/edit/' + $event.target.text));
+        //   }
+        // }
       }
     };
   }

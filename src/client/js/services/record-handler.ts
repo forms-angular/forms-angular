@@ -459,19 +459,20 @@ module fng.services {
             let data: any = response.data;
             if (data.success === false) {
               $location.path('/404');
-            } else if (response.master) {
-
-              ctrlState.allowLocationChange = false;
-              $scope.phase = 'ready';
-              $scope.record = angular.copy(response.data);
-              ctrlState.master = angular.copy(response.master);
-              if (response.changed) {
-                $timeout(() => {
-                  $scope[$scope.topLevelFormName].$setDirty();
-                });
-              } else {
-                $timeout($scope.setPristine);
-              }
+// TODO Figure out tab history updates (check for other tab-history-todos)
+//             } else if (response.master) {
+//
+//               ctrlState.allowLocationChange = false;
+//               $scope.phase = 'ready';
+//               $scope.record = angular.copy(response.data);
+//               ctrlState.master = angular.copy(response.master);
+//               if (response.changed) {
+//                 $timeout(() => {
+//                   $scope[$scope.topLevelFormName].$setDirty();
+//                 });
+//               } else {
+//                 $timeout($scope.setPristine);
+//               }
             } else {
               handleIncomingData(data, $scope, ctrlState);
             }

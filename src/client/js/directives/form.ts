@@ -262,7 +262,9 @@ module fng.directives {
                   }
                 }
                 if (tabNo >= 0) {
-                  result.before = '<uib-tab deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
+// TODO Figure out tab history updates (check for other tab-history-todos)
+                  // result.before = '<uib-tab deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
+                  result.before = '<uib-tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
                   if (tabNo > 0) {
                     result.before += 'active="tabs[' + tabNo + '].active"';
                   }
