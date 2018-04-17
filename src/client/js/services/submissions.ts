@@ -41,38 +41,43 @@ module fng.services {
       return queryString;
     };
 
-    interface ITabChange {
-      model: string;
-      id: string;
-      record: any;
-      master: any;
-      changed: boolean;
-    }
-
-    let tabChangeData: ITabChange;
+// TODO Figure out tab history updates (check for other tab-history-todos)
+//
+//     interface ITabChange {
+//       model: string;
+//       id: string;
+//       record: any;
+//       master: any;
+//       changed: boolean;
+//     }
+//
+//     let tabChangeData: ITabChange;
 
     return {
-      setUpForTabChange: function(model: string, id: string, data: any, original: any, changed: boolean) {
-        tabChangeData = {
-          model: model,
-          id: id,
-          record: data,
-          master: original,
-          changed: changed
-        };
-      },
+// TODO Figure out tab history updates (check for other tab-history-todos)
+//       setUpForTabChange: function(model: string, id: string, data: any, original: any, changed: boolean) {
+//         tabChangeData = {
+//           model: model,
+//           id: id,
+//           record: data,
+//           master: original,
+//           changed: changed
+//         };
+//       },
       getListAttributes: function (ref, id) {
         return $http.get('/api/' + ref + '/' + id + '/list');
       },
       readRecord: function (modelName, id): Promise<any> {
-        let retVal;
-        if (tabChangeData && tabChangeData.model === modelName && tabChangeData.id === id) {
-          retVal = Promise.resolve({data:tabChangeData.record, changed: tabChangeData.changed, master: tabChangeData.master});
-        } else {
-          retVal = $http.get('/api/' + modelName + '/' + id);
-        }
-        tabChangeData = null;
-        return retVal;
+// TODO Figure out tab history updates (check for other tab-history-todos)
+//         let retVal;
+//         if (tabChangeData && tabChangeData.model === modelName && tabChangeData.id === id) {
+//           retVal = Promise.resolve({data:tabChangeData.record, changed: tabChangeData.changed, master: tabChangeData.master});
+//         } else {
+           return $http.get('/api/' + modelName + '/' + id);
+//           retVal = $http.get('/api/' + modelName + '/' + id);
+//         }
+//         tabChangeData = null;
+//         return retVal;
       },
       getAll: function (modelName, _options) {
         var options = angular.extend({
