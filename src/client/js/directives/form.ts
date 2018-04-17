@@ -369,7 +369,7 @@ module fng.directives {
                     }
 
                     if (cssFrameworkService.framework() === 'bs3') {
-                      template += '<div class="row"><div class="schema-head col-sm-offset-3">' + info.label + topButton + '</div></div>';
+                      template += '<div class="row schema-head"><div class="col-sm-offset-3">' + info.label + topButton + '</div></div>';
                     } else {
                       template += '<div class="schema-head">' + info.label + topButton + '</div>';
                     }
@@ -434,7 +434,7 @@ module fng.directives {
                                  </button>`;
                     }
                     if (cssFrameworkService.framework() === 'bs3') {
-                      template += '<div class="row"><div class="schema-foot col-sm-offset-3">' + footer + '</div></div>';
+                      template += '<div class="row schema-foot"><div class="col-sm-offset-3">' + footer + '</div></div>';
                     } else {
                       template += '<div class = "schema-foot ">' + footer + '</div>';
                     }

@@ -107,12 +107,14 @@ describe('formInput', function () {
       }));
 
       it('has Exams section', function () {
-        var thisElm = angular.element(elm.find('div')[8]);
+        var thisElm = angular.element(elm.find('div')[7]);
         expect(thisElm).toHaveClass('schema-head');
+        thisElm = angular.element(elm.find('div')[8]);
         expect(thisElm.text()).toBe('Exams');
-        thisElm = angular.element(elm.find('div')[24]);
+        thisElm = angular.element(elm.find('div')[23]);
         expect(thisElm).toHaveClass('schema-foot');
 
+        thisElm = angular.element(elm.find('div')[24]);
         thisElm = thisElm.find('button');
         expect((thisElm).text()).toMatch(/Add/);
 
