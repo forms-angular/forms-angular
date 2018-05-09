@@ -767,23 +767,24 @@ module fng.services {
         };
 
         $scope.$on('$locationChangeStart', function (event, next) {
-          let changed = !$scope.isCancelDisabled();
-          let curPath = window.location.href.split('/');
-          let nextPath = next.split('/');
-          let tabChangeOnly = true;
-          let i = 0;
-          do {
-            i += 1;
-            if (curPath[i] !== nextPath[i]) {
-              tabChangeOnly = false;
-            }
-          } while (tabChangeOnly && curPath[i] !== 'edit');
-          if (tabChangeOnly) {
-            // let dataToReturn = recordHandlerInstance.convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0, $scope);
-            SubmissionsService.setUpForTabChange($scope.modelName, $scope.id, $scope.record, ctrlState.master, changed);
-          } else if (!ctrlState.allowLocationChange && changed) {
+          // let changed = !$scope.isCancelDisabled();
+          // let curPath = window.location.href.split('/');
+          // let nextPath = next.split('/');
+          // let tabChangeOnly = true;
+          // let i = 0;
+          // do {
+          //   i += 1;
+          //   if (curPath[i] !== nextPath[i]) {
+          //     tabChangeOnly = false;
+          //   }
+          // } while (tabChangeOnly && curPath[i] !== 'edit');
+          // if (tabChangeOnly) {
+          //   // let dataToReturn = recordHandlerInstance.convertToMongoModel($scope.formSchema, angular.copy($scope.record), 0, $scope);
+          //   SubmissionsService.setUpForTabChange($scope.modelName, $scope.id, $scope.record, ctrlState.master, changed);
+          // } else if (!ctrlState.allowLocationChange && changed) {
+          if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
             event.preventDefault();
-            var modalInstance = $uibModal.open({
+            const modalInstance = $uibModal.open({
               template: '<div class="modal-header">' +
               '   <h3>Record modified</h3>' +
               '</div>' +
