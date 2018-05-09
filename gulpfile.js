@@ -189,7 +189,7 @@ gulp.task('copyTypes', function () {
 });
 
 gulp.task('copyLess', function () {
-  gulp.src('./src/client/less/*.less')
+  gulp.src(['./src/client/less/*.less', './src/client/index.js'])
     .pipe(gulp.dest(distDirectory + '/client'));
 });
 
