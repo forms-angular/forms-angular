@@ -17,7 +17,7 @@ describe('mongoose collection name API', function () {
 
     fng = new (formsAngular)(mongoose, app, {urlPrefix: '/api/'});
 
-    mongoose.connect('mongodb://localhost/forms-ng_test', {useMongoClient: true});
+    mongoose.connect('mongodb://localhost/forms-ng_test');
     mongoose.connection.on('error', function () {
       console.error('connection error', arguments);
     });
