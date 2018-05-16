@@ -20,7 +20,6 @@ describe('original API', function () {
     fng = new (formsAngular)(mongoose, app, {urlPrefix: '/api/'});
 
     mongoose.connect('mongodb://localhost/forms-ng_test', {
-      useMongoClient: true,
       keepAlive: 1,
       connectTimeoutMS: 30000,
       reconnectTries: 30,

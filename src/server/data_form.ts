@@ -630,7 +630,7 @@ DataForm.prototype.report = function () {
   }, this);
 };
 
-DataForm.prototype.hackVariablesInPipeline = function (runPipeline) {
+DataForm.prototype.hackVariablesInPipeline = function (runPipeline: Array<any>) {
   for (let pipelineSection = 0; pipelineSection < runPipeline.length; pipelineSection++) {
     if (runPipeline[pipelineSection]['$match']) {
       this.hackVariables(runPipeline[pipelineSection]['$match']);
@@ -663,7 +663,8 @@ DataForm.prototype.hackVariables = function (obj) {
 };
 
 DataForm.prototype.reportInternal = function (req, resource, schema, callback) {
-  let runPipeline: any;
+  let runPipelineStr: string;
+  let runPipelineObj: any;
   let self = this;
   if (typeof req.query === 'undefined') { req.query = {}; }
 
@@ -671,8 +672,7 @@ DataForm.prototype.reportInternal = function (req, resource, schema, callback) {
     if (err) {
       return 'There was a problem with the findFunc for model';
     } else {
-      // Bit crap here switching back and forth to string
-      runPipeline = JSON.stringify(schema.pipeline);
+      runPipelineStr = JSON.stringify(schema.pipeline);
       for (let param in req.query) {
         if (req.query[param]) {
           if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
@@ -682,8 +682,8 @@ DataForm.prototype.reportInternal = function (req, resource, schema, callback) {
       }
 
       // Replace parameters with the value
-      if (runPipeline) {
-        runPipeline = runPipeline.replace(/\"\(.+?\)\"/g, function (match) {
+      if (runPipelineStr) {
+        runPipelineStr = runPipelineStr.replace(/\"\(.+?\)\"/g, function (match) {
           let sparam = schema.params[match.slice(2, -2)];
           if (sparam.type === 'number') {
             return sparam.value;
@@ -701,23 +701,26 @@ DataForm.prototype.reportInternal = function (req, resource, schema, callback) {
       let hiddenFields = self.generateHiddenFields(resource, false);
       for (const hiddenField in hiddenFields) {
         if (hiddenFields.hasOwnProperty(hiddenField)) {
-          if (runPipeline.indexOf(hiddenField) !== -1) {
+          if (runPipelineStr.indexOf(hiddenField) !== -1) {
             return callback('You cannot access ' + hiddenField);
           }
         }
       }
 
-      runPipeline = JSON.parse(runPipeline);
-      self.hackVariablesInPipeline(runPipeline);
+      runPipelineObj = JSON.parse(runPipelineStr);
+      if (!_.isArray(runPipelineObj)) {
+        runPipelineObj = [runPipelineObj];
+      }
+      self.hackVariablesInPipeline(runPipelineObj);
 
       // Add the findFunc query to the pipeline
       if (queryObj) {
-        runPipeline.unshift({$match: queryObj});
+        runPipelineObj.unshift({$match: queryObj});
       }
 
       let toDo: any = {
         runAggregation: function (cb) {
-          resource.model.aggregate(runPipeline, cb);
+          resource.model.aggregate(runPipelineObj, cb);
         }
       };
 
