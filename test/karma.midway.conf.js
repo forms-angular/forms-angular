@@ -14,7 +14,7 @@ module.exports = function(config) {
           'dist/client/forms-angular.js',
           'src/client/template/*.html',
           'test/example-directives/*.js',
-          'test/helpers/**/*.js',
+          'test/helpers/karma-helpers.js',
           'test/template/*.html',
           'test/midway/**/*.js'
         ],
