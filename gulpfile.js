@@ -1,9 +1,8 @@
 var gulp = require('gulp');
-var runSequence = require('run-sequence');
 var del = require('del');
 var rename = require('gulp-rename');
 var Server = require('karma').Server;
-var typeScriptCompiler = require('gulp-tsc');
+var typeScriptCompiler = require('gulp-typescript');
 var uglify = require('gulp-uglify');
 var pump = require('pump');
 
@@ -22,73 +21,12 @@ gulp.task('watch', function(){
   gulp.watch(['js/**/*.ts', 'server/data_form.ts'], ['build']);
 });
 
-/**
- * Main task: cleans, builds, run tests, and bundles up for distribution.
- */
-gulp.task('all', function(callback) {
-  runSequence(
-    'clean',
-    'build',
-    'test',
-    callback);
-});
-
-gulp.task('default', function(callback) {
-  runSequence(
-    'clean',
-    'build',
-    'test',
-    callback);
-});
-
-gulp.task('allServer', function(callback) {
-  runSequence(
-    'clean',
-    'compileServerSide',
-    'apiTest',
-    callback);
-});
-
-gulp.task('build', function(callback) {
-  runSequence(
-    'compile',
-    'templates',
-    'concatTemplates',
-    'annotate',
-    'tidy',
-    'uglify',
-    'saveDebug',
-    'copyTypes',
-    'copyLess',
-    'cleanMin',
-    'less',
-    callback);
-});
-
-gulp.task('debugBuild', function(callback) {
-  runSequence(
-    'compile',
-    'templates',
-    'concatTemplates',
-    'annotate',
-    'tidy',
-    'less',
-    callback);
-});
-
-gulp.task('compile', function(callback) {
-  runSequence(
-    'compileServerSide',
-    'compileClientSide',
-    callback);
-});
 
 gulp.task('compileClientSide', function() {
   return gulp
     .src(browserSources)
     .pipe(typeScriptCompiler({
       module: 'amd',
-      emitError: false,
       lib: [
         "ES5",
         "ES2015",
@@ -138,23 +76,15 @@ gulp.task('tidy', function() {
   return del([distDirectory + '/client/templates.js'], function(err,paths) {console.log('Cleared ' + paths.join(' '));});
 });
 
-gulp.task('test', function(callback) {
-  runSequence(
-    'karmaTest',
-    'midwayTest',
-    'apiTest',
-    callback);
-});
-
 gulp.task('karmaTest', function(done) {
-  new Server({
+  return new Server({
     configFile: rootDir + '/test/karma.conf.js',
     singleRun: true
   }, done).start();
 });
 
 gulp.task('midwayTest', function(done) {
-  new Server({
+  return new Server({
     configFile: rootDir + '/test/karma.midway.conf.js',
     singleRun: true
   }, done).start();
@@ -167,13 +97,13 @@ gulp.task('apiTest', function () {
 });
 
 gulp.task('saveDebug', function () {
-  gulp.src(distDirectory + '/client/min/forms-angular.js')
+  return gulp.src(distDirectory + '/client/min/forms-angular.js')
     .pipe(rename('forms-angular.min.js'))
     .pipe(gulp.dest(distDirectory + '/client'));
 });
 
 gulp.task('uglify', function(cb) {
-  pump([
+  return pump([
       gulp.src(distDirectory + '/client/forms-angular.js'),
       uglify(),
       gulp.dest(distDirectory + '/client/min')
@@ -183,13 +113,13 @@ gulp.task('uglify', function(cb) {
 });
 
 gulp.task('copyTypes', function () {
-  gulp.src('./src/client/js/fng-types.d.ts')
+  return gulp.src('./src/client/js/fng-types.d.ts')
     .pipe(rename('index.d.ts'))
     .pipe(gulp.dest(distDirectory + '/client'));
 });
 
 gulp.task('copyLess', function () {
-  gulp.src(['./src/client/less/*.less', './src/client/index.js'])
+  return gulp.src(['./src/client/less/*.less'])
     .pipe(gulp.dest(distDirectory + '/client'));
 });
 
@@ -212,3 +142,65 @@ gulp.task('less', function () {
     .pipe(minifyCSS())
     .pipe(gulp.dest(distDirectory + '/client'));
 });
+
+/**
+ * Main task: cleans, builds, run tests, and bundles up for distribution.
+ */
+gulp.task('compile', gulp.series(
+  'compileServerSide',
+  'compileClientSide',
+  function(done) {done();})
+);
+
+gulp.task('test', gulp.series(
+    'karmaTest',
+    'midwayTest',
+    'apiTest',
+    function(done) {done();})
+);
+
+gulp.task('build', gulp.series(
+    'compile',
+    'templates',
+    'concatTemplates',
+    'annotate',
+    'tidy',
+    'uglify',
+    'saveDebug',
+    'copyTypes',
+    'copyLess',
+    'cleanMin',
+    'less',
+  function(done) {done();})
+);
+
+gulp.task('debugBuild', gulp.series(
+    'compile',
+    'templates',
+    'concatTemplates',
+    'annotate',
+    'tidy',
+    'less',
+  function(done) {done();})
+);
+
+gulp.task('all', gulp.series(
+  'clean',
+  'build',
+  'test',
+  function(done) {done();})
+);
+
+gulp.task('default', gulp.series(
+  'clean',
+  'build',
+  'test',
+  function(done) {done();})
+);
+
+gulp.task('allServer', gulp.series(
+  'clean',
+  'compileServerSide',
+  'apiTest',
+  function(done) {done();})
+);
