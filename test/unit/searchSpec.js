@@ -7,6 +7,7 @@ describe('search', function () {
   beforeEach(function () {
       angular.mock.module('formsAngular');
       angular.mock.module('template/search-bs2.html');
+      angular.mock.module('template/search-bs3.html');
     }
   );
 
