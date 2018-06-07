@@ -4,6 +4,7 @@ var rename = require('gulp-rename');
 var Server = require('karma').Server;
 var typeScriptCompiler = require('gulp-typescript');
 var uglify = require('gulp-uglify');
+var replace  =  require('gulp-replace');
 var pump = require('pump');
 
 var browserSources = [
@@ -129,6 +130,7 @@ gulp.task('templates', function() {
   return gulp
     .src('src/client/template/**/*.html')
     .pipe(templateCache({standalone: false, module: 'formsAngular'}))
+    .pipe(replace(/templateCache.put\('\//g, "templateCache.put('"))
     .pipe(gulp.dest(distDirectory + '/client'));
 });
 
