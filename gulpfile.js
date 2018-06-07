@@ -160,6 +160,7 @@ gulp.task('test', gulp.series(
 );
 
 gulp.task('build', gulp.series(
+    'clean',
     'compile',
     'templates',
     'concatTemplates',
@@ -185,7 +186,6 @@ gulp.task('debugBuild', gulp.series(
 );
 
 gulp.task('all', gulp.series(
-  'clean',
   'build',
   'test',
   function(done) {done();})

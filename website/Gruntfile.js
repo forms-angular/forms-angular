@@ -54,13 +54,6 @@ module.exports = function (grunt) {
       }
     },
     watch: {
-      js: {
-        files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
-        tasks: ['newer:jshint:all'],
-        options: {
-          livereload: true
-        }
-      },
       styles: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
         tasks: ['newer:copy:styles', 'autoprefixer']
@@ -74,7 +67,7 @@ module.exports = function (grunt) {
       },
       jsTest: {
         files: ['test/client/spec/{,*/}*.js'],
-        tasks: ['newer:jshint:test', 'karma']
+        tasks: ['karma']
       },
       less: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.less'],
@@ -99,34 +92,11 @@ module.exports = function (grunt) {
           'server.js',
           'lib/**/*.{js,json}'
         ],
-        tasks: ['newer:jshint:server', 'express:dev', 'wait'],
+        tasks: ['express:dev', 'wait'],
         options: {
           livereload: true,
           nospawn: true //Without this option specified express won't be reloaded
         }
-      }
-    },
-
-    // Make sure code styles are up to par and there are no obvious mistakes
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc',
-        reporter: require('jshint-stylish')
-      },
-      server: {
-        options: {
-          jshintrc: 'lib/.jshintrc'
-        },
-        src: [ 'lib/{,*/}*.js']
-      },
-      all: [
-        '<%= yeoman.app %>/scripts/{,*/}*.js'
-      ],
-      test: {
-        options: {
-          jshintrc: 'test/client/.jshintrc'
-        },
-        src: ['test/client/spec/{,*/}*.js']
       }
     },
 
@@ -236,11 +206,57 @@ module.exports = function (grunt) {
     // concat, minify and revision files. Creates configurations in memory so
     // additional tasks can operate on them
     useminPrepare: {
-      html: ['<%= yeoman.app %>/index.html'],
+      html: ['<%= yeoman.client %>/index.html'],
       options: {
-        dest: '<%= yeoman.dist %>/public'
+        dest: '<%= yeoman.dist %>',
+        flow: {
+          steps: {
+            js: ['concat', 'uglify'],
+            css: ['concat', 'cssmin']
+          },
+          post: {
+            js: [{
+              name: 'concat',
+              createConfig: function(context, block) {
+                if (block.dest === 'scripts/vendor.js') {
+                  // We want to tell it how to get hold of the stuff in node_modules folders.  See https://github.com/yeoman/grunt-usemin flow section for details
+                  var vendorObj = _.find(context.options.generated.files, function(obj) {
+                    return (obj.dest === '.tmp/concat/scripts/vendor.js');
+                  });
+                  vendorObj.src = vendorObj.src.map(function(file) {
+                    return 'node_modules/'+ file.slice(4);
+                  });
+                }
+              }
+            }],
+            css: [{
+              name: 'concat',
+              createConfig: function(context, block) {
+                if (block.dest === 'styles/main.css') {
+                  // We want to tell it how to get hold of the stuff in node_modules folders.  See https://github.com/yeoman/grunt-usemin flow section for details
+                  var vendorObj = _.find(context.options.generated.files, function(obj) {
+                    return (obj.dest === '.tmp/concat/styles/main.css');
+                  });
+                  vendorObj.src = vendorObj.src.map(function(file) {
+                    return file;
+                    // console.log(file);
+                    // if (file.slice(0,4) === 'css/' || file.slice(0,9) === 'features/' || file.slice(0,11) === 'components/') {
+                    //   console.log(file);
+                    //   return file;
+                    // } else {
+                    //   var retVal = 'node_modules/'+file;
+                    //   console.log(retVal);
+                    //   return retVal;
+                    // }
+                  });
+                }
+              }
+            }]
+          }
+        }
       }
     },
+
 
     // Performs rewrites based on rev and the useminPrepare configuration
     usemin: {
@@ -327,11 +343,11 @@ module.exports = function (grunt) {
           cwd: 'node_modules/components-font-awesome',
           dest: '<%= yeoman.dist %>',
           src: 'font/**/*'
-        }, {
-          expand: true,
-          cwd: 'node_modules/select2/select2-bootstrap.css',
-          dest: '<%= yeoman.dist %>/public/styles',
-          src: ['*']
+        // }, {
+        //   expand: true,
+        //   cwd: 'node_modules/select2/select2-bootstrap.css',
+        //   dest: '<%= yeoman.dist %>/public/styles',
+        //   src: ['*']
         }, {
           expand: true,
           cwd: 'node_modules/jquery-ui/themes/base/images/',
@@ -578,7 +594,6 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('default', [
-    'newer:jshint',
     'test',
     'build'
   ]);

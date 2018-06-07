@@ -16,6 +16,7 @@ var express = require('express'),
 
 module.exports = function(app) {
   var env = app.get('env');
+  console.log(env);
 
   if ('development' === env) {
     app.use(require('connect-livereload')());
