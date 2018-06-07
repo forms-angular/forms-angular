@@ -314,6 +314,76 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
 
   searchCriteria = {$regex: '^(' + modifiedSearchStr + ')', $options: 'i'};
 
+  let handleSearchResultsFromIndex = function(err, docs, item, cb) {
+    if (!err && docs && docs.length > 0) {
+      async.map(docs, function(aDoc, cbdoc) {
+        // Do we already have them in the list?
+        let thisId: string = aDoc._id.toString(),
+          resultObject: any,
+          resultPos: number;
+
+        function handleResultsInList() {
+          resultObject.searchImportance = item.resource.options.searchImportance || 99;
+          if (item.resource.options.localisationData) {
+            resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, "resource");
+            resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, "resourceText");
+            resultObject.resourceTab = translate(resultObject.resourceTab, item.resource.options.localisationData, "resourceTab");
+          }
+          results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
+          cbdoc(null);
+        }
+
+        for (resultPos = results.length - 1; resultPos >= 0; resultPos--) {
+          if (results[resultPos].id.toString() === thisId) {
+            break;
+          }
+        }
+        if (resultPos >= 0) {
+          resultObject = {};
+          extend(resultObject, results[resultPos]);
+          // If they have already matched then improve their weighting
+          // TODO: if the search string is B F currently Benjamin Barker scores same as Benjamin Franklin)
+          if (multiMatchPossible) {
+            resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 1);
+          }
+          // remove it from current position
+          results.splice(resultPos, 1);
+          // and re-insert where appropriate
+          results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
+          cbdoc(null);
+        } else {
+          // Otherwise add them new...
+          // Use special listings format if defined
+          let specialListingFormat = item.resource.options.searchResultFormat;
+          if (specialListingFormat) {
+            resultObject = specialListingFormat.apply(aDoc);
+            handleResultsInList();
+          } else {
+            that.getListFields(item.resource, aDoc, function(err, description) {
+              if (err) {
+                cbdoc(err);
+              } else {
+                resultObject = {
+                  id: aDoc._id,
+                  weighting: 9999,
+                  text: description
+                };
+                if (resourceCount > 1 || includeResourceInResults) {
+                  resultObject.resource = resultObject.resourceText = item.resource.resourceName;
+                }
+                handleResultsInList();
+              }
+            });
+          }
+        }
+      }, function(err) {
+        cb(err);
+      });
+    } else {
+      cb(err);
+    }
+  };
+
   this.searchFunc(
     searches,
     function (item, cb) {
@@ -336,75 +406,16 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
       // The +60 in the next line is an arbitrary safety zone for situations where items that match the string
       // in more than one index get filtered out.
       // TODO : Figure out a better way to deal with this
-      that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 60, null, function (err, docs) {
-        if (!err && docs && docs.length > 0) {
-          async.map(docs, function (aDoc, cbdoc) {
-            // Do we already have them in the list?
-            let thisId: string = aDoc._id.toString(),
-              resultObject: any,
-              resultPos: number;
+      if (item.resource.options.searchFunc) {
+        item.resource.options.searchFunc(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 60, null, function(err, docs) {
+          handleSearchResultsFromIndex(err, docs, item, cb);
+        });
+      } else {
+        that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 60, null, function(err, docs) {
+          handleSearchResultsFromIndex(err, docs, item, cb);
+        });
+      }
 
-            function handleResultsInList() {
-              resultObject.searchImportance = item.resource.options.searchImportance || 99;
-              if (item.resource.options.localisationData) {
-                resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, 'resource');
-                resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, 'resourceText');
-                resultObject.resourceTab = translate(resultObject.resourceTab, item.resource.options.localisationData, 'resourceTab');
-              }
-              results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
-              cbdoc(null);
-            }
-
-            for (resultPos = results.length - 1; resultPos >= 0; resultPos--) {
-              if (results[resultPos].id.toString() === thisId) {
-                break;
-              }
-            }
-            if (resultPos >= 0) {
-              resultObject = {};
-              extend(resultObject, results[resultPos]);
-              // If they have already matched then improve their weighting
-              // TODO: if the search string is B F currently Benjamin Barker scores same as Benjamin Franklin)
-              if (multiMatchPossible) {
-                resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 1);
-              }
-              // remove it from current position
-              results.splice(resultPos, 1);
-              // and re-insert where appropriate
-              results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
-              cbdoc(null);
-            } else {
-              // Otherwise add them new...
-              // Use special listings format if defined
-              let specialListingFormat = item.resource.options.searchResultFormat;
-              if (specialListingFormat) {
-                resultObject = specialListingFormat.apply(aDoc);
-                handleResultsInList();
-              } else {
-                that.getListFields(item.resource, aDoc, function (err, description) {
-                  if (err) {
-                    cbdoc(err);
-                  } else {
-                    resultObject = {
-                      id: aDoc._id,
-                      weighting: 9999,
-                      text: description
-                    };
-                    if (resourceCount > 1 || includeResourceInResults) {
-                      resultObject.resource = resultObject.resourceText = item.resource.resourceName;
-                    }
-                    handleResultsInList();
-                  }
-                });
-              }
-            }
-          }, function (err) {
-            cb(err);
-          });
-        } else {
-          cb(err);
-        }
-      });
     },
     function () {
       // Strip weighting from the results
@@ -1127,7 +1138,13 @@ DataForm.prototype.entityGet = function () {
       if (!req.resource) {
         return next();
       }
-      return res.send(req.doc);
+      if (req.resource.options.onAccess) {
+        req.resource.options.onAccess(req, function() {
+          return res.send(req.doc);
+        });
+      } else {
+        return res.send(req.doc);
+      }
     });
   }, this);
 };
