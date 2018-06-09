@@ -972,6 +972,7 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
 
   const that = this;
   let hiddenFields = this.generateHiddenFields(resource, false);
+  let stashAggregationResults;
 
   function doAggregation(cb) {
     if (aggregationParam) {
@@ -979,6 +980,7 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
         if (err) {
           throw err;
         } else {
+          stashAggregationResults = aggregationResults;
           cb(_.map(aggregationResults, function (obj) {
             return obj._id;
           }));
@@ -1011,7 +1013,20 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
           if (sortOrder) {
             query = query.sort(sortOrder);
           }
-          query.exec(callback);
+          query.exec(function(err, docs) {
+            if (!err && stashAggregationResults) {
+              docs.forEach(obj => {
+                // Add any fields from the aggregation results whose field name starts __ to the mongoose Document
+                let aggObj = stashAggregationResults.find(a => a._id.toString() === obj._id.toString());
+                Object.keys(aggObj).forEach(k => {
+                  if (k.slice(0,2) === '__') {
+                    obj[k] = aggObj[k];
+                  }
+                });
+              })
+            }
+            callback(err, docs)
+          });
         }
       });
     }
