@@ -80,6 +80,7 @@ module.exports = {
       );
     });
   },
+
   dropDb : function(mongoose, callback) {
     mongoose.connection.db.dropDatabase(function () {
       mongoose.disconnect(function() {
