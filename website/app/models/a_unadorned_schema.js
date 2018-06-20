@@ -8,7 +8,7 @@ var fngAudit = require("fng-audit");
 var ASchema = new Schema({
   surname: {type: String, required: true, index: true},
   forename: {type: String, index: true},
-  phone: {type: String},
+  phone: {type: String, required: true, match:/^\d{10,12}$/},
   weight: Number,
   eyeColour: {type: String, required: true, enum: ['Blue', 'Brown', 'Green', 'Hazel']},
   dateOfBirth: Date,

@@ -138,9 +138,27 @@ declare module fng {
     dropConversionWatcher: () => void;
   }
 
+  export interface IContextMenuDivider {
+    divider: boolean;
+  }
+  export interface IContextMenuOption {
+    // For it to make any sense, a menu option needs one of the next two properties
+    url?: string;
+    fn?: () => void;
+
+    text: string;
+    isDisabled?: () => boolean;
+
+    // Does the option appear in the following contexts?
+    listing: boolean;
+    creating: boolean;
+    editing: boolean;
+  }
+
   export interface IModelController extends IFormScope {
     onBaseCtrlReady? : (baseScope: IFormScope) => void;   // Optional callback after form is instantiated
     onAllReady? : (baseScope: IFormScope) => void;        // Optional callback after form is instantiated and populated
+    contextMenu? : Array<IContextMenuOption | IContextMenuDivider>
   }
 
   export interface IBaseFormOptions {
