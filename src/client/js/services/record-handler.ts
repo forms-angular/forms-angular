@@ -11,6 +11,9 @@ module fng.services {
   /*@ngInject*/
   export function recordHandler($http, $location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) : fng.IRecordHandler {
 
+    // TODO: Put this in a service
+    const makeMongoId = (rnd = r16 => Math.floor(r16).toString(16)) => rnd(Date.now()/1000) + ' '.repeat(16).replace(/./g, () => rnd(Math.random()*16));
+
     var suffixCleanId = function suffixCleanId(inst, suffix) {
       return (inst.id || 'f_' + inst.name).replace(/\./g, '_') + suffix;
     };
@@ -176,6 +179,24 @@ module fng.services {
       }
     }
 
+    // Set up the lookup lists (value and id) on the scope for an internal lookup.  Called by convertToAngularModel and $watch
+    function setUpInternalLookupLists($scope, optionsList, idsList, newVal, valueAttrib) {
+      $scope[optionsList].length = 0;
+      $scope[idsList].length = 0;
+      if (!!newVal && (newVal.length > 0)) {
+        newVal.forEach(a => {
+          let value = a[valueAttrib];
+          if (value && value.length > 0) {
+            $scope[optionsList].push(value);
+            if (!a._id) {
+              a._id = makeMongoId();
+            }
+            $scope[idsList].push(a._id);
+          }
+        });
+      }
+    }
+
     var simpleArrayNeedsX = function (aSchema) {
       var result = false;
 
@@ -216,6 +237,9 @@ module fng.services {
             }
           }
         } else {
+          if (schemaEntry.ref && schemaEntry.ref.type === 'internal') {
+            setUpInternalLookupLists($scope, schemaEntry.options, schemaEntry.ids, master[schemaEntry.ref.property], schemaEntry.ref.value);
+          }
           // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
           var thisField = getListData($scope, anObject, fieldName);
           if (schemaEntry.array && simpleArrayNeedsX(schemaEntry) && thisField) {
@@ -565,7 +589,7 @@ module fng.services {
 
       setData: setData,
 
-      setUpSelectOptions: function setUpSelectOptions(lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
+      setUpLookupOptions: function setUpLookupOptions(lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
         var optionsList = $scope[schemaElement.options] = [];
         var idList = $scope[schemaElement.ids] = [];
 
@@ -607,6 +631,40 @@ module fng.services {
           });
       },
 
+      handleInternalLookup: function handleInternalLookup($scope, formInstructions, ref) {
+
+        function convertOldToNew(val, attrib, newVals, oldVals) {
+          // check this is a chage to an existing value, rather than a new one or one being deleted
+          if (oldVals && oldVals.length > 0 && oldVals.length === newVals.length) {
+            let index = oldVals.findIndex(a => a[ref.value] === val[attrib]);
+            if (index > -1) {
+              val[attrib] = newVals[index][ref.value]
+            }
+          }
+        }
+
+        $scope[formInstructions.options] = [];
+        $scope[formInstructions.ids] = [];
+        let nameElements = formInstructions.name.split('.');
+        let lastPart = nameElements.pop();
+        let possibleArray = nameElements.join('.');
+        $scope.$watch(`record.${ref.property}`, function(newVal: Array<any>, oldVal: Array<any>) {
+          setUpInternalLookupLists($scope, formInstructions.options, formInstructions.ids, newVal, ref.value);
+          // now change the looked-up values that matched the old to the new
+          if ((newVal && newVal.length > 0) || (oldVal && oldVal.length > 0)) {
+            if (possibleArray) {
+              let arr = getData($scope.record, possibleArray, null);
+              if (arr && arr.length > 0) {
+                arr.forEach(a => convertOldToNew(a, lastPart, newVal, oldVal))
+              }
+            } else {
+              convertOldToNew($scope.record, lastPart, newVal, oldVal);
+            }
+          }
+        }, true);
+
+      },
+
       preservePristine: preservePristine,
 
       // Reverse the process of convertToAngularModel
@@ -635,7 +693,6 @@ module fng.services {
               }
             }
           } else {
-
             // Convert {array:[{x:'item 1'}]} to {array:['item 1']}
             if (schema[i].array && simpleArrayNeedsX(schema[i]) && thisField) {
               for (var k = 0; k < thisField.length; k++) {

@@ -1,12 +1,17 @@
 'use strict';
 
-var express = require('express'),
-    path = require('path'),
-    fs = require('fs'),
-    mongoose = require('mongoose'),
-    formsAngular = require('forms-angular'),
-    fngAudit = require('fng-audit'),
-    fngJqUpload = require('fng-jq-upload');
+var express = require('express');
+var path = require('path');
+var fs = require('fs');
+var formsAngular;
+try {
+  formsAngular = require('forms-angular');
+} catch (e) {
+  formsAngular = require('./../src/server/data_form');
+}
+var fngAudit = require('fng-audit');
+var fngJqUpload = require('fng-jq-upload');
+var mongoose = require('mongoose');
 
 /**
  * Main application file
