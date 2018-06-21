@@ -6,15 +6,15 @@ var ESchema = new Schema({
   surname: {type: String, list: {}},
   forename: {type: String, list: true},
   weight: {type: Number, form: {label: 'Weight (lbs)'}},
-  leadMentor:    { type: Schema.Types.ObjectId, ref: 'c_subdoc_example', required: true},
-  mentor:    { type: Schema.Types.ObjectId, ref: 'c_subdoc_example'},
-  guide:     { type: Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: {directive: 'fng-ui-select'}},
-  teacher: { type: Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
+  leadMentor:    { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'c_subdoc_example'}, required: true},
+  mentor:    { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'c_subdoc_example'}},
+  guide:     { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'b_enhanced_schema'}, form: {directive: 'fng-ui-select'}},
+  teacher: { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'b_enhanced_schema'}, form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
   dateOfBirth: Date,
-  assistants : [{ type: Schema.Types.ObjectId , ref: 'a_unadorned_schema'}],
-  assistants2:  { type:[Schema.Types.ObjectId], ref: 'a_unadorned_schema'} ,
-  team : [ { type: Schema.Types.ObjectId , ref: 'f_nested_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}} ],
-  team2:   { type:[Schema.Types.ObjectId], ref: 'f_nested_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
+  assistants : [{ type: Schema.Types.ObjectId , ref:{type:'lookup', collection:'a_unadorned_schema'}}],
+  assistants2:  { type:[Schema.Types.ObjectId], ref:{type:'lookup', collection:'a_unadorned_schema'}} ,
+  team : [ { type: Schema.Types.ObjectId , ref:{type:'lookup', collection:'f_nested_schema'}, form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}} ],
+  team2:   { type:[Schema.Types.ObjectId], ref:{type:'lookup', collection:'f_nested_schema'}, form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
   accepted: Boolean
 });
 
@@ -39,7 +39,7 @@ ESchema.statics.report = function (report) {
           {field: 'count', displayName: 'Number in Class'}
         ],
         columnTranslations: [
-          {field: '_id', ref: 'b_enhanced_schema'}
+          {field: '_id', ref:{type:'lookup', collection:'b_enhanced_schema'}}
         ]
       };
       break;

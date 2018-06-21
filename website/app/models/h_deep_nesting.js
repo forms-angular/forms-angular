@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var CourseTeachersSchema = new Schema({
-  teacher: { type: Schema.Types.ObjectId, ref: 'b_enhanced_schema'},
+  teacher: { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'b_enhanced_schema'}},
   room: Number
 });
 
@@ -12,7 +12,7 @@ var ExamsSchema = new Schema({
   examDate: Date,
   score: Number,
   result: {type: String, enum: ['distinction', 'merit', 'pass', 'fail']},
-  grader: { type: Schema.Types.ObjectId, ref: 'b_enhanced_schema'}
+  grader: { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'b_enhanced_schema'}}
 });
 
 var CourseSchema = new Schema({
@@ -33,7 +33,7 @@ var HSchema = new Schema({
     exams: [ExamsSchema]
   },
   assistants: [
-    { type: Schema.Types.ObjectId, ref: 'b_enhanced_schema'}
+    { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'b_enhanced_schema'}}
   ]
 });
 

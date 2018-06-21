@@ -118,10 +118,21 @@ module fng.services {
       function performLookupSelect(){
         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
         formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-        $scope[formInstructions.options] = [];
-        $scope[formInstructions.ids] = [];
-        if (!formInstructions.hidden && mongooseOptions.ref) {
-          recordHandler.setUpSelectOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
+        if (!formInstructions.hidden) {
+          if (typeof mongooseOptions.ref === 'string') {
+            mongooseOptions.ref = {type:'lookup', collection: mongooseOptions.ref};
+            console.log(`Support for string type "ref" property is deprecated - use ref:${JSON.stringify(mongooseOptions.ref)}`);
+          }
+          switch (mongooseOptions.ref.type) {
+            case 'lookup':
+              recordHandler.setUpLookupOptions(mongooseOptions.ref.collection, formInstructions, $scope, ctrlState, handleSchema);
+              break;
+            case 'internal':
+              recordHandler.handleInternalLookup($scope, formInstructions, mongooseOptions.ref);
+              break;
+            default:
+              throw new Error('Unsupported ref type found in ' + formInstructions.name);
+          }
         }
       }
 
