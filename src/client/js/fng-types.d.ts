@@ -17,7 +17,7 @@ declare module fng {
     size? : string;
   }
 
-  // Schema used internally on client - often derived from IFieldViewInfo pased from server
+  // Schema used internally on client - often derived from IFieldViewInfo passed from server
   export interface IFormInstruction extends IFieldViewInfo {
     id? : string;   // id of generated DOM element
     type?: 'string' | 'text' | 'textarea' | 'number' | 'select' | 'link' | 'date' | 'checkbox' | 'password';
@@ -28,7 +28,7 @@ declare module fng {
     hidden?: boolean;
     tab?: string;
     add? : string;
-    ref? : string;
+    ref? : any;
     link? : any;
     linkText?: string;
     form?: string;           // the form that is linked to
