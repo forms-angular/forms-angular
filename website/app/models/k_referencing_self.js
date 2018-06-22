@@ -17,7 +17,7 @@ var ESchema = new Schema({
   warehouse_name: {type: String, list: {}},
   shelves: {type: [ShelfSchema]},
   items: {type: [StockItemSchema]},
-  // cleanedShelves: {type: [Schema.Types.ObjectId], ref: shelfRef},
+  cleanedShelves: {type: [Schema.Types.ObjectId], ref: shelfRef},
   favouriteShelf: {type: Schema.Types.ObjectId, ref: shelfRef}
 });
 
