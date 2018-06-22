@@ -1,22 +1,22 @@
-'use strict';
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-
-var ZSchema = new Schema({
-  surname: String,
-  forename: String,
-  weight: Number,
-  dateOfBirth: Date,
-  termsAccepted: Boolean
-});
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var mongoose_1 = require("mongoose");
+var ZSchemaDef = {
+    surname: String,
+    forename: String,
+    weight: Number,
+    dateOfBirth: Date,
+    termsAccepted: Boolean
+};
+var ZSchema = new mongoose_1.Schema(ZSchemaDef);
 var Z;
 try {
-  Z = mongoose.model('z_custom_form');
-} catch (e) {
-  Z = mongoose.model('z_custom_form', ZSchema);
+    Z = mongoose_1.model('z_custom_form');
 }
-
+catch (e) {
+    Z = mongoose_1.model('z_custom_form', ZSchema);
+}
 module.exports = {
-  model: Z
+    model: Z
 };
+//# sourceMappingURL=z_custom_form.js.map
