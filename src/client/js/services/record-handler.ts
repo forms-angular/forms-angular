@@ -635,10 +635,13 @@ module fng.services {
 
         function convertOldToNew(val, attrib, newVals, oldVals) {
           // check this is a chage to an existing value, rather than a new one or one being deleted
-          if (oldVals && oldVals.length > 0 && oldVals.length === newVals.length) {
+          if (oldVals && oldVals.length > 0 && oldVals.length === newVals.length && val[attrib]) {
             let index = oldVals.findIndex(a => a[ref.value] === val[attrib]);
             if (index > -1) {
-              val[attrib] = newVals[index][ref.value]
+              let newVal = newVals[index][ref.value];
+              if (newVal) {
+                val[attrib] = newVal;
+              }
             }
           }
         }
@@ -657,6 +660,10 @@ module fng.services {
               if (arr && arr.length > 0) {
                 arr.forEach(a => convertOldToNew(a, lastPart, newVal, oldVal))
               }
+            } else if (angular.isArray($scope.record[lastPart])) {
+              $scope.record[lastPart].forEach(a => {
+                convertOldToNew(a,'x',newVal,oldVal);
+              });
             } else {
               convertOldToNew($scope.record, lastPart, newVal, oldVal);
             }
