@@ -43,7 +43,7 @@ var modelsPath = path.join(__dirname, 'app/models');
 
 fs.readdirSync(modelsPath).forEach(function (file) {
   var fname = modelsPath + '/' + file;
-  if ((app.get('env') === 'test' || file.slice(0,4) !== 'test') && fs.statSync(fname).isFile()) {
+  if ((app.get('env') === 'test' || file.slice(0,4) !== 'test') && fs.statSync(fname).isFile() && fname.match(/.js$/)) {
     var fngModelInfo = require(fname);
     fngHandler.newResource(fngModelInfo.model, fngModelInfo.options);
   }
