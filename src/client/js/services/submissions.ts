@@ -65,7 +65,11 @@ module fng.services {
 //         };
 //       },
       getListAttributes: function (ref, id) {
-        return $http.get('/api/' + ref + '/' + id + '/list');
+        if (typeof ref === 'string') {
+          ref = {type:'lookup', collection: ref};
+          console.log(`Support for string type "ref" property is deprecated - use ref:${JSON.stringify(ref)}`);
+        }
+        return $http.get('/api/' + ref.collection + '/' + id + '/list');
       },
       readRecord: function (modelName, id): Promise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
