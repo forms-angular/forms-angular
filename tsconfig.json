@@ -3,9 +3,9 @@
     "module": "commonjs",
     "target": "es5",
     "lib": [
-      "ES5",
-      "ES2015",
-      "DOM"
+      "es5",
+      "es2015",
+      "dom"
     ],
     "sourceMap": true
   },
