@@ -1,5 +1,4 @@
-/// <reference path="../../../../node_modules/@types/angular/index.d.ts" />
-/// <reference path="../fng-types" />
+/// <reference path="../../index.d.ts" />
 
 module fng.services {
 

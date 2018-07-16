@@ -114,8 +114,7 @@ gulp.task('uglify', function(cb) {
 });
 
 gulp.task('copyTypes', function () {
-  return gulp.src('./src/client/js/fng-types.d.ts')
-    .pipe(rename('index.d.ts'))
+  return gulp.src('./src/client/index.d.ts')
     .pipe(gulp.dest(distDirectory + '/client'));
 });
 

@@ -1,4 +1,4 @@
-/// <reference path="../fng-types.d.ts" />
+/// <reference path="../../index.d.ts" />
 
 module fng.services {
   /**
