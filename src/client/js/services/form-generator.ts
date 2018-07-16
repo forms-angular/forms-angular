@@ -1,4 +1,4 @@
-/// <reference path="../fng-types" />
+/// <reference path="../../index.d.ts" />
 
 module fng.services {
   /**
@@ -498,6 +498,7 @@ module fng.services {
         $scope.listSchema = [];
         $scope.recordList = [];
         $scope.dataDependencies = {};
+        $scope.internalLookups = [];
         $scope.conversions = {};
         $scope.pageSize = 60;
         $scope.pagesLoaded = 0;
