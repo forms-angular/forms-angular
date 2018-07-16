@@ -12,7 +12,7 @@ module.exports = {
 
     fng = new (formsAngular)(mongoose, app, { urlPrefix: "/api/" });
 
-    mongoose.connect("mongodb://localhost/forms-ng_test", {
+    mongoose.connect("mongodb://localhost:27017/forms-ng_test", {
       keepAlive: 1,
       connectTimeoutMS: 30000,
       reconnectTries: 30,
