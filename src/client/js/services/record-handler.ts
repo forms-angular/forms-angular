@@ -180,18 +180,20 @@ module fng.services {
     }
 
     // Set up the lookup lists (value and id) on the scope for an internal lookup.  Called by convertToAngularModel and $watch
-    function setUpInternalLookupLists($scope, optionsList, idsList, newVal, valueAttrib) {
-      $scope[optionsList].length = 0;
-      $scope[idsList].length = 0;
+    function setUpInternalLookupLists($scope: fng.IFormScope, options: string[] | string, ids: string[] | string, newVal, valueAttrib) {
+      let optionsArray = (typeof options === 'string' ? $scope[options] : options);
+      let idsArray = (typeof ids === 'string' ? $scope[ids] : ids);
+      optionsArray.length = 0;
+      idsArray.length = 0;
       if (!!newVal && (newVal.length > 0)) {
         newVal.forEach(a => {
           let value = a[valueAttrib];
           if (value && value.length > 0) {
-            $scope[optionsList].push(value);
+            optionsArray.push(value);
             if (!a._id) {
               a._id = makeMongoId();
             }
-            $scope[idsList].push(a._id);
+            idsArray.push(a._id);
           }
         });
       }
@@ -402,24 +404,28 @@ module fng.services {
               $scope.dropConversionWatcher = null;
             }
             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
+
+            // If we have any internal lookups then update the references
             $scope.internalLookups.forEach((lkp: fng.IFngInternalLookupHandlerInfo) => {
               let newVal = newValue[lkp.ref.property];
               let oldVal = oldValue[lkp.ref.property];
-              setUpInternalLookupLists($scope, lkp.formInstructions.options, lkp.formInstructions.ids, newVal, lkp.ref.value);
+              setUpInternalLookupLists($scope, lkp.lookupOptions, lkp.lookupIds, newVal, lkp.ref.value);
               // now change the looked-up values that matched the old to the new
               if ((newVal && newVal.length > 0) || (oldVal && oldVal.length > 0)) {
-                if (lkp.possibleArray) {
-                  let arr = getData($scope.record, lkp.possibleArray, null);
-                  if (arr && arr.length > 0) {
-                    arr.forEach(a => convertOldToNew(lkp.ref, a, lkp.lastPart, newVal, oldVal))
+                lkp.handlers.forEach((h) => {
+                  if (h.possibleArray) {
+                    let arr = getData($scope.record, h.possibleArray, null);
+                    if (arr && arr.length > 0) {
+                      arr.forEach(a => convertOldToNew(lkp.ref, a, h.lastPart, newVal, oldVal))
+                    }
+                  } else if (angular.isArray($scope.record[h.lastPart])) {
+                    $scope.record[h.lastPart].forEach(a => {
+                      convertOldToNew(lkp.ref, a, 'x', newVal, oldVal);
+                    });
+                  } else {
+                    convertOldToNew(lkp.ref, $scope.record, h.lastPart, newVal, oldVal);
                   }
-                } else if (angular.isArray($scope.record[lkp.lastPart])) {
-                  $scope.record[lkp.lastPart].forEach(a => {
-                    convertOldToNew(lkp.ref, a,'x',newVal,oldVal);
-                  });
-                } else {
-                  convertOldToNew(lkp.ref, $scope.record, lkp.lastPart, newVal, oldVal);
-                }
+                });
               }
             })
           }
@@ -665,15 +671,30 @@ module fng.services {
       },
 
       handleInternalLookup: function handleInternalLookup($scope: IFormScope, formInstructions: IFormInstruction, ref: IFngInternalLookupReference) {
-        $scope[formInstructions.options] = [];
-        $scope[formInstructions.ids] = [];
         let nameElements = formInstructions.name.split('.');
-        $scope.internalLookups.push({
-          formInstructions: formInstructions,
-          ref: ref,
-          lastPart : nameElements.pop(),
-          possibleArray : nameElements.join('.')
+
+        let refHandler: IFngInternalLookupHandlerInfo = $scope.internalLookups.find((lkp) => {
+          return lkp.ref.property === ref.property && lkp.ref.value === ref.value;
         });
+
+        let thisHandler: IFngSingleInternalLookupHandler = {
+          formInstructions: formInstructions,
+          lastPart: nameElements.pop(),
+          possibleArray: nameElements.join('.')
+        };
+
+        if (!refHandler) {
+          refHandler = {
+            ref: ref,
+            lookupOptions: [],
+            lookupIds: [],
+            handlers: []
+          };
+          $scope.internalLookups.push(refHandler);
+        }
+        refHandler.handlers.push(thisHandler);
+        $scope[formInstructions.options] = refHandler.lookupOptions;
+        $scope[formInstructions.ids] = refHandler.lookupIds;
       },
 
       preservePristine: preservePristine,

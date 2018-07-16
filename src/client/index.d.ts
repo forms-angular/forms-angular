@@ -207,11 +207,16 @@ declare module fng {
     decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedStuff);
   }
 
-  export interface IFngInternalLookupHandlerInfo {
+  export interface IFngSingleInternalLookupHandler {
     formInstructions: IFormInstruction;
-    ref: IFngInternalLookupReference;
     lastPart: string;
     possibleArray: string;
+  }
+  export interface IFngInternalLookupHandlerInfo {
+    ref: IFngInternalLookupReference;
+    lookupOptions: string[];
+    lookupIds: string[];
+    handlers: IFngSingleInternalLookupHandler[]
   }
   /*
     The scope which contains form data
