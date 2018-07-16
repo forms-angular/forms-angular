@@ -207,6 +207,12 @@ declare module fng {
     decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedStuff);
   }
 
+  export interface IFngInternalLookupHandlerInfo {
+    formInstructions: IFormInstruction;
+    ref: IFngInternalLookupReference;
+    lastPart: string;
+    possibleArray: string;
+  }
   /*
     The scope which contains form data
    */
@@ -215,11 +221,8 @@ declare module fng {
     modelNameDisplay : string;
     modelName: string;
     formName: string;
-    cancel(): any;
-    showError: (error: any, alertTitle? : string) => void;
     alertTitle: any;
     errorMessage: any;
-    prepareForSave: (cb: (error: string, dataToSave?: any) => void) => void;
     save: any;
     newRecord: boolean;
     initialiseNewRecord?: any;
@@ -247,13 +250,15 @@ declare module fng {
     listSchema: any;
     recordList: any;
     dataDependencies: any;
+    internalLookups: IFngInternalLookupHandlerInfo[];
     conversions: any;
     pageSize: any;
     pagesLoaded: any;
+    cancel: () => any;
+    showError: (error: any, alertTitle? : string) => void;
+    prepareForSave: (cb: (error: string, dataToSave?: any) => void) => void;
     formSchema: IFormInstruction[];
-
-    //functions
-    baseSchema() : Array<any>;
+    baseSchema: () => Array<any>;
     setFormDirty: any;
     add: any;
     hasError: any;
@@ -268,7 +273,7 @@ declare module fng {
     scrollTheList: any;
     getListData: any;
     dismissError: any;
-    handleHttpError(response: any): void;
+    handleHttpError: (response: any) => void;
     dropConversionWatcher: () => void;
   }
 

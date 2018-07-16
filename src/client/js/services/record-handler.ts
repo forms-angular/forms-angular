@@ -365,6 +365,19 @@ module fng.services {
         $scope.cancel();
     };
 
+    function convertOldToNew(ref, val, attrib, newVals, oldVals) {
+      // check this is a change to an existing value, rather than a new one or one being deleted
+      if (oldVals && oldVals.length > 0 && oldVals.length === newVals.length && val[attrib]) {
+        let index = oldVals.findIndex(a => a[ref.value] === val[attrib]);
+        if (index > -1) {
+          let newVal = newVals[index][ref.value];
+          if (newVal) {
+            val[attrib] = newVal;
+          }
+        }
+      }
+    }
+
     function fillFormFromBackendCustomSchema(schema, $scope:fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState) {
       var listOnly = (!$scope.id && !$scope.newRecord);
       // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
@@ -389,6 +402,26 @@ module fng.services {
               $scope.dropConversionWatcher = null;
             }
             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
+            $scope.internalLookups.forEach((lkp: fng.IFngInternalLookupHandlerInfo) => {
+              let newVal = newValue[lkp.ref.property];
+              let oldVal = oldValue[lkp.ref.property];
+              setUpInternalLookupLists($scope, lkp.formInstructions.options, lkp.formInstructions.ids, newVal, lkp.ref.value);
+              // now change the looked-up values that matched the old to the new
+              if ((newVal && newVal.length > 0) || (oldVal && oldVal.length > 0)) {
+                if (lkp.possibleArray) {
+                  let arr = getData($scope.record, lkp.possibleArray, null);
+                  if (arr && arr.length > 0) {
+                    arr.forEach(a => convertOldToNew(lkp.ref, a, lkp.lastPart, newVal, oldVal))
+                  }
+                } else if (angular.isArray($scope.record[lkp.lastPart])) {
+                  $scope.record[lkp.lastPart].forEach(a => {
+                    convertOldToNew(lkp.ref, a,'x',newVal,oldVal);
+                  });
+                } else {
+                  convertOldToNew(lkp.ref, $scope.record, lkp.lastPart, newVal, oldVal);
+                }
+              }
+            })
           }
         }, true);
 
@@ -631,45 +664,16 @@ module fng.services {
           });
       },
 
-      handleInternalLookup: function handleInternalLookup($scope, formInstructions, ref) {
-
-        function convertOldToNew(val, attrib, newVals, oldVals) {
-          // check this is a chage to an existing value, rather than a new one or one being deleted
-          if (oldVals && oldVals.length > 0 && oldVals.length === newVals.length && val[attrib]) {
-            let index = oldVals.findIndex(a => a[ref.value] === val[attrib]);
-            if (index > -1) {
-              let newVal = newVals[index][ref.value];
-              if (newVal) {
-                val[attrib] = newVal;
-              }
-            }
-          }
-        }
-
+      handleInternalLookup: function handleInternalLookup($scope: IFormScope, formInstructions: IFormInstruction, ref: IFngInternalLookupReference) {
         $scope[formInstructions.options] = [];
         $scope[formInstructions.ids] = [];
         let nameElements = formInstructions.name.split('.');
-        let lastPart = nameElements.pop();
-        let possibleArray = nameElements.join('.');
-        $scope.$watch(`record.${ref.property}`, function(newVal: Array<any>, oldVal: Array<any>) {
-          setUpInternalLookupLists($scope, formInstructions.options, formInstructions.ids, newVal, ref.value);
-          // now change the looked-up values that matched the old to the new
-          if ((newVal && newVal.length > 0) || (oldVal && oldVal.length > 0)) {
-            if (possibleArray) {
-              let arr = getData($scope.record, possibleArray, null);
-              if (arr && arr.length > 0) {
-                arr.forEach(a => convertOldToNew(a, lastPart, newVal, oldVal))
-              }
-            } else if (angular.isArray($scope.record[lastPart])) {
-              $scope.record[lastPart].forEach(a => {
-                convertOldToNew(a,'x',newVal,oldVal);
-              });
-            } else {
-              convertOldToNew($scope.record, lastPart, newVal, oldVal);
-            }
-          }
-        }, true);
-
+        $scope.internalLookups.push({
+          formInstructions: formInstructions,
+          ref: ref,
+          lastPart : nameElements.pop(),
+          possibleArray : nameElements.join('.')
+        });
       },
 
       preservePristine: preservePristine,
