@@ -51,7 +51,8 @@ module.exports = {
               async.each(files, function(file, cb2) {
                 var fname = dataPath + "/" + file;
                 if (fs.statSync(fname).isFile()) {
-                  exec("mongoimport --db forms-ng_test --drop --collection " + file.slice(0, 1) + "s --jsonArray < " + fname, function(error, stdout, stderr) {
+                  var command = "mongoimport --db forms-ng_test --drop --collection " + file.slice(0, 1) + "s --jsonArray < " + fname;
+                  exec(command, function(error, stdout, stderr) {
                     if (error !== null) {
                       cb2(new Error("Error executing " + command + " : " + error + " (Code = " + error.code + "    " + error.signal + ") : " + stderr + " : " + stdout));
                     } else {
