@@ -24,8 +24,24 @@ module.exports = {
     });
 
     mongoose.connection.on("open", function() {
-      async.parallel([
-          function(cb) {
+      // Import test data
+      var dataPath = path.join(__dirname, "../api/data");
+      fs.readdir(dataPath, function(err, files) {
+        async.each(files, function(file, cb2) {
+          var fname = dataPath + "/" + file;
+          if (fs.statSync(fname).isFile()) {
+            var command = "mongoimport --db forms-ng_test --drop --collection " + file.slice(0, 1) + "s --jsonArray < " + fname;                  exec(command, function(error, stdout, stderr) {
+              if (error !== null) {
+                cb2(new Error("Error executing " + command + " : " + error + " (Code = " + error.code + "    " + error.signal + ") : " + stderr + " : " + stdout));
+              } else {
+                cb2();
+              }
+            });
+          }
+        }, function(err) {
+          if (err) {
+            throw new Error(err);
+          } else {
             // Bootstrap models
             var modelsPath = path.join(__dirname, "../api/models");
             fs.readdir(modelsPath, function(err, files) {
@@ -39,46 +55,13 @@ module.exports = {
                 if (err) {
                   throw new Error(err);
                 } else {
-                  cb(null, "bootstrap");
-                }
-              });
-            });
-          },
-          function(cb) {
-            // Import test data
-            var dataPath = path.join(__dirname, "../api/data");
-            fs.readdir(dataPath, function(err, files) {
-              async.each(files, function(file, cb2) {
-                var fname = dataPath + "/" + file;
-                if (fs.statSync(fname).isFile()) {
-                  var command = "mongoimport --db forms-ng_test --drop --collection " + file.slice(0, 1) + "s --jsonArray < " + fname;
-                  exec(command, function(error, stdout, stderr) {
-                    if (error !== null) {
-                      cb2(new Error("Error executing " + command + " : " + error + " (Code = " + error.code + "    " + error.signal + ") : " + stderr + " : " + stdout));
-                    } else {
-                      cb2();
-                    }
-                  });
-                }
-              }, function(err) {
-                if (err) {
-                  throw new Error(err);
-                } else {
-                  cb(null, "import");
+                  callback(fng)
                 }
               });
             });
           }
-        ],
-
-        function(err, results) {
-          if (err) {
-            throw new Error(err);
-          } else {
-            callback(fng);
-          }
-        }
-      );
+        });
+      });
     });
   },
 
