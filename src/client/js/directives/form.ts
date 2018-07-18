@@ -727,7 +727,16 @@ module fng.directives {
                                 break;
                               case 'create':
                               default:
-                                arrayOffset = theRecord[info.name].push(thisSubkeyList) - 1;
+                                let nameElements = info.name.split('.');
+                                let lastPart: string = nameElements.pop();
+                                let possibleArray: string = nameElements.join('.');
+                                let obj = theRecord;
+
+                                // Should loop here when / if we re-introduce nesting
+                                if (possibleArray) {
+                                  obj = obj[possibleArray];
+                                }
+                                arrayOffset = obj[lastPart].push(thisSubkeyList) - 1;
                                 break;
                             }
                           }
