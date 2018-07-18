@@ -67,7 +67,7 @@ module fng.services {
       getListAttributes: function (ref, id) {
         if (typeof ref === 'string') {
           ref = {type:'lookup', collection: ref};
-          console.log(`Support for string type "ref" property is deprecated - use ref:${JSON.stringify(ref)}`);
+          console.warn(`Support for string type "ref" property is deprecated - use ref:${JSON.stringify(ref)}`);
         }
         return $http.get('/api/' + ref.collection + '/' + id + '/list');
       },

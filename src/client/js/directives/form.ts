@@ -546,7 +546,11 @@ module fng.directives {
                         break;
                       default:
                         if (info[prop]) {
-                          newElement += ' fng-fld-' + prop + '="' + info[prop].toString().replace(/"/g, '&quot;') + '"';
+                          if (typeof info[prop] === 'string') {
+                            newElement += ' fng-fld-' + prop + '="' + info[prop].toString().replace(/"/g, '&quot;') + '"';
+                          } else {
+                            newElement += ' fng-fld-' + prop + '="' + JSON.stringify(info[prop]).replace(/"/g, '&quot;') + '"';
+                          }
                         }
                         break;
                     }

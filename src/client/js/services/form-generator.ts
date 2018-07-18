@@ -121,7 +121,7 @@ module fng.services {
         if (!formInstructions.hidden) {
           if (typeof mongooseOptions.ref === 'string') {
             mongooseOptions.ref = {type:'lookup', collection: mongooseOptions.ref};
-            console.log(`Support for string type "ref" property is deprecated - use ref:${JSON.stringify(mongooseOptions.ref)}`);
+            console.warn(`Support for string type "ref" property is deprecated - use ref:${JSON.stringify(mongooseOptions.ref)}`);
           }
           switch (mongooseOptions.ref.type) {
             case 'lookup':
