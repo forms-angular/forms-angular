@@ -88,7 +88,7 @@ module fng.services {
       return retVal;
     };
 
-    var updateRecordWithLookupValues = function (schemaElement, $scope, ctrlState) {
+    var updateRecordWithLookupValues = function (schemaElement, $scope, ctrlState: IFngCtrlState) {
       // Update the master and the record with the lookup values, master first
       if (!$scope.topLevelFormName || $scope[$scope.topLevelFormName].$pristine) {
         updateObject(schemaElement.name, ctrlState.master, function (value) {
@@ -361,7 +361,7 @@ module fng.services {
       return valuesArray[index];
     };
 
-    var processServerData = function processServerData(recordFromServer, $scope, ctrlState) {
+    var processServerData = function processServerData(recordFromServer, $scope, ctrlState: IFngCtrlState) {
         ctrlState.master = convertToAngularModel($scope.formSchema, recordFromServer, 0, $scope);
         $scope.phase = 'ready';
         $scope.cancel();
@@ -380,7 +380,7 @@ module fng.services {
       }
     }
 
-    function fillFormFromBackendCustomSchema(schema, $scope:fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState) {
+    function fillFormFromBackendCustomSchema(schema, $scope:fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState: IFngCtrlState) {
       var listOnly = (!$scope.id && !$scope.newRecord);
       // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
       // but should be removed when/if formschemas are cached
@@ -427,7 +427,57 @@ module fng.services {
                   }
                 });
               }
-            })
+            });
+
+            // If we have any list lookups then update the references
+            $scope.listLookups.forEach((lkp: fng.IFngLookupListHandlerInfo) => {
+
+              function extractIdVal(obj: any, idString: string): any {
+                let retVal = obj[idString]
+                if (retVal && retVal.id) {
+                  retVal = retVal.id;
+                }
+                return retVal;
+              }
+
+              let idString = lkp.ref.id.slice(1);
+              if (idString.includes('.')) {
+                throw new Error(`No support for nested list lookups yet - ${JSON.stringify(lkp.ref)}`)
+              }
+              let newVal = extractIdVal(newValue, idString);
+              let oldVal = extractIdVal(oldValue, idString);
+              if (newVal !== oldVal) {
+                if (newVal) {
+                  SubmissionsService.readRecord(lkp.ref.collection, newVal).then(
+                    (response) => {
+                      lkp.handlers.forEach((h) => {
+                        let optionsList = $scope[h.formInstructions.options];
+                        let idList = $scope[h.formInstructions.ids];
+                        let data = response.data[lkp.ref.property]
+                        for (var i = 0; i < data.length; i++) {
+                          var option = data[i][lkp.ref.value];
+                          var pos = _.sortedIndex(optionsList, option);
+                          // handle dupes
+                          if (optionsList[pos] === option) {
+                            option = option + '    (' + data[i]._id + ')';
+                            pos = _.sortedIndex(optionsList, option);
+                          }
+                          optionsList.splice(pos, 0, option);
+                          idList.splice(pos, 0, data[i]._id);
+                        }
+                        updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState);
+                      });
+                    }
+                  );
+                } else {
+                  lkp.handlers.forEach((h) => {
+                    $scope[h.formInstructions.options].length = 0;
+                    $scope[h.formInstructions.ids].length = 0;
+                    updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState);
+                  });
+                }
+              }
+            });
           }
         }, true);
 
@@ -504,7 +554,7 @@ module fng.services {
       }
     }
 
-    function handleIncomingData(data, $scope, ctrlState) {
+    function handleIncomingData(data, $scope, ctrlState: IFngCtrlState) {
       ctrlState.allowLocationChange = false;
       $scope.phase = 'reading';
       if (typeof $scope.dataEventFunctions.onAfterRead === 'function') {
@@ -515,7 +565,7 @@ module fng.services {
     }
 
     return {
-      readRecord: function readRecord($scope, ctrlState) {
+      readRecord: function readRecord($scope, ctrlState: IFngCtrlState) {
         // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
         SubmissionsService.readRecord($scope.modelName, $scope.id)
           .then(function (response) {
@@ -568,7 +618,7 @@ module fng.services {
       },
 
       // TODO: Do we need model here?  Can we not infer it from scope?
-      deleteRecord: function deleteRecord(model, id, $scope, ctrlState) {
+      deleteRecord: function deleteRecord(model, id, $scope, ctrlState: IFngCtrlState) {
         SubmissionsService.deleteRecord(model, id)
           .then(function () {
             if (typeof $scope.dataEventFunctions.onAfterDelete === 'function') {
@@ -578,7 +628,7 @@ module fng.services {
           });
       },
 
-      updateDocument: function updateDocument(dataToSave, options, $scope: fng.IFormScope, ctrlState) {
+      updateDocument: function updateDocument(dataToSave, options, $scope: fng.IFormScope, ctrlState: IFngCtrlState) {
         $scope.phase = 'updating';
 
         SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave)
@@ -670,6 +720,59 @@ module fng.services {
           });
       },
 
+      setUpLookupListOptions: function setUpLookupListOptions(ref: IFngLookupListReference, formInstructions: IFormInstruction, $scope: IFormScope, ctrlState: IFngCtrlState) {
+        let optionsList = $scope[formInstructions.options] = [];
+        let idList = $scope[formInstructions.ids] = [];
+        if (ref.id[0] === '$') {
+          // id of document we are doing lookup from comes from record, so we need to deal with in $watch
+          // by adding it to listLookups
+          let nameElements = formInstructions.name.split('.');
+
+          let refHandler: IFngLookupListHandlerInfo = $scope.listLookups.find((lkp) => {
+            return lkp.ref.property === ref.property && lkp.ref.value === ref.value;
+          });
+  
+          let thisHandler: IFngSingleLookupHandler = {
+            formInstructions: formInstructions,
+            lastPart: nameElements.pop(),
+            possibleArray: nameElements.join('.')
+          };
+  
+          if (!refHandler) {
+            refHandler = {
+              ref: ref,
+              lookupOptions: [],
+              lookupIds: [],
+              handlers: []
+            };
+            $scope.listLookups.push(refHandler);
+          }
+          refHandler.handlers.push(thisHandler);
+          $scope[formInstructions.options] = refHandler.lookupOptions;
+          $scope[formInstructions.ids] = refHandler.lookupIds;
+          // TODO DRY this and handleInternalLookup below 
+        } else {
+          // we can do it now
+          SubmissionsService.readRecord(ref.collection, $scope.$eval(ref.id)).then(
+            (response) => {
+              let data = response.data[ref.property]
+              for (var i = 0; i < data.length; i++) {
+                var option = data[i][ref.value];
+                var pos = _.sortedIndex(optionsList, option);
+                // handle dupes
+                if (optionsList[pos] === option) {
+                  option = option + '    (' + data[i]._id + ')';
+                  pos = _.sortedIndex(optionsList, option);
+                }
+                optionsList.splice(pos, 0, option);
+                idList.splice(pos, 0, data[i]._id);
+              }
+              updateRecordWithLookupValues(formInstructions, $scope, ctrlState);
+            }
+          )
+        }
+      },
+
       handleInternalLookup: function handleInternalLookup($scope: IFormScope, formInstructions: IFormInstruction, ref: IFngInternalLookupReference) {
         let nameElements = formInstructions.name.split('.');
 
@@ -677,7 +780,7 @@ module fng.services {
           return lkp.ref.property === ref.property && lkp.ref.value === ref.value;
         });
 
-        let thisHandler: IFngSingleInternalLookupHandler = {
+        let thisHandler: IFngSingleLookupHandler = {
           formInstructions: formInstructions,
           lastPart: nameElements.pop(),
           possibleArray: nameElements.join('.')
@@ -764,7 +867,7 @@ module fng.services {
 
       handleError: handleError,
 
-      decorateScope: function decorateScope($scope:fng.IFormScope, $uibModal, recordHandlerInstance : fng.IRecordHandler, ctrlState) {
+      decorateScope: function decorateScope($scope:fng.IFormScope, $uibModal, recordHandlerInstance : fng.IRecordHandler, ctrlState: IFngCtrlState) {
 
         $scope.handleHttpError = handleError($scope);
 
@@ -1010,7 +1113,7 @@ module fng.services {
 
       fillFormFromBackendCustomSchema: fillFormFromBackendCustomSchema,
 
-      fillFormWithBackendSchema: function fillFormWithBackendSchema($scope, formGeneratorInstance, recordHandlerInstance, ctrlState) {
+      fillFormWithBackendSchema: function fillFormWithBackendSchema($scope, formGeneratorInstance, recordHandlerInstance, ctrlState: IFngCtrlState) {
 
         SchemasService.getSchema($scope.modelName, $scope.formName)
           .then(function (response) {

@@ -30,6 +30,27 @@ declare module fng {
   }
 
   /*
+  ILookupListReference makes it possible to look up from a list (of key / value pairs)
+  in a document in another collection for example:
+
+  const LSchemaDef : IFngSchemaDefinition = {
+    descriptin: {type: String, required: true, list: {}},
+    warehouse: {type: Schema.Types.ObjectId, ref:'k_referencing_self_collection', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
+    shelf: {type: Schema.Types.ObjectId, ref: {type: 'lookupList', collection:'k_referencing_self_collection', id:'$warehouse', property: 'shelves', value:'location'}},
+  };
+  */
+  export interface IFngLookupListReference {
+    type: 'lookupList';
+    collection: string;   // collection that contains the list
+    /*
+    Some means of calculating _id in collection.  If it starts with $ then it is property in record
+    */
+    id: string;
+    property: string;
+    value: string;
+  }
+
+  /*
   showWhen allows conditional display of fields based on values elsewhere.
 
   For example having prompted whether someone is a smoker you may want a field asking how many they smoke a day:
@@ -139,7 +160,6 @@ declare module fng {
     customFooter?: string; // Allows you to specify custom HTML (which may include directives) for the footer of a group of sub docs
   }
 
-
   // Schema passed from server - derived from Mongoose schema
   export interface IFieldViewInfo extends IFngSchemaTypeFormOpts {
     name: string;
@@ -174,50 +194,64 @@ declare module fng {
     label? : string;
   }
 
+  export interface IFngCtrlState {
+    master: any;
+    allowLocationChange: boolean;   // Do we allow location change or prompt for permission
+  }
   export interface IRecordHandler {
-    convertToMongoModel(schema: Array<IFieldViewInfo>, anObject: any, prefixLength: number, scope: fng.IFormScope): any;
-    createNew(dataToSave: any, options: any, scope: fng.IFormScope): void;
-    deleteRecord(model: any, id: any, scope: fng.IFormScope, ctrlState: any): void;
-    updateDocument(dataToSave : any, options: any, scope: fng.IFormScope, ctrlState: any) : void;
-    readRecord($scope: fng.IFormScope, ctrlState);
-    scrollTheList($scope: fng.IFormScope);
-    getListData($scope: fng.IFormScope, record, fieldName, listSchema);
+    convertToMongoModel(schema: Array<IFieldViewInfo>, anObject: any, prefixLength: number, scope: IFormScope): any;
+    createNew(dataToSave: any, options: any, scope: IFormScope): void;
+    deleteRecord(model: any, id: any, scope: IFormScope, ctrlState: any): void;
+    updateDocument(dataToSave : any, options: any, scope: IFormScope, ctrlState: any) : void;
+    readRecord($scope: IFormScope, ctrlState);
+    scrollTheList($scope: IFormScope);
+    getListData($scope: IFormScope, record, fieldName, listSchema);
     suffixCleanId(inst, suffix);
     setData(object, fieldname, element, value);
-    setUpLookupOptions(lookupCollection, schemaElement, $scope: fng.IFormScope, ctrlState, handleSchema);
-    handleInternalLookup($scope: fng.IFormScope, formInstructions, ref): void;
+    setUpLookupOptions(lookupCollection, schemaElement, $scope: IFormScope, ctrlState, handleSchema);
+    setUpLookupListOptions: (ref: IFngLookupListReference, formInstructions: IFormInstruction, $scope: IFormScope, ctrlState: IFngCtrlState) => void;
+    handleInternalLookup($scope: IFormScope, formInstructions, ref): void;
     preservePristine(element, fn): void;
     convertIdToListValue(id, idsArray, valuesArray, fname);
-    decorateScope($scope:fng.IFormScope, $uibModal, recordHandlerInstance : fng.IRecordHandler, ctrlState);
-    fillFormFromBackendCustomSchema(schema, $scope:fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
-    fillFormWithBackendSchema($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
-    handleError($scope: fng.IFormScope);
+    decorateScope($scope:IFormScope, $uibModal, recordHandlerInstance : IRecordHandler, ctrlState);
+    fillFormFromBackendCustomSchema(schema, $scope:IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
+    fillFormWithBackendSchema($scope: IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
+    handleError($scope: IFormScope);
   }
 
   export interface IFormGenerator {
-    generateEditUrl(obj, $scope:fng.IFormScope): string;
-    generateNewUrl($scope: fng.IFormScope): string;
-    handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope: fng.IFormScope, ctrlState);
-    handleSchema(description: string, source, destForm, destList, prefix, doRecursion: boolean, $scope: fng.IFormScope, ctrlState);
-    updateDataDependentDisplay(curValue, oldValue, force, $scope: fng.IFormScope);
-    add(fieldName, $event, $scope: fng.IFormScope);
-    unshift(fieldName, $event, $scope: fng.IFormScope);
-    remove(fieldName, value, $event, $scope: fng.IFormScope);
-    hasError(formName, name, index, $scope: fng.IFormScope);
-    decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedStuff);
+    generateEditUrl(obj, $scope:IFormScope): string;
+    generateNewUrl($scope: IFormScope): string;
+    handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope: IFormScope, ctrlState);
+    handleSchema(description: string, source, destForm, destList, prefix, doRecursion: boolean, $scope: IFormScope, ctrlState);
+    updateDataDependentDisplay(curValue, oldValue, force, $scope: IFormScope);
+    add(fieldName, $event, $scope: IFormScope);
+    unshift(fieldName, $event, $scope: IFormScope);
+    remove(fieldName, value, $event, $scope: IFormScope);
+    hasError(formName, name, index, $scope: IFormScope);
+    decorateScope($scope: IFormScope, formGeneratorInstance, recordHandlerInstance: IRecordHandler, sharedStuff);
   }
 
-  export interface IFngSingleInternalLookupHandler {
+  export interface IFngSingleLookupHandler {
     formInstructions: IFormInstruction;
     lastPart: string;
     possibleArray: string;
   }
-  export interface IFngInternalLookupHandlerInfo {
-    ref: IFngInternalLookupReference;
+
+  export interface IFngLookupHandler {
     lookupOptions: string[];
     lookupIds: string[];
-    handlers: IFngSingleInternalLookupHandler[]
+    handlers: IFngSingleLookupHandler[]
   }
+
+  export interface IFngInternalLookupHandlerInfo extends IFngLookupHandler {
+    ref: IFngInternalLookupReference;
+  }
+
+  export interface IFngLookupListHandlerInfo extends IFngLookupHandler {
+    ref: IFngLookupListReference;
+  }
+
   /*
     The scope which contains form data
    */
@@ -256,6 +290,7 @@ declare module fng {
     recordList: any;
     dataDependencies: any;
     internalLookups: IFngInternalLookupHandlerInfo[];
+    listLookups: IFngLookupListHandlerInfo[];
     conversions: any;
     pageSize: any;
     pagesLoaded: any;
