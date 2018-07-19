@@ -16,27 +16,25 @@ const StockItemSchemaDef: IFngSchemaDefinition = {
 
 const StockItemSchema = new Schema(StockItemSchemaDef, {_id: false});    // _id is suppressed on this schema as it is not needed for this example (but would be needed in a real world use case)
 
-const ESchemaDef : IFngSchemaDefinition = {
-  warehouse_name: {type: String, list: {}},
+const KSchemaDef : IFngSchemaDefinition = {
+  warehouse_name: {type: String, required: true, list: {}, index: true},
+  postcode: {type: String, index: true},
   shelves: {type: [ShelfSchema]},
   items: {type: [StockItemSchema]},
   cleanedShelves: {type: [Schema.Types.ObjectId], ref: shelfRef},
   favouriteShelf: {type: Schema.Types.ObjectId, ref: shelfRef}
 };
 
-const ESchema = new Schema(ESchemaDef);
+const KSchema = new Schema(KSchemaDef);
 
 let K;
 const name = 'k_referencing_self_collection';
 try {
   K = model(name);
 } catch (e) {
-  K = model(name, ESchema);
+  K = model(name, KSchema);
 }
-
 
 module.exports = {
   model: K
 };
-
-
