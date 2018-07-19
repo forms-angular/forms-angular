@@ -127,11 +127,14 @@ module fng.services {
             case 'lookup':
               recordHandler.setUpLookupOptions(mongooseOptions.ref.collection, formInstructions, $scope, ctrlState, handleSchema);
               break;
+            case 'lookupList':
+              recordHandler.setUpLookupListOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState);
+              break;
             case 'internal':
               recordHandler.handleInternalLookup($scope, formInstructions, mongooseOptions.ref);
               break;
             default:
-              throw new Error('Unsupported ref type found in ' + formInstructions.name);
+              throw new Error(`Unsupported ref type ${mongooseOptions.ref.type} found in ${formInstructions.name}`);
           }
         }
       }
@@ -499,6 +502,7 @@ module fng.services {
         $scope.recordList = [];
         $scope.dataDependencies = {};
         $scope.internalLookups = [];
+        $scope.listLookups = [];
         $scope.conversions = {};
         $scope.pageSize = 60;
         $scope.pagesLoaded = 0;
