@@ -10,6 +10,7 @@ node_modules
 test_out
 dist
 .idea
+.vscode
 npm-debug.log
 src/**/*.js
 src/**/*.js.map
