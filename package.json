@@ -78,7 +78,7 @@
     "gulp-uglify": "^3.0.0",
     "gulp-umd": "0.2.1",
     "jasmine-core": "3.1.0",
-    "karma": "^2.0.5",
+    "karma": "^3.0.0",
     "karma-chrome-launcher": "2.2.0",
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "1.1.1",
