@@ -35,8 +35,9 @@ describe('Links', function () {
       $httpBackend.flush();
     }));
 
-    it('generates correct schema', function () {
-      expect(scope.formSchema[1].ref).toBe('Person');
+   it('generates correct schema', function () {
+      expect(scope.formSchema[1].ref.collection).toBe('Person');
+      expect(scope.formSchema[1].ref.type).toBe('lookup');
       expect(scope.formSchema[1].type).toBe('link');
       expect(scope.formSchema[1].linkText).toBe('My link text');
       expect(scope.formSchema[1].link).toBe(undefined);
@@ -73,7 +74,7 @@ describe('Links', function () {
     }));
 
     it('generates correct schema', function () {
-      expect(scope.formSchema[1].ref).toBe('Person');
+      expect(scope.formSchema[1].ref.collection).toBe('Person');
       expect(scope.formSchema[1].type).toBe('link');
       expect(scope.formSchema[1].form).toBe('myschema');
       expect(scope.formSchema[1].linkText).toBe('My link text');

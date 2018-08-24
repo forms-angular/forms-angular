@@ -8,7 +8,7 @@ module fng.directives {
       restrict: 'E',
       scope: {dataSrc: '&model'},
       link: function (scope, element, attrs) {
-        var ref: string = attrs['ref'];
+        const ref = JSON.parse(attrs['ref']);
         var form: string = attrs['form'];
         scope['readonly'] = attrs['readonly'];
         form = form ? form + '/' : '';
@@ -21,7 +21,7 @@ module fng.directives {
             if (typeof index !== 'undefined' && angular.isArray(newVal)) {
               newVal = newVal[index];
             }
-            scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
+            scope['link'] = routingService.buildUrl(ref.collection + '/' + form + newVal + '/edit');
             if (!scope['text']) {
               SubmissionsService.getListAttributes(ref, newVal).then(function (response) {
                 let data: any = response.data;

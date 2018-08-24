@@ -146,7 +146,11 @@ module fng.directives {
               }
               break;
             case 'link' :
-              value = '<fng-link model="' + modelString + '" ref="' + fieldInfo.ref + '"';
+              if (typeof fieldInfo.ref === 'string') {
+                fieldInfo.ref = {type:'lookup', collection: fieldInfo.ref};
+                console.warn(`Support for string type "ref" property is deprecated - use ref:${JSON.stringify(fieldInfo.ref)}`);
+              }
+              value = '<fng-link model="' + modelString + '" ref="' + JSON.stringify(fieldInfo.ref).replace(/"/g, '&quot;') + '"';
               if (fieldInfo.form) {
                 value += ' form="' + fieldInfo.form + '"';
               }
