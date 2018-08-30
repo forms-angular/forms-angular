@@ -389,6 +389,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
     function (item, cb) {
       let searchDoc = {};
       if (filter) {
+        that.hackVariables(filter);
         extend(searchDoc, filter);
         if (filter[item.field]) {
           delete searchDoc[item.field];
@@ -663,7 +664,7 @@ DataForm.prototype.hackVariables = function (obj) {
         } else {
           const objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
           if (objectIdTest) {
-            obj[prop] = new this.mongoose.Schema.Types.ObjectId(objectIdTest[1]);
+            obj[prop] = new this.mongoose.Types.ObjectId(objectIdTest[1]);
           }
         }
       } else if (_.isObject(obj[prop])) {
