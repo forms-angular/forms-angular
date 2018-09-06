@@ -118,7 +118,7 @@ module fng.services {
       function performLookupSelect(){
         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
         formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-        if (!formInstructions.hidden) {
+        if (!formInstructions.hidden && mongooseOptions.ref) {
           if (typeof mongooseOptions.ref === 'string') {
             mongooseOptions.ref = {type:'lookup', collection: mongooseOptions.ref};
             console.warn(`Support for string type "ref" property is deprecated - use ref:${JSON.stringify(mongooseOptions.ref)}`);
