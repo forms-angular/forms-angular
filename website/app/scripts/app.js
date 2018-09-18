@@ -7,7 +7,8 @@ var websiteApp = angular.module('websiteApp', [
   'ui.grid',
   'ui.grid.selection',
   'ui.sortable',
-  'ngCkeditor',
+  'ngCkeditor',       // V4
+  'fng.ckeditor',    // V5
   'fng.uiSelect',
   'uploadModule',
   'angularCSS',

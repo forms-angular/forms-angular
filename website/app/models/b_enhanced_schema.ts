@@ -64,12 +64,22 @@ const bSchemaDef: IFngSchemaDefinition = {
     }
   },
   resizingText: {type: String, form: {type: 'textarea', rows: 'auto', help: 'This field resizes thanks to the <a href="http://monospaced.github.io/angular-elastic/">angular-elastic</a> module'}},
-  formattedText: {
+// ckEditor v4
+formattedText: {
     type: String,
     form: {
       type: 'textarea',
-      editor: 'ckEditor',
-      help: 'This field uses <a href="http://ckeditor.com">CKEditor</a> and the <a href="https://github.com/esvit/ng-ckeditor">ng-ckeditor</a> module'
+      add: 'ckEditor',
+      help: 'This field uses <a href="http://ckeditor.com">CKEditor V4</a> and the <a href="https://github.com/esvit/ng-ckeditor">ng-ckeditor</a> module'
+    }
+  },
+// ckEditor v5
+  formattedText5: {
+    type: String,
+    form: {
+      type: 'textarea',
+      add: 'ckeditor5',
+      help: 'This field uses <a href="http://ckeditor.com">CKEditor V5</a> and the <a href="https://github.com/forms-angular/fng-ckeditor">fng-ckeditor</a> module'
     }
   },
   ipAddress: {type: String, form: {hidden: true}},

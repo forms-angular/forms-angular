@@ -8,6 +8,7 @@
     "url": "https://github.com/forms-angular/website"
   },
   "dependencies": {
+    "@vleesbrood/ng-ckeditor5": "0.0.3",
     "angular": "1.6.7",
     "angular-css": "git://github.com/castillo-io/angular-css#master",
     "angular-elastic": "2.5.1",
@@ -27,6 +28,7 @@
     "fng-audit": "^0.12.0-pre",
     "fng-bootstrap-date": "0.12.0-beta.13",
     "fng-bootstrap-datetime": "0.12.0-beta.13",
+    "fng-ckeditor": "file:../../fng-ckeditor/fng-ckeditor-0.12.0-beta.17.tgz",
     "fng-colour-picker": "0.12.0-beta.13",
     "fng-jq-upload": "0.12.0-beta.13",
     "fng-reports": "0.12.0-beta.13",
