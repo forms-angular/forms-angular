@@ -214,6 +214,7 @@ module fng.directives {
                   }
                 }
                 if (fieldInfo.editor === 'ckEditor') {
+                  console.log('Deprecation Warning: "editor" property deprecated - use "add"');
                   common += 'ckeditor = "" ';
                   if (cssFrameworkService.framework() === 'bs3') {
                     allInputsVars.sizeClassBS3 = 'col-xs-12';

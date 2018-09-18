@@ -70,6 +70,7 @@ formattedText: {
     form: {
       type: 'textarea',
       add: 'ckEditor',
+      size: 'block',
       help: 'This field uses <a href="http://ckeditor.com">CKEditor V4</a> and the <a href="https://github.com/esvit/ng-ckeditor">ng-ckeditor</a> module'
     }
   },
@@ -78,6 +79,7 @@ formattedText: {
     type: String,
     form: {
       type: 'textarea',
+      size: 'block',
       add: 'ckeditor5',
       help: 'This field uses <a href="http://ckeditor.com">CKEditor V5</a> and the <a href="https://github.com/forms-angular/fng-ckeditor">fng-ckeditor</a> module'
     }

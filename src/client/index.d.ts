@@ -123,7 +123,6 @@ declare module fng {
 
     class?: string;  // allows arbitrary classes to be added to the input tag.
     inlineRadio?: boolean;  // (only valid when type is radio) should be set to true to present all radio button options in a single line
-    editor?: string; // (only valid when type is textarea) should be set to ckEditor to use CKEditor
     link?: IFngLinkSetup; // handles displaying links for IFngLookupReference lookups
 
     /*
