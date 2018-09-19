@@ -108,17 +108,26 @@ DataForm.prototype.getListFields = function (resource: Resource, doc: Document, 
       if (typeof doc[aField.field] !== 'undefined') {
         if (aField.params) {
           if (aField.params.ref) {
-            let lookupResource = that.getResource(resource.model.schema['paths'][aField.field].options.ref);
-            if (lookupResource) {
-              let hiddenFields = that.generateHiddenFields(lookupResource, false);
-              hiddenFields.__v = 0;
-              lookupResource.model.findOne({_id: doc[aField.field]}).select(hiddenFields).exec(function (err, doc2) {
-                if (err) {
-                  cbm(err);
-                } else {
-                  that.getListFields(lookupResource, doc2, cbm);
-                }
-              });
+            let fieldOptions = resource.model.schema['paths'][aField.field].options;
+            if (typeof fieldOptions.ref === 'string') {
+              fieldOptions.ref = {type: 'lookup', collection: fieldOptions.ref};
+              console.log('Deprecation warning: invalid ref should be ' + JSON.stringify(fieldOptions.ref));
+            }
+            if (fieldOptions.ref.type === 'lookup') {
+              let lookupResource = that.getResource(fieldOptions.ref.collection);
+              if (lookupResource) {
+                let hiddenFields = that.generateHiddenFields(lookupResource, false);
+                hiddenFields.__v = 0;
+                lookupResource.model.findOne({ _id: doc[aField.field] }).select(hiddenFields).exec(function(err, doc2) {
+                  if (err) {
+                    cbm(err);
+                  } else {
+                    that.getListFields(lookupResource, doc2, cbm);
+                  }
+                });
+              }
+            } else {
+              throw new Error('No support for ref type ' + aField.params.ref.type)
             }
           } else if (aField.params.params === 'timestamp') {
             let date = this.extractTimestampFromMongoID(doc[aField.field]);
