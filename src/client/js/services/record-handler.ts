@@ -453,7 +453,7 @@ module fng.services {
                       lkp.handlers.forEach((h) => {
                         let optionsList = $scope[h.formInstructions.options];
                         let idList = $scope[h.formInstructions.ids];
-                        let data = response.data[lkp.ref.property]
+                        let data = response.data[lkp.ref.property] || [];
                         for (var i = 0; i < data.length; i++) {
                           var option = data[i][lkp.ref.value];
                           var pos = _.sortedIndex(optionsList, option);
