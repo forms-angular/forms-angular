@@ -386,6 +386,82 @@ module fng.services {
       // but should be removed when/if formschemas are cached
       formGeneratorInstance.handleSchema('Main ' + $scope.modelName, schema, listOnly ? null : $scope.formSchema, $scope.listSchema, '', true, $scope, ctrlState);
 
+      function processLookupHandlers(newValue, oldValue) {
+// If we have any internal lookups then update the references
+        $scope.internalLookups.forEach((lkp: fng.IFngInternalLookupHandlerInfo) => {
+          let newVal = newValue[lkp.ref.property];
+          let oldVal = oldValue[lkp.ref.property];
+          setUpInternalLookupLists($scope, lkp.lookupOptions, lkp.lookupIds, newVal, lkp.ref.value);
+          // now change the looked-up values that matched the old to the new
+          if ((newVal && newVal.length > 0) || (oldVal && oldVal.length > 0)) {
+            lkp.handlers.forEach((h) => {
+              if (h.possibleArray) {
+                let arr = getData($scope.record, h.possibleArray, null);
+                if (arr && arr.length > 0) {
+                  arr.forEach(a => convertOldToNew(lkp.ref, a, h.lastPart, newVal, oldVal));
+                }
+              } else if (angular.isArray($scope.record[h.lastPart])) {
+                $scope.record[h.lastPart].forEach(a => {
+                  convertOldToNew(lkp.ref, a, "x", newVal, oldVal);
+                });
+              } else {
+                convertOldToNew(lkp.ref, $scope.record, h.lastPart, newVal, oldVal);
+              }
+            });
+          }
+        });
+
+        // If we have any list lookups then update the references
+        $scope.listLookups.forEach((lkp: fng.IFngLookupListHandlerInfo) => {
+
+          function extractIdVal(obj: any, idString: string): any {
+            let retVal = obj[idString];
+            if (retVal && retVal.id) {
+              retVal = retVal.id;
+            }
+            return retVal;
+          }
+
+          let idString = lkp.ref.id.slice(1);
+          if (idString.includes(".")) {
+            throw new Error(`No support for nested list lookups yet - ${JSON.stringify(lkp.ref)}`);
+          }
+          let newVal = extractIdVal(newValue, idString);
+          let oldVal = extractIdVal(oldValue, idString);
+          if (newVal !== oldVal) {
+            if (newVal) {
+              SubmissionsService.readRecord(lkp.ref.collection, newVal).then(
+                (response) => {
+                  lkp.handlers.forEach((h) => {
+                    let optionsList = $scope[h.formInstructions.options];
+                    let idList = $scope[h.formInstructions.ids];
+                    let data = response.data[lkp.ref.property] || [];
+                    for (var i = 0; i < data.length; i++) {
+                      var option = data[i][lkp.ref.value];
+                      var pos = _.sortedIndex(optionsList, option);
+                      // handle dupes
+                      if (optionsList[pos] === option) {
+                        option = option + "    (" + data[i]._id + ")";
+                        pos = _.sortedIndex(optionsList, option);
+                      }
+                      optionsList.splice(pos, 0, option);
+                      idList.splice(pos, 0, data[i]._id);
+                    }
+                    updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState);
+                  });
+                }
+              );
+            } else {
+              lkp.handlers.forEach((h) => {
+                $scope[h.formInstructions.options].length = 0;
+                $scope[h.formInstructions.ids].length = 0;
+                updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState);
+              });
+            }
+          }
+        });
+      }
+
       if (listOnly) {
         ctrlState.allowLocationChange = true;
       } else {
@@ -404,80 +480,7 @@ module fng.services {
               $scope.dropConversionWatcher = null;
             }
             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
-
-            // If we have any internal lookups then update the references
-            $scope.internalLookups.forEach((lkp: fng.IFngInternalLookupHandlerInfo) => {
-              let newVal = newValue[lkp.ref.property];
-              let oldVal = oldValue[lkp.ref.property];
-              setUpInternalLookupLists($scope, lkp.lookupOptions, lkp.lookupIds, newVal, lkp.ref.value);
-              // now change the looked-up values that matched the old to the new
-              if ((newVal && newVal.length > 0) || (oldVal && oldVal.length > 0)) {
-                lkp.handlers.forEach((h) => {
-                  if (h.possibleArray) {
-                    let arr = getData($scope.record, h.possibleArray, null);
-                    if (arr && arr.length > 0) {
-                      arr.forEach(a => convertOldToNew(lkp.ref, a, h.lastPart, newVal, oldVal))
-                    }
-                  } else if (angular.isArray($scope.record[h.lastPart])) {
-                    $scope.record[h.lastPart].forEach(a => {
-                      convertOldToNew(lkp.ref, a, 'x', newVal, oldVal);
-                    });
-                  } else {
-                    convertOldToNew(lkp.ref, $scope.record, h.lastPart, newVal, oldVal);
-                  }
-                });
-              }
-            });
-
-            // If we have any list lookups then update the references
-            $scope.listLookups.forEach((lkp: fng.IFngLookupListHandlerInfo) => {
-
-              function extractIdVal(obj: any, idString: string): any {
-                let retVal = obj[idString]
-                if (retVal && retVal.id) {
-                  retVal = retVal.id;
-                }
-                return retVal;
-              }
-
-              let idString = lkp.ref.id.slice(1);
-              if (idString.includes('.')) {
-                throw new Error(`No support for nested list lookups yet - ${JSON.stringify(lkp.ref)}`)
-              }
-              let newVal = extractIdVal(newValue, idString);
-              let oldVal = extractIdVal(oldValue, idString);
-              if (newVal !== oldVal) {
-                if (newVal) {
-                  SubmissionsService.readRecord(lkp.ref.collection, newVal).then(
-                    (response) => {
-                      lkp.handlers.forEach((h) => {
-                        let optionsList = $scope[h.formInstructions.options];
-                        let idList = $scope[h.formInstructions.ids];
-                        let data = response.data[lkp.ref.property] || [];
-                        for (var i = 0; i < data.length; i++) {
-                          var option = data[i][lkp.ref.value];
-                          var pos = _.sortedIndex(optionsList, option);
-                          // handle dupes
-                          if (optionsList[pos] === option) {
-                            option = option + '    (' + data[i]._id + ')';
-                            pos = _.sortedIndex(optionsList, option);
-                          }
-                          optionsList.splice(pos, 0, option);
-                          idList.splice(pos, 0, data[i]._id);
-                        }
-                        updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState);
-                      });
-                    }
-                  );
-                } else {
-                  lkp.handlers.forEach((h) => {
-                    $scope[h.formInstructions.options].length = 0;
-                    $scope[h.formInstructions.ids].length = 0;
-                    updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState);
-                  });
-                }
-              }
-            });
+            processLookupHandlers(newValue, oldValue);
           }
         }, true);
 
@@ -520,6 +523,7 @@ module fng.services {
           }
           $scope.phase = 'ready';
           $scope.cancel();
+          processLookupHandlers($scope.record, {});
         }
       }
     }
@@ -609,7 +613,7 @@ module fng.services {
                 $scope.pagesLoaded++;
                 $scope.recordList = $scope.recordList.concat(data);
               } else {
-                console.log('DEBUG: infinite scroll component asked for a page twice');
+                console.log('DEBUG: infinite scroll component asked for a page twice - the model was ' + $scope.modelName);
               }
             } else {
               $scope.showError(data, 'Invalid query');
