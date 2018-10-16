@@ -6,6 +6,7 @@
 * Fix duplicate ids in _select_ elements  
 ### BREAKING CHANGES
 * Removed $data service (global stash).  In almost all places $data.xx can be replaced by $scope.sharedData.xx
+* Deprecate dataEventFunctions.onInitialiseNewRecord(data) - a synchronous function in favour of dataEventFunctions.onInitialiseNewRecord(data, cb(err))
 
 ## 0.11.0 - 8 Dec 2017
 * Menu options can now be added after a promise is resolved by creating a contextMenuPromise on the controller $scope which resolves to a contextMenu array.

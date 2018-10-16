@@ -462,6 +462,12 @@ module fng.services {
         });
       }
 
+      function notifyReady() {
+        $scope.phase = 'ready';
+        $scope.cancel();
+        processLookupHandlers($scope.record, {});
+      }
+
       if (listOnly) {
         ctrlState.allowLocationChange = true;
       } else {
@@ -519,11 +525,20 @@ module fng.services {
             }
           }
           if (typeof $scope.dataEventFunctions.onInitialiseNewRecord === 'function') {
+            console.log('onInitialiseNewRecord is deprecated - use the async version - onNewRecordInit(data,cb)');
             $scope.dataEventFunctions.onInitialiseNewRecord(ctrlState.master);
           }
-          $scope.phase = 'ready';
-          $scope.cancel();
-          processLookupHandlers($scope.record, {});
+          if (typeof $scope.dataEventFunctions.onNewRecordInit === 'function') {
+            $scope.dataEventFunctions.onNewRecordInit(ctrlState.master, function(err) {
+              if (err) {
+                $scope.showError(err);
+              } else {
+                notifyReady();
+              }
+            });
+          } else {
+            notifyReady();
+          }
         }
       }
     }

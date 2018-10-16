@@ -314,7 +314,8 @@ you can easily switch between modes without having to manually change all the in
 
     <p>There are hooks before and after CRUD events as follows:</p>
     <ul>
-      <li>onInitialiseNewRecord function(data) - called as the new object is instantiated on the client after any application of the r query parameter (see <a href="/#/forms#routes">new route</a> above)</li>
+      <li>onNewRecordInit function(data, callback(err)) - called as the new object is instantiated on the client after any application of the r query parameter (see <a href="/#/forms#routes">new route</a> above)</li>
+      <li>onInitialiseNewRecord function(data) - Deprecated - called at the same point is the async onNewRecordInit above</li>
       <li>onBeforeRead function(id, callback(err))</li>
       <li>onAfterRead function(data)</li>
       <li>onBeforeCreate function(data, callback(err)) - called before a new record is added to the collection</li>
