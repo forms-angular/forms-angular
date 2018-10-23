@@ -387,7 +387,7 @@ module fng.directives {
                   if (cssFrameworkService.framework() === 'bs2') {
                     template += '<div class="row-fluid sub-doc">';
                   }
-                  if (!info.noRemove || info.customSubDoc) {
+                  if (info.noRemove !== true || info.customSubDoc) {
                     template += '   <div class="sub-doc-btns">';
                     if (typeof info.customSubDoc == 'string') {
                       template += info.customSubDoc;

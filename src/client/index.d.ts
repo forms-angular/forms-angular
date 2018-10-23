@@ -326,6 +326,7 @@ declare module fng {
 
     text: string;
     isDisabled?: () => boolean;
+    isHidden?: () => boolean;
 
     // Does the option appear in the following contexts?
     listing: boolean;

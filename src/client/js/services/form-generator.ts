@@ -439,9 +439,12 @@ module fng.services {
       },
 
       add: function add(fieldName, $event, $scope) {
-        var arrayField = getArrayFieldToExtend(fieldName, $scope);
-        arrayField.push({});
-        $scope.setFormDirty($event);
+        // check that target element is visible.  May not be reliable - see https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
+        if ($event.target.offsetParent) {
+          var arrayField = getArrayFieldToExtend(fieldName, $scope);
+          arrayField.push({});
+          $scope.setFormDirty($event);
+        }
       },
 
       unshift: function unshift(fieldName, $event, $scope) {
@@ -471,7 +474,7 @@ module fng.services {
           // Cannot assume that directives will use the same methods
           if (form) {
             let field = form[name];
-            if (field && field.$invalid) {
+            if (field && field.$invalid && !field.$$attr.readonly) {
               if (field.$dirty) {
                 result = true;
               } else {

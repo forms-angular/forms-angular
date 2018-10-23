@@ -15,7 +15,7 @@ var ExamsSchema = new mongoose_1.Schema(ExamsSchemaDef, { id: false });
 var fSchemaDef = {
     surname: { type: String, index: true, required: true, list: {} },
     forename: { type: String, index: true, list: true },
-    exams: { type: [ExamsSchema], form: { sortable: true } }
+    exams: { type: [ExamsSchema], form: { sortable: true, noRemove: 'record.exams[$index].result' } }
 };
 var FSchema = new mongoose_1.Schema(fSchemaDef);
 var F;

@@ -115,18 +115,18 @@ form {
     margin-bottom: 5px;
   }
 
-  input.ng-invalid:not(.ng-invalid-required):focus {
+  input.ng-invalid:not(.ng-invalid-required):focus:read-write {
     border: solid 1px red;
   }
 
-  input[type="checkbox"].ng-invalid-required:before, span:first-child input[type="radio"].ng-invalid-required:before {
+  input[type="checkbox"].ng-invalid-required:before:read-write, span:first-child input[type="radio"].ng-invalid-required:before:read-write {
     content:"*";
     font-weight: bold;
     color: red;
     margin-left: -8px
   }
 
-  input.ng-invalid-required, select.fng-invalid-required,  select.ng-invalid-required, textarea.ng-invalid-required {
+  input.ng-invalid-required, select.fng-invalid-required:read-write,  select.ng-invalid-required, textarea.ng-invalid-required:read-write {
     background-color: rgba(255, 0, 0, 0.10);
   }
 

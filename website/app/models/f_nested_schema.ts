@@ -17,7 +17,7 @@ const ExamsSchema = new Schema(ExamsSchemaDef, {id: false});
 const fSchemaDef: IFngSchemaDefinition = {
   surname: {type: String, index: true, required: true, list: {}},
   forename: {type: String, index: true, list: true},
-  exams: {type: [ExamsSchema], form: {sortable: true}}
+  exams: {type: [ExamsSchema], form: {sortable: true, noRemove: 'record.exams[$index].result'}}
 };
 
 const FSchema = new Schema(fSchemaDef);

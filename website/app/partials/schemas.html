@@ -250,7 +250,7 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
         <li><strong>sortable</strong> (for arrays of sub documents) allow drag and drop sorting - requires ui-sortable and elements of jquery-ui.  See
             <a href="https://github.com/angular-ui/ui-sortable" target="_blank">here</a> for details.</li>
         <li><strong>noRemove</strong> if set to <strong>true</strong>, inhibits a Remove button being generated for array elements.  Alternatively can be set to an
-            expression which hides the Add button if it yields a truthty result</li>
+            expression which hides the Add button if it yields a truthy result.  (see an example in <a href="/models/f_nested_schema.js">this schema</a>)</li>
         <li><strong>remove</strong> remove button for array elements has Remove as label (default is 'x' since 0.12).</li>
         <li><strong>add</strong> allows arbitrary attributes to be added to the input tag.</li>
         <li><strong>class</strong> allows arbitrary classes to be added to the input tag.</li>

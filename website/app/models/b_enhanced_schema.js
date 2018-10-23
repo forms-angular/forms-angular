@@ -67,7 +67,8 @@ var bSchemaDef = {
         form: {
             type: 'textarea',
             add: 'ckEditor',
-            help: 'This field uses <a href="http://ckeditor.com">CKEditor</a> and the <a href="https://github.com/esvit/ng-ckeditor">ng-ckeditor</a> module'
+            size: 'block-level',
+            help: 'This field uses <a href="http://ckeditor.com">CKEditor V4</a> and the <a href="https://github.com/esvit/ng-ckeditor">ng-ckeditor</a> module'
         }
     },
     // ckEditor v5
@@ -75,8 +76,9 @@ var bSchemaDef = {
         type: String,
         form: {
             type: 'textarea',
+            size: 'block-level',
             add: 'ckeditor5',
-            help: 'This field uses <a href="http://ckeditor.com">CKEditor V5</a> and the <a href="https://github.com/arnoschutijzer/ng-ckeditor5">ng-ckeditor5</a> module'
+            help: 'This field uses <a href="http://ckeditor.com">CKEditor V5</a> and the <a href="https://github.com/forms-angular/fng-ckeditor">fng-ckeditor</a> module'
         }
     },
     ipAddress: { type: String, form: { hidden: true } },
