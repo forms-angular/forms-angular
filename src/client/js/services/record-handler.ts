@@ -115,17 +115,7 @@ module fng.services {
     }
 
     var getListData = function getListData($scope, record, fieldName, listSchema=null) {
-      var retVal = record;
-      var nests = fieldName.split('.');
-      for (var i = 0; i < nests.length; i++) {
-        if (retVal !== undefined && retVal !== null && nests && nests[i]) {
-          retVal = retVal[nests[i]];
-        }
-      }
-      if (retVal === undefined) {
-        retVal = '';
-      }
-
+      let retVal = getData(record, fieldName) || '';
       if (retVal && listSchema) {
         // Convert list fields as per instructions in params (ideally should be the same as what is found in data_form getListFields
         var schemaElm  = _.find(listSchema, elm => (elm['name'] === fieldName));
@@ -218,7 +208,7 @@ module fng.services {
     function getConversionObject(scope: any, entryName: string, schemaName? : string) : any {
       let conversions = scope.conversions;
       if (schemaName) {
-        conversions = conversions[schemaName] || {};
+        conversions = getData(conversions, schemaName) || {};
       }
       return conversions[entryName];
     }
@@ -774,7 +764,7 @@ module fng.services {
           // we can do it now
           SubmissionsService.readRecord(ref.collection, $scope.$eval(ref.id)).then(
             (response) => {
-              let data = response.data[ref.property]
+              let data = response.data[ref.property];
               for (var i = 0; i < data.length; i++) {
                 var option = data[i][ref.value];
                 var pos = _.sortedIndex(optionsList, option);
@@ -837,37 +827,38 @@ module fng.services {
         }
 
         for (var i = 0; i < schema.length; i++) {
-          var fieldname = schema[i].name.slice(prefixLength);
-          var thisField = getListData($scope, anObject, fieldname);
+          const schemaI = schema[i];
+          const fieldname = schemaI.name.slice(prefixLength);
+          const thisField = getListData($scope, anObject, fieldname);
 
-          if (schema[i].schema) {
+          if (schemaI.schema) {
             if (thisField) {
-              for (var j = 0; j < thisField.length; j++) {
-                thisField[j] = convertToMongoModel(schema[i].schema, thisField[j], prefixLength + 1 + fieldname.length, $scope, fieldname);
+              for (let j = 0; j < thisField.length; j++) {
+                thisField[j] = convertToMongoModel(schemaI.schema, thisField[j], prefixLength + 1 + fieldname.length, $scope, fieldname);
               }
             }
           } else {
             // Convert {array:[{x:'item 1'}]} to {array:['item 1']}
-            if (schema[i].array && simpleArrayNeedsX(schema[i]) && thisField) {
-              for (var k = 0; k < thisField.length; k++) {
+            if (schemaI.array && simpleArrayNeedsX(schemaI) && thisField) {
+              for (let k = 0; k < thisField.length; k++) {
                 thisField[k] = thisField[k].x;
               }
             }
 
             // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
-            var idList = $scope[suffixCleanId(schema[i], '_ids')];
+            const idList = $scope[suffixCleanId(schemaI, '_ids')];
             let thisConversion: any;
             if (idList && idList.length > 0) {
               updateObject(fieldname, anObject, function (value) {
-                return convertToForeignKeys(schema[i], value, $scope[suffixCleanId(schema[i], 'Options')], idList);
+                return convertToForeignKeys(schemaI, value, $scope[suffixCleanId(schemaI, 'Options')], idList);
               });
             } else if (thisConversion = getConversionObject($scope, fieldname, schemaName)) {
-              var lookup = getData(anObject, fieldname, null);
-              var newVal;
-              if (schema[i].array) {
+              const lookup = getData(anObject, fieldname, null);
+              let newVal;
+              if (schemaI.array) {
                 newVal = [];
                 if (lookup) {
-                  for (var n = 0; n < lookup.length; n++) {
+                  for (let n = 0; n < lookup.length; n++) {
                     newVal[n] = convertLookup(lookup[n], thisConversion);
                   }
                 }
