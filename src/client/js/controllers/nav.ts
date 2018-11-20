@@ -69,7 +69,7 @@ module fng.controllers {
         }
       } else if (event.keyCode === 45 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
         deferredBtnClick('newButton');                           // Ctrl+Shift+Ins creates New record
-      } else if (event.keyCode === 88 && event.ctrlKey && event.shiftKey && event.altKey && !event.metaKey) {
+      } else if (event.keyCode === 88 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
         deferredBtnClick('deleteButton');                        // Ctrl+Shift+X deletes record
       }
     };
