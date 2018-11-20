@@ -18,7 +18,7 @@ module fng.services {
       return (inst.id || 'f_' + inst.name).replace(/\./g, '_') + suffix;
     };
 
-    var walkTree = function (object, fieldname, element) {
+    var walkTree = function (object, fieldname, element, insertIntermediateObjects = false) {
       // Walk through subdocs to find the required key
       // for instance walkTree(master,'address.street.number',element)
       // called by getData and setData
@@ -37,6 +37,9 @@ module fng.services {
             return obj[parts[i]];
           });
         } else {
+          if (insertIntermediateObjects && !workingRec[parts[i]]) {
+            workingRec[parts[i]] = {};
+          }
           workingRec = workingRec[parts[i]];
         }
         if (angular.isArray(workingRec) && typeof element !== 'undefined') {
@@ -60,7 +63,7 @@ module fng.services {
     };
 
     var setData = function setData(object, fieldname, element, value) {
-      var leafData = walkTree(object, fieldname, element);
+      var leafData = walkTree(object, fieldname, element, true);
 
       if (leafData.lastObject && leafData.key) {
         if (angular.isArray(leafData.lastObject)) {
@@ -495,6 +498,7 @@ module fng.services {
           }
         } else {
           // New record
+          ctrlState.allowLocationChange = false;
           ctrlState.master = {};
           let passedRecord = $scope.initialiseNewRecord || $location.$$search.r;
           if (passedRecord) {
@@ -662,11 +666,12 @@ module fng.services {
           }, $scope.handleHttpError);
       },
 
-      createNew: function createNew(dataToSave, options, $scope: fng.IFormScope) {
+      createNew: function createNew(dataToSave, options, $scope: fng.IFormScope, ctrlState: IFngCtrlState) {
         SubmissionsService.createRecord($scope.modelName, dataToSave)
           .then(function (response) {
             let data: any = response.data;
             if (data.success !== false) {
+              ctrlState.allowLocationChange = true;
               if (typeof $scope.dataEventFunctions.onAfterCreate === 'function') {
                 $scope.dataEventFunctions.onAfterCreate(data);
               }
@@ -959,7 +964,7 @@ module fng.services {
             } else if ($scope.id) {
               recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
             } else {
-              recordHandlerInstance.createNew(dataToSave, options, $scope);
+              recordHandlerInstance.createNew(dataToSave, options, $scope, ctrlState);
             }
           });
         };

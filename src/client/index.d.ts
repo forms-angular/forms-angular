@@ -199,9 +199,9 @@ declare module fng {
   }
   export interface IRecordHandler {
     convertToMongoModel(schema: Array<IFieldViewInfo>, anObject: any, prefixLength: number, scope: IFormScope): any;
-    createNew(dataToSave: any, options: any, scope: IFormScope): void;
+    createNew(dataToSave: any, options: any, scope: IFormScope, ctrlState: IFngCtrlState): void;
     deleteRecord(model: any, id: any, scope: IFormScope, ctrlState: any): void;
-    updateDocument(dataToSave : any, options: any, scope: IFormScope, ctrlState: any) : void;
+    updateDocument(dataToSave : any, options: any, scope: IFormScope, ctrlState: IFngCtrlState) : void;
     readRecord($scope: IFormScope, ctrlState);
     scrollTheList($scope: IFormScope);
     getListData($scope: IFormScope, record, fieldName, listSchema);
