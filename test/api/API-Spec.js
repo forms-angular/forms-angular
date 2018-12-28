@@ -491,7 +491,7 @@ describe('API tests', function() {
         fng.searchAll()(mockReq, mockRes);
       });
 
-      it('shoucd ..ld not find records indexed on a no-search field', function(done) {
+      it('should not find records indexed on a no-search field', function(done) {
         var mockReq = {
           url: '/search',
           query: {
@@ -560,6 +560,28 @@ describe('API tests', function() {
             assert.notEqual(data.moreCount, 0);
             assert.equal(data.results[0].text, 'Smith04 John04');  // Double hit should come first
             assert.equal(data.results[1].text, 'Smith00 John00');  // normal weighting
+            done();
+          }
+        };
+        fng.searchAll()(mockReq, mockRes);
+      });
+
+      /*
+        Thought about doing this, but decided it would make it too complicated for users
+       */
+      it.skip('should find only records that match all partial initial strings concatenated by &', function(done) {
+        var mockReq = {
+          url: '/search',
+          query: {
+            q: 'smi&john04'
+          },
+          route: { path: '/api/search' }
+        };
+        var mockRes = {
+          send: function(data) {
+            assert.notEqual(data.moreCount, 0);
+            assert.equal(data.results.length, 1);
+            assert.equal(data.results[0].text, 'Smith04 John04');
             done();
           }
         };

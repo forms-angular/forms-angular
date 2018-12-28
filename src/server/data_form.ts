@@ -427,19 +427,33 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
       }
 
     },
-    function () {
-      // Strip weighting from the results
-      results = _.map(results, function (aResult) {
-        delete aResult.weighting;
-        return aResult;
-      });
-      if (results.length > limit) {
-        moreCount += results.length - limit;
-        results.splice(limit);
+    function (err) {
+      if (err) {
+        callback(err);
+      }  else {
+        // Strip weighting from the results
+        results = _.map(results, function(aResult) {
+          delete aResult.weighting;
+          return aResult;
+        });
+        if (results.length > limit) {
+          moreCount += results.length - limit;
+          results.splice(limit);
+        }
+        callback(null, { results: results, moreCount: moreCount });
       }
-      callback({results: results, moreCount: moreCount});
     }
   );
+};
+
+DataForm.prototype.wrapInternalSearch = function(req, res, resourcesToSearch, includeResourceInResults, limit) {
+  this.internalSearch(req, resourcesToSearch, includeResourceInResults, limit, function (err, resultsObject) {
+    if (err) {
+      res.status(400, err)
+    } else {
+      res.send(resultsObject);
+    }
+  });
 };
 
 DataForm.prototype.search = function () {
@@ -447,18 +461,13 @@ DataForm.prototype.search = function () {
     if (!(req.resource = this.getResource(req.params.resourceName))) {
       return next();
     }
-
-    this.internalSearch(req, [req.resource], false, 10, function (resultsObject) {
-      res.send(resultsObject);
-    });
+    this.wrapInternalSearch(req, res,  [req.resource], false, 10);
   }, this);
 };
 
 DataForm.prototype.searchAll = function () {
   return _.bind(function (req, res) {
-    this.internalSearch(req, this.resources, true, 10, function (resultsObject) {
-      res.send(resultsObject);
-    });
+    this.wrapInternalSearch(req, res, this.resources, true, 10);
   }, this);
 };
 
