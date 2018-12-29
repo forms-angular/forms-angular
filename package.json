@@ -15,7 +15,7 @@
     "pretest": "npm run build",
     "test": "gulp test",
     "tidy": "find . -name '*.js' -not -path '**/node_modules/**' -and -not -path '**/website/**' -and -not -path '**/test/**' -and -not -path '**/models/**' -and -not -name 'gulpfile.js' -and -not -name 'index.js' -and -not -name 'Gruntfile.js' -and -not -name '*.conf.js' -delete && find . -name '*.map' -not -path '**/node_modules/**' -delete",
-    "build": "if [ -d 'node_modules/bower' ]; then bower install --config.directory=node_modules --production jquery@3.3.1 bootstrap-2-3-2=git://github.com/twbs/bootstrap.git#v2.3.2 bootstrap-3-4-0=git://github.com/twbs/bootstrap.git#v3.4.0; fi && gulp build"
+    "build": "if [ -d 'node_modules/bower' ]; then bower install --config.directory=node_modules --production jquery@2.0.3 bootstrap-2-3-2=git://github.com/twbs/bootstrap.git#v2.3.2 bootstrap-3-4-0=git://github.com/twbs/bootstrap.git#v3.4.0; fi && gulp build"
   },
   "files": [
     "dist"
