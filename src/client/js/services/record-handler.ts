@@ -117,7 +117,7 @@ module fng.services {
       return result;
     }
 
-    var getListData = function getListData($scope, record, fieldName, listSchema=null) {
+    var getListData = function getListData(record, fieldName, listSchema=null, $scope) {
       let retVal = getData(record, fieldName) || '';
       if (retVal && listSchema) {
         // Convert list fields as per instructions in params (ideally should be the same as what is found in data_form getListFields
@@ -236,7 +236,7 @@ module fng.services {
             setUpInternalLookupLists($scope, schemaEntry.options, schemaEntry.ids, master[schemaEntry.ref.property], schemaEntry.ref.value);
           }
           // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
-          var thisField = getListData($scope, anObject, fieldName);
+          var thisField = getListData(anObject, fieldName, null, $scope);
           if (schemaEntry.array && simpleArrayNeedsX(schemaEntry) && thisField) {
             for (var k = 0; k < thisField.length; k++) {
               thisField[k] = {x: thisField[k]};
@@ -834,7 +834,7 @@ module fng.services {
         for (var i = 0; i < schema.length; i++) {
           const schemaI = schema[i];
           const fieldname = schemaI.name.slice(prefixLength);
-          const thisField = getListData($scope, anObject, fieldname);
+          const thisField = getListData(anObject, fieldname, null, $scope);
 
           if (schemaI.schema) {
             if (thisField) {

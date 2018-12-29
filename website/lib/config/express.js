@@ -39,8 +39,11 @@ module.exports = function(app) {
     app.use(express.static(path.join(config.root, '../src/client/template')));
     app.use(express.static(path.join(config.root, 'dist/public')));
   } else if ('test' === env) {
+    app.use(express.static(path.join(config.root, '.')));
     app.use(express.static(path.join(config.root, '.tmp')));
     app.use(express.static(path.join(config.root, 'app')));
+    app.use(express.static(path.join(config.root, '../src/client/js')));
+    app.use(express.static(path.join(config.root, '../src/client/template')));
   } else if ('production' === env) {
     app.use(compression());
     app.use(favicon(path.join(config.root, 'app', 'favicon.ico')));

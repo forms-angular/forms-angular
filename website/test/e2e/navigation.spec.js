@@ -6,7 +6,7 @@ describe('Navigation', function () {
   var height = 768;
   browser.driver.manage().window().setSize(width, height);
 
-  var baseMenuCount = 8;
+  var baseMenuCount = 7;
 
   it('should cope with a list with menu options', function () {
     browser.get('/#/b_enhanced_schema');
