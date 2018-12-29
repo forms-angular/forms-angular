@@ -227,7 +227,7 @@ declare module fng {
     updateDocument(dataToSave : any, options: any, scope: IFormScope, ctrlState: IFngCtrlState) : void;
     readRecord($scope: IFormScope, ctrlState);
     scrollTheList($scope: IFormScope);
-    getListData($scope: IFormScope, record, fieldName, listSchema);
+    getListData(record, fieldName, listSchema?, $scope?: IFormScope);
     suffixCleanId(inst, suffix);
     setData(object, fieldname, element, value);
     setUpLookupOptions(lookupCollection, schemaElement, $scope: IFormScope, ctrlState, handleSchema);

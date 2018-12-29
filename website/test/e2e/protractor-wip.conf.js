@@ -3,7 +3,7 @@ var path = require('path');
 
 exports.config = {
   specs: [
-    './selects.spec.js'
+    './navigation.spec.js'
   ],
   capabilities: {
     browserName: 'chrome'

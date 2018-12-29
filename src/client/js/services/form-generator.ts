@@ -525,7 +525,7 @@ module fng.services {
         };
 
         $scope.getListData = function (record, fieldName) {
-          return recordHandlerInstance.getListData( $scope, record, fieldName, $scope.listSchema);
+          return recordHandlerInstance.getListData(record, fieldName, $scope.listSchema, $scope);
         };
 
         $scope.setPristine = function (clearErrors) {
