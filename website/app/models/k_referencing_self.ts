@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
-import { IFngSchemaDefinition } from "../../../src/fng-schema";
+import { IFngSchemaDefinition} from "../../../src/fng-schema";
 
-const shelfRef = {type: 'internal', property: 'shelves', value:'location'};
+const shelfRef = {property: 'shelves', value:'location'};
 
 const ShelfSchemaDef: IFngSchemaDefinition = {
   location: {type: String, required: true}
@@ -11,7 +11,7 @@ const ShelfSchema = new Schema(ShelfSchemaDef); // Note that this schema needs a
 
 const StockItemSchemaDef: IFngSchemaDefinition = {
   description: {type: String, required: true},
-  shelf: {type: Schema.Types.ObjectId, ref: shelfRef}
+  shelf: {type: Schema.Types.ObjectId, internalRef: shelfRef }
 };
 
 const StockItemSchema = new Schema(StockItemSchemaDef, {_id: false});    // _id is suppressed on this schema as it is not needed for this example (but would be needed in a real world use case)
@@ -21,8 +21,8 @@ const KSchemaDef : IFngSchemaDefinition = {
   postcode: {type: String, index: true},
   shelves: {type: [ShelfSchema]},
   items: {type: [StockItemSchema]},
-  cleanedShelves: {type: [Schema.Types.ObjectId], ref: shelfRef},
-  favouriteShelf: {type: Schema.Types.ObjectId, ref: shelfRef}
+  cleanedShelves: {type: [Schema.Types.ObjectId], internalRef: shelfRef},
+  favouriteShelf: {type: Schema.Types.ObjectId, internalRef: shelfRef}
 };
 
 const KSchema = new Schema(KSchemaDef);

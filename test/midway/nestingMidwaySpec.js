@@ -510,7 +510,6 @@ describe('nesting', function () {
     it('enables save button when a subDoc is added', function () {
       var noDocs = scope.record.studies.exams.length;
       var buttons = elm.find('button');
-      console.log(buttons);
       var button = angular.element(buttons[buttons.length-1]);
       expect(button.text()).toMatch(/Add/);
       button.offsetParent = true;  // Make the button appear real

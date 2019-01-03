@@ -4,9 +4,9 @@ var mongoose_1 = require("mongoose");
 var NestedSchemaDef = {
     someText: { type: String, required: true },
     anEnum: { type: String, enum: ['A Option', 'B Option', 'C Option'], form: { directive: 'fng-ui-select' } },
-    singleCached: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'b_enhanced_schema' }, form: { directive: 'fng-ui-select' } },
-    singleAjax: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'b_enhanced_schema' }, form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
-    filteredAjax: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'b_enhanced_schema' }, form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: escape(JSON.stringify({ interviewScore: { $gt: 90 } })) } } }
+    singleCached: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select' } },
+    singleAjax: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
+    filteredAjax: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: escape(JSON.stringify({ interviewScore: { $gt: 90 } })) } } }
 };
 var NestedSchema = new mongoose_1.Schema(NestedSchemaDef, { _id: false });
 var TestNestedSelectSchemaDef = {

@@ -118,23 +118,15 @@ module fng.services {
       function performLookupSelect(){
         formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
         formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
-        if (!formInstructions.hidden && mongooseOptions.ref) {
-          if (typeof mongooseOptions.ref === 'string') {
-            mongooseOptions.ref = {type:'lookup', collection: mongooseOptions.ref};
-            console.warn(`Support for string type "ref" property is deprecated - use ref:${JSON.stringify(mongooseOptions.ref)}`);
-          }
-          switch (mongooseOptions.ref.type) {
-            case 'lookup':
-              recordHandler.setUpLookupOptions(mongooseOptions.ref.collection, formInstructions, $scope, ctrlState, handleSchema);
-              break;
-            case 'lookupList':
-              recordHandler.setUpLookupListOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState);
-              break;
-            case 'internal':
-              recordHandler.handleInternalLookup($scope, formInstructions, mongooseOptions.ref);
-              break;
-            default:
-              throw new Error(`Unsupported ref type ${mongooseOptions.ref.type} found in ${formInstructions.name}`);
+        if (!formInstructions.hidden) {
+          if (mongooseOptions.ref) {
+            recordHandler.setUpLookupOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
+          } else if (mongooseOptions.lookupListRef) {
+            recordHandler.setUpLookupListOptions(mongooseOptions.lookupListRef, formInstructions, $scope, ctrlState);
+          } else if (mongooseOptions.internalRef) {
+            recordHandler.handleInternalLookup($scope, formInstructions, mongooseOptions.internalRef);
+          } else {
+            throw new Error(`No supported select lookup type found in ${formInstructions.name}`);
           }
         }
       }

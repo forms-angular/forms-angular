@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose_1 = require("mongoose");
 var CourseTeachersSchemaDef = {
-    teacher: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'b_enhanced_schema' } },
+    teacher: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema' },
     room: Number
 };
 var CourseTeachersSchema = new mongoose_1.Schema(CourseTeachersSchemaDef);
@@ -11,7 +11,7 @@ var ExamsSchemaDef = {
     examDate: Date,
     score: Number,
     result: { type: String, enum: ['distinction', 'merit', 'pass', 'fail'] },
-    grader: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'b_enhanced_schema' } }
+    grader: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema' }
 };
 var ExamsSchema = new mongoose_1.Schema(ExamsSchemaDef);
 var CourseSchemaDef = {
@@ -32,7 +32,7 @@ var HSchemaDef = {
         exams: [ExamsSchema]
     },
     assistants: [
-        { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'b_enhanced_schema' } }
+        { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema' }
     ]
 };
 var HSchema = new mongoose_1.Schema(HSchemaDef);

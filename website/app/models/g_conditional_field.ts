@@ -5,7 +5,7 @@ const ExamSchemaDef: IFngSchemaDefinition = {
   subject: String,
   examDate: {type:Date, form:{size: 'small'} },
   result: {type: String, enum: ['distinction', 'merit', 'pass', 'fail']},
-  grader: { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'b_enhanced_schema'}, form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}, label: 'Marked By'}},
+  grader: { type: Schema.Types.ObjectId, ref:'b_enhanced_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}, label: 'Marked By'}},
   retakeDate: {type: Date, form: {showWhen: {lhs: '$exams.result', comp: 'eq', rhs: 'fail'}}}
 };
 

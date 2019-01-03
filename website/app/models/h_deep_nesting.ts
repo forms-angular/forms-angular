@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import { IFngSchemaDefinition } from "../../../src/fng-schema";
 
 const CourseTeachersSchemaDef: IFngSchemaDefinition = {
-  teacher: { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'b_enhanced_schema'}},
+  teacher: { type: Schema.Types.ObjectId, ref:'b_enhanced_schema'},
   room: Number
 };
 
@@ -13,7 +13,7 @@ const ExamsSchemaDef: IFngSchemaDefinition = {
   examDate: Date,
   score: Number,
   result: {type: String, enum: ['distinction', 'merit', 'pass', 'fail']},
-  grader: { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'b_enhanced_schema'}}
+  grader: { type: Schema.Types.ObjectId, ref:'b_enhanced_schema'}
 };
 
 const ExamsSchema = new Schema(ExamsSchemaDef);
@@ -38,7 +38,7 @@ const HSchemaDef: IFngSchemaDefinition = {
     exams: [ExamsSchema]
   },
   assistants: [
-    { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'b_enhanced_schema'}}
+    { type: Schema.Types.ObjectId, ref:'b_enhanced_schema'}
   ]
 };
 

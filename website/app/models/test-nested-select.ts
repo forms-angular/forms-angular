@@ -4,9 +4,9 @@ import { IFngSchemaDefinition } from "../../../src/fng-schema";
 const NestedSchemaDef : IFngSchemaDefinition = {
   someText: {type: String, required: true},
   anEnum: {type: String, enum: ['A Option', 'B Option', 'C Option'], form: {directive: 'fng-ui-select'}},
-  singleCached:            { type: Schema.Types.ObjectId,  ref:{type:'lookup', collection:'b_enhanced_schema'}, form: {directive: 'fng-ui-select'}},
-  singleAjax:              { type: Schema.Types.ObjectId,  ref:{type:'lookup', collection:'b_enhanced_schema'}, form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
-  filteredAjax:            { type: Schema.Types.ObjectId,  ref:{type:'lookup', collection:'b_enhanced_schema'}, form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: escape(JSON.stringify({interviewScore:{$gt:90}})) }}}
+  singleCached:            { type: Schema.Types.ObjectId,  ref:'b_enhanced_schema', form: {directive: 'fng-ui-select'}},
+  singleAjax:              { type: Schema.Types.ObjectId,  ref:'b_enhanced_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
+  filteredAjax:            { type: Schema.Types.ObjectId,  ref:'b_enhanced_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: escape(JSON.stringify({interviewScore:{$gt:90}})) }}}
 };
 
 const NestedSchema = new Schema(NestedSchemaDef, {_id: false});

@@ -5,11 +5,6 @@ declare module fng {
   Type definitions for types that are used on both the client and the server
    */
 
-  export interface IFngLookupReference {
-    type: 'lookup';
-    collection: string
-  }
-
   /*
   IInternalLookupreference makes it possible to look up from a list (of key / value pairs) in the current record.  For example
 
@@ -20,11 +15,10 @@ declare module fng {
   var ESchema = new Schema({
     warehouse_name: {type: String, list: {}},
     shelves: {type: [ShelfSchema]},
-    favouriteShelf: {type: Schema.Types.ObjectId, ref: {type: 'internal', property: 'shelves', value:'location'};
+    favouriteShelf: {type: Schema.Types.ObjectId, internalRef: {property: 'shelves', value:'location'};
   });
    */
   export interface IFngInternalLookupReference {
-    type: 'internal';
     property: string;
     value: string;
   }
@@ -36,11 +30,10 @@ declare module fng {
   const LSchemaDef : IFngSchemaDefinition = {
     descriptin: {type: String, required: true, list: {}},
     warehouse: {type: Schema.Types.ObjectId, ref:'k_referencing_self_collection', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
-    shelf: {type: Schema.Types.ObjectId, ref: {type: 'lookupList', collection:'k_referencing_self_collection', id:'$warehouse', property: 'shelves', value:'location'}},
+    shelf: {type: Schema.Types.ObjectId, lookupListRef: {collection:'k_referencing_self_collection', id:'$warehouse', property: 'shelves', value:'location'}},
   };
   */
   export interface IFngLookupListReference {
-    type: 'lookupList';
     collection: string;   // collection that contains the list
     /*
     Some means of calculating _id in collection.  If it starts with $ then it is property in record
@@ -97,10 +90,11 @@ declare module fng {
      */
     type?: string;
 
-    hidden?: boolean;   // inhibits this schema key from appearing on the generated form.
-    label?: string | null;   // overrides the default input label. label:null suppresses the label altogether.
-    ref?: IFngLookupReference | IFngInternalLookupReference;
-
+    hidden?: boolean;         // inhibits this schema key from appearing on the generated form.
+    label?: string | null;    // overrides the default input label. label:null suppresses the label altogether.
+    ref?: string;             // reference to another collection
+    internalRef? : IFngInternalLookupReference;
+    lookupListRef?: IFngLookupListReference;
     id?: string; // specifies the id of the input field (which defaults to f_name)
 
     placeHolder?: string // adds placeholder text to the input (depending on data type).
@@ -123,7 +117,7 @@ declare module fng {
 
     class?: string;  // allows arbitrary classes to be added to the input tag.
     inlineRadio?: boolean;  // (only valid when type is radio) should be set to true to present all radio button options in a single line
-    link?: IFngLinkSetup; // handles displaying links for IFngLookupReference lookups
+    link?: IFngLinkSetup; // handles displaying links for ref lookups
 
     /*
       With a select / radio type you can specify the options.
