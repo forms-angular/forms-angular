@@ -5,15 +5,15 @@ var eSchemaDef = {
     surname: { type: String, list: {} },
     forename: { type: String, list: true },
     weight: { type: Number, form: { label: 'Weight (lbs)' } },
-    leadMentor: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'c_subdoc_example' }, required: true },
-    mentor: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'c_subdoc_example' } },
-    guide: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'b_enhanced_schema' }, form: { directive: 'fng-ui-select' } },
-    teacher: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'b_enhanced_schema' }, form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
+    leadMentor: { type: mongoose_1.Schema.Types.ObjectId, ref: 'c_subdoc_example', required: true },
+    mentor: { type: mongoose_1.Schema.Types.ObjectId, ref: 'c_subdoc_example' },
+    guide: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select' } },
+    teacher: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
     dateOfBirth: Date,
-    assistants: [{ type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'a_unadorned_schema' } }],
-    assistants2: { type: [mongoose_1.Schema.Types.ObjectId], ref: { type: 'lookup', collection: 'a_unadorned_schema' } },
-    team: [{ type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'f_nested_schema' }, form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } }],
-    team2: { type: [mongoose_1.Schema.Types.ObjectId], ref: { type: 'lookup', collection: 'f_nested_schema' }, form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
+    assistants: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'a_unadorned_schema' }],
+    assistants2: { type: [mongoose_1.Schema.Types.ObjectId], ref: 'a_unadorned_schema' },
+    team: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'f_nested_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } }],
+    team2: { type: [mongoose_1.Schema.Types.ObjectId], ref: 'f_nested_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
     accepted: Boolean
 };
 var ESchema = new mongoose_1.Schema(eSchemaDef);
@@ -38,7 +38,7 @@ ESchema.statics.report = function (report) {
                     { field: 'count', displayName: 'Number in Class' }
                 ],
                 columnTranslations: [
-                    { field: '_id', ref: { type: 'lookup', collection: 'b_enhanced_schema' } }
+                    { field: '_id', ref: 'b_enhanced_schema' }
                 ]
             };
             break;

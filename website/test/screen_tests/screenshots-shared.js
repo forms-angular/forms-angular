@@ -25,6 +25,7 @@ module.exports = function(framework, width, height) {
     it('b_enhanced_schema', function () {
       browser.setLocation(framework + '/b_enhanced_schema/519a6075b320153869b155e0/edit');
       expect($('.header-lhs h4').getText()).toMatch('B Enhanced Schema');
+      browser.sleep(1000);
       expect($('#cke_f_formattedText').getText()).toMatch('Source');  // Wait for ckEditor
     });
 
@@ -51,13 +52,13 @@ module.exports = function(framework, width, height) {
 
     it('f_nested_schema', function () {
       browser.setLocation(framework + '/f_nested_schema/51c583d5b5c51226db418f16/edit');
-      expect(element.all(by.css('span.select2-chosen')).first().getText()).toMatch('IsAccepted John');
+      expect(element.all(by.css('#cg_f_exams_grader > div > div > a > span:nth-child(2)')).first().getText()).toMatch('IsAccepted John');
       expect($('.header-lhs h4').getText()).toMatch('F Nested Schema');
     });
 
     it('g_conditional_field', function () {
       browser.setLocation(framework + '/g_conditional_field/51c583d5b9991226db418f01/edit');
-      expect(element.all(by.css('span.select2-chosen')).first().getText()).toMatch('Jones Alan');
+      expect(element.all(by.css('#cg_f_exams_grader > div > a > span:nth-child(2)')).first().getText()).toMatch('Jones Alan');
       expect($('.header-lhs h4').getText()).toMatch('G Conditional Field');
     });
 

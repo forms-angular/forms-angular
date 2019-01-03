@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose_1 = require("mongoose");
 var FriendSchemaDef = {
-    friend: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'a_unadorned_schema' } },
+    friend: { type: mongoose_1.Schema.Types.ObjectId, ref: 'a_unadorned_schema' },
     type: { type: String, enum: ['best friend', 'partner', 'colleague', 'acquaintance', 'other'] },
     comment: { type: String }
 };

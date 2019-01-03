@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import { IFngSchemaDefinition } from "../../../src/fng-schema";
 
 const FriendSchemaDef : IFngSchemaDefinition = {
-  friend: { type: Schema.Types.ObjectId, ref:{type:'lookup', collection:'a_unadorned_schema'}},
+  friend: { type: Schema.Types.ObjectId, ref:'a_unadorned_schema'},
   type: { type: String, enum: ['best friend', 'partner', 'colleague', 'acquaintance', 'other']},
   comment: { type: String}
 };

@@ -11,8 +11,9 @@ module.exports = {
     app = express();
 
     fng = new (formsAngular)(mongoose, app, { urlPrefix: "/api/" });
-
+    mongoose.set('useCreateIndex', true);
     mongoose.connect("mongodb://localhost:27017/forms-ng_test", {
+      useNewUrlParser: true,
       keepAlive: 1,
       connectTimeoutMS: 30000,
       reconnectTries: 30,

@@ -8,7 +8,7 @@ var ExamsSchemaDef = {
     score: Number,
     result: { type: String, enum: ['distinction', 'merit', 'pass', 'fail'] },
     scan: { type: [new mongoose_1.Schema(jqUploads.FileSchema)], form: { hidden: true, help: 'Attach a scan of the paper - maximum size 0.5MB', directive: 'fng-jq-upload-form', fngJqUploadForm: { single: true, autoUpload: true, sizeLimit: 524288 } } },
-    grader: { type: mongoose_1.Schema.Types.ObjectId, ref: { type: 'lookup', collection: 'b_enhanced_schema' }, form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true }, label: 'Marked By' } },
+    grader: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true }, label: 'Marked By' } },
     retakeDate: { type: Date, form: { showWhen: { lhs: '$exams.result', comp: 'eq', rhs: 'fail' } } }
 };
 var ExamsSchema = new mongoose_1.Schema(ExamsSchemaDef, { id: false });

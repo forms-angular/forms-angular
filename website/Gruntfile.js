@@ -567,7 +567,7 @@ module.exports = function (grunt) {
       'test:server',
       'test:client',
       'test:e2e',
-      'test:screens'
+      // 'test:screens'  Not a lot of point as not comparing them at the moment
     ]);
   });
 

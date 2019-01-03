@@ -79,6 +79,7 @@ describe('Base edit form', function () {
       $('.modal-footer button.dlg-cancel').click();
       expect(browser.getCurrentUrl()).toMatch('/b_enhanced_schema/519a6075b320153869b155e0/edit');
       list = element.all(by.css('.modal'));
+      browser.sleep(1000);
       expect(list.count()).toBe(0);
     });
 

@@ -1,6 +1,7 @@
 // TODO: subkeys etc, return types of statics.form & statics.report
 
 import { Schema, SchemaType, SchemaTypeOpts } from "mongoose";
+// @ts-ignore
 import IFngSchemaTypeFormOpts = fng.IFngSchemaTypeFormOpts;
 
   /*
