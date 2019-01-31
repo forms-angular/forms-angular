@@ -110,11 +110,7 @@ DataForm.prototype.getListFields = function (resource: Resource, doc: Document, 
           if (aField.params.ref) {
             let fieldOptions = resource.model.schema['paths'][aField.field].options;
             if (typeof fieldOptions.ref === 'string') {
-              fieldOptions.ref = {type: 'lookup', collection: fieldOptions.ref};
-              console.log('Deprecation warning: invalid ref should be ' + JSON.stringify(fieldOptions.ref));
-            }
-            if (fieldOptions.ref.type === 'lookup') {
-              let lookupResource = that.getResource(fieldOptions.ref.collection);
+              let lookupResource = that.getResource(fieldOptions.ref);
               if (lookupResource) {
                 let hiddenFields = that.generateHiddenFields(lookupResource, false);
                 hiddenFields.__v = 0;
