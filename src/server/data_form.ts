@@ -1006,19 +1006,30 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
     }
   }
 
-  doAggregation(function (idArray) {
-    if (aggregationParam && idArray.length === 0) {
-      callback(null, []);
+  that.doFindFunc(req, resource, function (err, queryObj) {
+    if (err) {
+      callback(err);
     } else {
-      that.doFindFunc(req, resource, function (err, queryObj) {
-        if (err) {
-          callback(err);
+      if (queryObj && aggregationParam) {
+        let match = aggregationParam.find(o => o.hasOwnProperty('$match'));
+        if (match) {
+          _.extend(match.$match, queryObj)
+        } else {
+          aggregationParam.unshift({$match:queryObj});
+        }
+      }
+      doAggregation(function(idArray) {
+        if (aggregationParam && idArray.length === 0) {
+          callback(null, []);
         } else {
           let query = resource.model.find(queryObj);
           if (idArray.length > 0) {
             query = query.where('_id').in(idArray);
           }
-          query = query.find(findParam).select(hiddenFields);
+          if (findParam) {
+            query = query.find(findParam);
+          }
+          query = query.select(hiddenFields);
           if (limit) {
             query = query.limit(limit);
           }
@@ -1034,7 +1045,7 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
                 // Add any fields from the aggregation results whose field name starts __ to the mongoose Document
                 let aggObj = stashAggregationResults.find(a => a._id.toString() === obj._id.toString());
                 Object.keys(aggObj).forEach(k => {
-                  if (k.slice(0,2) === '__') {
+                  if (k.slice(0, 2) === '__') {
                     obj[k] = aggObj[k];
                   }
                 });
