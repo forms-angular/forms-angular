@@ -150,6 +150,7 @@ declare module fng {
     The next section relates to the display of sub documents
      */
     customSubDoc?: string; // Allows you to specify custom HTML (which may include directives) for the sub doc
+    customHeader?: string; // Allows you to specify custom HTML (which may include directives) for the header of a group of sub docs
     customFooter?: string; // Allows you to specify custom HTML (which may include directives) for the footer of a group of sub docs
   }
 
@@ -179,7 +180,7 @@ declare module fng {
     linkText?: string;
     form?: string;           // the form that is linked to
     select2? : any;          // deprecated
-    schema?: Array<IFormInstruction>;
+    schema?: IFormInstruction[];   // If the field is an array of fields
   }
 
   export interface IContainer {
@@ -191,6 +192,7 @@ declare module fng {
      */
     containerType: 'fieldset' | 'well' | 'tabset' | 'tab' | 'well-large' | 'well-small' | string;
     title?: string;
+
     /*
       h1...h6 will use a header style
       anything else will be used as a paragraph stype

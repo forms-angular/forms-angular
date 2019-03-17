@@ -316,7 +316,7 @@ module fng.services {
     }
 
     var convertListValueToId = function (value, valuesArray, idsArray, fname) {
-      var textToConvert = _.isObject(value) ? (value.x || value.text) : value;
+      var textToConvert = _.isObject(value) ? ((<any>value).x || (<any>value).text) : value;
       if (textToConvert && textToConvert.match(/^[0-9a-f]{24}$/)) {
         return textToConvert;  // a plugin probably added this
       } else {
