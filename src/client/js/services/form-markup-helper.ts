@@ -107,7 +107,9 @@ module fng.services {
             labelHTML = '<label';
             var classes = 'control-label';
             if (isHorizontalStyle(options.formstyle)) {
-              labelHTML += ' for="' + fieldInfo.id + '"';
+              if (!fieldInfo.linklabel) {
+                labelHTML += ' for="' + fieldInfo.id + '"';
+              }
               if (typeof fieldInfo.labelDefaultClass !== 'undefined') {
                 // Override default label class (can be empty)
                 classes += ' ' + fieldInfo.labelDefaultClass;
@@ -123,6 +125,14 @@ module fng.services {
               labelHTML += ' <i id="add_' + fieldInfo.id + '" ng-click="add(\'' + fieldInfo.name + '\',$event)" class="' + glyphClass() + '-plus-sign"></i>';
             }
             labelHTML += '</label>';
+            if (fieldInfo.linklabel) {
+              let value: string = '<fng-link fld="' + fieldInfo.name + '" ref="' + fieldInfo.ref + '" text="' + escape(labelHTML) + '"' ;
+              if (fieldInfo.form) {
+                value += ' form="' + fieldInfo.form + '"';
+              }
+              value += '></fng-link>';
+              labelHTML = value;
+            }
           }
           return labelHTML;
         },

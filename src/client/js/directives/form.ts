@@ -150,8 +150,8 @@ module fng.directives {
               if (fieldInfo.form) {
                 value += ' form="' + fieldInfo.form + '"';
               }
-              if (fieldInfo.linkText) {
-                value += ' text="' + fieldInfo.linkText + '"';
+              if (fieldInfo.linktext) {
+                value += ' text="' + fieldInfo.linktext + '"';
               }
               if (fieldInfo.readonly) {
                 value += ' readonly="true"';

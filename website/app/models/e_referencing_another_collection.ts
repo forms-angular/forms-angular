@@ -56,8 +56,8 @@ ESchema.statics.form = function (layout) {
         surname: {},
         forename: {},
         weight: {},
-        mentor:{link:{linkOnly:true}},
-        assistants:{link:{linkOnly:true}}
+        leadMentor:{link:{linkOnly:true}},
+        mentor:{link:{linkOnly:false, label: true}}
       };
       break;
   }

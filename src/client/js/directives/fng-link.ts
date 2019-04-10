@@ -9,36 +9,77 @@ module fng.directives {
       scope: {dataSrc: '&model'},
       link: function (scope, element, attrs) {
         const ref = attrs['ref'];
+        const isLabel = attrs['text'] && (unescape(attrs['text']) !== attrs['text']);
         var form: string = attrs['form'];
         scope['readonly'] = attrs['readonly'];
         form = form ? form + '/' : '';
-        if (attrs['text'] && attrs['text'].length > 0) {
-          scope['text'] = attrs['text'];
-        }
-        var index = scope['$parent']['$index'];
-        scope.$watch('dataSrc()', function (newVal) {
-          if (newVal) {
-            if (typeof index !== 'undefined' && angular.isArray(newVal)) {
-              newVal = newVal[index];
-            }
-            scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
-            if (!scope['text']) {
-              SubmissionsService.getListAttributes(ref, newVal).then(function (response) {
-                let data: any = response.data;
-                if (data.success === false) {
-                  scope['text'] = data.err;
+        if (isLabel) {
+          let watchRecord = scope.$watch('$parent.record.' + attrs['fld'], (newVal) => {
+            console.log(newVal);
+            if (newVal) {
+              if (/^[a-f0-9]{24}$/.test(newVal.toString())) {
+                console.log('id found');
+              } else if(scope.$parent[`f_${attrs['fld']}Options`]) {
+                // extract from lookups
+                let i = scope.$parent[`f_${attrs['fld']}Options`].indexOf(newVal);
+                if (i > -1) {
+                  newVal = scope.$parent[`f_${attrs['fld']}_ids`][i];
                 } else {
-                  scope['text'] = data.list;
+                  newVal = undefined;
                 }
-              }, function (response) {
-                scope['text'] = 'Error ' + response.status + ': ' + response.data;
-              });
+              } else {
+                newVal = undefined;
+              }
+              if (newVal) {
+                scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
+              } else {
+                scope['link']
+              }
+            } else {
+              scope['link'] = undefined;
             }
+          }, true);
+        } else {
+          if (attrs['text'] && attrs['text'].length > 0) {
+            scope['text'] = attrs['text'];
           }
-        }, true);
+          var index = scope['$parent']['$index'];
+          scope.$watch('dataSrc()', function(newVal) {
+            if (newVal) {
+              console.log('In watch', newVal);
+              if (typeof index !== 'undefined' && angular.isArray(newVal)) {
+                newVal = newVal[index];
+              }
+              scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
+              if (!scope['text']) {
+                SubmissionsService.getListAttributes(ref, newVal).then(function(response) {
+                  let data: any = response.data;
+                  if (data.success === false) {
+                    scope['text'] = data.err;
+                  } else {
+                    scope['text'] = data.list;
+                  }
+                }, function(response) {
+                  scope['text'] = 'Error ' + response.status + ': ' + response.data;
+                });
+              }
+            }
+          }, true);
+        }
       },
       template: function (element, attrs) {
-        return attrs.readonly ? '<span class="fng-link">{{text}}</span>' : '<a href="{{ link }}" class="fng-link">{{text}}</a>';
+        // return attrs.readonly ? '<span class="fng-link">{{text}}</span>' : '<a href="{{ link }}" class="fng-link">{{text}}</a>';
+        let retVal: string;
+        if (attrs.readonly) {
+          retVal = '<span class="fng-link">{{text}}</span>';
+        } else if (attrs['text'] && unescape(attrs['text']) !== attrs['text']) {
+          console.log('Attrs',attrs);
+          retVal = `<a href="{{ link }}" class="fng-link">${unescape(attrs['text'])}</a>`
+          // retVal = '<a href="{{ link }}" class="fng-link">{{text}}</a>';
+        } else {
+          retVal = '<a href="{{ link }}" class="fng-link">{{text}}</a>';
+        }
+        return retVal;
       }
     };
   }

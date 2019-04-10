@@ -158,18 +158,25 @@ module fng.services {
         }
       } else if (mongooseType.instance === 'ObjectID') {
         formInstructions.ref = mongooseOptions.ref;
-        if (formInstructions.link && formInstructions.link.linkOnly) {
-          formInstructions.type = 'link';
-          formInstructions.linkText = formInstructions.link.text;
+        if (formInstructions.link) {
+          if (formInstructions.link.linkOnly) {
+            formInstructions.type = 'link';
+            formInstructions.linktext = formInstructions.link.text;
+          } else if (formInstructions.link.label) {
+            formInstructions.linklabel = true;
+          } else {
+            console.log('Unsupported link setup')
+          }
           formInstructions.form = formInstructions.link.form;
           delete formInstructions.link;
-        } else {
+        }
+        if (formInstructions.type !== 'link') {
           formInstructions.type = 'select';
-            if (formInstructions.select2 || (mongooseOptions.form && mongooseOptions.form.select2)) {
-              console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
-            } else if ((!formInstructions.directive || (!formInstructions.noLookup && (!formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax)))) {
-              performLookupSelect();
-            }
+          if (formInstructions.select2 || (mongooseOptions.form && mongooseOptions.form.select2)) {
+            console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
+          } else if ((!formInstructions.directive || (!formInstructions.noLookup && (!formInstructions[$filter('camelCase')(formInstructions.directive)] || !formInstructions[$filter('camelCase')(formInstructions.directive)].fngAjax)))) {
+            performLookupSelect();
+          }
         }
       } else if (mongooseType.instance === 'Date') {
         if (!formInstructions.type) {
