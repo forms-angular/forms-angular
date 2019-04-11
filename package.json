@@ -62,12 +62,12 @@
   "devDependencies": {
     "@types/angular": "1.6.54",
     "@types/lodash": "4.14.123",
-    "@types/mongoose": "5.3.22",
+    "@types/mongoose": "^5.3.26",
     "@types/node": "^10.14.1",
     "angular-mocks": "1.7.8",
     "body-parser": "1.18.3",
     "bower": "^1.8.8",
-    "del": "4.0.0",
+    "del": "4.1.0",
     "express": "4.16.4",
     "gulp": "^4.0.0",
     "gulp-angular-templatecache": "2.2.6",
@@ -81,7 +81,7 @@
     "gulp-typescript": "5.0.1",
     "gulp-uglify": "3.0.2",
     "gulp-umd": "2.0.0",
-    "jasmine-core": "3.3.0",
+    "jasmine-core": "3.4.0",
     "karma": "^4.0.1",
     "karma-chrome-launcher": "2.2.0",
     "karma-firefox-launcher": "^1.1.0",
@@ -89,11 +89,11 @@
     "karma-junit-reporter": "1.2.0",
     "karma-ng-html2js-preprocessor": "1.0.0",
     "matchdep": "2.0.0",
-    "mocha": "6.0.2",
-    "mongoose": "5.4.19",
+    "mocha": "^6.1.2",
+    "mongoose": "5.5.0",
     "prettier": "1.16.4",
     "pump": "3.0.0",
-    "typescript": "3.3.3333"
+    "typescript": "3.4.3"
   },
   "license": "MIT"
 }
