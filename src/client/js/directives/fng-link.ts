@@ -13,6 +13,62 @@ module fng.directives {
         var form: string = attrs['form'];
         scope['readonly'] = attrs['readonly'];
         form = form ? form + '/' : '';
+
+        if (isLabel) {
+          let workScope = scope;
+          let workString = '';
+          while (typeof workScope['baseSchema'] !== "function" && workScope.$parent) {
+            if (typeof workScope['$index'] !== "undefined") {
+              throw new Error('No support for $index at this level - ' + workString);
+            }
+            workScope = workScope.$parent;
+            workString = workString + '$parent.';
+          }
+          let attrib = attrs['fld'];
+          if (typeof workScope['$index'] !== "undefined") {
+            console.log('last index', workScope['$index'])
+            let splitAttrib = attrib.split('.');
+            attrib = splitAttrib.pop();
+            attrib = splitAttrib.join('.') + '[' + workScope['$index'] + '].' + attrib;
+          }
+          console.log(workString + 'record.' + attrib);
+          var watchRecord = scope.$watch(workString + 'record.' + attrib, function (newVal: any) {
+            console.log(newVal);
+            if (newVal) {
+              if (/^[a-f0-9]{24}/.test(newVal.toString())) {
+                newVal = newVal.slice(0,24);
+              }
+              else if (newVal.id && /^[a-f0-9]{24}/.test(newVal.id)) {
+                newVal = newVal.id.slice(0,24);
+              }
+              else if (scope.$parent["f_" + attrs['fld'] + "Options"]) {
+                // extract from lookups
+                var i = scope.$parent["f_" + attrs['fld'] + "Options"].indexOf(newVal);
+                if (i > -1) {
+                  newVal = scope.$parent["f_" + attrs['fld'] + "_ids"][i];
+                }
+                else {
+                  newVal = undefined;
+                }
+              }
+              else {
+                newVal = undefined;
+              }
+              if (newVal) {
+                scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
+              }
+              else {
+                scope['link'];
+              }
+            }
+            else {
+              scope['link'] = undefined;
+            }
+          }, true);
+        }
+
+
+
         if (isLabel) {
           let watchRecord = scope.$watch('$parent.record.' + attrs['fld'], (newVal) => {
             console.log(newVal);
