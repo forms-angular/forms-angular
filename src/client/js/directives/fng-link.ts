@@ -26,14 +26,11 @@ module fng.directives {
           }
           let attrib = attrs['fld'];
           if (typeof workScope['$index'] !== "undefined") {
-            console.log('last index', workScope['$index'])
             let splitAttrib = attrib.split('.');
             attrib = splitAttrib.pop();
             attrib = splitAttrib.join('.') + '[' + workScope['$index'] + '].' + attrib;
           }
-          console.log(workString + 'record.' + attrib);
           var watchRecord = scope.$watch(workString + 'record.' + attrib, function (newVal: any) {
-            console.log(newVal);
             if (newVal) {
               if (/^[a-f0-9]{24}/.test(newVal.toString())) {
                 newVal = newVal.slice(0,24);
@@ -71,10 +68,8 @@ module fng.directives {
 
         if (isLabel) {
           let watchRecord = scope.$watch('$parent.record.' + attrs['fld'], (newVal) => {
-            console.log(newVal);
             if (newVal) {
               if (/^[a-f0-9]{24}$/.test(newVal.toString())) {
-                console.log('id found');
               } else if(scope.$parent[`f_${attrs['fld']}Options`]) {
                 // extract from lookups
                 let i = scope.$parent[`f_${attrs['fld']}Options`].indexOf(newVal);
@@ -102,7 +97,6 @@ module fng.directives {
           var index = scope['$parent']['$index'];
           scope.$watch('dataSrc()', function(newVal) {
             if (newVal) {
-              console.log('In watch', newVal);
               if (typeof index !== 'undefined' && angular.isArray(newVal)) {
                 newVal = newVal[index];
               }
@@ -129,7 +123,6 @@ module fng.directives {
         if (attrs.readonly) {
           retVal = '<span class="fng-link">{{text}}</span>';
         } else if (attrs['text'] && unescape(attrs['text']) !== attrs['text']) {
-          console.log('Attrs',attrs);
           retVal = `<a href="{{ link }}" class="fng-link">${unescape(attrs['text'])}</a>`
           // retVal = '<a href="{{ link }}" class="fng-link">{{text}}</a>';
         } else {
