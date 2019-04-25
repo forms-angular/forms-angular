@@ -1,6 +1,7 @@
 <div class="form-btn-grp">
   <div class="btn-group pull-right">
     <button id="saveButton" class="btn btn-primary form-btn btn-xs" ng-click="save()" ng-disabled="isSaveDisabled()"><i class="glyphicon glyphicon-ok"></i> Save</button>
+    <div id="why-disabled" ng-bind-html="whyDisabled"></div>
     <button id="cancelButton" class="btn btn-warning form-btn btn-xs" ng-click="cancel()" ng-disabled="isCancelDisabled()"><i class="glyphicon glyphicon-remove"></i> Cancel</button>
   </div>
   <div class="btn-group pull-right">

@@ -1074,11 +1074,49 @@ module fng.services {
         };
 
         $scope.isSaveDisabled = function () {
+          $scope.whyDisabled = undefined;
           if (typeof $scope.disableFunctions.isSaveDisabled === 'function') {
-            return $scope.disableFunctions.isSaveDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
+            if ($scope.disableFunctions.isSaveDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName])) {
+              $scope.whyDisabled = 'An application level user-specified function is inhibiting saving the record';
+            }
           } else {
-            return ($scope[$scope.topLevelFormName] && ($scope[$scope.topLevelFormName].$invalid || $scope[$scope.topLevelFormName].$pristine));
+            if ($scope[$scope.topLevelFormName]) {
+              if ($scope[$scope.topLevelFormName].$invalid) {
+                $scope.whyDisabled = 'The form data is invalid:';
+                $scope[$scope.topLevelFormName].$$controls.forEach(c => {
+                  if (c.$invalid) {
+                    $scope.whyDisabled += '<br /><strong>';
+
+                    if (c.$$element &&
+                      c.$$element.parent() &&
+                      c.$$element.parent().parent() &&
+                      c.$$element.parent().parent().find('label') &&
+                      c.$$element.parent().parent().find('label').text()
+                    ) {
+                      $scope.whyDisabled += c.$$element.parent().parent().find('label').text()
+                    } else {
+                      $scope.whyDisabled += c.$name;
+                    }
+                    $scope.whyDisabled += '</strong>';
+                    if (c.$error) {
+                      if (c.$error.required) {
+                        $scope.whyDisabled += ' - field missing required value';
+                      } else if (c.$error.pattern) {
+                        $scope.whyDisabled += ' - field does not match required pattern';
+                      } else {
+                        $scope.whyDisabled += JSON.stringify(c.$error);
+                      }
+                    }
+                  }
+                })
+              } else if ($scope[$scope.topLevelFormName].$pristine) {
+                $scope.whyDisabled = 'The form has not been modified';
+              }
+            } else {
+              $scope.whyDisabled = 'Top level form name invalid';
+            }
           }
+          return !!$scope.whyDisabled;
         };
 
         $scope.isDeleteDisabled = function () {
@@ -1095,14 +1133,6 @@ module fng.services {
           } else {
             return false;
           }
-        };
-
-        $scope.disabledText = function (localStyling) {
-          var text = '';
-          if ($scope.isSaveDisabled) {
-            text = 'This button is only enabled when the form is complete and valid.  Make sure all required inputs are filled in. ' + localStyling;
-          }
-          return text;
         };
 
         $scope.getVal = function (expression, index) {

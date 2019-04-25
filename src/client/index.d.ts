@@ -292,7 +292,7 @@ declare module fng {
     isCancelDisabled: any;
     isNewDisabled: any;
     isSaveDisabled: any;
-    disabledText: any;
+    whyDisabled: string;
     unconfirmedDelete: boolean;
     getVal: any;
     sortableOptions: any;

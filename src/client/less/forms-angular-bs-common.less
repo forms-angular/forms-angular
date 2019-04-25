@@ -190,3 +190,22 @@ span input[type="radio"] {
 .dropdown-menu > .disabled > a:focus {
   cursor: not-allowed;
 }
+
+#why-disabled {
+  display: none
+}
+
+button#saveButton[disabled]:hover + #why-disabled {
+  display: block;
+  border: #ddd solid 2px;
+  font-size: small;
+  z-index: 20;
+  position: absolute;
+  background-color: white;
+  right: 0;
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: 4px 4px 4px #999;
+  color: red;
+  font-weight: normal;
+}
