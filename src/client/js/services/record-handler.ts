@@ -1097,14 +1097,14 @@ module fng.services {
                     } else {
                       $scope.whyDisabled += c.$name;
                     }
-                    $scope.whyDisabled += '</strong>';
+                    $scope.whyDisabled += '</strong>: ';
                     if (c.$error) {
-                      if (c.$error.required) {
-                        $scope.whyDisabled += ' - field missing required value';
-                      } else if (c.$error.pattern) {
-                        $scope.whyDisabled += ' - field does not match required pattern';
-                      } else {
-                        $scope.whyDisabled += JSON.stringify(c.$error);
+                      for (let type in c.$error) {
+                        switch (type) {
+                          case 'required': $scope.whyDisabled += 'Field missing required value. '; break;
+                          case 'pattern': $scope.whyDisabled += 'Field does not match required pattern. '; break;
+                          default: $scope.whyDisabled += type + '. ';
+                        }
                       }
                     }
                   }
