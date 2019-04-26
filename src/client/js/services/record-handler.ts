@@ -9,7 +9,7 @@ module fng.services {
    */
 
   /*@ngInject*/
-  export function recordHandler($http, $location, $window, $filter, $timeout, routingService, SubmissionsService, SchemasService) : fng.IRecordHandler {
+  export function recordHandler($http, $location, $window, $filter, $timeout, routingService, cssFrameworkService, SubmissionsService, SchemasService) : fng.IRecordHandler {
 
     // TODO: Put this in a service
     const makeMongoId = (rnd = r16 => Math.floor(r16).toString(16)) => rnd(Date.now()/1000) + ' '.repeat(16).replace(/./g, () => rnd(Math.random()*16));
@@ -1087,13 +1087,25 @@ module fng.services {
                   if (c.$invalid) {
                     $scope.whyDisabled += '<br /><strong>';
 
-                    if (c.$$element &&
+                    if (
+                      cssFrameworkService.framework() === 'bs2' &&
+                      c.$$element &&
                       c.$$element.parent() &&
                       c.$$element.parent().parent() &&
                       c.$$element.parent().parent().find('label') &&
                       c.$$element.parent().parent().find('label').text()
                     ) {
                       $scope.whyDisabled += c.$$element.parent().parent().find('label').text()
+                    } else if (
+                      cssFrameworkService.framework() === 'bs3' &&
+                      c.$$element &&
+                      c.$$element.parent() &&
+                      c.$$element.parent().parent() &&
+                      c.$$element.parent().parent().parent() &&
+                      c.$$element.parent().parent().parent().find('label') &&
+                      c.$$element.parent().parent().parent().find('label').text()
+                    ) {
+                      $scope.whyDisabled += c.$$element.parent().parent().parent().find('label').text()
                     } else {
                       $scope.whyDisabled += c.$name;
                     }
