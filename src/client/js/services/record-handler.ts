@@ -1075,6 +1075,7 @@ module fng.services {
 
         $scope.isSaveDisabled = function () {
           $scope.whyDisabled = undefined;
+          let pristine = false;
           if (typeof $scope.disableFunctions.isSaveDisabled === 'function') {
             if ($scope.disableFunctions.isSaveDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName])) {
               $scope.whyDisabled = 'An application level user-specified function is inhibiting saving the record';
@@ -1122,13 +1123,15 @@ module fng.services {
                   }
                 })
               } else if ($scope[$scope.topLevelFormName].$pristine) {
-                $scope.whyDisabled = 'The form has not been modified';
+                // Don't have disabled message - should be obvious from Cancel being disabled,
+                // and the message comes up when the Save button is clicked.
+                pristine = true;
               }
             } else {
               $scope.whyDisabled = 'Top level form name invalid';
             }
           }
-          return !!$scope.whyDisabled;
+          return pristine || !!$scope.whyDisabled;
         };
 
         $scope.isDeleteDisabled = function () {
