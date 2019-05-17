@@ -232,8 +232,8 @@ module fng.services {
             }
           }
         } else {
-          if (schemaEntry.ref && schemaEntry.ref.type === 'internal') {
-            setUpInternalLookupLists($scope, schemaEntry.options, schemaEntry.ids, master[schemaEntry.ref.property], schemaEntry.ref.value);
+          if (schemaEntry.internalRef) {
+            setUpInternalLookupLists($scope, schemaEntry.options, schemaEntry.ids, master[schemaEntry.internalRef.property], schemaEntry.internalRef.value);
           }
           // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
           var thisField = getListData(anObject, fieldName, null, $scope);

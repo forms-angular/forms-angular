@@ -123,8 +123,10 @@ module fng.services {
             recordHandler.setUpLookupOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
           } else if (mongooseOptions.lookupListRef) {
             recordHandler.setUpLookupListOptions(mongooseOptions.lookupListRef, formInstructions, $scope, ctrlState);
+            formInstructions.lookupListRef = mongooseOptions.lookupListRef;
           } else if (mongooseOptions.internalRef) {
             recordHandler.handleInternalLookup($scope, formInstructions, mongooseOptions.internalRef);
+            formInstructions.internalRef = mongooseOptions.internalRef;
           } else {
             throw new Error(`No supported select lookup type found in ${formInstructions.name}`);
           }
