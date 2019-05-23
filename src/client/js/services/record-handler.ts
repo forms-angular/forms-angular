@@ -959,7 +959,9 @@ module fng.services {
           $scope.prepareForSave((err, dataToSave) => {
             if (err) {
               if (err !== '_update_handled_') {
-                $scope.$apply(() => {$scope.showError(err)});
+                $timeout(() => {
+                  $scope.showError(err)
+                });
               }
             } else if ($scope.id) {
               recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
