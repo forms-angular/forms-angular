@@ -959,7 +959,7 @@ module fng.services {
           $scope.prepareForSave((err, dataToSave) => {
             if (err) {
               if (err !== '_update_handled_') {
-                $scope.showError(err);
+                $scope.$apply(() => {$scope.showError(err)});
               }
             } else if ($scope.id) {
               recordHandlerInstance.updateDocument(dataToSave, options, $scope, ctrlState);
@@ -1045,6 +1045,11 @@ module fng.services {
 
             confirmDelete.then(
               function (result) {
+
+                function doTheDeletion() {
+                  recordHandlerInstance.deleteRecord($scope.modelName, $scope.id, $scope, ctrlState);
+                }
+
                 if (result) {
                   if (typeof $scope.dataEventFunctions.onBeforeDelete === 'function') {
                     $scope.dataEventFunctions.onBeforeDelete(ctrlState.master, function (err) {
@@ -1053,11 +1058,11 @@ module fng.services {
                           $scope.showError(err);
                         }
                       } else {
-                        recordHandlerInstance.deleteRecord($scope.modelName, $scope.id, $scope, ctrlState);
+                        doTheDeletion();
                       }
                     });
                   } else {
-                    recordHandlerInstance.deleteRecord($scope.modelName, $scope.id, $scope, ctrlState);
+                    doTheDeletion();
                   }
                 }
               }
@@ -1066,79 +1071,91 @@ module fng.services {
         };
 
         $scope.isCancelDisabled = function () {
-          if (typeof $scope.disableFunctions.isCancelDisabled === 'function') {
+          if ($scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine) {
+            return true
+          } else if (typeof $scope.disableFunctions.isCancelDisabled === 'function') {
             return $scope.disableFunctions.isCancelDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
           } else {
-            return $scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine;
+            return false;
           }
         };
 
         $scope.isSaveDisabled = function () {
           $scope.whyDisabled = undefined;
           let pristine = false;
-          if (typeof $scope.disableFunctions.isSaveDisabled === 'function') {
-            if ($scope.disableFunctions.isSaveDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName])) {
-              $scope.whyDisabled = 'An application level user-specified function is inhibiting saving the record';
-            }
-          } else {
-            if ($scope[$scope.topLevelFormName]) {
-              if ($scope[$scope.topLevelFormName].$invalid) {
-                $scope.whyDisabled = 'The form data is invalid:';
-                $scope[$scope.topLevelFormName].$$controls.forEach(c => {
-                  if (c.$invalid) {
-                    $scope.whyDisabled += '<br /><strong>';
 
-                    if (
-                      cssFrameworkService.framework() === 'bs2' &&
-                      c.$$element &&
-                      c.$$element.parent() &&
-                      c.$$element.parent().parent() &&
-                      c.$$element.parent().parent().find('label') &&
-                      c.$$element.parent().parent().find('label').text()
-                    ) {
-                      $scope.whyDisabled += c.$$element.parent().parent().find('label').text()
-                    } else if (
-                      cssFrameworkService.framework() === 'bs3' &&
-                      c.$$element &&
-                      c.$$element.parent() &&
-                      c.$$element.parent().parent() &&
-                      c.$$element.parent().parent().parent() &&
-                      c.$$element.parent().parent().parent().find('label') &&
-                      c.$$element.parent().parent().parent().find('label').text()
-                    ) {
-                      $scope.whyDisabled += c.$$element.parent().parent().parent().find('label').text()
-                    } else {
-                      $scope.whyDisabled += c.$name;
-                    }
-                    $scope.whyDisabled += '</strong>: ';
-                    if (c.$error) {
-                      for (let type in c.$error) {
-                        switch (type) {
-                          case 'required': $scope.whyDisabled += 'Field missing required value. '; break;
-                          case 'pattern': $scope.whyDisabled += 'Field does not match required pattern. '; break;
-                          default: $scope.whyDisabled += type + '. ';
-                        }
+          if ($scope[$scope.topLevelFormName]) {
+            if ($scope[$scope.topLevelFormName].$invalid) {
+              $scope.whyDisabled = 'The form data is invalid:';
+              $scope[$scope.topLevelFormName].$$controls.forEach(c => {
+                if (c.$invalid) {
+                  $scope.whyDisabled += '<br /><strong>';
+
+                  if (
+                    cssFrameworkService.framework() === 'bs2' &&
+                    c.$$element &&
+                    c.$$element.parent() &&
+                    c.$$element.parent().parent() &&
+                    c.$$element.parent().parent().find('label') &&
+                    c.$$element.parent().parent().find('label').text()
+                  ) {
+                    $scope.whyDisabled += c.$$element.parent().parent().find('label').text()
+                  } else if (
+                    cssFrameworkService.framework() === 'bs3' &&
+                    c.$$element &&
+                    c.$$element.parent() &&
+                    c.$$element.parent().parent() &&
+                    c.$$element.parent().parent().parent() &&
+                    c.$$element.parent().parent().parent().find('label') &&
+                    c.$$element.parent().parent().parent().find('label').text()
+                  ) {
+                    $scope.whyDisabled += c.$$element.parent().parent().parent().find('label').text()
+                  } else {
+                    $scope.whyDisabled += c.$name;
+                  }
+                  $scope.whyDisabled += '</strong>: ';
+                  if (c.$error) {
+                    for (let type in c.$error) {
+                      switch (type) {
+                        case 'required': $scope.whyDisabled += 'Field missing required value. '; break;
+                        case 'pattern': $scope.whyDisabled += 'Field does not match required pattern. '; break;
+                        default: $scope.whyDisabled += type + '. ';
                       }
                     }
                   }
-                })
-              } else if ($scope[$scope.topLevelFormName].$pristine) {
-                // Don't have disabled message - should be obvious from Cancel being disabled,
-                // and the message comes up when the Save button is clicked.
-                pristine = true;
-              }
-            } else {
-              $scope.whyDisabled = 'Top level form name invalid';
+                }
+              })
+            } else if ($scope[$scope.topLevelFormName].$pristine) {
+              // Don't have disabled message - should be obvious from Cancel being disabled,
+              // and the message comes up when the Save button is clicked.
+              pristine = true;
             }
+          } else {
+            $scope.whyDisabled = 'Top level form name invalid';
           }
-          return pristine || !!$scope.whyDisabled;
+
+          if (pristine || !!$scope.whyDisabled) {
+            return true;
+          } else if (typeof $scope.disableFunctions.isSaveDisabled !== 'function') {
+            return false;
+          } else {
+            let retVal = $scope.disableFunctions.isSaveDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
+            if (typeof retVal === "string") {
+              $scope.whyDisabled = retVal;
+            } else {
+              $scope.whyDisabled = 'An application level user-specified function is inhibiting saving the record';
+            }
+            return !!retVal;
+          }
         };
 
         $scope.isDeleteDisabled = function () {
-          if (typeof $scope.disableFunctions.isDeleteDisabled === 'function') {
+          if (!$scope.id) {
+            return true
+          } else if (typeof $scope.disableFunctions.isDeleteDisabled === 'function') {
             return $scope.disableFunctions.isDeleteDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
           } else {
-            return (!$scope.id);
+            return false;
           }
         };
 

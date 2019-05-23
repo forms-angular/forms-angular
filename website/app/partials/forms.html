@@ -83,7 +83,8 @@ you can easily switch between modes without having to manually change all the in
 <ul>
     <li>Header section showing the key fields from the record.</li>
     <li><p>Buttons to perform the usual Save, Cancel, New and Delete operations.  forms-angular handles all
-        the back-end stuff for you.  There a number of keyboard short cuts that can be used in the forms. Hit <span class="key">?</span> to find out more.</p>
+        the back-end stuff for you.  There a number of keyboard short cuts that can be used in the forms. Hit <span class="key">?</span> to find out more.
+        There are hooks that can be used to disable the buttons - see the <a href="#button-hooks">Client Side Customization</a> section.</p>
         <p>The form button customisation is currently limited to over-riding the default enabled state of the buttons by
             defining
             functions in a controller for the model (or model and form). See <a href="/scripts/controllers/d-array-example.js">here</a> for an
@@ -331,6 +332,13 @@ you can easily switch between modes without having to manually change all the in
       can be handled within the function by passing back the special err of '_update_handled_'.  In these cases it will
       usually be helpful to call <code>baseScope.prepareForSave(cb: (error: string, dataToSave?: any) => void): void</code>
       to convert the client-side model into the format that needs to be written back to MongoDb.
+    </p>
+    <h5 id="#button-hooks">Controlling CRUD button enabled state</h5>
+    <p>There are hooks to override the default CRUD button enabled state behaviour.  There is a trivial example which uses this capability to create
+        a read-only view can be found in the controller <a href="/scripts/controllers/b-enhanced-schema-readonly.js">here</a>.  The functions are
+        passed three parameters: <strong>record</strong>, <strong>originalRecord</strong> and <strong>form</strong> and return a boolean, except in the case of
+        isSaveDisabled, which can return a boolean or a string explaining what the problem is.  This string is displayed when the user hovers over
+        the disabled Save button.
     </p>
 
     <p>You can also call onRecordChange function(data, old) which is useful for updating calculated fields etc.</p>

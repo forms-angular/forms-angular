@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@types/angular": "1.6.54",
-    "@types/lodash": "4.14.129",
+    "@types/lodash": "4.14.132",
     "@types/mongoose": "^5.5.1",
     "@types/node": "^10.14.1",
     "angular-mocks": "1.7.8",
@@ -90,7 +90,7 @@
     "karma-ng-html2js-preprocessor": "1.0.0",
     "matchdep": "2.0.0",
     "mocha": "^6.1.4",
-    "mongoose": "5.5.9",
+    "mongoose": "5.5.11",
     "prettier": "1.17.1",
     "pump": "3.0.0",
     "typescript": "3.4.5"
