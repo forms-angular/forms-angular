@@ -89,7 +89,7 @@ var bSchemaDef = {
 var BSchema = new mongoose_1.Schema(bSchemaDef);
 BSchema.pre('save', function (next) {
     // Check for rude words (well, the word "rude", actually) to show an error
-    if (this.freeText && this.freeText.indexOf('rude') !== -1) {
+    if (this['freeText'] && this['freeText'].indexOf('rude') !== -1) {
         return next(new Error('Wash your mouth!  You must not use rude words.'));
     }
     return next();

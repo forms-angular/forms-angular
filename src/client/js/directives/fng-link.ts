@@ -1,5 +1,39 @@
 /// <reference path="../../../../node_modules/@types/angular/index.d.ts" />
 
+module fng.controllers {
+
+  /*@ngInject*/
+  export function LinkCtrl($scope) {
+
+    /**
+     * In the event that the link is part of a form that belongs to a (ui-bootstrap) modal,
+     * close the modal
+     */
+    $scope.checkNotModal = function() {
+      let elm = $scope.element[0];
+      let parentNode;
+      let finished = false;
+      const fakeEvt = {
+        preventDefault: angular.noop,
+        stopPropagation: angular.noop,
+        target:1,
+        currentTarget:1
+      };
+      do {
+        parentNode = elm.parentNode;
+        if (!parentNode) {
+          finished = true;
+        } else if (parentNode.getAttribute('uib-modal-window')) {
+          (angular.element(elm).scope() as any).close(fakeEvt);
+          finished = true;
+        } else {
+          elm = parentNode;
+        }
+      } while (!finished);
+    };
+  }
+}
+
 module fng.directives {
 
   /*@ngInject*/
@@ -12,6 +46,7 @@ module fng.directives {
         const isLabel = attrs['text'] && (unescape(attrs['text']) !== attrs['text']);
         var form: string = attrs['form'];
         scope['readonly'] = attrs['readonly'];
+        scope['element'] = element;
         form = form ? form + '/' : '';
 
         if (isLabel) {
@@ -55,7 +90,7 @@ module fng.directives {
                 scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
               }
               else {
-                scope['link'];
+                scope['link'] = undefined;
               }
             }
             else {
@@ -84,7 +119,7 @@ module fng.directives {
               if (newVal) {
                 scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
               } else {
-                scope['link']
+                scope['link'] = undefined;
               }
             } else {
               scope['link'] = undefined;
@@ -117,16 +152,21 @@ module fng.directives {
           }, true);
         }
       },
+      controller: "LinkCtrl",
       template: function (element, attrs) {
-        // return attrs.readonly ? '<span class="fng-link">{{text}}</span>' : '<a href="{{ link }}" class="fng-link">{{text}}</a>';
+
+        function handleAnchor(contents: string) : string {
+          return `<a ng-click="checkNotModal()" href="{{ link }}" class="fng-link">${contents}</a>`;
+        }
+
         let retVal: string;
         if (attrs.readonly) {
           retVal = '<span class="fng-link">{{text}}</span>';
         } else if (attrs['text'] && unescape(attrs['text']) !== attrs['text']) {
-          retVal = `<a href="{{ link }}" class="fng-link">${unescape(attrs['text'])}</a>`
+          retVal = handleAnchor(unescape(attrs['text']));
           // retVal = '<a href="{{ link }}" class="fng-link">{{text}}</a>';
         } else {
-          retVal = '<a href="{{ link }}" class="fng-link">{{text}}</a>';
+          retVal = handleAnchor('{{text}}');
         }
         return retVal;
       }

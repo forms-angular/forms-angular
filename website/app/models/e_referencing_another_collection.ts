@@ -1,11 +1,10 @@
 import { Schema, model } from "mongoose";
 import { IFngSchemaDefinition } from "../../../src/fng-schema";
-
 const eSchemaDef: IFngSchemaDefinition = {
   surname: {type: String, list: {}},
   forename: {type: String, list: true},
   weight: {type: Number, form: {label: 'Weight (lbs)'}},
-  leadMentor:    { type: Schema.Types.ObjectId, ref:'c_subdoc_example', required: true},
+  leadMentor:    { type: Schema.Types.ObjectId, ref:'c_subdoc_example', required: true, form: {label: 'LEEDS MENDER'}},
   mentor:    { type: Schema.Types.ObjectId, ref:'c_subdoc_example'},
   guide:     { type: Schema.Types.ObjectId, ref:'b_enhanced_schema', form: {directive: 'fng-ui-select'}},
   teacher: { type: Schema.Types.ObjectId, ref:'b_enhanced_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},

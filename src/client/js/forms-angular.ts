@@ -35,6 +35,7 @@ module fng {
   ])
   .controller('BaseCtrl',fng.controllers.BaseCtrl)
   .controller('SaveChangesModalCtrl', fng.controllers.SaveChangesModalCtrl)
+  .controller('LinkCtrl', fng.controllers.LinkCtrl)
   .controller('ModelCtrl', fng.controllers.ModelCtrl)
   .controller('NavCtrl', fng.controllers.NavCtrl)
   .directive('modelControllerDropdown',fng.directives.modelControllerDropdown)
