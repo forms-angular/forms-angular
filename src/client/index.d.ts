@@ -397,6 +397,7 @@ declare module fng {
     subkeyno?: number;
     subschema? : string;
     subschemaroot? : string;
+    viewform? : boolean;
   }
 
   export interface IBuiltInRoute {

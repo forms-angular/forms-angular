@@ -485,6 +485,10 @@ module fng.directives {
           if (instructionsArray) {
             for (var anInstruction = 0; anInstruction < instructionsArray.length; anInstruction++) {
               var info = instructionsArray[anInstruction];
+              if (options.viewform) {
+                info = angular.copy(info);
+                info.readonly = true;
+              }
               if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/) && typeof info.add !== 'object') {
                 info.add = info.add ? ' ' + info.add + ' ' : '';
                 if (info.add.indexOf('ui-date') === -1 && !options.noautofocus && !info.containerType) {
@@ -637,7 +641,7 @@ module fng.directives {
                 var customAttrs = '';
                 for (var thisAttr in attrs) {
                   if (attrs.hasOwnProperty(thisAttr)) {
-                    if (thisAttr[0] !== '$' && ['name', 'formstyle', 'schema', 'subschema', 'model'].indexOf(thisAttr) === -1) {
+                    if (thisAttr[0] !== '$' && ['name', 'formstyle', 'schema', 'subschema', 'model', 'viewform'].indexOf(thisAttr) === -1) {
                       customAttrs += ' ' + attrs.$attr[thisAttr] + '="' + attrs[thisAttr] + '"';
                     }
                   }

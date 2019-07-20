@@ -24,12 +24,18 @@ module fng.services {
       {route: '/analyse/:model', state: 'analyse::model', templateUrl: 'base-analysis.html'},
       {route: '/:model/:id/edit', state: 'model::edit', templateUrl: 'base-edit.html'},
       {route: '/:model/:id/edit/:tab', state: 'model::edit::tab', templateUrl: 'base-edit.html'},
+      {route: '/:model/:id/view', state: 'model::view', templateUrl: 'base-view.html'},
+      {route: '/:model/:id/view/:tab', state: 'model::view::tab', templateUrl: 'base-view.html'},
       {route: '/:model/new', state: 'model::new', templateUrl: 'base-edit.html'},
       {route: '/:model', state: 'model::list', templateUrl: 'base-list.html'},
-      {route: '/:model/:form/:id/edit', state: 'model::form::edit', templateUrl: 'base-edit.html'},       // non default form (different fields etc)
-      {route: '/:model/:form/:id/edit/:tab', state: 'model::form::edit::tab', templateUrl: 'base-edit.html'},       // non default form (different fields etc)
-      {route: '/:model/:form/new', state: 'model::form::new', templateUrl: 'base-edit.html'},       // non default form (different fields etc)
-      {route: '/:model/:form', state: 'model::form::list', templateUrl: 'base-list.html'}        // list page with links to non default form
+
+      // Non default form (subset of fields etc)
+      {route: '/:model/:form/:id/edit', state: 'model::form::edit', templateUrl: 'base-edit.html'},
+      {route: '/:model/:form/:id/edit/:tab', state: 'model::form::edit::tab', templateUrl: 'base-edit.html'},
+      {route: '/:model/:form/:id/view', state: 'model::form::view', templateUrl: 'base-view.html'},
+      {route: '/:model/:form/:id/view/:tab', state: 'model::form::view::tab', templateUrl: 'base-view.html'},
+      {route: '/:model/:form/new', state: 'model::form::new', templateUrl: 'base-edit.html'},
+      {route: '/:model/:form', state: 'model::form::list', templateUrl: 'base-list.html'}        // list page with edit links to non default form
     ];
 
     var _routeProvider, _stateProvider;
@@ -87,6 +93,9 @@ module fng.services {
           break;
         case 'edit' :
           urlStr = modelString + formString + '/' + id + '/edit' + tabString;
+          break;
+        case 'read' :
+          urlStr = modelString + formString + '/' + id + '/read' + tabString;
           break;
         case 'new' :
           urlStr = modelString + formString + '/new' + tabString;
@@ -196,34 +205,6 @@ module fng.services {
               return lastObject;
 
             };
-///**
-// * DominicBoettger wrote:
-// *
-// * Parser for the states provided by ui.router
-// */
-//'use strict';
-//formsAngular.factory('$stateParse', [function () {
-//
-//  var lastObject = {};
-//
-//  return function (state) {
-//    if (state.current && state.current.name) {
-//      lastObject = {newRecord: false};
-//      lastObject.modelName = state.params.model;
-//      if (state.current.name === 'model::list') {
-//        lastObject = {index: true};
-//        lastObject.modelName = state.params.model;
-//      } else if (state.current.name === 'model::edit') {
-//        lastObject.id = state.params.id;
-//      } else if (state.current.name === 'model::new') {
-//        lastObject.newRecord = true;
-//      } else if (state.current.name === 'model::analyse') {
-//        lastObject.analyse = true;
-//      }
-//    }
-//    return lastObject;
-//  };
-//}]);
           },
           buildUrl: function (path) {
             var url = config.html5Mode ? '' : '#';
@@ -240,8 +221,6 @@ module fng.services {
           },
           redirectTo: function () {
             return function (operation, scope, location, id, tab) {
-//            switch (config.routing) {
-//              case 'ngroute' :
               if (location.search()) {
                 location.url(location.path());
               }
@@ -249,39 +228,6 @@ module fng.services {
               var urlStr = _buildOperationUrl(config.prefix, operation, scope.modelName, scope.formName, id, tab);
               location.path(urlStr);
 
-//                break;
-//              case 'uirouter' :
-//                var formString = scope.formName ? ('/' + scope.formName) : '';
-//                var modelString = config.prefix + '/' + scope.modelName;
-//                console.log('form schemas not supported with ui-router');
-//                switch (operation) {
-//                  case 'list' :
-//                    location.path(modelString + formString);
-//                    break;
-//                  case 'edit' :
-//                    location.path(modelString + formString + '/' + id + '/edit');
-//                    break;
-//                  case 'new' :
-//                    location.path(modelString + formString + '/new');
-//                    break;
-//                }
-//                switch (operation) {
-//                  case 'list' :
-//                    $state.go('model::list', { model: model });
-//                    break;
-//                  case 'edit' :
-//                    location.path('/' + scope.modelName + formString + '/' + id + '/edit');
-//                    break;
-//                  case 'new' :
-//                    location.path('/' + scope.modelName + formString + '/new');
-//                    break;
-//                }
-//                break;
-//
-//
-//                //  edit: $state.go('model::edit', {id: data._id, model: $scope.modelName });
-//                //  new:  $state.go('model::new', {model: $scope.modelName});
-//                break;
             };
           }
         };
