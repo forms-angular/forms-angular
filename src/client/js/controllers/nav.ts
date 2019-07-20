@@ -3,13 +3,14 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function NavCtrl($scope, $location, $filter, routingService, cssFrameworkService) {
+  export function NavCtrl($rootScope, $scope, $location, $filter, routingService, cssFrameworkService) {
 
     function clearContextMenu() {
       $scope.items = [];
       $scope.contextMenu = undefined;
     }
 
+    $rootScope.navScope = $scope;  // Lets plugins access menus
     clearContextMenu();
 
     /* isCollapsed and showShortcuts are used to control how the menu is displayed in a responsive environment and whether the shortcut keystrokes help should be displayed */
