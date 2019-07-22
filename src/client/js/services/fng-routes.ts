@@ -13,7 +13,7 @@ module fng.services {
       prefix: ''            // How do we want to prefix our routes?  If not empty string then first character must be slash (which is added if not)
     };
 
-    var postActions: Array<string> = ['edit'];
+    var postActions: Array<string> = ['edit','view'];
 
     var builtInRoutes:Array<fng.IBuiltInRoute> = [
       {
@@ -24,7 +24,7 @@ module fng.services {
       {route: '/analyse/:model', state: 'analyse::model', templateUrl: 'base-analysis.html'},
       {route: '/:model/:id/edit', state: 'model::edit', templateUrl: 'base-edit.html'},
       {route: '/:model/:id/edit/:tab', state: 'model::edit::tab', templateUrl: 'base-edit.html'},
-      {route: '/:model/:id/view', state: 'model::view', templateUrl: 'base-view.html'},
+      {route: '/:model/:id/view', state: 'model::edit', templateUrl: 'base-view.html'},
       {route: '/:model/:id/view/:tab', state: 'model::view::tab', templateUrl: 'base-view.html'},
       {route: '/:model/new', state: 'model::new', templateUrl: 'base-edit.html'},
       {route: '/:model', state: 'model::list', templateUrl: 'base-list.html'},
