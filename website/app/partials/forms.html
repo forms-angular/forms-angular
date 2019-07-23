@@ -33,11 +33,31 @@
 
     <ul>
         <li><strong>/#/:model</strong> which lists the documents in the collection, with links to the form for editing them</li>
+        <li><strong>/#/:model/viewonly</strong> which lists the documents in the collection, with links to a readonly form for viewing them</li>
         <li><strong>/#/:model/new</strong> which enables the user to create a new document using the default form for the collection.  It is also possible to override the
         default values for new records passing the desired record as follows: <code>/#/:model/new?r={"field1":"value1","field2":"value2"}</code></li>
         <li><strong>/#/:model/:id/edit</strong> which enables the user to edit a document</li>
         <li><strong>/#/:model/:id/edit/:tab</strong> which enables the user to edit a document, opening a tabbed form at a specified tab</li>
+        <li><strong>/#/:model/:id/view</strong> which enables the user to view a document in a read-only form</li>
+        <li><strong>/#/:model/:id/view/:tab</strong> which enables the user to view a document in a read-only form, opening a tabbed form at a specified tab</li>
     </ul>
+    <p>
+        Each view created from the <a href="/#/schemas#custom">custom form schemas</a> will also have routes
+        generated to them which only differ in that they have the schema name added as an additional parameter after the model:
+    </p>
+
+    <ul>
+        <li><strong>/#/:model/:formschema</strong> which lists the documents in the collection, with links to the form for editing them
+            (example <a ng-href="{{buildUrl('b_enhanced_schema/justnameandpostcode/')}}">here</a>).</li>
+        <li><strong>/#/:model/:formschema/viewonly</strong> which lists the documents in the collection, with links to the form for editing them</li>
+    </ul>
+    <p>etc</p>
+<!--        <li><strong>/#/:model/:formschema/new</strong> which enables the user to create a new document using the default form for the collection.  It is also possible to override the-->
+<!--            default values for new records passing the desired record as follows: <code>/#/:model/new?r={"field1":"value1","field2":"value2"}</code></li>-->
+<!--        <li><strong>/#/:model/:formschema/:id/edit</strong> which enables the user to edit a document</li>-->
+<!--        <li><strong>/#/:model/:formschema/:id/edit/:tab</strong> which enables the user to edit a document, opening a tabbed form at a specified tab</li>-->
+<!--        <li><strong>/#/:model/:formschema/:id/view</strong> which enables the user to view a document in a read-only form</li>-->
+<!--        <li><strong>/#/:model/:formschema/:id/view/:tab</strong> which enables the user to view a document in a read-only form, opening a tabbed form at a specified tab</li>-->
 
     <p>These routes are set up by making a call such as:<pre><code>myDemoApp.config(['formRoutesProvider', function (formRoutes) {
   formRoutes.start({
@@ -335,7 +355,7 @@ you can easily switch between modes without having to manually change all the in
     </p>
     <h5 id="#button-hooks">Controlling CRUD button enabled state</h5>
     <p>There are hooks to override the default CRUD button enabled state behaviour.  There is a trivial example which uses this capability to create
-        a read-only view can be found in the controller <a href="/scripts/controllers/b-enhanced-schema-readonly.js">here</a>.  The functions are
+        a read-only view can be found in the controller <a href="/scripts/controllers/b-enhanced-schema-readonly.js">here</a> (which is much the same as using the /view routes family).  The functions are
         passed three parameters: <strong>record</strong>, <strong>originalRecord</strong> and <strong>form</strong> and return a boolean, except in the case of
         isSaveDisabled, which can return a boolean or a string explaining what the problem is.  This string is displayed when the user hovers over
         the disabled Save button.

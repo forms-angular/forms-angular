@@ -28,6 +28,7 @@ module fng.services {
       {route: '/:model/:id/view/:tab', state: 'model::view::tab', templateUrl: 'base-view.html'},
       {route: '/:model/new', state: 'model::new', templateUrl: 'base-edit.html'},
       {route: '/:model', state: 'model::list', templateUrl: 'base-list.html'},
+      {route: '/:model/viewonly', state: 'model::view', templateUrl: 'base-list-view.html'},
 
       // Non default form (subset of fields etc)
       {route: '/:model/:form/:id/edit', state: 'model::form::edit', templateUrl: 'base-edit.html'},
@@ -35,7 +36,8 @@ module fng.services {
       {route: '/:model/:form/:id/view', state: 'model::form::view', templateUrl: 'base-view.html'},
       {route: '/:model/:form/:id/view/:tab', state: 'model::form::view::tab', templateUrl: 'base-view.html'},
       {route: '/:model/:form/new', state: 'model::form::new', templateUrl: 'base-edit.html'},
-      {route: '/:model/:form', state: 'model::form::list', templateUrl: 'base-list.html'}        // list page with edit links to non default form
+      {route: '/:model/:form', state: 'model::form::list', templateUrl: 'base-list.html'},        // list page with edit links to non default form
+      {route: '/:model/:form/:viewonly', state: 'model::form::list::view', templateUrl: 'base-list-view.html'}        // list page with edit links to non default form
     ];
 
     var _routeProvider, _stateProvider;
@@ -93,6 +95,9 @@ module fng.services {
           break;
         case 'edit' :
           urlStr = modelString + formString + '/' + id + '/edit' + tabString;
+          break;
+        case 'view' :
+          urlStr = modelString + formString + '/' + id + '/view' + tabString;
           break;
         case 'read' :
           urlStr = modelString + formString + '/' + id + '/read' + tabString;
@@ -180,8 +185,9 @@ module fng.services {
                   lastObject.modelName = locationSplit[1];
                   let lastParts = [locationSplit[locationParts - 1], locationSplit[locationParts - 2]];
                   let newPos = lastParts.indexOf('new');
+                  let viewonlyPos = lastParts.indexOf('viewonly');
                   let actionPos;
-                  if (newPos === -1) {
+                  if (newPos === -1 && viewonlyPos === -1) {
                     actionPos = postActions.reduce((previousValue, currentValue) => {
                       let pos = lastParts.indexOf(currentValue);
                       return pos > -1 ? pos : previousValue
@@ -190,9 +196,11 @@ module fng.services {
                       locationParts -= (2 + actionPos);
                       lastObject.id = locationSplit[locationParts];
                     }
-                  } else {
+                  } else if (newPos !== -1) {
                     lastObject.newRecord = true;
                     locationParts -= (1 + newPos);
+                  } else {
+                    locationParts -= (1 + viewonlyPos);
                   }
                   if (actionPos === 1 || newPos === 1) {
                     lastObject.tab = lastParts[0];

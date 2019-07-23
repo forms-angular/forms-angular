@@ -358,6 +358,9 @@ module fng.services {
       generateEditUrl: function generateEditUrl(obj, $scope:fng.IFormScope):string {
         return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
       },
+      generateViewUrl: function generateViewUrl(obj, $scope:fng.IFormScope):string {
+        return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/view');
+      },
       generateNewUrl: function generateNewUrl($scope):string {
         return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + 'new');
       },
@@ -515,6 +518,10 @@ module fng.services {
 
         $scope.generateEditUrl = function (obj) {
           return formGeneratorInstance.generateEditUrl(obj, $scope);
+        };
+
+        $scope.generateViewUrl = function (obj) {
+          return formGeneratorInstance.generateViewUrl(obj, $scope);
         };
 
         $scope.generateNewUrl = function () {

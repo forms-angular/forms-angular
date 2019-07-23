@@ -331,19 +331,10 @@ howManyPerDay: {type: Number, form:{showWhen:{lhs:"$smoker", comp:"eq", rhs:true
 
     <p>It is easy to create custom form schemas which are a subset of the whole schema by specifying the
         fields to include and any options. See the static in <a href="/models/b_enhanced_schema.js">this example</a>.
-        The custom form schemas are invoked as follows:
+        These schemas are automatically used to generate custom views and routes to them (see <a href="/#/forms#routes">here</a>).
     </p>
-    <ul>
-        <li><strong>/#/:model/:formschema</strong> (<a ng-href="{{buildUrl('b_enhanced_schema/justnameandpostcode/')}}">example
-            here</a>)
-        </li>
-        <li><strong>/#/:model/:formschema/new</strong> (<a ng-href="{{buildUrl('b_enhanced_schema/justnameandpostcode/new')}}">example
-            here</a>)
-        </li>
-        <li><strong>/#/:model/:formschema/:id/edit</strong></li>
-    </ul>
-    <p>It is also possible to show a subset of fields in a sub-schema, which can be seen (<a ng-href="{{buildUrl('f_nested_schema/ResultsOnly/new')}}">here</a>
-      if you add a new exam.</p>
+    <p>It is also possible to show a subset of fields in a sub-schema (which can be seen <a ng-href="{{buildUrl('f_nested_schema/ResultsOnly/new')}}">here</a>
+      if you add a new exam).</p>
 
     <h4>Subkeys</h4>
     <p>Custom schemas are a good way to allow access to only part of a document, for instance if a customer record contained operational

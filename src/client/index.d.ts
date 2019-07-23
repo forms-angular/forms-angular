@@ -241,6 +241,7 @@ declare module fng {
 
   export interface IFormGenerator {
     generateEditUrl(obj, $scope:IFormScope): string;
+    generateViewUrl(obj, $scope:IFormScope): string;
     generateNewUrl($scope: IFormScope): string;
     handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope: IFormScope, ctrlState);
     handleSchema(description: string, source, destForm, destList, prefix, doRecursion: boolean, $scope: IFormScope, ctrlState);
@@ -329,6 +330,7 @@ declare module fng {
     skipCols: any;
     setPristine: any;
     generateEditUrl: any;
+    generateViewUrl: any;
     generateNewUrl: any;
     scrollTheList: any;
     getListData: any;
