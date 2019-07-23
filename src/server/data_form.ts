@@ -417,7 +417,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
           handleSearchResultsFromIndex(err, docs, item, cb);
         });
       } else {
-        that.filteredFind(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 60, null, function(err, docs) {
+        that.filteredFind(item.resource, req, null, searchDoc, null, item.resource.options.searchOrder, limit + 60, null, function(err, docs) {
           handleSearchResultsFromIndex(err, docs, item, cb);
         });
       }
@@ -951,6 +951,7 @@ DataForm.prototype.collectionGet = function () {
     try {
       const aggregationParam = req.query.a ? JSON.parse(req.query.a) : null;
       const findParam = req.query.f ? JSON.parse(req.query.f) : {};
+      const projectParam = req.query.p ? JSON.parse(req.query.p) : {};
       const limitParam = req.query.l ? JSON.parse(req.query.l) : 0;
       const skipParam = req.query.s ? JSON.parse(req.query.s) : 0;
       const orderParam = req.query.o ? JSON.parse(req.query.o) : req.resource.options.listOrder;
@@ -961,8 +962,7 @@ DataForm.prototype.collectionGet = function () {
       }
 
       const self = this;
-
-      this.filteredFind(req.resource, req, aggregationParam, findParam, orderParam, limitParam, skipParam, function (err, docs) {
+      this.filteredFind(req.resource, req, aggregationParam, findParam, projectParam, orderParam, limitParam, skipParam, function (err, docs) {
         if (err) {
           return self.renderError(err, null, req, res, next);
         } else {
@@ -975,6 +975,48 @@ DataForm.prototype.collectionGet = function () {
   }, this);
 };
 
+DataForm.prototype.generateProjection = function(hiddenFields, projectParam): any {
+
+  let type;
+
+  function setSelectType(typeChar, checkChar) {
+    if (type === checkChar) {
+      throw new Error('Cannot mix include and exclude fields in select');
+    } else {
+      type = typeChar;
+    }
+  }
+
+  let retVal: any = hiddenFields;
+  if (projectParam) {
+    let projection = Object.keys(projectParam);
+    if (projection.length > 0) {
+      projection.forEach(p => {
+        if (projectParam[p] === 0) {
+          setSelectType('E','I');
+        } else if (projectParam[p] === 1) {
+          setSelectType('I','E');
+        } else {
+          throw new Error('Invalid projection: ' + projectParam);
+        }
+      });
+      if (type === 'E') {
+        // We are excluding fields - can just merge with hiddenFields
+        Object.assign(retVal, projectParam, hiddenFields);
+      } else {
+        // We are selecting fields - make sure none are hidden
+        retVal = projectParam;
+        for (let h in hiddenFields) {
+          if (hiddenFields.hasOwnProperty(h)) {
+            delete retVal[h];
+          }
+        }
+      }
+    }
+  }
+  return retVal;
+};
+
 DataForm.prototype.doFindFunc = function (req, resource, cb) {
   if (resource.options.findFunc) {
     resource.options.findFunc(req, cb);
@@ -983,7 +1025,7 @@ DataForm.prototype.doFindFunc = function (req, resource, cb) {
   }
 };
 
-DataForm.prototype.filteredFind = function (resource, req, aggregationParam, findParam, sortOrder, limit, skip, callback) {
+DataForm.prototype.filteredFind = function (resource, req, aggregationParam, findParam, projectParam, sortOrder, limit, skip, callback) {
 
   const that = this;
   let hiddenFields = this.generateHiddenFields(resource, false);
@@ -1029,7 +1071,7 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
           if (findParam) {
             query = query.find(findParam);
           }
-          query = query.select(hiddenFields);
+          query = query.select(that.generateProjection(hiddenFields, projectParam));
           if (limit) {
             query = query.limit(limit);
           }
@@ -1117,16 +1159,17 @@ DataForm.prototype.cleanseRequest = function (req) {
 };
 
 DataForm.prototype.generateQueryForEntity = function (req, resource, id, cb) {
+  let that = this;
   let hiddenFields = this.generateHiddenFields(resource, false);
   hiddenFields.__v = 0;
 
-  this.doFindFunc(req, resource, function (err, queryObj) {
+  that.doFindFunc(req, resource, function (err, queryObj) {
     if (err) {
       cb(err);
     } else {
       let idSel = {_id: id};
       let crit = queryObj ? extend(queryObj, idSel) : idSel;
-      cb(null, resource.model.findOne(crit).select(hiddenFields));
+      cb(null, resource.model.findOne(crit).select(that.generateProjection(hiddenFields, req.query.p)));
     }
   });
 };
@@ -1142,20 +1185,20 @@ DataForm.prototype.processEntity = function (req, res, next) {
   }
   this.generateQueryForEntity(req, req.resource, req.params.id, function (err, query) {
     if (err) {
-      return res.send({
+      return res.status(500).send({
         success: false,
         err: util.inspect(err)
       });
     } else {
       query.exec(function (err, doc) {
         if (err) {
-          return res.send({
+          return res.status(400).send({
             success: false,
             err: util.inspect(err)
           });
         }
         else if (doc == null) {
-          return res.send({
+          return res.status(404).send({
             success: false,
             err: 'Record not found'
           });
@@ -1181,10 +1224,10 @@ DataForm.prototype.entityGet = function () {
       }
       if (req.resource.options.onAccess) {
         req.resource.options.onAccess(req, function() {
-          return res.send(req.doc);
+          return res.status(200).send(req.doc);
         });
       } else {
-        return res.send(req.doc);
+        return res.status(200).send(req.doc);
       }
     });
   }, this);

@@ -166,7 +166,120 @@ describe('API tests', function() {
 
   describe('API', function() {
 
-    describe('data read', function() {
+    describe.only('document read', function() {
+
+      var bData, status;
+
+      function getItem(id, query, cb) {
+        var mockReq = {
+          url: '/b_using_options/' + id,
+          params: { resourceName: 'b_using_options', id: id },
+          query: query
+        };
+        var mockRes = {
+          status: function(data) {
+            status = data;
+            return this;
+          },
+          send: function(data) {
+            cb(null, data);
+          }
+        };
+        fng.entityGet()(mockReq, mockRes);
+      }
+
+      describe('simple', function() {
+
+        before(function(done) {
+          getItem('519a6075b320153869b175e0', {}, function(err, result) {
+            if (err) {throw err;}
+            bData = result;
+            done();
+          });
+        });
+
+        it('should send a record', function() {
+          assert(status === 200);
+          assert(bData);
+        });
+
+        it('should not send secure fields of a modified schema', function() {
+          assert(bData.surname, 'Must send surname');
+          assert(bData.forename, 'Must send forename');
+          assert(!bData.login, 'Must not send secure login field');
+          assert(!bData.passwordHash, 'Must not send secure password hash field');
+          assert(bData.email, 'Must send email');
+          assert(bData.weight, 'Must send weight');
+          assert(bData.accepted, 'Must send accepted');
+          assert(bData.interviewScore, 'Must send interview score');
+          assert(bData.freeText, 'Must send freetext');
+        });
+
+        it('should not send secure fields of a modified subschema', function() {
+          assert(bData.address.line1, 'Must send line1');
+          assert(bData.address.town, 'Must send town');
+          assert(bData.address.postcode, 'Must send postcode');
+          assert(!bData.address.surveillance, 'Must not send secure surveillance field');
+        });
+
+      });
+
+      describe('projection', function() {
+
+        before(function(done) {
+          getItem('519a6075b320153869b175e0', {p: {surname:1, forename:1, login:1, 'address.line1':1, 'address.surveillance': 1}}, function(err, result) {
+            if (err) {throw err;}
+            bData = result;
+            done();
+          });
+        });
+
+        it('should send a record', function() {
+          assert(bData);
+          assert(status === 200);
+        });
+
+        it('should not send secure fields of a modified schema', function() {
+          assert(bData.surname, 'Must send surname');
+          assert(bData.forename, 'Must send forename');
+          assert(!bData.login, 'Must not send secure login field');
+          assert(!bData.passwordHash, 'Must not send secure password hash field');
+          assert(!bData.email, 'Must not send email');
+          assert(!bData.weight, 'Must not send weight');
+          assert(!bData.accepted, 'Must not send accepted');
+          assert(!bData.interviewScore, 'Must not send interview score');
+          assert(!bData.freeText, 'Must not send freetext');
+        });
+
+        it('should not send secure fields of a modified subschema', function() {
+          assert(bData.address.line1, 'Must send line1');
+          assert(!bData.address.town, 'Must not send town');
+          assert(!bData.address.postcode, 'Must not send postcode');
+          assert(!bData.address.surveillance, 'Must not send secure surveillance field');
+        });
+
+      });
+
+      describe('findFunc filter', function() {
+
+        before(function(done) {
+          getItem('519a6075b440153869b155e0', {}, function(err, result) {
+            if (err) {throw err;}
+            bData = result;
+            done();
+          });
+        });
+
+        it('should not send a record', function() {
+          assert(!bData || !bData.success);
+          assert(status === 404);
+        });
+
+      });
+
+    });
+
+    describe('collection read', function() {
 
       var aData, aPtr, bData, bPtr;
 
@@ -244,6 +357,85 @@ describe('API tests', function() {
         assert(bPtr.address.town, 'Must send town');
         assert(bPtr.address.postcode, 'Must send postcode');
         assert.equal(Object.keys(bPtr).indexOf('address.surveillance'), -1, 'Must not send secure surveillance field');
+      });
+
+    });
+
+    describe('collection projection', function() {
+
+      var aData, aPtr, bData, bPtr;
+
+      function getCollectionProjection(model, proj, cb) {
+        var mockReq = {
+          url: '/' + model,
+          query : {p : JSON.stringify(proj)},
+          params: { resourceName: model }
+        };
+        var mockRes = {
+          send: function(data) {
+            cb(null, data);
+          }
+        };
+        fng.collectionGet()(mockReq, mockRes);
+      }
+
+      before(function(done) {
+        async.auto(
+          {
+            aData: function(cb) {
+              getCollectionProjection('a_unadorned_mongoose', {forename:0, weight:0}, cb);
+            },
+            bData: function(cb) {
+              getCollectionProjection('b_using_options', {surname: 1, weight: 1, login: 1, 'address.surveillance': 1, 'address.line1': 1}, cb);
+            }
+          },
+          function(err, results) {
+            if (err) {
+              throw err;
+            }
+            aData = results['aData'];
+            aPtr = aData.find(function(obj) {
+              return obj.surname === 'TestPerson1'
+            });
+            bData = results['bData'];
+            bPtr = bData.find(function(obj) {
+              return obj.surname === 'IsAccepted1'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should send the right number of records', function() {
+        assert.strictEqual(aData.length, 2);
+      });
+
+      it('should suppress unselected fields', function() {
+        assert(aPtr.surname, 'must send surname');
+        assert(!aPtr.forename, 'must not send forename');
+        assert(!aPtr.weight, 'must not send weight');
+        assert(aPtr.eyeColour, 'must send eyeColour');
+        assert(aPtr.dateOfBirth, 'must send dob');
+        assert.strictEqual(aPtr.accepted, false, 'must send accepted');
+      });
+
+      it('should send select fields unless they are secure', function() {
+        assert(bPtr.surname, 'Must send surname');
+        assert(!bPtr.forename, 'Must not send forename');
+        assert(!bPtr.login, 'Must not send secure login field');
+        assert(!bPtr.passwordHash, 'Must not send secure password hash field');
+        assert(!bPtr.email, 'Must not send email');
+        assert(bPtr.weight, 'Must send weight');
+        assert(!bPtr.accepted, 'Must not send accepted');
+        assert(!bPtr.interviewScore, 'Must not send interview score');
+        assert(!bPtr.freeText, 'Must not send freetext');
+      });
+
+      it('should not send secure fields of a modified subschema', function() {
+        assert(bPtr.address.line1, 'Must send line1');
+        assert(!bPtr.address.town, 'Must not send town');
+        assert(!bPtr.address.postcode, 'Must not send postcode');
+        assert(!bPtr.address.surveillance, 'Must not send secure surveillance field');
       });
 
     });

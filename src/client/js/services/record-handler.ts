@@ -558,7 +558,7 @@ module fng.services {
           if (errorMessage.length > 0) {
             errorMessage = response.data.message + '<br /><ul>' + errorMessage + '</ul>';
           } else {
-            errorMessage = response.data.message || 'Error!  Sorry - No further details available.';
+            errorMessage = response.data.message || response.data.err || 'Error!  Sorry - No further details available.';
           }
           $scope.showError(errorMessage);
         } else {
@@ -583,26 +583,14 @@ module fng.services {
         SubmissionsService.readRecord($scope.modelName, $scope.id)
           .then(function (response) {
             let data: any = response.data;
-            if (data.success === false) {
+            handleIncomingData(data, $scope, ctrlState);
+          }, function(error) {
+            if (error.status === 404) {
               $location.path('/404');
-// TODO Figure out tab history updates (check for other tab-history-todos)
-//             } else if (response.master) {
-//
-//               ctrlState.allowLocationChange = false;
-//               $scope.phase = 'ready';
-//               $scope.record = angular.copy(response.data);
-//               ctrlState.master = angular.copy(response.master);
-//               if (response.changed) {
-//                 $timeout(() => {
-//                   $scope[$scope.topLevelFormName].$setDirty();
-//                 });
-//               } else {
-//                 $timeout($scope.setPristine);
-//               }
             } else {
-              handleIncomingData(data, $scope, ctrlState);
+              $scope.handleHttpError(error);
             }
-          }, $scope.handleHttpError);
+          });
       },
 
       scrollTheList: function scrollTheList($scope) {

@@ -27,11 +27,12 @@
                     <li><strong>f</strong>ilter using a JSON object.  For example <a href="/api/b_enhanced_schema?f={%22forename%22:%22Alan%22}"><code>/api/b_enhanced_schema?f={"forename":"Alan"}</code></a></li>
                     <li><strong>l</strong>imit.  For example <a href="/api/b_enhanced_schema?l=10"><code>/api/b_enhanced_schema?l=10</code></a>.  (Used with <strong>s</strong>kip option to provide pagination)</li>
                     <li><strong>s</strong>kip.  For example <a href="/api/b_enhanced_schema?s=10"><code>/api/b_enhanced_schema?s=10</code></a>.  (Used with <strong>l</strong>imit option to provide pagination)</li>
-                    <li><strong>o</strong>rder using a JSON object.  For example <a href="/api/b_enhanced_schema?o={%22forename%22:%221%22,%22dateOfBirth%22:%22-1%22}"><code>/api/b_enhanced_schema?o={"forename":"1","dateOfBirth":"-1"}</code></a> sorts by forename by youth</li>
+                    <li><strong>o</strong>rder using a JSON object.  For example <a href="/api/b_enhanced_schema?o={%22forename%22:1,%22dateOfBirth%22:-1}"><code>/api/b_enhanced_schema?o={"forename":1,"dateOfBirth":-1}</code></a> sorts by forename by youth</li>
+                    <li><strong>p</strong>roject (return secified fields) using a JSON object.  For example <a href="/api/b_enhanced_schema?p={%22surname%22:1}"><code>/api/b_enhanced_schema?p={"surname":1}</code></a> returns only surname.  _id is always returned. 0 suppresses a field.  You cannot mix suppression and selection.</li>
                     <li><strong>a</strong>ggregation using a JSON object, gives access to the very powerful (and quite difficult) MongoDB <a href="https://docs.mongodb.org/manual/core/aggregation-introduction/">aggregation framework</a>.
                     The normal use case here is to use the aggregation framework to perform a <strong>$match</strong>.  Any $project steps must return the original _id.
                   </ul>
-                <li><strong>/api/:model/:id</strong> a single document from the collection</li>
+                <li><strong>/api/:model/:id</strong> a single document from the collection.  You can <strong>project</strong> fields here (see above for details)</li>
                 <li><strong>/api/:model/:id/list</strong> returns how a document should appear in a list</li>
             </ul>
 

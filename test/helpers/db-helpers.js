@@ -1,4 +1,4 @@
-var formsAngular = require("../../dist/server/data_form.js");
+var formsAngular = require("../../src/server/data_form.js");
 var express = require("express");
 var async = require("async");
 var path = require("path");
