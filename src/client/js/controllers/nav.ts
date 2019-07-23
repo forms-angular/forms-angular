@@ -13,6 +13,10 @@ module fng.controllers {
     $rootScope.navScope = $scope;  // Lets plugins access menus
     clearContextMenu();
 
+    $scope.toggleCollapsed = function() {
+      $scope.collapsed = !$scope.collapsed;
+    };
+
     /* isCollapsed and showShortcuts are used to control how the menu is displayed in a responsive environment and whether the shortcut keystrokes help should be displayed */
     $scope.isCollapsed = true;
     $scope.showShortcuts = false;
