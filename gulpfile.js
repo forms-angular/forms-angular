@@ -123,6 +123,11 @@ gulp.task('copyLess', function () {
     .pipe(gulp.dest(distDirectory + '/client'));
 });
 
+gulp.task('copyJs', function () {
+  return gulp.src([distDirectory + '/server/*.js'])
+    .pipe(gulp.dest('./src/server'));
+});
+
 gulp.task('templates', function() {
   var templateCache = require('gulp-angular-templatecache');
 
@@ -171,6 +176,7 @@ gulp.task('build', gulp.series(
     'saveDebug',
     'copyTypes',
     'copyLess',
+    'copyJs',
     'cleanMin',
     'less',
   function(done) {done();})
