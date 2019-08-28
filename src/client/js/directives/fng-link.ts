@@ -23,7 +23,7 @@ module fng.controllers {
         parentNode = elm.parentNode;
         if (!parentNode) {
           finished = true;
-        } else if (parentNode.getAttribute('uib-modal-window')) {
+        } else if (typeof parentNode.getAttribute === "function" && parentNode.getAttribute('uib-modal-window')) {
           (angular.element(elm).scope() as any).close(fakeEvt);
           finished = true;
         } else {
