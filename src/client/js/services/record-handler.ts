@@ -905,11 +905,19 @@ module fng.services {
               $scope.errorMessage = error;
             }
           }
+          $scope.errorHideTimer = window.setTimeout(function() {
+            $scope.dismissError();
+            $scope.$digest();
+          }, 2000 + (1000 * ($scope.alertTitle + $scope.errorMessage).length / 40));
         };
 
-        $scope.dismissError = function () {
+        $scope.dismissError = function(fade = false) {
           delete $scope.errorMessage;
           delete $scope.alertTitle;
+        };
+
+        $scope.stickError = function() {
+          clearTimeout($scope.errorHideTimer);
         };
 
         $scope.prepareForSave = function(cb: (error: string, dataToSave?: any) => void): void {

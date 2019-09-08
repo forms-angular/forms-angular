@@ -1,0 +1,8 @@
+<div id="display-error" ng-style="{opacity : errorMessage ? '1' : '0', 'z-index' : errorMessage ? '130' : '0'}"  class="row-fluid">
+    <div class="alert alert-error offset1 span10 alert-warning ">
+        <button type="button" class="close" ng-click="dismissError()"><i class="icon-remove"></i></button>
+        <button type="button" class="close" ng-click="stickError()"><i class="icon-stop"></i></button>
+          <h4>{{alertTitle}}</h4>
+          <div ng-bind-html="errorMessage"></div>
+        </div>
+</div>

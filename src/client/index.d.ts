@@ -283,6 +283,7 @@ declare module fng {
     formName: string;
     alertTitle: any;
     errorMessage: any;
+    errorHideTimer: number;
     save: any;
     newRecord: boolean;
     initialiseNewRecord?: any;
@@ -334,7 +335,8 @@ declare module fng {
     generateNewUrl: any;
     scrollTheList: any;
     getListData: any;
-    dismissError: any;
+    dismissError: () => void;
+    stickError: () => void;
     handleHttpError: (response: any) => void;
     dropConversionWatcher: () => void;
   }
