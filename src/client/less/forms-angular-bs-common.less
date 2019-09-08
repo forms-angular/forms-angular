@@ -212,13 +212,14 @@ button#saveButton[disabled]:hover + #why-disabled.showwhy {
 }
 
 #display-error {
+  transition: opacity .5s ease-in-out;
   position: fixed;
   top: 60px;
-  z-index: 130;
+  width: 100%;
 }
 
 input[type="checkbox"].ng-invalid::after {
-  content: "Req'd!";
+  content: "Invalid";
   color: rgba(255, 0, 0, 0.6);
   padding-left: 1em;
 }

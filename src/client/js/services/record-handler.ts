@@ -905,12 +905,10 @@ module fng.services {
               $scope.errorMessage = error;
             }
           }
-          $('#display-error').fadeIn(400);
           $scope.errorHideTimer = window.setTimeout(function() {
-            $('#display-error').fadeOut(2500, () => {
-              $scope.dismissError();
-            });
-          }, 1200 * ($scope.alertTitle + $scope.errorMessage).length / 40);
+            $scope.dismissError();
+            $scope.$digest();
+          }, 2000 + (1000 * ($scope.alertTitle + $scope.errorMessage).length / 40));
         };
 
         $scope.dismissError = function(fade = false) {
