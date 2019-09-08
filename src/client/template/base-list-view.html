@@ -1,11 +1,11 @@
 <div ng-controller="BaseCtrl">
+    <error-display></error-display>
     <div ng-class="css('rowFluid')" class="page-header list-header">
         <div class="header-lhs col-sm-8 span8">
             <h1>{{modelNameDisplay}}</h1>
         </div>
     </div>
     <div class="page-body list-body">
-        <error-display></error-display>
         <div ng-class="css('rowFluid')" infinite-scroll="scrollTheList()">
             <a ng-repeat="record in recordList" ng-href="{{generateViewUrl(record)}}">
                 <div class="list-item">

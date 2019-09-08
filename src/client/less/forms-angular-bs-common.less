@@ -210,3 +210,15 @@ button#saveButton[disabled]:hover + #why-disabled.showwhy {
   font-weight: normal;
   top: 22px;
 }
+
+#display-error {
+  position: fixed;
+  top: 60px;
+  z-index: 130;
+}
+
+input[type="checkbox"].ng-invalid::after {
+  content: "Req'd!";
+  color: rgba(255, 0, 0, 0.6);
+  padding-left: 1em;
+}
