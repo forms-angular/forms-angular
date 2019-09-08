@@ -1,4 +1,5 @@
 <div ng-controller="BaseCtrl">
+    <error-display></error-display>
     <div ng-class="css('rowFluid')" class="page-header edit-header">
         <div class="header-lhs col-sm-8 span8">
             <h4>{{modelNameDisplay}} :
@@ -7,7 +8,6 @@
         </div>
     </div>
     <div class="container-fluid page-body edit-body">
-        <error-display></error-display>
         <form-input name="baseForm" schema="baseSchema()" formstyle="compact" viewform="true"></form-input>
     </div>
 </div>

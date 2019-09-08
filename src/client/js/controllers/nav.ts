@@ -98,32 +98,36 @@ module fng.controllers {
     });
 
     $scope.doClick = function (index, event) {
-      var option = angular.element(event.target);
-      var item = $scope.items[index];
+      const option = angular.element(event.target);
+      const item = $scope.items[index];
       if (item.divider || option.parent().hasClass('disabled')) {
         event.preventDefault();
       } else if (item.broadcast) {
         $scope.$broadcast(item.broadcast);
       } else {
         // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
-        var args = item.args || [],
-          fn = item.fn;
-        switch (args.length) {
-          case  0:
-            fn();
-            break;
-          case  1:
-            fn(args[0]);
-            break;
-          case  2:
-            fn(args[0], args[1]);
-            break;
-          case  3:
-            fn(args[0], args[1], args[2]);
-            break;
-          case  4:
-            fn(args[0], args[1], args[2], args[3]);
-            break;
+        const args = item.args || [];
+        const fn = item.fn;
+        if (typeof fn === "function") {
+          switch (args.length) {
+            case  0:
+              fn();
+              break;
+            case  1:
+              fn(args[0]);
+              break;
+            case  2:
+              fn(args[0], args[1]);
+              break;
+            case  3:
+              fn(args[0], args[1], args[2]);
+              break;
+            case  4:
+              fn(args[0], args[1], args[2], args[3]);
+              break;
+          }
+        } else if (fn) {
+          throw new Error("Incorrect menu setup")
         }
       }
     };

@@ -81,6 +81,7 @@ formsAngular.config(['$locationProvider', 'cssFrameworkServiceProvider', 'routin
 /**
  * The rest of this file is all about testing different frameworks and will almost certainly be of no interest to
  * anyone not working on forms-angular itself
+ * to specify the framework for testing open a new browser tab and enter localhost:9000/#/bs3 (or whichever framework)
  **/
 
 websiteApp.css = {
