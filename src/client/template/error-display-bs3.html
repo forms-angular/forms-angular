@@ -1,4 +1,4 @@
-<div id="display-error" ng-style="{opacity : (errorMessage && '1') || '0', 'z-index' : (errorMessage && '130') || '0'}" class="row">
+<div id="display-error" ng-style="{opacity : errorMessage ? '1' : '0', 'z-index' : errorMessage ? '130' : '0'}" class="row">
     <div class="alert col-md-offset-1 col-md-10 alert-warning ">
         <button type="button" class="close" ng-click="dismissError()"><i class="glyphicon glyphicon-remove"></i></button>
         <button type="button" class="close" ng-click="stickError()"><i class="glyphicon glyphicon-pushpin"></i></button>
