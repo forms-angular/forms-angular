@@ -211,6 +211,12 @@ button#saveButton[disabled]:hover + #why-disabled.showwhy {
   top: 22px;
 }
 
+.ng-animate {
+  // Turn animation off as it interferes with some existing code when (for instance) switching views
+  // The phase gets set to "ready" even though there are potentially multiple views on the screen
+  animation-duration: 0s;
+}
+
 #display-error {
   position: fixed;
   top: 60px;
@@ -221,7 +227,7 @@ button#saveButton[disabled]:hover + #why-disabled.showwhy {
 #display-error.ng-hide {
   opacity: 0;
 }
-#display-error.ng-hide-add,
+#display-error.ng-hide-add,         // animate the error display
 #display-error.ng-hide-remove {
   transition: all linear 0.5s;
 }
