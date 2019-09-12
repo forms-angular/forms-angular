@@ -908,10 +908,20 @@ module fng.services {
           $scope.errorHideTimer = window.setTimeout(function() {
             $scope.dismissError();
             $scope.$digest();
-          }, 2000 + (1000 * ($scope.alertTitle + $scope.errorMessage).length / 40));
+          }, 1000 + (1000 * ($scope.alertTitle + $scope.errorMessage).length / 50));
+          $scope.errorVisible = true;
         };
 
-        $scope.dismissError = function(fade = false) {
+        $scope.clearTimeout = function() {
+          if ($scope.errorHideTimer) {
+            clearTimeout($scope.errorHideTimer);
+            delete $scope.errorHideTimer;
+          }
+        };
+
+        $scope.dismissError = function () {
+          $scope.clearTimeout;
+          $scope.errorVisible = false;
           delete $scope.errorMessage;
           delete $scope.alertTitle;
         };

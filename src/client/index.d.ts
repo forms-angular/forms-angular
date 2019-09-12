@@ -282,6 +282,7 @@ declare module fng {
     modelName: string;
     formName: string;
     alertTitle: any;
+    errorVisible: boolean;
     errorMessage: any;
     errorHideTimer: number;
     save: any;
@@ -337,6 +338,7 @@ declare module fng {
     getListData: any;
     dismissError: () => void;
     stickError: () => void;
+    clearTimeout: () => void;
     handleHttpError: (response: any) => void;
     dropConversionWatcher: () => void;
   }

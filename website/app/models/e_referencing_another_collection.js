@@ -5,11 +5,7 @@ var eSchemaDef = {
     surname: { type: String, list: {} },
     forename: { type: String, list: true },
     weight: { type: Number, form: { label: 'Weight (lbs)' } },
-    leadMentor: { type: mongoose_1.Schema.Types.ObjectId, ref: 'c_subdoc_example', required: true, form: {
-        help: 'This field has got a link from this collection to the referred to collection.  See the form Object documentation on the schemas page for details',
-        link : {linkOnly: false, label: true},
-        label: 'zzzzzz'
-    }},
+    leadMentor: { type: mongoose_1.Schema.Types.ObjectId, ref: 'c_subdoc_example', required: true },
     mentor: { type: mongoose_1.Schema.Types.ObjectId, ref: 'c_subdoc_example' },
     guide: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select' } },
     teacher: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },

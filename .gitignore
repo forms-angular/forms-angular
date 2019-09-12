@@ -19,3 +19,5 @@ package-lock.json
 
 website/node_modules
 website/app/bower_components
+website/failed_tests
+website/test/e2e/failed_tests

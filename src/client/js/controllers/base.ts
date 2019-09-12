@@ -18,6 +18,7 @@ module fng.controllers {
       allowLocationChange: true   // Set when the data arrives..
     };
 
+    $scope.errorVisible = false;
     angular.extend($scope, routingService.parsePathFunc()($location.$$path));
 
     // Load context menu.  For /person/client/:id/edit we need

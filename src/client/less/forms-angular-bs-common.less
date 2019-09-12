@@ -212,10 +212,18 @@ button#saveButton[disabled]:hover + #why-disabled.showwhy {
 }
 
 #display-error {
-  transition: opacity .5s ease-in-out;
   position: fixed;
   top: 60px;
   width: 100%;
+  z-index: 109;
+}
+
+#display-error.ng-hide {
+  opacity: 0;
+}
+#display-error.ng-hide-add,
+#display-error.ng-hide-remove {
+  transition: all linear 0.5s;
 }
 
 input[type="checkbox"].ng-invalid::after {
