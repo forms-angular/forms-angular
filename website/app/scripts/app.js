@@ -48,7 +48,12 @@ websiteApp
 websiteApp.frameworks = ['bs2', 'bs3'];   // Just for testing forms-angular
 websiteApp.defaultFramework = 'bs2';
 
-formsAngular.config(['$locationProvider', 'cssFrameworkServiceProvider', 'routingServiceProvider', function ($locationProvider, cssFrameworkService, routingService) {
+formsAngular.config(['$locationProvider', 'cssFrameworkServiceProvider', 'routingServiceProvider', '$animateProvider',
+  function ($locationProvider, cssFrameworkService, routingService, $animateProvider) {
+    $animateProvider.customFilter(function(node, event, options) {
+      // Only error display
+      return node.id === "display-error";
+    });
 //  $locationProvider.hashPrefix('');
   routingService.start(
     {
