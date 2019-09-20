@@ -452,7 +452,10 @@ module fng.services {
         // check that target element is visible.  May not be reliable - see https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
         if ($event.target.offsetParent) {
           var arrayField = getArrayFieldToExtend(fieldName, $scope);
-          var obj = $scope.setDefaults($scope.formSchema.find(f => f.name === fieldName).schema, fieldName + '.');
+
+          const schemaElement = $scope.formSchema.find(f => f.name === fieldName);  // In case someone is using the formSchema directly
+          const subSchema = schemaElement ? schemaElement.schema : null;
+          let obj = subSchema ? $scope.setDefaults(subSchema, fieldName + '.') : {};
           arrayField.push(obj);
           $scope.setFormDirty($event);
         }

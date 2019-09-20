@@ -50,8 +50,6 @@
     "angular-ui-bootstrap": "1.3.2 || 2.5.6",
     "angular-ui-grid": "^4.8.1",
     "async": "3.1.0",
-    "fng-reports": "^0.12.0-beta.46",
-    "fng-ui-select": "^0.12.0-beta.46",
     "lodash": "^4.17.15",
     "ng-infinite-scroll": "1.3.0",
     "node.extend": "2.0.2"
