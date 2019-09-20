@@ -499,11 +499,11 @@ module fng.services {
         } else {
           // New record
           ctrlState.allowLocationChange = false;
-          ctrlState.master = {};
+          ctrlState.master = $scope.setDefaults($scope.formSchema);
           let passedRecord = $scope.initialiseNewRecord || $location.$$search.r;
           if (passedRecord) {
             try {
-              ctrlState.master = JSON.parse(passedRecord);
+              Object.assign(ctrlState.master, JSON.parse(passedRecord));
 
               // Although this is a new record we are making it dirty from the url so we need to $setDirty
               $scope.$on('fngCancel', () => {
@@ -733,13 +733,13 @@ module fng.services {
           let refHandler: IFngLookupListHandlerInfo = $scope.listLookups.find((lkp) => {
             return lkp.ref.property === ref.property && lkp.ref.value === ref.value;
           });
-  
+
           let thisHandler: IFngSingleLookupHandler = {
             formInstructions: formInstructions,
             lastPart: nameElements.pop(),
             possibleArray: nameElements.join('.')
           };
-  
+
           if (!refHandler) {
             refHandler = {
               ref: ref,
@@ -840,26 +840,50 @@ module fng.services {
 
             // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
             const idList = $scope[suffixCleanId(schemaI, '_ids')];
-            let thisConversion: any;
             if (idList && idList.length > 0) {
               updateObject(fieldname, anObject, function (value) {
                 return convertToForeignKeys(schemaI, value, $scope[suffixCleanId(schemaI, 'Options')], idList);
               });
-            } else if (thisConversion = getConversionObject($scope, fieldname, schemaName)) {
-              const lookup = getData(anObject, fieldname, null);
-              let newVal;
-              if (schemaI.array) {
-                newVal = [];
-                if (lookup) {
-                  for (let n = 0; n < lookup.length; n++) {
-                    newVal[n] = convertLookup(lookup[n], thisConversion);
+            } else {
+              let thisConversion = getConversionObject($scope, fieldname, schemaName);
+              if (thisConversion) {
+                const lookup = getData(anObject, fieldname, null);
+                let newVal;
+                if (schemaI.array) {
+                  newVal = [];
+                  if (lookup) {
+                    for (let n = 0; n < lookup.length; n++) {
+                      newVal[n] = convertLookup(lookup[n], thisConversion);
+                    }
                   }
+                } else {
+                  newVal = convertLookup(lookup, thisConversion);
                 }
-              } else {
-                newVal = convertLookup(lookup, thisConversion);
+                setData(anObject, fieldname, null, newVal);
               }
-              setData(anObject, fieldname, null, newVal);
             }
+            // // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
+            // const idList = $scope[suffixCleanId(schemaI, '_ids')];
+            // let thisConversion: any;
+            // if (idList && idList.length > 0) {
+            //   updateObject(fieldname, anObject, function (value) {
+            //     return convertToForeignKeys(schemaI, value, $scope[suffixCleanId(schemaI, 'Options')], idList);
+            //   });
+            // } else if (thisConversion = getConversionObject($scope, fieldname, schemaName)) {
+            //   const lookup = getData(anObject, fieldname, null);
+            //   let newVal;
+            //   if (schemaI.array) {
+            //     newVal = [];
+            //     if (lookup) {
+            //       for (let n = 0; n < lookup.length; n++) {
+            //         newVal[n] = convertLookup(lookup[n], thisConversion);
+            //       }
+            //     }
+            //   } else {
+            //     newVal = convertLookup(lookup, thisConversion);
+            //   }
+            //   setData(anObject, fieldname, null, newVal);
+            // }
 
           }
         }
@@ -1128,15 +1152,17 @@ module fng.services {
                   $scope.whyDisabled += "</strong>: ";
                   if (c.$error) {
                     for (let type in c.$error) {
-                      switch (type) {
-                        case "required":
-                          $scope.whyDisabled += "Field missing required value. ";
-                          break;
-                        case "pattern":
-                          $scope.whyDisabled += "Field does not match required pattern. ";
-                          break;
-                        default:
-                          $scope.whyDisabled += type + ". ";
+                      if (c.$error.hasOwnProperty(type)) {
+                        switch (type) {
+                          case "required":
+                            $scope.whyDisabled += "Field missing required value. ";
+                            break;
+                          case "pattern":
+                            $scope.whyDisabled += "Field does not match required pattern. ";
+                            break;
+                          default:
+                            $scope.whyDisabled += type + ". ";
+                        }
                       }
                     }
                   }
@@ -1189,6 +1215,16 @@ module fng.services {
           } else {
             return false;
           }
+        };
+
+        $scope.setDefaults = function(formSchema: IFormInstruction[], base = ''): any {
+          const retVal = {};
+          formSchema.forEach(s => {
+            if (s.defaultValue) {
+              retVal[s.name.replace(base, '')] = s.defaultValue;
+            }
+          });
+          return retVal;
         };
 
         $scope.getVal = function (expression, index) {

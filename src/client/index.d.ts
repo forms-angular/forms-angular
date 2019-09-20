@@ -169,7 +169,8 @@ declare module fng {
   export interface IFormInstruction extends IFieldViewInfo {
     id? : string;   // id of generated DOM element
     type?: 'string' | 'text' | 'textarea' | 'number' | 'select' | 'link' | 'date' | 'checkbox' | 'password';
-    rows? : number
+    defaultValue? : any;
+    rows? : number;
     label: string;
     options?: any;
     ids?: any;
@@ -320,6 +321,7 @@ declare module fng {
     cancel: () => any;
     showError: (error: any, alertTitle? : string) => void;
     prepareForSave: (cb: (error: string, dataToSave?: any) => void) => void;
+    setDefaults: (formSchema: IFormSchema, base?: string) => any;
     formSchema: IControlledFormSchema;
     baseSchema: () => Array<any>;
     setFormDirty: any;

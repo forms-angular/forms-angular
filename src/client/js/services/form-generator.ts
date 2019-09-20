@@ -10,9 +10,7 @@ module fng.services {
    */
 
   /*@ngInject*/
-  import IFormController = angular.IFormController;
   import IFormInstruction = fng.IFormInstruction;
-
 
   export function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) : IFormGenerator {
 
@@ -44,46 +42,48 @@ module fng.services {
       }
 
       for (var field in source) {
-        if (field === '_id') {
-          if (destList && source['_id'].options && source['_id'].options.list) {
-            handleListInfo(destList, source['_id'].options.list, field);
-          }
-        } else if (source.hasOwnProperty(field)) {
-          var mongooseType = source[field],
-            mongooseOptions: any = mongooseType.options || {};
-          var formData: any = mongooseOptions.form || {};
-          if (mongooseType.schema && !formData.hidden) {
-            if (doRecursion && destForm) {
-              var schemaSchema = [];
-              handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
-              var sectionInstructions = basicInstructions(field, formData, prefix);
-              sectionInstructions.schema = schemaSchema;
-              if (formData.tab) {
-                handletabInfo(formData.tab, sectionInstructions);
-              }
-              if (formData.order !== undefined) {
-                destForm.splice(formData.order, 0, sectionInstructions);
-              } else {
-                destForm.push(sectionInstructions);
-              }
+        if (source.hasOwnProperty(field)) {
+          if (field === '_id') {
+            if (destList && source['_id'].options && source['_id'].options.list) {
+              handleListInfo(destList, source['_id'].options.list, field);
             }
-          } else {
-            if (destForm && !formData.hidden) {
-              var formInstructions = basicInstructions(field, formData, prefix);
-              if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
-                var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
-                if (formInst.tab) {
-                  handletabInfo(formInst.tab, formInst);
+          } else if (source.hasOwnProperty(field)) {
+            var mongooseType = source[field],
+              mongooseOptions: any = mongooseType.options || {};
+            var formData: any = mongooseOptions.form || {};
+            if (mongooseType.schema && !formData.hidden) {
+              if (doRecursion && destForm) {
+                var schemaSchema = [];
+                handleSchema('Nested ' + field, mongooseType.schema, schemaSchema, null, field + '.', true, $scope, ctrlState);
+                var sectionInstructions = basicInstructions(field, formData, prefix);
+                sectionInstructions.schema = schemaSchema;
+                if (formData.tab) {
+                  handletabInfo(formData.tab, sectionInstructions);
                 }
                 if (formData.order !== undefined) {
-                  destForm.splice(formData.order, 0, formInst);
+                  destForm.splice(formData.order, 0, sectionInstructions);
                 } else {
-                  destForm.push(formInst);
+                  destForm.push(sectionInstructions);
                 }
               }
-            }
-            if (destList && mongooseOptions.list) {
-              handleListInfo(destList, mongooseOptions.list, field);
+            } else {
+              if (destForm && !formData.hidden) {
+                var formInstructions = basicInstructions(field, formData, prefix);
+                if (handleConditionals(formInstructions.showIf, formInstructions.name, $scope) && field !== 'options') {
+                  var formInst = handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope, ctrlState);
+                  if (formInst.tab) {
+                    handletabInfo(formInst.tab, formInst);
+                  }
+                  if (formData.order !== undefined) {
+                    destForm.splice(formData.order, 0, formInst);
+                  } else {
+                    destForm.push(formInst);
+                  }
+                }
+              }
+              if (destList && mongooseOptions.list) {
+                handleListInfo(destList, mongooseOptions.list, field);
+              }
             }
           }
         }
@@ -189,7 +189,8 @@ module fng.services {
           } else {
             try {
               formInstructions.add = formInstructions.add || '';
-              let testDatePickerInstalled = angular.module('ui.date').requires;
+              // Check whether DatePicker is installed
+              angular.module('ui.date').requires;
               formInstructions.type = 'text';
               formInstructions.add += ' ui-date ui-date-format ';
               // formInstructions.add += ' ui-date ui-date-format datepicker-popup-fix ';
@@ -220,6 +221,11 @@ module fng.services {
       }
       if (mongooseOptions.readonly) {
         formInstructions['readonly'] = true;
+      }
+      if (mongooseType.defaultValue) {
+        formInstructions.defaultValue = mongooseType.defaultValue;
+      } else if (mongooseType.options && mongooseType.options.default) {
+        console.log('No support for default with no value, yet')
       }
       return formInstructions;
     }
@@ -446,7 +452,8 @@ module fng.services {
         // check that target element is visible.  May not be reliable - see https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
         if ($event.target.offsetParent) {
           var arrayField = getArrayFieldToExtend(fieldName, $scope);
-          arrayField.push({});
+          var obj = $scope.setDefaults($scope.formSchema.find(f => f.name === fieldName).schema, fieldName + '.');
+          arrayField.push(obj);
           $scope.setFormDirty($event);
         }
       },
