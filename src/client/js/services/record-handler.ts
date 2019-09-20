@@ -1092,47 +1092,63 @@ module fng.services {
           $scope.whyDisabled = undefined;
           let pristine = false;
 
-          if ($scope[$scope.topLevelFormName]) {
-            if ($scope[$scope.topLevelFormName].$invalid) {
-              $scope.whyDisabled = 'The form data is invalid:';
-              $scope[$scope.topLevelFormName].$$controls.forEach(c => {
-                if (c.$invalid) {
-                  $scope.whyDisabled += '<br /><strong>';
-
+          function generateWhyDisabledMessage(form, subFormName?: string) {
+            form.$$controls.forEach(c => {
+              if (c.$invalid) {
+                if (c.$$controls) {
+                  // nested form
+                  generateWhyDisabledMessage(c, c.$name)
+                } else {
+                  $scope.whyDisabled += "<br /><strong>";
+                  if (subFormName) {
+                    $scope.whyDisabled += subFormName + ' ';
+                  }
                   if (
-                    cssFrameworkService.framework() === 'bs2' &&
+                    cssFrameworkService.framework() === "bs2" &&
                     c.$$element &&
                     c.$$element.parent() &&
                     c.$$element.parent().parent() &&
-                    c.$$element.parent().parent().find('label') &&
-                    c.$$element.parent().parent().find('label').text()
+                    c.$$element.parent().parent().find("label") &&
+                    c.$$element.parent().parent().find("label").text()
                   ) {
-                    $scope.whyDisabled += c.$$element.parent().parent().find('label').text()
+                    $scope.whyDisabled += c.$$element.parent().parent().find("label").text();
                   } else if (
-                    cssFrameworkService.framework() === 'bs3' &&
+                    cssFrameworkService.framework() === "bs3" &&
                     c.$$element &&
                     c.$$element.parent() &&
                     c.$$element.parent().parent() &&
                     c.$$element.parent().parent().parent() &&
-                    c.$$element.parent().parent().parent().find('label') &&
-                    c.$$element.parent().parent().parent().find('label').text()
+                    c.$$element.parent().parent().parent().find("label") &&
+                    c.$$element.parent().parent().parent().find("label").text()
                   ) {
-                    $scope.whyDisabled += c.$$element.parent().parent().parent().find('label').text()
+                    $scope.whyDisabled += c.$$element.parent().parent().parent().find("label").text();
                   } else {
                     $scope.whyDisabled += c.$name;
                   }
-                  $scope.whyDisabled += '</strong>: ';
+                  $scope.whyDisabled += "</strong>: ";
                   if (c.$error) {
                     for (let type in c.$error) {
                       switch (type) {
-                        case 'required': $scope.whyDisabled += 'Field missing required value. '; break;
-                        case 'pattern': $scope.whyDisabled += 'Field does not match required pattern. '; break;
-                        default: $scope.whyDisabled += type + '. ';
+                        case "required":
+                          $scope.whyDisabled += "Field missing required value. ";
+                          break;
+                        case "pattern":
+                          $scope.whyDisabled += "Field does not match required pattern. ";
+                          break;
+                        default:
+                          $scope.whyDisabled += type + ". ";
                       }
                     }
                   }
                 }
-              })
+              }
+            });
+          }
+
+          if ($scope[$scope.topLevelFormName]) {
+            if ($scope[$scope.topLevelFormName].$invalid) {
+              $scope.whyDisabled = 'The form data is invalid:';
+              generateWhyDisabledMessage($scope[$scope.topLevelFormName]);
             } else if ($scope[$scope.topLevelFormName].$pristine) {
               // Don't have disabled message - should be obvious from Cancel being disabled,
               // and the message comes up when the Save button is clicked.

@@ -4,7 +4,7 @@ var jqUploads = require('fng-jq-upload');
 var mongoose_1 = require("mongoose");
 var ExamsSchemaDef = {
     subject: { type: String, required: true },
-    examDate: { type: Date, required: true },
+    examDate: { type: Date, required: true, default: new Date(), form: { add: " ng-model-options=\"{timezone:'UTC'}\"" } },
     score: Number,
     result: { type: String, enum: ['distinction', 'merit', 'pass', 'fail'] },
     scan: { type: [new mongoose_1.Schema(jqUploads.FileSchema)], form: { hidden: true, help: 'Attach a scan of the paper - maximum size 0.5MB', directive: 'fng-jq-upload-form', fngJqUploadForm: { single: true, autoUpload: true, sizeLimit: 524288 } } },
