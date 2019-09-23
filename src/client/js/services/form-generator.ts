@@ -222,9 +222,9 @@ module fng.services {
       if (mongooseOptions.readonly) {
         formInstructions['readonly'] = true;
       }
-      if (mongooseType.defaultValue) {
+      if (mongooseType.defaultValue !== undefined) {
         formInstructions.defaultValue = mongooseType.defaultValue;
-      } else if (mongooseType.options && mongooseType.options.default) {
+      } else if (mongooseType.options && mongooseType.options.default !== undefined) {
         console.log('No support for default with no value, yet')
       }
       return formInstructions;

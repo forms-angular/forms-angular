@@ -862,29 +862,6 @@ module fng.services {
                 setData(anObject, fieldname, null, newVal);
               }
             }
-            // // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
-            // const idList = $scope[suffixCleanId(schemaI, '_ids')];
-            // let thisConversion: any;
-            // if (idList && idList.length > 0) {
-            //   updateObject(fieldname, anObject, function (value) {
-            //     return convertToForeignKeys(schemaI, value, $scope[suffixCleanId(schemaI, 'Options')], idList);
-            //   });
-            // } else if (thisConversion = getConversionObject($scope, fieldname, schemaName)) {
-            //   const lookup = getData(anObject, fieldname, null);
-            //   let newVal;
-            //   if (schemaI.array) {
-            //     newVal = [];
-            //     if (lookup) {
-            //       for (let n = 0; n < lookup.length; n++) {
-            //         newVal[n] = convertLookup(lookup[n], thisConversion);
-            //       }
-            //     }
-            //   } else {
-            //     newVal = convertLookup(lookup, thisConversion);
-            //   }
-            //   setData(anObject, fieldname, null, newVal);
-            // }
-
           }
         }
         return anObject;
@@ -1220,7 +1197,7 @@ module fng.services {
         $scope.setDefaults = function(formSchema: IFormInstruction[], base = ''): any {
           const retVal = {};
           formSchema.forEach(s => {
-            if (s.defaultValue) {
+            if (s.defaultValue !== undefined) {
               retVal[s.name.replace(base, '')] = s.defaultValue;
             }
           });
