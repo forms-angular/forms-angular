@@ -4,6 +4,8 @@ import { IFngSchemaDefinition } from "../../../src/fng-schema";
 const TestFngUiSelectSchemaDef : IFngSchemaDefinition = {
   surname: {type: String, list: {}},
   forename: {type: String, list: true},
+  derivedText: {type: String, required: true, form: {directive: "fng-ui-select", fngUiSelect: { theme: "bootstrap", deriveOptions: "getDerivedText" } } },
+  derivedObj: {type: String, required: true, form: {directive: "fng-ui-select", fngUiSelect: { theme: "bootstrap", deriveOptions: "getDerivedObj" } } },
   singleCached:            { type: Schema.Types.ObjectId,  ref:'b_enhanced_schema', form: {directive: 'fng-ui-select'}},
   singleAjax:              { type: Schema.Types.ObjectId,  ref:'b_enhanced_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
   multiOutsideCached:    [ { type: Schema.Types.ObjectId,  ref:'f_nested_schema',   form: {directive: 'fng-ui-select', size: 'xxlarge' }} ],
