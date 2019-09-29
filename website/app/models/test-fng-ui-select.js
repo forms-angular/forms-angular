@@ -4,8 +4,8 @@ var mongoose_1 = require("mongoose");
 var TestFngUiSelectSchemaDef = {
     surname: { type: String, list: {} },
     forename: { type: String, list: true },
-    derivedText: { type: String, required: true, form: { directive: "fng-ui-select", fngUiSelect: { theme: "bootstrap", deriveOptions: "getDerivedText" } } },
-    derivedObj: { type: String, required: true, form: { directive: "fng-ui-select", fngUiSelect: { theme: "bootstrap", deriveOptions: "getDerivedObj" } } },
+    derivedText: { type: String, form: { directive: "fng-ui-select", fngUiSelect: { deriveOptions: "getDerivedText" } } },
+    derivedObj: { type: String, form: { directive: "fng-ui-select", fngUiSelect: { deriveOptions: "getDerivedObj" } } },
     singleCached: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select' } },
     singleAjax: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
     multiOutsideCached: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'f_nested_schema', form: { directive: 'fng-ui-select', size: 'xxlarge' } }],
