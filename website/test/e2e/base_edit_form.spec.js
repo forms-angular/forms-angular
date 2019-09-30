@@ -21,11 +21,19 @@ describe('Base edit form', function () {
     field.sendKeys('Smith');
     element(by.model('record.accepted')).click();
     element(by.model('record.freeText')).sendKeys('this is a rude word');
-    $('#saveButton').click();
-    var alertTextPromise = element(by.css('.alert-error')).getText();
-    expect(alertTextPromise).toMatch(/Error!/);
-    expect(alertTextPromise).toMatch(/Wash your mouth!/);
-    expect(alertTextPromise).not.toMatch(/eye/);
+    let saveBtn = $('#saveButton');
+    saveBtn.click();
+    expect(element(by.id('err-title')).getText()).toMatch(/Error!/);
+    expect(element(by.id('err-msg')).getText()).toMatch(/Wash your mouth!/);
+    $('#err-hide').click();
+    element(by.model('record.freeText')).clear();
+    element(by.model('record.freeText')).sendKeys('this is polite');
+    saveBtn.click();
+    expect(browser.getCurrentUrl()).toMatch('/edit');
+    $('#deleteButton').click();
+    browser.sleep(400);
+    $('.modal-footer button.dlg-yes').click();
+    expect(browser.getCurrentUrl()).toMatch(/\/#\/b_enhanced_schema$/);
   });
 
   describe('should display deletion confirmation modal', function () {
@@ -100,6 +108,7 @@ describe('Base edit form', function () {
       var yesBtn = $('.modal-footer button.dlg-yes');
       yesBtn.click();
       expect($('.alert-error').getText()).toMatch(/your mouth/);
+      $('#err-hide').click();
       var freeTextField = element(by.model('record.freeText'));
       freeTextField.clear();
       freeTextField.sendKeys('This is a polite thing');

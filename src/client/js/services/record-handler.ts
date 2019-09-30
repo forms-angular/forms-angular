@@ -499,11 +499,11 @@ module fng.services {
         } else {
           // New record
           ctrlState.allowLocationChange = false;
-          ctrlState.master = {};
+          ctrlState.master = $scope.setDefaults($scope.formSchema);
           let passedRecord = $scope.initialiseNewRecord || $location.$$search.r;
           if (passedRecord) {
             try {
-              ctrlState.master = JSON.parse(passedRecord);
+              Object.assign(ctrlState.master, JSON.parse(passedRecord));
 
               // Although this is a new record we are making it dirty from the url so we need to $setDirty
               $scope.$on("fngCancel", () => {
@@ -845,22 +845,24 @@ module fng.services {
               updateObject(fieldname, anObject, function(value) {
                 return convertToForeignKeys(schemaI, value, $scope[suffixCleanId(schemaI, "Options")], idList);
               });
-            } else if (thisConversion = getConversionObject($scope, fieldname, schemaName)) {
-              const lookup = getData(anObject, fieldname, null);
-              let newVal;
-              if (schemaI.array) {
-                newVal = [];
-                if (lookup) {
-                  for (let n = 0; n < lookup.length; n++) {
-                    newVal[n] = convertLookup(lookup[n], thisConversion);
+            } else {
+              let thisConversion = getConversionObject($scope, fieldname, schemaName);
+              if (thisConversion) {
+                const lookup = getData(anObject, fieldname, null);
+                let newVal;
+                if (schemaI.array) {
+                  newVal = [];
+                  if (lookup) {
+                    for (let n = 0; n < lookup.length; n++) {
+                      newVal[n] = convertLookup(lookup[n], thisConversion);
+                    }
                   }
+                } else {
+                  newVal = convertLookup(lookup, thisConversion);
                 }
-              } else {
-                newVal = convertLookup(lookup, thisConversion);
+                setData(anObject, fieldname, null, newVal);
               }
-              setData(anObject, fieldname, null, newVal);
             }
-
           }
         }
         return anObject;
@@ -908,7 +910,7 @@ module fng.services {
           $scope.errorHideTimer = window.setTimeout(function() {
             $scope.dismissError();
             $scope.$digest();
-          }, 1000 + (1000 * ($scope.alertTitle + $scope.errorMessage).length / 50));
+          }, 2000 + (1000 * ($scope.alertTitle + $scope.errorMessage).length / 50));
           $scope.errorVisible = true;
         };
 
@@ -1092,13 +1094,17 @@ module fng.services {
           $scope.whyDisabled = undefined;
           let pristine = false;
 
-          if ($scope[$scope.topLevelFormName]) {
-            if ($scope[$scope.topLevelFormName].$invalid) {
-              $scope.whyDisabled = "The form data is invalid:";
-              $scope[$scope.topLevelFormName].$$controls.forEach(c => {
-                if (c.$invalid) {
+          function generateWhyDisabledMessage(form, subFormName?: string) {
+            form.$$controls.forEach(c => {
+              if (c.$invalid) {
+                if (c.$$controls) {
+                  // nested form
+                  generateWhyDisabledMessage(c, c.$name)
+                } else {
                   $scope.whyDisabled += "<br /><strong>";
-
+                  if (subFormName) {
+                    $scope.whyDisabled += subFormName + ' ';
+                  }
                   if (
                     cssFrameworkService.framework() === "bs2" &&
                     c.$$element &&
@@ -1124,20 +1130,29 @@ module fng.services {
                   $scope.whyDisabled += "</strong>: ";
                   if (c.$error) {
                     for (let type in c.$error) {
-                      switch (type) {
-                        case "required":
-                          $scope.whyDisabled += "Field missing required value. ";
-                          break;
-                        case "pattern":
-                          $scope.whyDisabled += "Field does not match required pattern. ";
-                          break;
-                        default:
-                          $scope.whyDisabled += type + ". ";
+                      if (c.$error.hasOwnProperty(type)) {
+                        switch (type) {
+                          case "required":
+                            $scope.whyDisabled += "Field missing required value. ";
+                            break;
+                          case "pattern":
+                            $scope.whyDisabled += "Field does not match required pattern. ";
+                            break;
+                          default:
+                            $scope.whyDisabled += type + ". ";
+                        }
                       }
                     }
                   }
                 }
-              });
+              }
+            });
+          }
+
+          if ($scope[$scope.topLevelFormName]) {
+            if ($scope[$scope.topLevelFormName].$invalid) {
+              $scope.whyDisabled = 'The form data is invalid:';
+              generateWhyDisabledMessage($scope[$scope.topLevelFormName]);
             } else if ($scope[$scope.topLevelFormName].$pristine) {
               // Don't have disabled message - should be obvious from Cancel being disabled,
               // and the message comes up when the Save button is clicked.
@@ -1178,6 +1193,16 @@ module fng.services {
           } else {
             return false;
           }
+        };
+
+        $scope.setDefaults = function(formSchema: IFormInstruction[], base = ''): any {
+          const retVal = {};
+          formSchema.forEach(s => {
+            if (s.defaultValue !== undefined) {
+              retVal[s.name.replace(base, '')] = s.defaultValue;
+            }
+          });
+          return retVal;
         };
 
         $scope.getVal = function(expression, index) {

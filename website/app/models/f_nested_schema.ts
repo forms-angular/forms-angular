@@ -4,9 +4,9 @@ import { IFngSchemaDefinition } from "../../../src/fng-schema";
 
 const ExamsSchemaDef : IFngSchemaDefinition = {
   subject: {type: String, required: true},
-  examDate: {type: Date, required: true},
-  score: Number,
-  result: {type: String, enum: ['distinction', 'merit', 'pass', 'fail']},
+  examDate: {type: Date, required: true, default: new Date(), form: {add: " ng-model-options=\"{timezone:'UTC'}\""}},
+  score: {type: Number, default: 60},
+  result: {type: String, enum: ['distinction', 'merit', 'pass', 'fail'], default: 'pass'},
   scan: {type: [new Schema(jqUploads.FileSchema)], form: {hidden: true, help:'Attach a scan of the paper - maximum size 0.5MB', directive: 'fng-jq-upload-form', fngJqUploadForm:{single:true, autoUpload: true, sizeLimit:524288}}},
   grader: { type: Schema.Types.ObjectId, ref:'b_enhanced_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}, label: 'Marked By'}},
   retakeDate: {type: Date, form: {showWhen: {lhs: '$exams.result', comp: 'eq', rhs: 'fail'}}}
