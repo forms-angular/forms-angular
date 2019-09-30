@@ -60,8 +60,8 @@
   },
   "devDependencies": {
     "@types/angular": "1.6.56",
-    "@types/lodash": "4.14.138",
-    "@types/mongoose": "^5.5.15",
+    "@types/lodash": "4.14.141",
+    "@types/mongoose": "^5.5.18",
     "@types/node": "=10.14.1",
     "angular-mocks": "1.7.8",
     "body-parser": "1.19.0",
@@ -80,7 +80,7 @@
     "gulp-typescript": "5.0.1",
     "gulp-uglify": "3.0.2",
     "gulp-umd": "2.0.0",
-    "jasmine-core": "3.4.0",
+    "jasmine-core": "3.5.0",
     "karma": "^4.3.0",
     "karma-chrome-launcher": "3.1.0",
     "karma-firefox-launcher": "^1.2.0",
@@ -88,11 +88,11 @@
     "karma-junit-reporter": "1.2.0",
     "karma-ng-html2js-preprocessor": "1.0.0",
     "matchdep": "2.0.0",
-    "mocha": "^6.2.0",
-    "mongoose": "5.6.11",
+    "mocha": "^6.2.1",
+    "mongoose": "5.7.1",
     "prettier": "1.18.2",
     "pump": "3.0.0",
-    "typescript": "3.5.3"
+    "typescript": "3.6.3"
   },
   "license": "MIT"
 }
