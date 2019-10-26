@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = require("mongoose");
-var cSchemaDef = {
+const mongoose_1 = require("mongoose");
+const cSchemaDef = {
     surname: { type: String, list: {} },
     forename: { type: String, list: true },
     weight: { type: Number, form: { label: 'Weight (lbs)' } },
@@ -15,8 +15,8 @@ var cSchemaDef = {
         interviewHash: { type: String, secure: true, forms: { hidden: true } }
     }
 };
-var CSchema = new mongoose_1.Schema(cSchemaDef);
-var C;
+const CSchema = new mongoose_1.Schema(cSchemaDef);
+let C;
 try {
     C = mongoose_1.model('c_subdoc_example');
 }

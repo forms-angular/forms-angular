@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = require("mongoose");
-var ExamSchemaDef = {
+const mongoose_1 = require("mongoose");
+const ExamSchemaDef = {
     subject: String,
     examDate: { type: Date, form: { size: 'small' } },
     result: { type: String, enum: ['distinction', 'merit', 'pass', 'fail'] },
     grader: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true }, label: 'Marked By' } },
     retakeDate: { type: Date, form: { showWhen: { lhs: '$exams.result', comp: 'eq', rhs: 'fail' } } }
 };
-var ExamsSchema = new mongoose_1.Schema(ExamSchemaDef, { _id: false });
-var GSchemaDef = {
+const ExamsSchema = new mongoose_1.Schema(ExamSchemaDef, { _id: false });
+const GSchemaDef = {
     surname: { type: String, list: {}, index: true },
     forename: { type: String, list: true, index: true },
     sex: { type: String, enum: ['F', 'M'] },
@@ -20,8 +20,8 @@ var GSchemaDef = {
     loggedInBribeBook: { type: Boolean, form: { showWhen: 'record.bribeAmount >= 10 && record.bribeAmount <= 200' } },
     exams: { type: [ExamsSchema], form: { formStyle: 'inline' } }
 };
-var GSchema = new mongoose_1.Schema(GSchemaDef);
-var G;
+const GSchema = new mongoose_1.Schema(GSchemaDef);
+let G;
 try {
     G = mongoose_1.model('g_conditional_field');
 }
@@ -29,7 +29,7 @@ catch (e) {
     G = mongoose_1.model('g_conditional_field', GSchema);
 }
 GSchema.statics.report = function (report) {
-    var reportSchema = '', fullDescription = { field: '_id', translations: [{ value: 'M', display: 'Male' }, { value: 'F', display: 'Female' }, { 'value': '', 'display': 'Unspecified' }] };
+    let reportSchema = '', fullDescription = { field: '_id', translations: [{ value: 'M', display: 'Male' }, { value: 'F', display: 'Female' }, { 'value': '', 'display': 'Unspecified' }] };
     switch (report) {
         case 'breakdownbysex':
             reportSchema = {

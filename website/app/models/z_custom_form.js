@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = require("mongoose");
-var ZSchemaDef = {
+const mongoose_1 = require("mongoose");
+const ZSchemaDef = {
     surname: String,
     forename: String,
     weight: Number,
     dateOfBirth: Date,
     termsAccepted: Boolean
 };
-var ZSchema = new mongoose_1.Schema(ZSchemaDef);
-var Z;
+const ZSchema = new mongoose_1.Schema(ZSchemaDef);
+let Z;
 try {
     Z = mongoose_1.model('z_custom_form');
 }

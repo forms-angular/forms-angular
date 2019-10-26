@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var jqUploads = require('fng-jq-upload');
-var mongoose_1 = require("mongoose");
-var ExamsSchemaDef = {
+const jqUploads = require('fng-jq-upload');
+const mongoose_1 = require("mongoose");
+const ExamsSchemaDef = {
     subject: { type: String, required: true },
     examDate: { type: Date, required: true, default: new Date(), form: { add: " ng-model-options=\"{timezone:'UTC'}\"" } },
     score: { type: Number, default: 60 },
@@ -11,14 +11,14 @@ var ExamsSchemaDef = {
     grader: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true }, label: 'Marked By' } },
     retakeDate: { type: Date, form: { showWhen: { lhs: '$exams.result', comp: 'eq', rhs: 'fail' } } }
 };
-var ExamsSchema = new mongoose_1.Schema(ExamsSchemaDef, { id: false });
-var fSchemaDef = {
+const ExamsSchema = new mongoose_1.Schema(ExamsSchemaDef, { id: false });
+const fSchemaDef = {
     surname: { type: String, index: true, required: true, list: {} },
     forename: { type: String, index: true, list: true },
     exams: { type: [ExamsSchema], form: { sortable: true, noRemove: 'record.exams[$index].result' } }
 };
-var FSchema = new mongoose_1.Schema(fSchemaDef);
-var F;
+const FSchema = new mongoose_1.Schema(fSchemaDef);
+let F;
 try {
     F = mongoose_1.model('f_nested_schema');
 }
@@ -28,7 +28,7 @@ catch (e) {
 F.prototype.searchResultFormat = function () {
     // You can set up a function to modify search result display and the
     // ordering within a collection
-    var weighting;
+    let weighting;
     weighting = this.forename === 'John' ? 2 : 3;
     return {
         resource: 'f_nested_schema',
@@ -39,7 +39,7 @@ F.prototype.searchResultFormat = function () {
     };
 };
 FSchema.statics.form = function (layout) {
-    var formSchema = '';
+    let formSchema = '';
     switch (layout) {
         case 'English':
             // Just the English exam from the array

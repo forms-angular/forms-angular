@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "ES2015",
+    "lib": [
+      "es5",
+      "es2015",
+      "dom"
+    ],
+    "sourceMap": true
+  }
+}

@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = require("mongoose");
-var shelfRef = { type: 'lookupList', collection: '', id: '', property: 'shelves', value: 'location' };
-var LSchemaDef = {
+const mongoose_1 = require("mongoose");
+const shelfRef = { type: 'lookupList', collection: '', id: '', property: 'shelves', value: 'location' };
+const LSchemaDef = {
     description: { type: String, required: true, list: {} },
     warehouse: { type: mongoose_1.Schema.Types.ObjectId, ref: 'k_referencing_self_collection', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
     shelf: { type: mongoose_1.Schema.Types.ObjectId, lookupListRef: { collection: 'k_referencing_self_collection', id: '$warehouse', property: 'shelves', value: 'location' } },
 };
-var LSchema = new mongoose_1.Schema(LSchemaDef);
-var L;
-var name = 'l_referencing_list_in_other_document';
+const LSchema = new mongoose_1.Schema(LSchemaDef);
+let L;
+const name = 'l_referencing_list_in_other_document';
 try {
     L = mongoose_1.model(name);
 }

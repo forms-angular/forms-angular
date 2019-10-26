@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = require("mongoose");
-var jqUploads = require('fng-jq-upload');
-var bSchemaDef = {
+const mongoose_1 = require("mongoose");
+const jqUploads = require('fng-jq-upload');
+const bSchemaDef = {
     photo: { type: [new mongoose_1.Schema(jqUploads.FileSchema)], form: { directive: 'fng-jq-upload-form', fngJqUploadForm: { autoUpload: true, sizeLimit: 256 * 1024, single: true, width: 100, height: 100 } } },
     surname: { type: String, required: true, index: true, list: {} },
     forename: { type: String, list: true, index: true },
@@ -86,7 +86,7 @@ var bSchemaDef = {
     // This can be overidden by adding 'form:{password:false}' - also this can be true if the field is NOT called password
     password: { type: String }
 };
-var BSchema = new mongoose_1.Schema(bSchemaDef);
+const BSchema = new mongoose_1.Schema(bSchemaDef);
 BSchema.pre('save', function (next) {
     // Check for rude words (well, the word "rude", actually) to show an error
     if (this['freeText'] && this['freeText'].indexOf('rude') !== -1) {
@@ -94,7 +94,7 @@ BSchema.pre('save', function (next) {
     }
     return next();
 });
-var B;
+let B;
 try {
     B = mongoose_1.model('b_enhanced_schema');
 }
@@ -103,7 +103,7 @@ catch (e) {
 }
 // Alternative form schemas can be defined as shown below
 BSchema.statics.form = function (layout) {
-    var formSchema = '';
+    let formSchema = '';
     switch (layout) {
         case 'justnameandpostcode':
             // the object overrides the form object in the schema
@@ -131,7 +131,7 @@ BSchema.statics.prepareSave = function (doc, req, cb) {
     cb(null);
 };
 BSchema.statics.report = function (report) {
-    var reportSchema = '';
+    let reportSchema = '';
     switch (report) {
         case 'allVisible':
             reportSchema = {

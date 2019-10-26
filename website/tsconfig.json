@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
+    "target": "ES2017",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "lib": [
       "es5",
       "es2015",
@@ -10,6 +12,6 @@
     "sourceMap": true
   },
   "exclude": [
-    "node_modules",
+    "node_modules"
   ]
 }

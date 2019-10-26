@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const fngAudit = require("fng-audit");
-const aSchemaDef = {
+const NSchemaDef = {
     surname: { type: String, required: true, index: true },
     forename: { type: String, index: true },
     phone: { type: String, required: true, match: /^\d{10,12}$/ },
@@ -12,16 +12,16 @@ const aSchemaDef = {
     dateOfBirth: Date,
     accepted: { type: Boolean, default: true }
 };
-const ASchema = new mongoose_1.Schema(aSchemaDef);
-let A;
+const NSchema = new mongoose_1.Schema(NSchemaDef);
+let N;
 try {
-    A = mongoose_1.model('a_unadorned_schema');
+    N = mongoose_1.model('n_typescript_schema');
 }
 catch (e) {
-    ASchema.plugin(fngAudit.plugin, {});
-    A = mongoose_1.model('a_unadorned_schema', ASchema);
+    NSchema.plugin(fngAudit.plugin, {});
+    N = mongoose_1.model('n_typescript_schema', NSchema);
 }
 module.exports = {
-    model: A
+    model: N
 };
-//# sourceMappingURL=a_unadorned_schema.js.map
+//# sourceMappingURL=n_typescript_schema.js.map

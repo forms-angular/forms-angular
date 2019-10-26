@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = require("mongoose");
-var ISchemaDef = {
+const mongoose_1 = require("mongoose");
+const ISchemaDef = {
     surname: { type: String, required: true, list: {}, form: { tab: 'first' } },
     forename: { type: String, list: true, form: { tab: 'first' } },
     address: {
@@ -17,8 +17,8 @@ var ISchemaDef = {
     interviewScore: { type: Number, form: { tab: 'second' }, list: {} },
     freeText: { type: String, form: { type: 'textarea', rows: 5, tab: 'second' } }
 };
-var ISchema = new mongoose_1.Schema(ISchemaDef);
-var I;
+const ISchema = new mongoose_1.Schema(ISchemaDef);
+let I;
 try {
     I = mongoose_1.model('i_tabbed_form');
 }

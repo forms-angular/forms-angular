@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = require("mongoose");
-var TestFngUiSelectSchemaDef = {
+const mongoose_1 = require("mongoose");
+const TestFngUiSelectSchemaDef = {
     surname: { type: String, list: {} },
     forename: { type: String, list: true },
     derivedText: { type: String, form: { directive: "fng-ui-select", fngUiSelect: { deriveOptions: "getDerivedText" } } },
@@ -18,8 +18,8 @@ var TestFngUiSelectSchemaDef = {
     multipleInsideAjax: { type: [mongoose_1.Schema.Types.ObjectId], ref: 'f_nested_schema', form: { directive: 'fng-ui-select', size: 'xxlarge', fngUiSelect: { fngAjax: true }, label: 'Multiple In. Ajax' } },
     filteredAjax: { type: mongoose_1.Schema.Types.ObjectId, ref: 'b_enhanced_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: escape(JSON.stringify({ interviewScore: { $gt: 90 } })) } } }
 };
-var TestFngUiSelectSchema = new mongoose_1.Schema(TestFngUiSelectSchemaDef);
-var E;
+const TestFngUiSelectSchema = new mongoose_1.Schema(TestFngUiSelectSchemaDef);
+let E;
 try {
     E = mongoose_1.model('test_fng_ui_select');
 }

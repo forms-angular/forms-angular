@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = require("mongoose");
-var eSchemaDef = {
+const mongoose_1 = require("mongoose");
+const eSchemaDef = {
     surname: { type: String, list: {} },
     forename: { type: String, list: true },
     weight: { type: Number, form: { label: 'Weight (lbs)' } },
@@ -16,8 +16,8 @@ var eSchemaDef = {
     team2: { type: [mongoose_1.Schema.Types.ObjectId], ref: 'f_nested_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
     accepted: Boolean
 };
-var ESchema = new mongoose_1.Schema(eSchemaDef);
-var E;
+const ESchema = new mongoose_1.Schema(eSchemaDef);
+let E;
 try {
     E = mongoose_1.model('e_referencing_another_collection');
 }
@@ -25,7 +25,7 @@ catch (e) {
     E = mongoose_1.model('e_referencing_another_collection', ESchema);
 }
 ESchema.statics.report = function (report) {
-    var reportSchema = '';
+    let reportSchema = '';
     switch (report) {
         case 'class-sizes':
             reportSchema = {
@@ -46,7 +46,7 @@ ESchema.statics.report = function (report) {
     return reportSchema;
 };
 ESchema.statics.form = function (layout) {
-    var formSchema = '';
+    let formSchema = '';
     switch (layout) {
         case 'links':
             formSchema = {

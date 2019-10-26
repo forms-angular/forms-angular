@@ -1,5 +1,3 @@
-'use strict';
-
 websiteApp.controller('BEnhancedSchemaCtrl', ['$scope', function ($scope) {
 
   $scope.record = $scope.sharedData.record;
