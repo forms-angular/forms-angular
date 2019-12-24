@@ -501,7 +501,7 @@ DataForm.prototype.applySchemaSubset = function (vanilla, schema) {
         if (!vanilla[fld]) {
           throw new Error('No such field as ' + fld + '.  Is it part of a sub-doc? If so you need the bit before the period.');
         }
-        outPath[fld] = vanilla[fld];
+        outPath[fld] = _.cloneDeep(vanilla[fld]);
         if (vanilla[fld].schema) {
           outPath[fld].schema = this.applySchemaSubset(outPath[fld].schema, schema[fld].schema);
         }
