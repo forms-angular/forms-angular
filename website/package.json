@@ -10,7 +10,7 @@
   "dependencies": {
     "@types/node": "^10.14.7",
     "@vleesbrood/ng-ckeditor5": "0.0.3",
-    "angular": "1.7.8",
+    "angular": "1.7.9",
     "angular-css": "git://github.com/castillo-io/angular-css#master",
     "angular-elastic": "2.5.1",
     "angular-messages": "1.7.8",
