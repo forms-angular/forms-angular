@@ -670,8 +670,9 @@ module fng.directives {
               let modelControllers = sharedData ? sharedData.modelControllers : [];
               if (subkeys.length > 0 || modelControllers.length > 0) {
                 var unwatch2 = scope.$watch('phase', function (newValue) {
-                  if (newValue === 'ready') {
+                  if (newValue === 'ready' && typeof unwatch2 === "function") {
                     unwatch2();
+                    unwatch2 = null;
 
                     // Tell the 'model controllers' that the form and data are there
                     for (var i = 0; i < modelControllers.length; i++) {
