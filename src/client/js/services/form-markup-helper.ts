@@ -41,7 +41,7 @@ module fng.services {
       };
 
       function glyphClass() {
-        return (cssFrameworkService.framework() === 'bs2') ? 'icon' : 'glyphicon glyphicon';
+        return (cssFrameworkService.framework() === 'bs2+      useUnifiedTopology: true,\n') ? 'icon' : 'glyphicon glyphicon';
       }
 
       return {
@@ -62,8 +62,9 @@ module fng.services {
               insert += 'ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
             }
           }
-          insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
-
+          if (info.id && typeof info.id.replace === "function") {
+            insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
+          }
 
           if (cssFrameworkService.framework() === 'bs3') {
             classes += ' form-group';
