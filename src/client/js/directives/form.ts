@@ -632,8 +632,9 @@ module fng.directives {
         var unwatch = scope.$watch(attrs.schema, function (newValue: any) {
           if (newValue) {
             var newArrayValue: Array<any> = angular.isArray(newValue) ? newValue : [newValue];   // otherwise some old tests stop working for no real reason
-            if (newArrayValue.length > 0) {
+            if (newArrayValue.length > 0 && typeof unwatch === "function") {
               unwatch();
+              unwatch = null;
               var elementHtml = '';
               var recordAttribute = attrs.model || 'record';      // By default data comes from scope.record
               var theRecord = scope[recordAttribute];
