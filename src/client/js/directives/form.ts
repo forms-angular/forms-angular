@@ -504,7 +504,7 @@ module fng.directives {
                 var directiveName = info.directive;
                 var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
                 var thisElement = element[0];
-                inferMissingProperties(info);
+                inferMissingProperties(info, options);
                 for (var i = 0; i < thisElement.attributes.length; i++) {
                   var thisAttr = thisElement.attributes[i];
                   switch (thisAttr.nodeName) {
@@ -540,7 +540,9 @@ module fng.directives {
                             break;
                           case 'object' :
                             for (var subAdd in info.add) {
-                              newElement += ' ' + subAdd + '="' + info.add[subAdd].toString().replace(/"/g, '&quot;') + '"';
+                              if (info.add.hasOwnProperty(subAdd)) {
+                                newElement += ' ' + subAdd + '="' + info.add[subAdd].toString().replace(/"/g, '&quot;') + '"';
+                              }
                             }
                             break;
                           default:
@@ -549,7 +551,9 @@ module fng.directives {
                         break;
                       case directiveCamel :
                         for (var subProp in info[prop]) {
-                          newElement += info.directive + '-' + subProp + '="' + info[prop][subProp] + '"';
+                          if (info[prop].hasOwnProperty(subProp)) {
+                            newElement += info.directive + '-' + subProp + '="' + info[prop][subProp] + '"';
+                          }
                         }
                         break;
                       default:
@@ -606,9 +610,7 @@ module fng.directives {
               } else if (options.subkey) {
                 // Don't display fields that form part of the subkey, as they should not be edited (because in these circumstances they form some kind of key)
                 var objectToSearch = angular.isArray(scope[options.subkey]) ? scope[options.subkey][0].keyList : scope[options.subkey].keyList;
-                if (_.find(objectToSearch, function (value, key) {
-                  return scope[options.subkey].path + '.' + key === info.name;
-                })) {
+                if (_.find(objectToSearch, (value, key) => scope[options.subkey].path + '.' + key === info.name )) {
                   callHandleField = false;
                 }
               }
@@ -616,7 +618,7 @@ module fng.directives {
                 //                            if (groupId) {
                 //                                scope['showHide' + groupId] = true;
                 //                            }
-                inferMissingProperties(info);
+                inferMissingProperties(info, options);
                 result += handleField(info, options);
               }
             }
