@@ -88,7 +88,7 @@ module fng.directives {
               var lastPart = compoundName.slice(root.length + 1);
               if (options.index) {
                 modelString += root + '[' + options.index + '].' + lastPart;
-                idString = 'f_' + modelString.slice(modelBase.length).replace(/(\.|\[|\]\.)/g, '-');
+                idString = 'f_' + modelString.slice(modelBase.length).replace(/(\.|\[|]\.)/g, '-');
               } else {
                 modelString += root;
                 if (options.subkey) {
@@ -108,7 +108,6 @@ module fng.directives {
           var allInputsVars = formMarkupHelper.allInputsVars(scope, fieldInfo, options, modelString, idString, nameString);
           var common = allInputsVars.common;
           var value;
-          var requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
           isRequired = isRequired || fieldInfo.required;
           var requiredStr = isRequired ? ' required' : '';
           var enumInstruction:IEnumInstruction;
@@ -263,7 +262,7 @@ module fng.directives {
                 if (tabNo >= 0) {
 // TODO Figure out tab history updates (check for other tab-history-todos)
                   // result.before = '<uib-tab deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
-                  result.before = '<uib-tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
+                  result.before = '<uib-tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"';
                   if (tabNo > 0) {
                     result.before += 'active="tabs[' + tabNo + '].active"';
                   }

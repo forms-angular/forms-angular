@@ -397,6 +397,7 @@ declare module fng {
      */
     schema : string;
     forceform?: string;    // Must be true or omitted.  Forces generation of the <strong>form</strong> tag when model is specified
+    noid? : boolean;
   }
 
   export interface IFormOptions extends IBaseFormOptions {
