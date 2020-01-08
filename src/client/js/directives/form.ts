@@ -464,7 +464,7 @@ module fng.directives {
           return template;
         };
 
-        var inferMissingProperties = function (info) {
+        var inferMissingProperties = function (info, options?) {
           // infer missing values
           info.type = info.type || 'text';
           if (info.id) {
@@ -472,7 +472,11 @@ module fng.directives {
               info.id = '_' + info.id;
             }
           } else {
-            info.id = 'f_' + info.name.replace(/\./g, '_');
+            if (options && options.noid) {
+              info.id = null;
+            } else {
+              info.id = 'f_' + info.name.replace(/\./g, '_');
+            }
           }
           info.label = (info.label !== undefined) ? (info.label === null ? '' : info.label) : $filter('titleCase')(info.name.split('.').slice(-1)[0]);
         };
@@ -488,7 +492,7 @@ module fng.directives {
                 info = angular.copy(info);
                 info.readonly = true;
               }
-              if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/) && typeof info.add !== 'object') {
+              if (anInstruction === 0 && topLevel && !options.schema.match(/\$_schema_/) && typeof info.add !== 'object') {
                 info.add = info.add ? ' ' + info.add + ' ' : '';
                 if (info.add.indexOf('ui-date') === -1 && !options.noautofocus && !info.containerType) {
                   info.add = info.add + 'autofocus ';
