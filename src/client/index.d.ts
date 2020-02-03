@@ -104,7 +104,7 @@ declare module fng {
     popup?: string;  // adds popup help as specified.
     order?: number;  // allows user to specify the order / tab order of this field in the form. This overrides the position in the Mongoose schema.
     size?: 'mini' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'block-level';  // sets control width.  Default is 'medium''
-    readonly?: boolean;  // adds the readonly attribute to the generated input (currently doesn't work with date - and perhaps other types).
+    readonly?: boolean | string;  // adds the readonly or ng-readonly attribute to the generated input (currently doesn't work with date - and perhaps other types).
     rows?: number | 'auto';  // sets the number of rows in inputs (such as textarea) that support this. Setting rows to "auto" makes the textarea expand to fit the content, rather than create a scrollbar.
     tab?: string;  // Used to divide a large form up into a tabset with multiple tabs
     showWhen?: IFngShowWhen | string;  // allows conditional display of fields based on values elsewhere.  string must be an abular expression.
@@ -171,7 +171,7 @@ declare module fng {
     type?: 'string' | 'text' | 'textarea' | 'number' | 'select' | 'link' | 'date' | 'checkbox' | 'password';
     defaultValue? : any;
     rows? : number;
-    label: string;
+    label?: string;
     options?: any;
     ids?: any;
     hidden?: boolean;
@@ -397,6 +397,7 @@ declare module fng {
      */
     schema : string;
     forceform?: string;    // Must be true or omitted.  Forces generation of the <strong>form</strong> tag when model is specified
+    noid? : boolean;
   }
 
   export interface IFormOptions extends IBaseFormOptions {

@@ -41,7 +41,7 @@ module fng.services {
       };
 
       function glyphClass() {
-        return (cssFrameworkService.framework() === 'bs2') ? 'icon' : 'glyphicon glyphicon';
+        return (cssFrameworkService.framework() === 'bs2' ? 'icon' : 'glyphicon glyphicon');
       }
 
       return {
@@ -62,8 +62,9 @@ module fng.services {
               insert += 'ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
             }
           }
-          insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
-
+          if (info.id && typeof info.id.replace === "function") {
+            insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
+          }
 
           if (cssFrameworkService.framework() === 'bs3') {
             classes += ' form-group';
@@ -245,7 +246,12 @@ module fng.services {
           if (fieldInfo.add) {
             result += ' ' + fieldInfo.add + ' ';
           }
-          result += requiredStr + (fieldInfo.readonly ? ' readonly' : '') + ' ';
+          result += requiredStr;
+          if (fieldInfo.readonly) {
+            result += ` ${typeof fieldInfo.readOnly === 'boolean' ? 'readonly' : 'ng-readonly="' + fieldInfo.readonly + '"'} `;
+          } else {
+            result += ' ';
+          }
           return result;
         }
       }

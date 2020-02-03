@@ -88,7 +88,7 @@ module fng.directives {
               var lastPart = compoundName.slice(root.length + 1);
               if (options.index) {
                 modelString += root + '[' + options.index + '].' + lastPart;
-                idString = 'f_' + modelString.slice(modelBase.length).replace(/(\.|\[|\]\.)/g, '-');
+                idString = 'f_' + modelString.slice(modelBase.length).replace(/(\.|\[|]\.)/g, '-');
               } else {
                 modelString += root;
                 if (options.subkey) {
@@ -108,17 +108,28 @@ module fng.directives {
           var allInputsVars = formMarkupHelper.allInputsVars(scope, fieldInfo, options, modelString, idString, nameString);
           var common = allInputsVars.common;
           var value;
-          var requiredStr = (isRequired || fieldInfo.required) ? ' required' : '';
           isRequired = isRequired || fieldInfo.required;
           var requiredStr = isRequired ? ' required' : '';
           var enumInstruction:IEnumInstruction;
+
+          function handleReadOnlyDisabled(readonly: any): string {
+            let retVal = '';
+            if (readonly) {
+              if (typeof readonly === "boolean") {
+                retVal = ` disabled `;
+              } else {
+                retVal = ` ng-readonly="${readonly}" `;
+              }
+            }
+            return retVal;
+          }
 
           switch (fieldInfo.type) {
             case 'select' :
               if (fieldInfo.select2) {
                 value = '<input placeholder="fng-select2 has been removed" readonly>';
               } else {
-                common += (fieldInfo.readonly ? 'disabled ' : '');
+                common += handleReadOnlyDisabled(fieldInfo.readonly);
                 common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
 
@@ -154,13 +165,18 @@ module fng.directives {
                 value += ' text="' + fieldInfo.linktext + '"';
               }
               if (fieldInfo.readonly) {
-                value += ' readonly="true"';
+                if (typeof fieldInfo.readonly === "boolean") {
+                  value += ` readonly="true"`;
+                } else {
+                  value += ` ng-readonly="${fieldInfo.readonly}"`;
+                }
               }
               value += '></fng-link>';
               break;
             case 'radio' :
               value = '';
-              common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
+              common += requiredStr;
+              common += handleReadOnlyDisabled(fieldInfo.readonly);
               var separateLines = options.formstyle === 'vertical' || (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
               if (angular.isArray(fieldInfo.options)) {
@@ -192,7 +208,8 @@ module fng.directives {
               }
               break;
             case 'checkbox' :
-              common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
+              common += requiredStr;
+              common += handleReadOnlyDisabled(fieldInfo.readonly);
               if (cssFrameworkService.framework() === 'bs3') {
                 value = '<div class="checkbox"><input ' + common + 'type="checkbox"></div>';
               } else {
@@ -263,7 +280,7 @@ module fng.directives {
                 if (tabNo >= 0) {
 // TODO Figure out tab history updates (check for other tab-history-todos)
                   // result.before = '<uib-tab deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
-                  result.before = '<uib-tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
+                  result.before = '<uib-tab select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"';
                   if (tabNo > 0) {
                     result.before += 'active="tabs[' + tabNo + '].active"';
                   }
@@ -465,7 +482,7 @@ module fng.directives {
           return template;
         };
 
-        var inferMissingProperties = function (info) {
+        var inferMissingProperties = function (info, options?) {
           // infer missing values
           info.type = info.type || 'text';
           if (info.id) {
@@ -473,7 +490,11 @@ module fng.directives {
               info.id = '_' + info.id;
             }
           } else {
-            info.id = 'f_' + info.name.replace(/\./g, '_');
+            if (options && options.noid) {
+              info.id = null;
+            } else {
+              info.id = 'f_' + info.name.replace(/\./g, '_');
+            }
           }
           info.label = (info.label !== undefined) ? (info.label === null ? '' : info.label) : $filter('titleCase')(info.name.split('.').slice(-1)[0]);
         };
@@ -489,7 +510,7 @@ module fng.directives {
                 info = angular.copy(info);
                 info.readonly = true;
               }
-              if (anInstruction === 0 && topLevel && !options.schema.match(/$_schema_/) && typeof info.add !== 'object') {
+              if (anInstruction === 0 && topLevel && !options.schema.match(/\$_schema_/) && typeof info.add !== 'object') {
                 info.add = info.add ? ' ' + info.add + ' ' : '';
                 if (info.add.indexOf('ui-date') === -1 && !options.noautofocus && !info.containerType) {
                   info.add = info.add + 'autofocus ';
@@ -501,7 +522,7 @@ module fng.directives {
                 var directiveName = info.directive;
                 var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
                 var thisElement = element[0];
-                inferMissingProperties(info);
+                inferMissingProperties(info, options);
                 for (var i = 0; i < thisElement.attributes.length; i++) {
                   var thisAttr = thisElement.attributes[i];
                   switch (thisAttr.nodeName) {
@@ -537,7 +558,9 @@ module fng.directives {
                             break;
                           case 'object' :
                             for (var subAdd in info.add) {
-                              newElement += ' ' + subAdd + '="' + info.add[subAdd].toString().replace(/"/g, '&quot;') + '"';
+                              if (info.add.hasOwnProperty(subAdd)) {
+                                newElement += ' ' + subAdd + '="' + info.add[subAdd].toString().replace(/"/g, '&quot;') + '"';
+                              }
                             }
                             break;
                           default:
@@ -546,7 +569,9 @@ module fng.directives {
                         break;
                       case directiveCamel :
                         for (var subProp in info[prop]) {
-                          newElement += info.directive + '-' + subProp + '="' + info[prop][subProp] + '"';
+                          if (info[prop].hasOwnProperty(subProp)) {
+                            newElement += info.directive + '-' + subProp + '="' + info[prop][subProp] + '"';
+                          }
                         }
                         break;
                       default:
@@ -603,9 +628,7 @@ module fng.directives {
               } else if (options.subkey) {
                 // Don't display fields that form part of the subkey, as they should not be edited (because in these circumstances they form some kind of key)
                 var objectToSearch = angular.isArray(scope[options.subkey]) ? scope[options.subkey][0].keyList : scope[options.subkey].keyList;
-                if (_.find(objectToSearch, function (value, key) {
-                  return scope[options.subkey].path + '.' + key === info.name;
-                })) {
+                if (_.find(objectToSearch, (value, key) => scope[options.subkey].path + '.' + key === info.name )) {
                   callHandleField = false;
                 }
               }
@@ -613,7 +636,7 @@ module fng.directives {
                 //                            if (groupId) {
                 //                                scope['showHide' + groupId] = true;
                 //                            }
-                inferMissingProperties(info);
+                inferMissingProperties(info, options);
                 result += handleField(info, options);
               }
             }
@@ -627,8 +650,9 @@ module fng.directives {
         var unwatch = scope.$watch(attrs.schema, function (newValue: any) {
           if (newValue) {
             var newArrayValue: Array<any> = angular.isArray(newValue) ? newValue : [newValue];   // otherwise some old tests stop working for no real reason
-            if (newArrayValue.length > 0) {
+            if (newArrayValue.length > 0 && typeof unwatch === "function") {
               unwatch();
+              unwatch = null;
               var elementHtml = '';
               var recordAttribute = attrs.model || 'record';      // By default data comes from scope.record
               var theRecord = scope[recordAttribute];
@@ -664,8 +688,9 @@ module fng.directives {
               let modelControllers = sharedData ? sharedData.modelControllers : [];
               if (subkeys.length > 0 || modelControllers.length > 0) {
                 var unwatch2 = scope.$watch('phase', function (newValue) {
-                  if (newValue === 'ready') {
+                  if (newValue === 'ready' && typeof unwatch2 === "function") {
                     unwatch2();
+                    unwatch2 = null;
 
                     // Tell the 'model controllers' that the form and data are there
                     for (var i = 0; i < modelControllers.length; i++) {
