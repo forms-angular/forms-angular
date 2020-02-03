@@ -112,12 +112,24 @@ module fng.directives {
           var requiredStr = isRequired ? ' required' : '';
           var enumInstruction:IEnumInstruction;
 
+          function handleReadOnlyDisabled(readonly: any): string {
+            let retVal = '';
+            if (readonly) {
+              if (typeof readonly === "boolean") {
+                retVal = ` disabled `;
+              } else {
+                retVal = ` ng-readonly="${readonly}" `;
+              }
+            }
+            return retVal;
+          }
+
           switch (fieldInfo.type) {
             case 'select' :
               if (fieldInfo.select2) {
                 value = '<input placeholder="fng-select2 has been removed" readonly>';
               } else {
-                common += (fieldInfo.readonly ? 'disabled ' : '');
+                common += handleReadOnlyDisabled(fieldInfo.readonly);
                 common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
 
@@ -153,13 +165,18 @@ module fng.directives {
                 value += ' text="' + fieldInfo.linktext + '"';
               }
               if (fieldInfo.readonly) {
-                value += ' readonly="true"';
+                if (typeof fieldInfo.readonly === "boolean") {
+                  value += ` readonly="true"`;
+                } else {
+                  value += ` ng-readonly="${fieldInfo.readonly}"`;
+                }
               }
               value += '></fng-link>';
               break;
             case 'radio' :
               value = '';
-              common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
+              common += requiredStr;
+              common += handleReadOnlyDisabled(fieldInfo.readonly);
               var separateLines = options.formstyle === 'vertical' || (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
               if (angular.isArray(fieldInfo.options)) {
@@ -191,7 +208,8 @@ module fng.directives {
               }
               break;
             case 'checkbox' :
-              common += requiredStr + (fieldInfo.readonly ? ' disabled ' : ' ');
+              common += requiredStr;
+              common += handleReadOnlyDisabled(fieldInfo.readonly);
               if (cssFrameworkService.framework() === 'bs3') {
                 value = '<div class="checkbox"><input ' + common + 'type="checkbox"></div>';
               } else {
