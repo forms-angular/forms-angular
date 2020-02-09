@@ -109,7 +109,7 @@ module fng.directives {
           var common = allInputsVars.common;
           var value;
           isRequired = isRequired || fieldInfo.required;
-          var requiredStr = isRequired ? ' required' : '';
+          var requiredStr = isRequired ? ' required ' : '';
           var enumInstruction:IEnumInstruction;
 
           function handleReadOnlyDisabled(readonly: any): string {
