@@ -4,8 +4,10 @@ declare module fng {
   /*
   Type definitions for types that are used on both the client and the server
    */
+  type formStyle = 'inline' | 'vertical' | 'horizontal' | 'horizontalCompact' | 'stacked';
 
   /*
+
   IInternalLookupreference makes it possible to look up from a list (of key / value pairs) in the current record.  For example
 
   var ShelfSchema = new Schema({
@@ -144,7 +146,7 @@ declare module fng {
     noAdd?: boolean; // inhibits an Add button being generated for arrays.
     unshift?: boolean; // (for arrays of sub documents) puts an add button in the sub schema header which allows insertion of new sub documents at the beginning of the array.
     noRemove?: boolean;  // inhibits a Remove button being generated for array elements.
-    formstyle?: 'inline' | 'vertical' | 'horizontal' | 'horizontalCompact';  // (only valid on a sub schema) sets style of sub form.
+    formstyle?: formStyle;  // (only valid on a sub schema) sets style of sub form.
     sortable? : boolean;  // Allows drag and drop sorting of arrays - requires angular-ui-sortable
 
     /*
@@ -375,7 +377,7 @@ declare module fng {
      * The style of the form layout.  Supported values are horizontalcompact, horizontal, vertical, inline
      */
     //TODO supported values should be in an enum
-    formstyle?: string;
+    formstyle?: formStyle;
     /**
      * Model on form scope (defaults to record).
      * <li><strong>model</strong> the object in the scope to be bound to the model controller.  Specifying

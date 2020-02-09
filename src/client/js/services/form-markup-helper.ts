@@ -36,8 +36,12 @@ module fng.services {
         return evaluateSide(showWhen.lhs) + conditionSymbols[conditionPos] + evaluateSide(showWhen.rhs);
       }
 
-      var isHorizontalStyle = function isHorizontalStyle(formStyle) {
-        return (!formStyle || formStyle === 'undefined' || ['vertical', 'inline'].indexOf(formStyle) === -1);
+      var isHorizontalStyle = function isHorizontalStyle(formStyle, includeStacked: boolean) {
+        let exclude = ['vertical', 'inline'];
+        if (!includeStacked) {
+          exclude.push('stacked');
+        }
+        return (!formStyle || formStyle === 'undefined' || !exclude.includes(formStyle));
       };
 
       function glyphClass() {
@@ -90,7 +94,7 @@ module fng.services {
             template += '<div' + addAllService.addAll(scope, 'Group', classes, options) + ' ng-class="{\'has-error\': hasError(\'' + formName + '\',\'' + modelControllerName + '\', $index)}"';
             closeTag += '</div>';
           } else {
-            if (isHorizontalStyle(options.formstyle)) {
+            if (isHorizontalStyle(options.formstyle, true)) {
               template += '<div' + addAllService.addAll(scope, 'Group', 'control-group', options);
               closeTag = '</div>';
             } else {
@@ -104,10 +108,10 @@ module fng.services {
 
         label: function label(scope, fieldInfo, addButtonMarkup, options) {
           var labelHTML = '';
-          if ((cssFrameworkService.framework() === 'bs3' || (options.formstyle !== 'inline' && fieldInfo.label !== '')) || addButtonMarkup) {
+          if ((cssFrameworkService.framework() === 'bs3' || (!['inline','stacked'].includes(options.formstyle) && fieldInfo.label !== '')) || addButtonMarkup) {
             labelHTML = '<label';
             var classes = 'control-label';
-            if (isHorizontalStyle(options.formstyle)) {
+            if (isHorizontalStyle(options.formstyle, false)) {
               if (!fieldInfo.linklabel) {
                 labelHTML += ' for="' + fieldInfo.id + '"';
               }
@@ -117,7 +121,7 @@ module fng.services {
               } else if (cssFrameworkService.framework() === 'bs3') {
                 classes += ' col-sm-3';
               }
-            } else if (options.formstyle === 'inline') {
+            } else if (['inline','stacked'].includes(options.formstyle)) {
               labelHTML += ' for="' + fieldInfo.id + '"';
               classes += ' sr-only';
             }
@@ -158,7 +162,7 @@ module fng.services {
             sizeClassBS2 = (fieldInfo.size ? ' input-' + fieldInfo.size : '');
           }
 
-          if (options.formstyle === 'inline') {
+          if (['inline','stacked'].includes(options.formstyle)) {
             placeHolder = placeHolder || fieldInfo.label;
           }
           common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' name="' + nameString + '" ');
@@ -177,7 +181,7 @@ module fng.services {
         },
 
         inputChrome: function inputChrome(value, fieldInfo, options: fng.IFormOptions, markupVars) {
-          if (cssFrameworkService.framework() === 'bs3' && isHorizontalStyle(options.formstyle) && fieldInfo.type !== 'checkbox') {
+          if (cssFrameworkService.framework() === 'bs3' && isHorizontalStyle(options.formstyle, true) && fieldInfo.type !== 'checkbox') {
             value = '<div class="bs3-input ' + markupVars.sizeClassBS3 + '">' + value + '</div>';
           }
           // Hack to cope with inline help in directives
@@ -209,7 +213,7 @@ module fng.services {
 
         controlDivClasses: function controlDivClasses(options) {
           var result = [];
-          if (isHorizontalStyle(options.formstyle)) {
+          if (isHorizontalStyle(options.formstyle, false)) {
             result.push(cssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-9');
           }
           return result;

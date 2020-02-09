@@ -205,7 +205,7 @@ you can easily switch between modes without having to manually change all the in
     <p>The optional attributes that can be passed for form-input are:</p>
     <ul>
         <li><strong>formstyle</strong> this attribute can take the values <strong>vertical</strong>, <strong>horizontal</strong>,
-            <strong>inline</strong> and <strong>horizontalCompact</strong>.  The first three generate the markup for a Twitter Bootstrap style and the last slightly modified style. <strong>vertical</strong>
+            <strong>inline</strong>, <strong>stacked</strong> and <strong>horizontalCompact</strong>.  The first three generate the markup for a Twitter Bootstrap style and the last slightly modified style. <strong>vertical</strong>
             generates markup that works with the default form style, and the others need classes adding as follows:
           <br />
           <br />
@@ -264,11 +264,25 @@ you can easily switch between modes without having to manually change all the in
             </tr>
             </tbody>
           </table>
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <td>
+                        <p class="lead">stacked</p>
+                        <img src="/images/stacked.png" alt="Example of stacked layout">
+                    </td>
+                </tr>
+                <tr class="info">
+                    <td>This layout generates vertical forms with no labels (except for screen readers).  This layout is not
+                        supported for Array fields.</td>
+                </tr>
+                </tbody>
+            </table>
 
             <p>Forms and sub forms that are created by the directive will have these classes added in the appropriate place.</p></li>
-        <li><strong>model</strong> the object in the scope to be bound to the model controller.  Specifying
-            the model inhibits the generation of the <strong>form</strong> tag unless the <strong>forceform</strong> attribute is set to true</li>
         <li><strong>name</strong> the name to be given to the form</li>
+        <li><strong>model</strong> the object in the scope to be bound to the model controller.  Specifying
+            the model inhibits the generation of the <strong>form</strong> tag unless the <strong>forceform</strong> attribute is set to true, in which case an <strong><a href="https://docs.angularjs.org/api/ng/directive/form#alias-link-ng-directive-ngform-ngform-" target="_blank">ngform</a></strong> is created</li>
         <li><strong>forceform</strong> can be set to true to force the generation of the <strong>form</strong>
             attribute under circumstances where it would generally not be generated (generally if a model attribute is used)</li>
         <li><strong>noautofocus</strong> can be set to true if you don't want the first field to receive focus</li>

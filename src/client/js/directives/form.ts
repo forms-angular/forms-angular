@@ -26,7 +26,7 @@ module fng.directives {
 //                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
 //                </div>
 //
-//                Inline
+//                Inline or stacked
 //                <div class="form-group">
 //                    <label class="sr-only" for="exampleInputEmail2">Email address</label>
 //                    <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Enter email">
@@ -46,7 +46,7 @@ module fng.directives {
 //                <input type="text" placeholder="Type something…">
 //                <span class="help-block">Example block-level help text here.</span>
 //
-//                Inline
+//                Inline or Stacked
 //                <input type="text" class="input-small" placeholder="Email">
 
         var subkeys = [];
@@ -252,6 +252,9 @@ module fng.directives {
               break;
             case 'inline' :
               result = 'form-inline';
+              break;
+            case 'stacked' :
+              result = 'form-stacked';
               break;
             case 'horizontalCompact' :
               result = 'form-horizontal compact';
@@ -464,8 +467,8 @@ module fng.directives {
             var controlDivClasses = formMarkupHelper.controlDivClasses(options);
             if (info.array) {
               controlDivClasses.push('fng-array');
-              if (options.formstyle === 'inline') {
-                throw new Error('Cannot use arrays in an inline form');
+              if (options.formstyle === 'inline' || options.formstyle === 'stacked') {
+                throw new Error('Cannot use arrays in an inline or stacked form');
               }
               template += formMarkupHelper.label(scope, info, info.type !== 'link', options);
               template += formMarkupHelper.handleArrayInputAndControlDiv(generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, info.id + '_{{$index}}', options), controlDivClasses, info, options);
@@ -670,7 +673,8 @@ module fng.directives {
                     }
                   }
                 }
-                elementHtml = '<ngForm name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate"' + customAttrs + '>';
+                let tag = attrs.forceform ? 'ngform' : 'form';
+                elementHtml = `<${tag} name="${scope.topLevelFormName}" class="${convertFormStyleToClass(attrs.formstyle)}" novalidate ${customAttrs}>`;
               }
               if (theRecord === scope.topLevelFormName) {
                 throw new Error('Model and Name must be distinct - they are both ' + theRecord);
