@@ -184,6 +184,7 @@ declare module fng {
     form?: string;           // the form that is linked to
     select2? : any;          // deprecated
     schema?: IFormInstruction[];   // If the field is an array of fields
+    [ directiveOptions: string] : any;
   }
 
   export interface IContainer {

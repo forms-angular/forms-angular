@@ -109,7 +109,7 @@ module fng.directives {
           var common = allInputsVars.common;
           var value;
           isRequired = isRequired || fieldInfo.required;
-          var requiredStr = isRequired ? ' required' : '';
+          var requiredStr = isRequired ? ' required ' : '';
           var enumInstruction:IEnumInstruction;
 
           function handleReadOnlyDisabled(readonly: any): string {
@@ -670,7 +670,7 @@ module fng.directives {
                     }
                   }
                 }
-                elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate"' + customAttrs + '>';
+                elementHtml = '<ngForm name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate"' + customAttrs + '>';
               }
               if (theRecord === scope.topLevelFormName) {
                 throw new Error('Model and Name must be distinct - they are both ' + theRecord);
