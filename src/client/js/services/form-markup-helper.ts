@@ -189,13 +189,14 @@ module fng.services {
           if (inlineHelp.length > 0) {
             value += '<span class="' + (cssFrameworkService.framework() === 'bs2' ? 'help-inline' : 'help-block') + '">' + inlineHelp + '</span>';
           }
-          // If we have chosen
-          value +=  '<div ng-if="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$dirty" class="help-block">' +
-                    ' <div ng-messages="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$error">' +
-                    '  <div ng-messages-include="error-messages.html">' +
-                    '  </div>' +
-                    ' </div>' +
-                    '</div>';
+          if (!options.noid) {
+            value += '<div ng-if="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$dirty" class="help-block">' +
+                ' <div ng-messages="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$error">' +
+                '  <div ng-messages-include="error-messages.html">' +
+                '  </div>' +
+                ' </div>' +
+                '</div>';
+          }
           if (fieldInfo.help) {
             value += '<span class="help-block">' + fieldInfo.help + '</span>';
           }

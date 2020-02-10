@@ -392,6 +392,11 @@ declare module fng {
      * Normally first field in a form gets autofocus set.  Use this to prevent this
      */
     noautofocus?: string;
+    /*
+    Suppress the generation of element ids
+    (sometimes required when using nested form-inputs in a directive)
+     */
+    noid? : boolean;
   }
 
   export interface IFormAttrs extends IFormOptions, angular.IAttributes {

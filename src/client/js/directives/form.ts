@@ -485,11 +485,11 @@ module fng.directives {
           return template;
         };
 
-        var inferMissingProperties = function (info, options?) {
+        const inferMissingProperties = function (info: IFormInstruction, options?: IBaseFormOptions) {
           // infer missing values
           info.type = info.type || 'text';
           if (info.id) {
-            if (typeof info.id === 'number' || (info.id[0] >= 0 && info.id <= '9')) {
+            if (typeof info.id === 'number' || info.id.match(/^[0-9]/)) {
               info.id = '_' + info.id;
             }
           } else {
@@ -673,7 +673,7 @@ module fng.directives {
                     }
                   }
                 }
-                let tag = attrs.forceform ? 'ngform' : 'form';
+                let tag = attrs.forceform ? 'ng-form' : 'form';
                 elementHtml = `<${tag} name="${scope.topLevelFormName}" class="${convertFormStyleToClass(attrs.formstyle)}" novalidate ${customAttrs}>`;
               }
               if (theRecord === scope.topLevelFormName) {
