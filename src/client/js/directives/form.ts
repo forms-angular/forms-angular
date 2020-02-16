@@ -367,14 +367,17 @@ module fng.directives {
                     formstyle: options.formstyle,
                     subkey: schemaDefName + '_subkey',
                     subkeyno: arraySel,
-                    subschemaroot: info.name
+                    subschemaroot: info.name,
+                    suppressNestingWarning: info.suppressNestingWarning
                   });
                   template += topAndTail.after;
                 }
                 subkeys.push(info);
               } else {
                 if (options.subschema) {
-                  console.log('Attempts at supporting deep nesting have been removed - will hopefully be re-introduced at a later date');
+                  if (!options.suppressNestingWarning) {
+                    console.log('Attempts at supporting deep nesting have been removed - will hopefully be re-introduced at a later date');
+                  }
                 } else {
                   let model: string = (options.model || 'record') + '.' + info.name;
                   /* Array header */
@@ -429,7 +432,8 @@ module fng.directives {
                     subschema: 'true',
                     formstyle: info.formStyle,
                     model: options.model,
-                    subschemaroot: info.name
+                    subschemaroot: info.name,
+                    suppressNestingWarning: info.suppressNestingWarning
                   });
 
                   if (cssFrameworkService.framework() === 'bs2') {

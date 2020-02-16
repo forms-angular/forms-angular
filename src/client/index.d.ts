@@ -155,6 +155,12 @@ declare module fng {
     customSubDoc?: string; // Allows you to specify custom HTML (which may include directives) for the sub doc
     customHeader?: string; // Allows you to specify custom HTML (which may include directives) for the header of a group of sub docs
     customFooter?: string; // Allows you to specify custom HTML (which may include directives) for the footer of a group of sub docs
+
+    /*
+      Suppresses warnings about attenpting deep nesting which would be logged to console in some circumstances when a
+      directive fakes deep nesting
+     */
+    suppressNestingWarning? : boolean;
   }
 
   // Schema passed from server - derived from Mongoose schema
@@ -186,6 +192,7 @@ declare module fng {
     form?: string;           // the form that is linked to
     select2? : any;          // deprecated
     schema?: IFormInstruction[];   // If the field is an array of fields
+    intType? : 'date';
     [ directiveOptions: string] : any;
   }
 
@@ -415,6 +422,7 @@ declare module fng {
     subschema? : string;
     subschemaroot? : string;
     viewform? : boolean;
+    suppressNestingWarning? : boolean;
   }
 
   export interface IBuiltInRoute {

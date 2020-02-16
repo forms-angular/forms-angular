@@ -18,7 +18,7 @@ module fng.services {
       return (inst.id || "f_" + inst.name).replace(/\./g, "_") + suffix;
     };
 
-    var walkTree = function(object, fieldname, element, insertIntermediateObjects = false) {
+    var walkTree = function(object, fieldname, element? , insertIntermediateObjects = false) {
       // Walk through subdocs to find the required key
       // for instance walkTree(master,'address.street.number',element)
       // called by getData and setData
@@ -26,8 +26,8 @@ module fng.services {
       // element is used when accessing in the context of a input, as the id (like exams-2-grader)
       // gives us the element of an array (one level down only for now).  Leaving element blank returns the whole array
       var parts = fieldname.split("."),
-        higherLevels = parts.length - 1,
-        workingRec = object;
+          higherLevels = parts.length - 1,
+          workingRec = object;
       for (var i = 0; i < higherLevels; i++) {
         if (!workingRec) {
           throw new Error(`walkTree failed: Object = ${object}, fieldname = ${fieldname}, i = ${i}`);
@@ -108,7 +108,7 @@ module fng.services {
 // Split a field name into the next level and all following levels
     function splitFieldName(aFieldName) {
       var nesting = aFieldName.split("."),
-        result = [nesting[0]];
+          result = [nesting[0]];
 
       if (nesting.length > 1) {
         result.push(nesting.slice(1).join("."));
@@ -219,12 +219,18 @@ module fng.services {
 
     // Convert mongodb json to what we use in the browser, for example {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
     // This will currently only work for a single level of nesting (conversionObject will not go down further without amendment, and offset needs to be an array, at least)
-    var convertToAngularModel = function(schema, anObject, prefixLength, $scope, schemaName?: string, master?, offset?: number) {
+    var convertToAngularModel = function(schema: IFormInstruction[], anObject, prefixLength, $scope, schemaName?: string, master?, offset?: number) {
       master = master || anObject;
       for (var i = 0; i < schema.length; i++) {
         var schemaEntry = schema[i];
         var fieldName = schemaEntry.name.slice(prefixLength);
+        if (!fieldName.length) {
+          fieldName = schemaEntry.name.split('.').pop();
+        }
         var fieldValue = getData(anObject, fieldName);
+        if (schemaEntry.intType === 'date' && typeof fieldValue === 'string') {
+          setData(anObject, fieldName, null, new Date(fieldValue))
+        }
         if (schemaEntry.schema) {
           if (fieldValue) {
             for (var j = 0; j < fieldValue.length; j++) {

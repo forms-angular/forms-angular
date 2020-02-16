@@ -7,7 +7,6 @@ const LSchemaDef : IFngSchemaDefinition = {
   description: {type: String, required: true, list: {}},
   warehouse: {type: Schema.Types.ObjectId, ref:'k_referencing_self_collection', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
   shelf: {type: Schema.Types.ObjectId, lookupListRef: {collection:'k_referencing_self_collection', id:'$warehouse', property: 'shelves', value:'location'}},
-  // shelf: {type: Schema.Types.ObjectId, lookupListRef: {collection:'k_referencing_self_collection', id:'"5b509037c160d51b254cc405"', property: 'shelves', value:'location'}},
 };
 
 const LSchema = new Schema(LSchemaDef);
