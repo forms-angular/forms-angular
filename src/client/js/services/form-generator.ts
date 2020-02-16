@@ -182,10 +182,11 @@ module fng.services {
         }
       } else if (mongooseType.instance === 'Date') {
         if (!formInstructions.type) {
+          formInstructions.intType = 'date';
           if (formInstructions.readonly) {
             formInstructions.type = 'text';
           } else if (formInstructions.directive) {
-            formInstructions.type = 'text';     // Think they all use date
+            formInstructions.type = 'text';
           } else {
             try {
               formInstructions.add = formInstructions.add || '';

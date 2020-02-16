@@ -26,7 +26,7 @@ module fng.directives {
 //                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
 //                </div>
 //
-//                Inline
+//                Inline or stacked
 //                <div class="form-group">
 //                    <label class="sr-only" for="exampleInputEmail2">Email address</label>
 //                    <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Enter email">
@@ -46,7 +46,7 @@ module fng.directives {
 //                <input type="text" placeholder="Type something…">
 //                <span class="help-block">Example block-level help text here.</span>
 //
-//                Inline
+//                Inline or Stacked
 //                <input type="text" class="input-small" placeholder="Email">
 
         var subkeys = [];
@@ -253,6 +253,9 @@ module fng.directives {
             case 'inline' :
               result = 'form-inline';
               break;
+            case 'stacked' :
+              result = 'form-stacked';
+              break;
             case 'horizontalCompact' :
               result = 'form-horizontal compact';
               break;
@@ -364,14 +367,17 @@ module fng.directives {
                     formstyle: options.formstyle,
                     subkey: schemaDefName + '_subkey',
                     subkeyno: arraySel,
-                    subschemaroot: info.name
+                    subschemaroot: info.name,
+                    suppressNestingWarning: info.suppressNestingWarning
                   });
                   template += topAndTail.after;
                 }
                 subkeys.push(info);
               } else {
                 if (options.subschema) {
-                  console.log('Attempts at supporting deep nesting have been removed - will hopefully be re-introduced at a later date');
+                  if (!options.suppressNestingWarning) {
+                    console.log('Attempts at supporting deep nesting have been removed - will hopefully be re-introduced at a later date');
+                  }
                 } else {
                   let model: string = (options.model || 'record') + '.' + info.name;
                   /* Array header */
@@ -426,7 +432,8 @@ module fng.directives {
                     subschema: 'true',
                     formstyle: info.formStyle,
                     model: options.model,
-                    subschemaroot: info.name
+                    subschemaroot: info.name,
+                    suppressNestingWarning: info.suppressNestingWarning
                   });
 
                   if (cssFrameworkService.framework() === 'bs2') {
@@ -464,8 +471,8 @@ module fng.directives {
             var controlDivClasses = formMarkupHelper.controlDivClasses(options);
             if (info.array) {
               controlDivClasses.push('fng-array');
-              if (options.formstyle === 'inline') {
-                throw new Error('Cannot use arrays in an inline form');
+              if (options.formstyle === 'inline' || options.formstyle === 'stacked') {
+                throw new Error('Cannot use arrays in an inline or stacked form');
               }
               template += formMarkupHelper.label(scope, info, info.type !== 'link', options);
               template += formMarkupHelper.handleArrayInputAndControlDiv(generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, info.id + '_{{$index}}', options), controlDivClasses, info, options);
@@ -482,11 +489,11 @@ module fng.directives {
           return template;
         };
 
-        var inferMissingProperties = function (info, options?) {
+        const inferMissingProperties = function (info: IFormInstruction, options?: IBaseFormOptions) {
           // infer missing values
           info.type = info.type || 'text';
           if (info.id) {
-            if (typeof info.id === 'number' || (info.id[0] >= 0 && info.id <= '9')) {
+            if (typeof info.id === 'number' || info.id.match(/^[0-9]/)) {
               info.id = '_' + info.id;
             }
           } else {
@@ -670,7 +677,8 @@ module fng.directives {
                     }
                   }
                 }
-                elementHtml = '<form name="' + scope.topLevelFormName + '" class="' + convertFormStyleToClass(attrs.formstyle) + ' novalidate"' + customAttrs + '>';
+                let tag = attrs.forceform ? 'ng-form' : 'form';
+                elementHtml = `<${tag} name="${scope.topLevelFormName}" class="${convertFormStyleToClass(attrs.formstyle)}" novalidate ${customAttrs}>`;
               }
               if (theRecord === scope.topLevelFormName) {
                 throw new Error('Model and Name must be distinct - they are both ' + theRecord);
