@@ -577,14 +577,19 @@ module fng.directives {
                       case directiveCamel :
                         for (var subProp in info[prop]) {
                           if (info[prop].hasOwnProperty(subProp)) {
-                            newElement += info.directive + '-' + subProp + '="' + info[prop][subProp] + '"';
+                            newElement += ` ${info.directive}-${subProp}="`;
+                            if (typeof info[prop][subProp] === 'string') {
+                              newElement += `${info[prop][subProp].replace(/"/g, '&quot;')}"`;
+                            } else {
+                              newElement += `${JSON.stringify(info[prop][subProp]).replace(/"/g, '&quot;')}"`;
+                            }
                           }
                         }
                         break;
                       default:
                         if (info[prop]) {
                           if (typeof info[prop] === 'string') {
-                            newElement += ' fng-fld-' + prop + '="' + info[prop].toString().replace(/"/g, '&quot;') + '"';
+                            newElement += ' fng-fld-' + prop + '="' + info[prop].replace(/"/g, '&quot;') + '"';
                           } else {
                             newElement += ' fng-fld-' + prop + '="' + JSON.stringify(info[prop]).replace(/"/g, '&quot;') + '"';
                           }
