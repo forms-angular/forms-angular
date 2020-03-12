@@ -1240,7 +1240,7 @@ DataForm.prototype.replaceHiddenFields = function (record, data) {
     _.each(data, function (value, name) {
       if (_.isObject(value)) {
         self.replaceHiddenFields(record[name], value);
-      } else {
+      } else if (!record[name]) {
         record[name] = value;
       }
     });
