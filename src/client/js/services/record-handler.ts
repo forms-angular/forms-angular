@@ -234,7 +234,7 @@ module fng.services {
         if (schemaEntry.schema) {
           if (fieldValue) {
             for (var j = 0; j < fieldValue.length; j++) {
-              fieldValue[j] = convertToAngularModel(schemaEntry.schema, fieldValue[j], prefixLength + 1 + fieldName.length, $scope, fieldName, master, j);
+              fieldValue[j] = convertToAngularModel(schemaEntry.schema, fieldValue[j], 1 + fieldName.length, $scope, fieldName, master, j);
             }
           }
         } else {
@@ -256,7 +256,9 @@ module fng.services {
             if (fieldName.indexOf(".") !== -1) {
               throw new Error("Trying to directly assign to a nested field 332");
             }  // Not sure that this can happen, but put in a runtime test
-            anObject[fieldName] = convertForeignKeys(schemaEntry, fieldValue, $scope[suffixCleanId(schemaEntry, "Options")], idList);
+            if (!schemaEntry.internalRef || !schemaEntry.internalRef.noConvert) {
+              anObject[fieldName] = convertForeignKeys(schemaEntry, fieldValue, $scope[suffixCleanId(schemaEntry, "Options")], idList);
+            }
           } else if (schemaEntry.select2) {
             // Do nothing with these - handled elsewhere (and deprecated)
             console.log("fng-select2 is deprecated - use fng-ui-select instead");
@@ -846,7 +848,6 @@ module fng.services {
 
             // Convert {lookup:'List description for 012abcde'} to {lookup:'012abcde'}
             const idList = $scope[suffixCleanId(schemaI, "_ids")];
-            let thisConversion: any;
             if (idList && idList.length > 0) {
               updateObject(fieldname, anObject, function(value) {
                 return convertToForeignKeys(schemaI, value, $scope[suffixCleanId(schemaI, "Options")], idList);

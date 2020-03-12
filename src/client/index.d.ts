@@ -23,6 +23,7 @@ declare module fng {
   export interface IFngInternalLookupReference {
     property: string;
     value: string;
+    noConvert? : boolean;    // can be used by a tricksy hack to get around nesting limitations
   }
 
   /*
