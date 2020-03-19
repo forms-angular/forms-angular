@@ -917,7 +917,7 @@ module fng.services {
           $scope.errorHideTimer = window.setTimeout(function() {
             $scope.dismissError();
             $scope.$digest();
-          }, 2000 + (1000 * ($scope.alertTitle + $scope.errorMessage).length / 50));
+          }, 3500 + (1000 * ($scope.alertTitle + $scope.errorMessage).length / 50));
           $scope.errorVisible = true;
         };
 
