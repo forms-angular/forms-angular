@@ -14,6 +14,12 @@ module fng.services {
     // TODO: Put this in a service
     const makeMongoId = (rnd = r16 => Math.floor(r16).toString(16)) => rnd(Date.now() / 1000) + " ".repeat(16).replace(/./g, () => rnd(Math.random() * 16));
 
+    function _handleCancel(resp: string) {
+        if (["cancel", "backdrop click", "escape key press"].indexOf(resp) === -1) {
+          throw resp;
+        }
+    }
+
     var suffixCleanId = function suffixCleanId(inst, suffix) {
       return (inst.id || "f_" + inst.name).replace(/\./g, "_") + suffix;
     };
@@ -760,7 +766,7 @@ module fng.services {
           refHandler.handlers.push(thisHandler);
           $scope[formInstructions.options] = refHandler.lookupOptions;
           $scope[formInstructions.ids] = refHandler.lookupIds;
-          // TODO DRY this and handleInternalLookup below 
+          // TODO DRY this and handleInternalLookup below
         } else {
           // we can do it now
           SubmissionsService.readRecord(ref.collection, $scope.$eval(ref.id)).then(
@@ -1009,23 +1015,24 @@ module fng.services {
           if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
             event.preventDefault();
             const modalInstance = $uibModal.open({
-              template: "<div class=\"modal-header\">" +
-                "   <h3>Record modified</h3>" +
-                "</div>" +
-                "<div class=\"modal-body\">" +
-                "   <p>Would you like to save your changes?</p>" +
-                "</div>" +
-                "<div class=\"modal-footer\">" +
-                "    <button class=\"btn btn-primary dlg-yes\" ng-click=\"yes()\">Yes</button>" +
-                "    <button class=\"btn btn-warning dlg-no\" ng-click=\"no()\">No</button>" +
-                "    <button class=\"btn dlg-cancel\" ng-click=\"cancel()\">Cancel</button>" +
-                "</div>",
+              template:
+`<div class="modal-header">
+   <h3>Record modified</h3>
+</div>
+<div class="modal-body">
+   <p>Would you like to save your changes?</p>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary dlg-yes" ng-click="yes()">Yes</button>
+    <button class="btn btn-warning dlg-no" ng-click="no()">No</button>
+    <button class="btn dlg-cancel" ng-click="cancel()">Cancel</button>
+</div>`,
               controller: "SaveChangesModalCtrl",
               backdrop: "static"
             });
 
-            modalInstance.result.then(
-              function(result) {
+            modalInstance.result
+                .then(function(result) {
                 if (result) {
                   $scope.save({ redirect: next, allowChange: true });    // save changes
                 } else {
@@ -1033,7 +1040,8 @@ module fng.services {
                   $window.location = next;
                 }
               }
-            );
+            )
+                .catch(_handleCancel);
           }
         });
 
@@ -1044,16 +1052,17 @@ module fng.services {
               confirmDelete = Promise.resolve(true);
             } else {
               let modalInstance = $uibModal.open({
-                template: "<div class=\"modal-header\">" +
-                  "   <h3>Delete Item</h3>" +
-                  "</div>" +
-                  "<div class=\"modal-body\">" +
-                  "   <p>Are you sure you want to delete this record?</p>" +
-                  "</div>" +
-                  "<div class=\"modal-footer\">" +
-                  "    <button class=\"btn btn-primary dlg-no\" ng-click=\"cancel()\">No</button>" +
-                  "    <button class=\"btn btn-warning dlg-yes\" ng-click=\"yes()\">Yes</button>" +
-                  "</div>",
+                template:
+`<div class="modal-header">
+   <h3>Delete Item</h3>
+</div>
+<div class="modal-body">
+   <p>Are you sure you want to delete this record?</p>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary dlg-no" ng-click="cancel()">No</button>
+    <button class="btn btn-warning dlg-yes" ng-click="yes()">Yes</button>
+</div>`,
                 controller: "SaveChangesModalCtrl",
                 backdrop: "static"
               });
@@ -1083,7 +1092,8 @@ module fng.services {
                   }
                 }
               }
-            );
+            )
+                .catch(_handleCancel);
           }
         };
 
