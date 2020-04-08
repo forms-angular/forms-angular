@@ -108,7 +108,7 @@ DataForm.prototype.getListFields = function (resource: Resource, doc: Document, 
       if (typeof doc[aField.field] !== 'undefined') {
         if (aField.params) {
           if (aField.params.ref) {
-            let fieldOptions = resource.model.schema['paths'][aField.field].options;
+            let fieldOptions = (resource.model.schema['paths'][aField.field] as any).options;
             if (typeof fieldOptions.ref === 'string') {
               let lookupResource = that.getResource(fieldOptions.ref);
               if (lookupResource) {
