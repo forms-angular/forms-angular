@@ -229,13 +229,25 @@ module fng.services {
           },
           redirectTo: function () {
             return function (operation, scope, location, id, tab) {
-              if (location.search()) {
-                location.url(location.path());
+              let path = '';
+
+              location.search({}); // Lose any search parameters
+
+              let urlStr: string;
+              if (operation === 'onDelete') {
+                if (config.onDelete) {
+                  if (config.onDelete === 'new') {
+                    urlStr = _buildOperationUrl(config.prefix, 'new', scope.modelName, scope.formName, id, tab);
+                  } else {
+                    urlStr = config.onDelete;
+                  }
+                } else {
+                  urlStr = _buildOperationUrl(config.prefix, 'list', scope.modelName, scope.formName, id, tab);
+                }
+              } else {
+                urlStr = _buildOperationUrl(config.prefix, operation, scope.modelName, scope.formName, id, tab);
               }
-
-              var urlStr = _buildOperationUrl(config.prefix, operation, scope.modelName, scope.formName, id, tab);
               location.path(urlStr);
-
             };
           }
         };

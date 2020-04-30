@@ -632,14 +632,20 @@ module fng.services {
           }, $scope.handleHttpError);
       },
 
-      // TODO: Do we need model here?  Can we not infer it from scope?
-      deleteRecord: function deleteRecord(model, id, $scope, ctrlState: IFngCtrlState) {
-        SubmissionsService.deleteRecord(model, id)
+      deleteRecord: function deleteRecord(id, $scope, ctrlState) {
+        SubmissionsService.deleteRecord($scope.modelName, id)
           .then(function() {
             if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
               $scope.dataEventFunctions.onAfterDelete(ctrlState.master);
             }
-            routingService.redirectTo()("list", $scope, $location);
+            routingService.redirectTo()("onDelete", $scope, $location);
+          }, (err) => {
+            if (err.status === 404) {
+              // Someone already deleted it
+              routingService.redirectTo()("onDelete", $scope, $location);
+            } else {
+              $scope.showError(`${err.statusText} (${err.status}) while deleting record`, 'Error deleting record');
+            }
           });
       },
 
@@ -1073,7 +1079,7 @@ module fng.services {
               function(result) {
 
                 function doTheDeletion() {
-                  recordHandlerInstance.deleteRecord($scope.modelName, $scope.id, $scope, ctrlState);
+                  recordHandlerInstance.deleteRecord($scope.id, $scope, ctrlState);
                 }
 
                 if (result) {

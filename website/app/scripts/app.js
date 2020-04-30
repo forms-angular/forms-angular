@@ -48,13 +48,8 @@ websiteApp
 websiteApp.frameworks = ['bs2', 'bs3'];   // Just for testing forms-angular
 websiteApp.defaultFramework = 'bs2';
 
-formsAngular.config(['$locationProvider', 'cssFrameworkServiceProvider', 'routingServiceProvider', '$animateProvider',
-  function ($locationProvider, cssFrameworkService, routingService, $animateProvider) {
-    $animateProvider.customFilter(function(node, event, options) {
-      // Only error display
-      return node.id === "display-error";
-    });
-//  $locationProvider.hashPrefix('');
+formsAngular.config(['$locationProvider', 'cssFrameworkServiceProvider', 'routingServiceProvider',
+  function ($locationProvider, cssFrameworkService, routingService) {
   routingService.start(
     {
       // Define the fixed routes (the dynamic routes for CRUD will be created by forms-angular)
@@ -77,7 +72,8 @@ formsAngular.config(['$locationProvider', 'cssFrameworkServiceProvider', 'routin
       ],
       routing: 'ngroute',                       // specify the routing we are using
       html5Mode: false,
-      variants:  websiteApp.frameworks          // variants is just for testing forms-angular
+      variants:  websiteApp.frameworks,          // variants is just for testing forms-angular
+      onDelete: '/'
     }
   );
   cssFrameworkService.setOptions({framework: websiteApp.defaultFramework});

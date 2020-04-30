@@ -233,7 +233,7 @@ declare module fng {
   export interface IRecordHandler {
     convertToMongoModel(schema: IControlledFormSchema, anObject: any, prefixLength: number, scope: IFormScope): any;
     createNew(dataToSave: any, options: any, scope: IFormScope, ctrlState: IFngCtrlState): void;
-    deleteRecord(model: any, id: any, scope: IFormScope, ctrlState: any): void;
+    deleteRecord(id: string, scope: IFormScope, ctrlState: IFngCtrlState): void;
     updateDocument(dataToSave : any, options: any, scope: IFormScope, ctrlState: IFngCtrlState) : void;
     readRecord($scope: IFormScope, ctrlState);
     scrollTheList($scope: IFormScope);
@@ -449,6 +449,7 @@ declare module fng {
 
     variantsForDemoWebsite? : any;  // Just for demo website
     variants?: any;                 // Just for demo website
+    onDelete?: string;              // Supports literal (such as '/') or 'new' (which will go to a /new of the model) default is to go to the list view
   }
 
   export interface IFngRoute {
