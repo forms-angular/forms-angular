@@ -1406,7 +1406,6 @@ DataForm.prototype.entityDelete = function () {
         }
 
         async function runDeletion(doc: Document, resource: Resource) : Promise<any> {
-            // TODO - better to only read the doc here if we need it - otherwise just use _id
             if (resource.options.onRemove) {
                 resource.options.onRemove(doc, req, async function (err) {
                     if (err) {
