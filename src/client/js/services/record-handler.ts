@@ -644,7 +644,7 @@ module fng.services {
               // Someone already deleted it
               routingService.redirectTo()("onDelete", $scope, $location);
             } else {
-              $scope.showError(`${err.statusText} (${err.status}) while deleting record`, 'Error deleting record');
+              $scope.showError(`${err.statusText} (${err.status}) while deleting record<br />${err.data}`, 'Error deleting record');
             }
           });
       },
