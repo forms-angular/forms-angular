@@ -99,7 +99,7 @@ module fng.services {
 
     var updateRecordWithLookupValues = function(schemaElement, $scope, ctrlState: IFngCtrlState) {
       // Update the master and the record with the lookup values, master first
-      if (!$scope.topLevelFormName || $scope[$scope.topLevelFormName].$pristine) {
+      if (!$scope.topLevelFormName || ($scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine)) {
         updateObject(schemaElement.name, ctrlState.master, function(value) {
           return convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, "Options")], $scope[suffixCleanId(schemaElement, "_ids")]);
         });
