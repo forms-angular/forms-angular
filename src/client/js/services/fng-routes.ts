@@ -37,7 +37,7 @@ module fng.services {
       {route: '/:model/:form/:id/view/:tab', state: 'model::form::view::tab', templateUrl: 'base-view.html'},
       {route: '/:model/:form/new', state: 'model::form::new', templateUrl: 'base-edit.html'},
       {route: '/:model/:form', state: 'model::form::list', templateUrl: 'base-list.html'},        // list page with edit links to non default form
-      {route: '/:model/:form/:viewonly', state: 'model::form::list::view', templateUrl: 'base-list-view.html'}        // list page with edit links to non default form
+      {route: '/:model/:form/viewonly', state: 'model::form::list::view', templateUrl: 'base-list-view.html'}        // list page with edit links to non default form
     ];
 
     var _routeProvider, _stateProvider;
@@ -229,8 +229,6 @@ module fng.services {
           },
           redirectTo: function () {
             return function (operation, scope, location, id, tab) {
-              let path = '';
-
               location.search({}); // Lose any search parameters
 
               let urlStr: string;
