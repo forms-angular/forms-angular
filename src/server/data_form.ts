@@ -355,16 +355,17 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
         }
     }
     const that = this;
-    let results = [],
-        moreCount = 0,
-        searchCriteria,
-        multiMatchPossible = searchFor.includes(' '),
-        modifiedSearchStr = multiMatchPossible ? searchFor.split(' ').join('|') : searchFor;
+    let results = [];
+    let moreCount = 0;
+    let searchCriteria;
+    // THe snippet to escape the special characters comes from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+    searchFor = searchFor.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
+    let multiMatchPossible = searchFor.includes(' ');
+    let modifiedSearchStr = multiMatchPossible ? searchFor.split(' ').join('|') : searchFor;
 
     // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
 
-    // THe snippet to escape the special characters comes from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-    searchCriteria = {$regex: '^(' + modifiedSearchStr.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&') + ')', $options: 'i'};
+    searchCriteria = {$regex: '^(' + modifiedSearchStr + ')', $options: 'i'};
 
     let handleSearchResultsFromIndex = function (err, docs, item, cb) {
         if (!err && docs && docs.length > 0) {
