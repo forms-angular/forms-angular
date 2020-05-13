@@ -363,7 +363,8 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
 
     // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
 
-    searchCriteria = {$regex: '^(' + modifiedSearchStr + ')', $options: 'i'};
+    // THe snippet to escape the special characters comes from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+    searchCriteria = {$regex: '^(' + modifiedSearchStr.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&') + ')', $options: 'i'};
 
     let handleSearchResultsFromIndex = function (err, docs, item, cb) {
         if (!err && docs && docs.length > 0) {

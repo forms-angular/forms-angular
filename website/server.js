@@ -24,8 +24,6 @@ var config = require('./lib/config/config');
 mongoose.connect(config.mongo.uri, config.mongo.options);
 mongoose.Promise = global.Promise;
 
-mongoose.set('debug',true);
-
 // Setup Express
 var app = express();
 require('./lib/config/express')(app);
@@ -69,6 +67,8 @@ if (app.get('env') === 'test') {
     }
   });
 }
+
+// mongoose.set('debug', true);
 
 // Start server
 app.listen(config.port, config.ip, function () {
