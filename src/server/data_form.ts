@@ -1408,16 +1408,18 @@ DataForm.prototype.entityDelete = function () {
         }
 
         async function runDeletion(doc: Document, resource: Resource) : Promise<any> {
-            if (resource.options.onRemove) {
-                resource.options.onRemove(doc, req, async function (err) {
-                    if (err) {
-                        throw err;
-                    }
-                    return await removeDoc(doc, resource);
-                });
-            } else {
-                return await removeDoc(doc, resource);
-            }
+            return new Promise((resolve, reject) => {
+                if (resource.options.onRemove) {
+                    resource.options.onRemove(doc, req, async function (err) {
+                        if (err) {
+                            throw err;
+                        }
+                        resolve(removeDoc(doc, resource));
+                    });
+                } else {
+                    resolve(removeDoc(doc, resource));
+                }
+            })
         }
 
         this.processEntity(req, res, async function () {
