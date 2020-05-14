@@ -15,7 +15,6 @@ npm-debug.log
 src/**/*.js
 src/**/*.js.map
 website/app/models/**/*.js.map
-package-lock.json
 
 website/node_modules
 website/app/bower_components
