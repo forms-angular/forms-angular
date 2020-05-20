@@ -358,14 +358,18 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
     let results = [];
     let moreCount = 0;
     let searchCriteria;
-    // THe snippet to escape the special characters comes from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-    searchFor = searchFor.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
-    let multiMatchPossible = searchFor.includes(' ');
-    let modifiedSearchStr = multiMatchPossible ? searchFor.split(' ').join('|') : searchFor;
-
-    // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
-
-    searchCriteria = {$regex: '^(' + modifiedSearchStr + ')', $options: 'i'};
+    let multiMatchPossible = false;
+    if (searchFor === '?') {
+        // interpret this as a wildcard (so there is no way to search for ?
+        searchCriteria = null;
+    } else {
+        // THe snippet to escape the special characters comes from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+        searchFor = searchFor.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
+        multiMatchPossible = searchFor.includes(' ');
+        let modifiedSearchStr = multiMatchPossible ? searchFor.split(' ').join('|') : searchFor;
+        // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
+        searchCriteria = {$regex: '^(' + modifiedSearchStr + ')', $options: 'i'};
+    }
 
     let handleSearchResultsFromIndex = function (err, docs, item, cb) {
         if (!err && docs && docs.length > 0) {
@@ -451,10 +455,14 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                     obj2[item.field] = searchCriteria;
                     searchDoc['$and'] = [obj1, obj2];
                 } else {
-                    searchDoc[item.field] = searchCriteria;
+                    if (searchCriteria) {
+                        searchDoc[item.field] = searchCriteria;
+                    }
                 }
             } else {
-                searchDoc[item.field] = searchCriteria;
+                if (searchCriteria) {
+                    searchDoc[item.field] = searchCriteria;
+                }
             }
 
             // The +60 in the next line is an arbitrary safety zone for situations where items that match the string
