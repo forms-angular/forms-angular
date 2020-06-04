@@ -119,6 +119,12 @@ BSchema.statics.form = function (layout) {
                 ipAddress: { hidden: false }
             };
             break;
+        case 'introducePseudoField':
+            /*
+            An example of using the onSchemaFetch hook.  It has no impact on the form here
+            but the controller makes direct changes to the schema
+             */
+            break;
     }
     return formSchema;
 };

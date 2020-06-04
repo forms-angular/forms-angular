@@ -297,13 +297,17 @@ you can easily switch between modes without having to manually change all the in
         a model followed by <strong>Ctrl</strong> (or the name of the model followed by the name of
         the custom form followed by Ctrl. There is an sample model controller <a href="/scripts/controllers/b-enhanced-schema.js">here</a>
         which is used in the examples in this section. The NavCtrl controller handles the model controllers, so don't remove
-        it.  There are two points during the creation of a form when the model controllers are called:</p>
-      <ol>
-        <li><strong>When the BaseCtrl scope is available.</strong> Sometimes it is useful to have model controllers access the base controller, which is created after them.  The best way to
+        it.  There are a few during the creation of a form when the model controllers are called:</p>
+      <ul>
+        <li><strong>When the Mongoose schema is downloaded.</strong> It is possible to make run time modifications to the Mongoose schema before forms-angular starts the conversion
+        to the internal schema format by adding a <em>$scope.$parent.onSchemafetch(description, schema) to the model controller</em></li>
+        <li><strong>When the internal schema has been prepared.</strong> Before the form mark-up is generated there is an option to make changes by adding a
+            <em>$scope.$parent.onSchemaProcessed(description, schema) to the model controller</em></li>
+          <li><strong>When the BaseCtrl scope is available.</strong> Sometimes it is useful to have model controllers access the base controller, which is created after them.  The best way to
     do this is to add a <em>$scope.onBaseCtrlReady = function (baseScope)</em> to the model controller.</li>
         <li><strong>When the form is generated and the data is available.</strong> This allows the model controllers to modify the form in ways that
           depend on the value of the data.  This is done by adding a <em>$scope.onAllReady = function (baseScope)</em> to the model controller.</li>
-      </ol>
+      </ul>
 
     <h5 id="naming">Naming</h5>
     <p>The BaseCtrl scope has a variable called <strong>modelNameDisplay</strong> which is used in several places in the

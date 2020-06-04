@@ -41,6 +41,9 @@ module fng.services {
         tab.content.push(thisInst);
       }
 
+      if (typeof $scope.onSchemaFetch === "function") {
+        $scope.onSchemaFetch(description, source);
+      }
       for (var field in source) {
         if (source.hasOwnProperty(field)) {
           if (field === '_id') {
@@ -107,6 +110,9 @@ module fng.services {
 //            console.log($scope.tabs[0]['title'])
 //            $location.hash($scope.tabs[0]['title']);
 //        }
+      if (typeof $scope.onSchemaProcessed === "function") {
+        $scope.onSchemaProcessed(description, destForm);
+      }
 
       if (destList && destList.length === 0) {
         handleEmptyList(description, destList, destForm, source);
