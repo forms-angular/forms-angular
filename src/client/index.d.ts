@@ -354,6 +354,8 @@ declare module fng {
     clearTimeout: () => void;
     handleHttpError: (response: any) => void;
     dropConversionWatcher: () => void;
+    onSchemaFetch? : (description: string, source: IFieldViewInfo[]) => void;
+    onSchemaProcessed? : (description: string, formSchema: IFormInstruction[]) => void;
   }
 
   export interface IContextMenuDivider {
