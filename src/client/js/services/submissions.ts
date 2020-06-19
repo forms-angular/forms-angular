@@ -4,6 +4,7 @@ module fng.services {
 
   /*@ngInject*/
   export function SubmissionsService($http, $cacheFactory) {
+    let useCacheForGetAll = true;
     /*
      generate a query string for a filtered and paginated query for submissions.
      options consists of the following:
@@ -81,7 +82,7 @@ module fng.services {
       },
       getAll: function (modelName, _options) {
         var options = angular.extend({
-          cache: true
+          cache: useCacheForGetAll
         }, _options);
         return $http.get('/api/' + modelName, options);
       },
@@ -98,8 +99,16 @@ module fng.services {
       createRecord: function (modelName, dataToSave) {
         $cacheFactory.get('$http').remove('/api/' + modelName);
         return $http.post('/api/' + modelName, dataToSave);
+      },
+      useCache: function(val: boolean) {
+        useCacheForGetAll = val;
+      },
+      getCache: function(): boolean {
+        return !!$cacheFactory.get('$http')
+      },
+      clearCache: function() {
+        $cacheFactory.get('$http').removeAll();
       }
-
     };
   }
 }
