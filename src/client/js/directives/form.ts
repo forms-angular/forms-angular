@@ -233,7 +233,7 @@ module fng.directives {
                     allInputsVars.sizeClassBS3 = 'col-xs-12';
                   }
                 }
-                value = '<textarea ' + common + ' />';
+                value = '<textarea ' + common + '></textarea>';
               } else {
                 value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
               }

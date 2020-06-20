@@ -42,7 +42,7 @@
     "RESTful API"
   ],
   "dependencies": {
-    "angular": "^1.8.0",
+    "angular": "1.8.0",
     "angular-elastic": "2.5.1",
     "angular-messages": "1.8.0",
     "angular-sanitize": "1.8.0",
