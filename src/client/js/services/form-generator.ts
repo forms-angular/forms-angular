@@ -111,7 +111,7 @@ module fng.services {
 //            $location.hash($scope.tabs[0]['title']);
 //        }
       if (typeof $scope.onSchemaProcessed === "function") {
-        $scope.onSchemaProcessed(description, destForm);
+        $scope.onSchemaProcessed(description, description.slice(0,5) === 'Main ' ? $scope.baseSchema() : destForm);
       }
 
       if (destList && destList.length === 0) {
