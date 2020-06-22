@@ -450,16 +450,20 @@ module fng.directives {
                     if (typeof info.customFooter == 'string') {
                       footer = info.customFooter;
                     }
+                    let hideCond = '';
                     if (info.noAdd !== true) {
-                      footer += `<button ${info.noAdd ? 'ng-hide="' + info.noAdd + '"' : ''} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">
+                      hideCond = info.noAdd ? 'ng-hide="' + info.noAdd + '"' : ''
+                      footer += `<button ${hideCond} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">
                                    <i class="' + formMarkupHelper.glyphClass() + '-plus"></i> 
                                    Add
                                  </button>`;
                     }
-                    if (cssFrameworkService.framework() === 'bs3') {
-                      template += '<div class="row schema-foot"><div class="col-sm-offset-3">' + footer + '</div></div>';
-                    } else {
-                      template += '<div class = "schema-foot ">' + footer + '</div>';
+                    if (footer !== '') {
+                      if (cssFrameworkService.framework() === 'bs3') {
+                        template += `<div ${hideCond} class="row schema-foot"><div class="col-sm-offset-3">${footer}</div></div>`;
+                      } else {
+                        template += `<div ${hideCond} class = "schema-foot ">${footer}</div>`;
+                      }
                     }
                   }
                 }
