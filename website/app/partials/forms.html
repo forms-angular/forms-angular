@@ -400,6 +400,12 @@ you can easily switch between modes without having to manually change all the in
     <p>Due to the parse method, in order declare multiple classes each class must be prefixed with 'class=' e.g.</p>
     <pre>&lt;form-input schema="formSchema" <span>add-all-group="injected-element='with parameters' class=myclass class=my-second-class"</span>&gt;</pre>
 
+    <h5>Running a process before form generation</h5>
+    <p>It may be necessary to run an async process before generating a form - one use case is to complete a logging in process so that user data can be accessed.  Ths can be done
+        by setting up a</p>
+    <code><pre>beforeProcess? : (scope: IFormScope, cb: (err: Error) => void) => void;</pre></code>
+    <p>property in formsAngular.config() or formsAngular.run().  There is an example at the foot of formsAngular.config() in <a href="/scripts/app.js">this module</a>.</p>
+
 </section>
 
 <section id="server-side-customisation" name="Server Side Customization" affix-scroll>

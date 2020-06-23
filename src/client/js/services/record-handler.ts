@@ -593,7 +593,6 @@ module fng.services {
 
     return {
       readRecord: function readRecord($scope, ctrlState: IFngCtrlState) {
-        // TODO Consider using $parse for this - http://bahmutov.calepin.co/angularjs-parse-hacks.html
         SubmissionsService.readRecord($scope.modelName, $scope.id)
           .then(function(response) {
             let data: any = response.data;

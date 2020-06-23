@@ -2,10 +2,6 @@
 
 websiteApp.controller('BEnhancedSchemaCtrl', ['$scope', function ($scope) {
 
-  $scope.$parent.onSchemaProcessed = function(description, schema) {
-    console.log('Processed', description);
-  };
-
   $scope.record = $scope.sharedData.record;
 
   $scope.sharedData.dropDownDisplay = 'Custom Dropdown';

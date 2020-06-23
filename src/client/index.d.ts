@@ -1,5 +1,8 @@
 declare module fng {
-  var formsAngular: angular.IModule;
+  export interface IFng extends angular.IModule {
+    beforeProcess? : (scope: IFormScope, cb: (err: Error) => void) => void;
+  }
+  var formsAngular: IFng;
 
   /*
   Type definitions for types that are used on both the client and the server
@@ -467,4 +470,4 @@ declare module fng {
 
 }
 
-declare var formsAngular: angular.IModule;
+declare var formsAngular: fng.IFng;

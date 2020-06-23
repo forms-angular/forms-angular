@@ -39,19 +39,34 @@ module fng.controllers {
     formGenerator.decorateScope($scope, formGenerator, recordHandler, $scope.sharedData);
     recordHandler.decorateScope($scope, $uibModal, recordHandler, ctrlState);
 
-    recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
+    function processTheForm() {
+      recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
 
-    // Tell the 'model controllers' that they can start fiddling with basescope
-    for (let i = 0; i < $scope.sharedData.modelControllers.length; i++) {
-      if ($scope.sharedData.modelControllers[i].onBaseCtrlReady) {
-        $scope.sharedData.modelControllers[i].onBaseCtrlReady($scope);
+      // Tell the 'model controllers' that they can start fiddling with basescope
+      for (let i = 0; i < $scope.sharedData.modelControllers.length; i++) {
+        if ($scope.sharedData.modelControllers[i].onBaseCtrlReady) {
+          $scope.sharedData.modelControllers[i].onBaseCtrlReady($scope);
+        }
       }
+
+      $scope.$on('$destroy', () => {
+        $scope.sharedData.modelControllers.forEach((value) => value.$destroy());
+        $rootScope.$broadcast('fngControllersUnloaded');
+      });
     }
 
-    $scope.$on('$destroy', () => {
-      $scope.sharedData.modelControllers.forEach((value) => value.$destroy());
-      $rootScope.$broadcast('fngControllersUnloaded');
-    });
-
+//Check that we are ready
+    if (typeof formsAngular.beforeProcess === "function") {
+      formsAngular.beforeProcess($scope, function (err) {
+        if (err) {
+          $scope.showError(err.message, 'Error preparing to process form');
+        } else {
+          processTheForm();
+        }
+      });
+    } else {
+      console.log('There is no pre-processinging');
+      processTheForm();
+    }
   }
 }

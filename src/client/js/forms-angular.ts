@@ -26,7 +26,7 @@
 
 module fng {
 
-  export var formsAngular = angular.module('formsAngular', [
+  export var formsAngular: fng.IFng = angular.module('formsAngular', [
     'ngSanitize',
     'ngMessages',
     'ui.bootstrap',
