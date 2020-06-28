@@ -65,7 +65,6 @@ module fng.controllers {
         }
       });
     } else {
-      console.log('There is no pre-processinging');
       processTheForm();
     }
   }
