@@ -1,6 +1,6 @@
 declare module fng {
   export interface IFng extends angular.IModule {
-    beforeProcess? : (scope: IFormScope, cb: (err: Error) => void) => void;
+    beforeProcess? : (scope: IFormScope, cb: (err?: Error) => void) => void;
   }
   var formsAngular: IFng;
 
@@ -466,6 +466,22 @@ declare module fng {
     formName? :           string;
     tab? :                string;
     variant? :            string;    // TODO should be enum of supported frameworks
+  }
+
+  export interface IColumnDef {
+    field: string;
+    displayName: string;
+    align?: string;
+    cellFilter?: string;
+    totalsRow?: string;
+  }
+
+  export interface IReportSchema {
+    pipeline: any;
+    title?: string;
+    drilldown?: string;
+    params?: any;
+    columnDefs?: IColumnDef[]
   }
 
 }
