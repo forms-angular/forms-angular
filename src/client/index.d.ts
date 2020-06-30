@@ -468,22 +468,6 @@ declare module fng {
     variant? :            string;    // TODO should be enum of supported frameworks
   }
 
-  export interface IColumnDef {
-    field: string;
-    displayName: string;
-    align?: string;
-    cellFilter?: string;
-    totalsRow?: string;
-  }
-
-  export interface IReportSchema {
-    pipeline: any;
-    title?: string;
-    drilldown?: string;
-    params?: any;
-    columnDefs?: IColumnDef[]
-  }
-
 }
 
 declare var formsAngular: fng.IFng;
