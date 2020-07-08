@@ -208,9 +208,9 @@ module fng.services {
           }
         }
       } else if (mongooseType.instance.toLowerCase() === 'boolean') {
-        formInstructions.type = 'checkbox';
+        formInstructions.type = formInstructions.type || 'checkbox';
       } else if (mongooseType.instance === 'Number') {
-        formInstructions.type = 'number';
+        formInstructions.type = formInstructions.type || 'number';
         if (mongooseOptions.min !== undefined) {
           formInstructions.add = 'min="' + mongooseOptions.min + '" ' + (formInstructions.add || '');
         }
