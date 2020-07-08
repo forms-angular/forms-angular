@@ -1122,12 +1122,7 @@ DataForm.prototype.filteredFind = function (resource, req, aggregationParam, fin
             callback(err);
         } else {
             if (queryObj && aggregationParam) {
-                let match = aggregationParam.find(o => o.hasOwnProperty('$match'));
-                if (match) {
-                    _.extend(match.$match, queryObj)
-                } else {
-                    aggregationParam.unshift({$match: queryObj});
-                }
+                aggregationParam.unshift({$match: queryObj});
             }
             doAggregation(function (idArray) {
                 if (aggregationParam && idArray.length === 0) {
