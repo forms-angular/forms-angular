@@ -9,8 +9,8 @@
         "studies":{
             "courses":[
                 {
-                    "subject": 'English',
-                    "grade": 'A'
+                    "subject": "English",
+                    "grade": "A"
                 }
             ],
             "exams":[

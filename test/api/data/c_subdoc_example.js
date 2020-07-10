@@ -1,10 +1,10 @@
 [
     {
-        "_id": ObjectId("519aaaaab320153869b175e0"),
+        "_id": {"$oid": "519aaaaab320153869b175e0"},
         "surname": "Anderson",
         "forename":  "John",
         "weight": 123,
-        "hairColour": 'Brown',
+        "hairColour": "Brown",
         "accepted": true,
         "passwordHash": "top secret",
         "interview": {
@@ -14,11 +14,11 @@
         }
     },
     {
-        "_id": ObjectId("519aaaaab3201fff69b175e0"),
+        "_id": {"$oid": "519aaaaab3201fff69b175e0"},
         "surname": "Zodiac",
         "forename":  "Alison",
         "weight": 115,
-        "hairColour": 'Black',
+        "hairColour": "Black",
         "accepted": true,
         "passwordHash": "top secret",
         "interview": {

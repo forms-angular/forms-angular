@@ -1,6 +1,6 @@
 [
     {
-        "_id": ObjectId("519a6075b320153869b175e0"),
+        "_id": {"$oid": "519a6075b320153869b175e0"},
         "surname": "IsAccepted1",
         "forename": "John",
         "address": {
@@ -19,7 +19,7 @@
         "freeText": "Here is some tex blah blah"
     },
     {
-        "_id": ObjectId("519a6075b320153869b155e0"),
+        "_id": {"$oid": "519a6075b320153869b155e0"},
         "surname": "IsAccepted2",
         "forename": "Johan",
         "address": {
@@ -37,7 +37,7 @@
         "freeText": "Here is some tex blah blah"
     },
     {
-        "_id": ObjectId("519a6075b440153869b155e0"),
+        "_id": {"$oid": "519a6075b440153869b155e0"},
         "surname": "Jones-NotAccepted",
         "forename": "Alan",
         "address": {
