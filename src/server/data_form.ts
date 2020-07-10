@@ -1359,25 +1359,37 @@ DataForm.prototype.entityDelete = function () {
 
         function generateDependencyList(resource: Resource) {
             if (resource.options.dependents === undefined) {
-                resource.options.dependents = that.resources.reduce((acc, r) => {
-                    if (r !== resource) {
-                        let fldList = [];
-                        for (let fld in r.model.schema.paths) {
-                            let parts = fld.split('.');
-                            let schemaType = r.model.schema.tree;
+                resource.options.dependents = that.resources.reduce(function (acc, r) {
+
+                    function searchPaths(schema, prefix) {
+                        var fldList = [];
+                        for (var fld in schema.paths) {
+                            var parts = fld.split('.');
+                            var schemaType = schema.tree;
                             while (parts.length > 0) {
                                 schemaType = schemaType[parts.shift()];
                             }
-                            if (schemaType.type && schemaType.type.name === 'ObjectId' && schemaType.ref === resource.resourceName) {
-                                fldList.push(fld);
+                            if (schemaType.type) {
+                                if (schemaType.type.name === 'ObjectId' && schemaType.ref === resource.resourceName) {
+                                    fldList.push(prefix + fld);
+                                }
+                                else if (_.isArray(schemaType.type)) {
+                                    schemaType.type.forEach(function (t) {
+                                        searchPaths(t, prefix + fld + '.');
+                                    });
+                                }
                             }
                         }
                         if (fldList.length > 0) {
-                            acc.push({resource: r, keys: fldList})
+                            acc.push({ resource: r, keys: fldList });
                         }
                     }
+
+                    if (r !== resource) {
+                        searchPaths(r.model.schema, '');
+                    }
                     return acc;
-                }, [])
+                }, []);
             }
         }
 
