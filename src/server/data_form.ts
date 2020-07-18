@@ -617,7 +617,7 @@ DataForm.prototype.preprocess = function (resource: Resource, paths, formSchema)
                     hiddenFields.push(element);
                 }
                 if (paths[element].options.match) {
-                    outPath[element].options.match = paths[element].options.match.source;
+                    outPath[element].options.match = paths[element].options.match.source || paths[element].options.match;
                 }
                 let schemaListInfo: any = paths[element].options.list;
                 if (schemaListInfo) {
