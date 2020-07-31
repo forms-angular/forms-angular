@@ -8,7 +8,7 @@ module fng.directives {
         restrict: 'AE',
         replace: true,
         template: '<li ng-show="items.length > 0" class="mcdd" uib-dropdown>' +
-        ' <a uib-dropdown-toggle>' +
+        ' <a href="#" uib-dropdown-toggle>' +
         '  {{contextMenu}} <b class="caret"></b>' +
         ' </a>' +
         ' <ul class="uib-dropdown-menu dropdown-menu">' +
