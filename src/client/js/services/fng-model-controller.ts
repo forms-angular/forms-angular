@@ -13,6 +13,7 @@ module fng.services {
         controllerName += 'Ctrl';
         locals.$scope = sharedData.modelControllers[level] = localScope;
         let parentScope = localScope.$parent;
+        parentScope.items = parentScope.items || [];
 
         let addMenuOptions = function (array) {
           angular.forEach(array, function (value) {
