@@ -352,6 +352,7 @@ declare module fng {
     generateNewUrl: any;
     scrollTheList: any;
     getListData: any;
+    phaseWatcher: any;
     dismissError: () => void;
     stickError: () => void;
     clearTimeout: () => void;

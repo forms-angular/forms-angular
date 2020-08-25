@@ -703,8 +703,9 @@ module fng.directives {
               // If we have modelControllers we need to let them know when we have form + data
               let sharedData = scope[attrs.shared || 'sharedData'];
               let modelControllers = sharedData ? sharedData.modelControllers : [];
-              if (subkeys.length > 0 || modelControllers.length > 0) {
+              if ((subkeys.length > 0 || modelControllers.length > 0)  && !scope.phaseWatcher){
                 var unwatch2 = scope.$watch('phase', function (newValue) {
+                  scope.phaseWatcher = true;
                   if (newValue === 'ready' && typeof unwatch2 === "function") {
                     unwatch2();
                     unwatch2 = null;
@@ -797,7 +798,7 @@ module fng.directives {
                 });
               }
 
-              $rootScope.$broadcast('formInputDone');
+              $rootScope.$broadcast('formInputDone', attrs.name);
 
               if (formGenerator.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
                 // If this is not a test force the data dependent updates to the DOM
