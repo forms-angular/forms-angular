@@ -713,7 +713,8 @@ module fng.directives {
                     // Tell the 'model controllers' that the form and data are there
                     for (var i = 0; i < modelControllers.length; i++) {
                       if (modelControllers[i].onAllReady) {
-                        modelControllers[i].onAllReady(scope);
+                        let theFunc = modelControllers[i].onAllReady;
+                        $timeout(() => {theFunc(scope)});
                       }
                     }
 
@@ -742,7 +743,7 @@ module fng.directives {
                           arrayOffset = scope[arrayToProcess[thisOffset].selectFunc](theRecord, info);
 
                         } else if (arrayToProcess[thisOffset].keyList) {
-                          // We are chosing the array element by matching one or more keys
+                          // We are choosing the array element by matching one or more keys
                           var thisSubkeyList = arrayToProcess[thisOffset].keyList;
 
                           for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
