@@ -713,7 +713,7 @@ module fng.directives {
                     // Tell the 'model controllers' that the form and data are there
                     for (var i = 0; i < modelControllers.length; i++) {
                       if (modelControllers[i].onAllReady) {
-                        modelControllers[i].onAllReady();
+                        modelControllers[i].onAllReady(scope);
                       }
                     }
 
