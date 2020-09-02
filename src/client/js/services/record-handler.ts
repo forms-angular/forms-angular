@@ -262,7 +262,17 @@ module fng.services {
             if (fieldName.indexOf(".") !== -1) {
               throw new Error("Trying to directly assign to a nested field 332");
             }  // Not sure that this can happen, but put in a runtime test
-            if (!schemaEntry.internalRef || !schemaEntry.internalRef.noConvert) {
+            if (
+                /*
+                 Check we are starting with an ObjectId (ie not being called because of $watch on conversion, with a
+                 converted value, which would cause an exception)
+                 */
+                fieldValue.toString().match(/^[a-f0-9]{24}$/) &&
+                /*
+                  We are not suppressing conversions
+                 */
+                (!schemaEntry.internalRef || !schemaEntry.internalRef.noConvert)
+            ) {
               anObject[fieldName] = convertForeignKeys(schemaEntry, fieldValue, $scope[suffixCleanId(schemaEntry, "Options")], idList);
             }
           } else if (schemaEntry.select2) {
