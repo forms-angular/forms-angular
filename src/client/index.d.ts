@@ -383,7 +383,8 @@ declare module fng {
   export interface IModelController extends IFormScope {
     onBaseCtrlReady? : (baseScope: IFormScope) => void;   // Optional callback after form is instantiated
     onAllReady? : (baseScope: IFormScope) => void;        // Optional callback after form is instantiated and populated
-    contextMenu? : Array<IContextMenuOption | IContextMenuDivider>
+    contextMenu? : Array<IContextMenuOption | IContextMenuDivider>;
+    contextMenuPromise? : Promise<Array<IContextMenuOption | IContextMenuDivider>>;
   }
 
   export interface IBaseFormOptions {
