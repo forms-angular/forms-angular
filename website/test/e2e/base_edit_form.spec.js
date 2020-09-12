@@ -1,4 +1,5 @@
 'use strict';
+var EC = protractor.ExpectedConditions;
 
 describe('Base edit form', function () {
 
@@ -33,7 +34,7 @@ describe('Base edit form', function () {
     $('#deleteButton').click();
     browser.sleep(400);
     $('.modal-footer button.dlg-yes').click();
-    expect(browser.getCurrentUrl()).toMatch(/\/#\/b_enhanced_schema$/);
+    expect(browser.getCurrentUrl()).toMatch(/\/#\/$/);
   });
 
   describe('should display deletion confirmation modal', function () {
@@ -76,7 +77,7 @@ describe('Base edit form', function () {
       browser.sleep(200);
       element(by.model('record.freeText')).sendKeys('This is a rude thing');
       $('#newButton').click();
-      browser.sleep(1000);  //Really naff, but I tried for ages to do something better.  Apparently zones.js will sort it out eventually
+      browser.wait(EC.presenceOf($('.modal-dialog')), 5000);
     });
 
     it('supports cancelling navigation', function () {
@@ -86,8 +87,8 @@ describe('Base edit form', function () {
       expect($('.modal .modal-footer').getText()).toMatch('Cancel');
       $('.modal-footer button.dlg-cancel').click();
       expect(browser.getCurrentUrl()).toMatch('/b_enhanced_schema/519a6075b320153869b155e0/edit');
-      list = element.all(by.css('.modal'));
       browser.sleep(1000);
+      list = element.all(by.css('.modal'));
       expect(list.count()).toBe(0);
     });
 

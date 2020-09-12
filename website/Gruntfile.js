@@ -563,12 +563,14 @@ module.exports = function (grunt) {
       ]);
     }
 
-    else grunt.task.run([
-      'test:server',
-      'test:client',
-      'test:e2e',
-      // 'test:screens'  Not a lot of point as not comparing them at the moment
-    ]);
+    else {
+      grunt.task.run([
+        'test:server',
+        'test:client',
+        'test:e2e',
+        // 'test:screens'  Not a lot of point as not comparing them at the moment
+      ]);
+    }
   });
 
   grunt.registerTask('build', [

@@ -57,8 +57,8 @@ if (app.get('env') === 'test') {
   dataFiles.forEach(function (file) {
     var fname = dataPath + '/' + file;
     if (fs.statSync(fname).isFile()) {
-      console.log('mongoimport --host ' + mongoHost + ' --db fng-test --drop --collection ' + file.slice(0, -3) + 's --jsonArray < ' + fname);
-      exec('mongoimport --host ' + mongoHost + ' --db fng-test --drop --collection ' + file.slice(0, -3) + 's --jsonArray < ' + fname,
+      console.log('mongoimport --host ' + mongoHost + ' --db fng-test --drop --collection ' + file.slice(0, -5) + 's --jsonArray < ' + fname);
+      exec('mongoimport --host ' + mongoHost + ' --db fng-test --drop --collection ' + file.slice(0, -5) + 's --jsonArray < ' + fname,
         function (error, stdout, stderr) {
         if (error !== null) {
           console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);

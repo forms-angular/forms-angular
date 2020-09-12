@@ -1,0 +1,120 @@
+[
+    {
+        "_id": {
+            "$oid": "51c583d5b5c51226db418f15"
+        },
+        "surname": "Brown",
+        "forename": "John",
+        "exams": [
+            {
+                "subject": "English",
+                "examDate": {
+                    "$date": {
+                        "$numberLong": "1363132800000"
+                    }
+                },
+                "score": 89,
+                "result": "pass",
+                "grader": {
+                    "$oid": "519a6075b320153869b155e0"
+                }
+            },
+            {
+                "subject": "Maths",
+                "examDate": {
+                    "$date": {
+                        "$numberLong": "1363046400000"
+                    }
+                },
+                "score": 79,
+                "result": "pass",
+                "grader": {
+                    "$oid": "519a6075b320153869b155e0"
+                }
+            }
+        ]
+    },
+    {
+        "_id": {
+            "$oid": "51c583d5b5c51226db418f16"
+        },
+        "surname": "Smith",
+        "forename": "Anne",
+        "exams": [
+            {
+                "subject": "Maths",
+                "examDate": {
+                    "$date": {
+                        "$numberLong": "1363046400000"
+                    }
+                },
+                "score": 97,
+                "result": "distinction",
+                "grader": {
+                    "$oid": "519a6075b320153869b155e0"
+                }
+            },
+            {
+                "subject": "English",
+                "examDate": {
+                    "$date": {
+                        "$numberLong": "1363132800000"
+                    }
+                },
+                "score": 83,
+                "result": "pass",
+                "grader": {
+                    "$oid": "519a6075b320153869b155e0"
+                }
+            }
+        ]
+    },
+    {
+        "_id": {
+            "$oid": "51c583d5b5c51226db418f17"
+        },
+        "surname": "Brown",
+        "forename": "Jenny",
+        "exams": [
+            {
+                "subject": "English",
+                "examDate": {
+                    "$date": {
+                        "$numberLong": "1363132800000"
+                    }
+                },
+                "score": 62,
+                "result": "pass",
+                "grader": {
+                    "$oid": "519a6075b320153869b155e0"
+                }
+            },
+            {
+                "subject": "Physics",
+                "examDate": {
+                    "$date": {
+                        "$numberLong": "1363219200000"
+                    }
+                },
+                "score": 30,
+                "result": "fail",
+                "grader": {
+                    "$oid": "519a6075b320153869b155e0"
+                }
+            },
+            {
+                "subject": "Maths",
+                "examDate": {
+                    "$date": {
+                        "$numberLong": "1331510400000"
+                    }
+                },
+                "score": 60,
+                "result": "pass",
+                "grader": {
+                    "$oid": "519a6075b320153869b155e0"
+                }
+            }
+        ]
+    }
+]
