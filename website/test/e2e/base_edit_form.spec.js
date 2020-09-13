@@ -4,7 +4,7 @@ var EC = protractor.ExpectedConditions;
 describe('Base edit form', function () {
 
   var width = 1024;
-  var height = 768;
+  var height = 1468;
   browser.driver.manage().window().setSize(width, height);
 
   it('should display a form without debug info', function () {
@@ -75,9 +75,12 @@ describe('Base edit form', function () {
     beforeEach(function () {
       browser.get('/#/b_enhanced_schema/519a6075b320153869b155e0/edit');
       browser.sleep(200);
+      element(by.model('record.surname')).clear().sendKeys('Smith');
       element(by.model('record.freeText')).sendKeys('This is a rude thing');
+      browser.sleep(100);
       $('#newButton').click();
-      browser.wait(EC.presenceOf($('.modal-dialog')), 5000);
+      browser.sleep(1000);
+      // browser.wait(EC.presenceOf($('.modal-dialog')), 5000);
     });
 
     it('supports cancelling navigation', function () {
@@ -87,8 +90,8 @@ describe('Base edit form', function () {
       expect($('.modal .modal-footer').getText()).toMatch('Cancel');
       $('.modal-footer button.dlg-cancel').click();
       expect(browser.getCurrentUrl()).toMatch('/b_enhanced_schema/519a6075b320153869b155e0/edit');
-      browser.sleep(1000);
       list = element.all(by.css('.modal'));
+      browser.sleep(1000);
       expect(list.count()).toBe(0);
     });
 

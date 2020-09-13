@@ -603,7 +603,8 @@ module fng.services {
 
     return {
       readRecord: function readRecord($scope, ctrlState: IFngCtrlState) {
-        SubmissionsService.readRecord($scope.modelName, $scope.id)
+        $scope.readingRecord = SubmissionsService.readRecord($scope.modelName, $scope.id);
+        $scope.readingRecord
           .then(function(response) {
             let data: any = response.data;
             handleIncomingData(data, $scope, ctrlState);
@@ -745,7 +746,12 @@ module fng.services {
                     optionsList.splice(pos, 0, option);
                     idList.splice(pos, 0, data[i]._id);
                   }
-                  updateRecordWithLookupValues(schemaElement, $scope, ctrlState);
+                  if ($scope.readingRecord) {
+                    $scope.readingRecord
+                        .then(() => {
+                          updateRecordWithLookupValues(schemaElement, $scope, ctrlState);
+                        })
+                  }
                 }
               });
           });
