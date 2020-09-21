@@ -946,6 +946,9 @@ module fng.services {
             $scope.$digest();
           }, 3500 + (1000 * ($scope.alertTitle + $scope.errorMessage).length / 50));
           $scope.errorVisible = true;
+          window.setTimeout(() => {
+            $scope.$digest();
+          })
         };
 
         $scope.clearTimeout = function() {
