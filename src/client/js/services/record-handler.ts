@@ -101,7 +101,11 @@ module fng.services {
       // Update the master and the record with the lookup values, master first
       if (!$scope.topLevelFormName || ($scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine)) {
         updateObject(schemaElement.name, ctrlState.master, function(value) {
-          return convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, "Options")], $scope[suffixCleanId(schemaElement, "_ids")]);
+          if (value.toString().match(/^[a-f0-9]{24}$/)) {
+            return convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, "Options")], $scope[suffixCleanId(schemaElement, "_ids")]);
+          } else {
+            return value;
+          }
         });
         // Then copy the converted keys from master into record
         var newVal = getData(ctrlState.master, schemaElement.name);
@@ -446,6 +450,10 @@ module fng.services {
           let newVal = extractIdVal(newValue, idString);
           let oldVal = extractIdVal(oldValue, idString);
           if (newVal !== oldVal) {
+            lkp.handlers.forEach((h) => {
+              $scope[h.formInstructions.options].length = 0;
+              $scope[h.formInstructions.ids].length = 0;
+            });
             if (newVal) {
               SubmissionsService.readRecord(lkp.ref.collection, newVal).then(
                 (response) => {
@@ -470,8 +478,6 @@ module fng.services {
               );
             } else {
               lkp.handlers.forEach((h) => {
-                $scope[h.formInstructions.options].length = 0;
-                $scope[h.formInstructions.ids].length = 0;
                 updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState);
               });
             }
@@ -606,7 +612,7 @@ module fng.services {
         $scope.readingRecord = SubmissionsService.readRecord($scope.modelName, $scope.id);
         $scope.readingRecord
           .then(function(response) {
-            let data: any = response.data;
+            let data: any = angular.copy(response.data);
             handleIncomingData(data, $scope, ctrlState);
           }, function(error) {
             if (error.status === 404) {
@@ -728,7 +734,7 @@ module fng.services {
             }
             dataRequest
               .then(function(response) {
-                let data: any = response.data;
+                let data: any = angular.copy(response.data);
                 if (data) {
                   for (var i = 0; i < data.length; i++) {
                     var option = "";
