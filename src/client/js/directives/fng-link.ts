@@ -87,41 +87,13 @@ module fng.directives {
                 newVal = undefined;
               }
               if (newVal) {
-                scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
+                scope['link'] = routingService.buildUrl(ref + '/' + form + (newVal.id || newVal) + '/edit');
               }
               else {
                 scope['link'] = undefined;
               }
             }
             else {
-              scope['link'] = undefined;
-            }
-          }, true);
-        }
-
-
-
-        if (isLabel) {
-          let watchRecord = scope.$watch('$parent.record.' + attrs['fld'], (newVal) => {
-            if (newVal) {
-              if (/^[a-f0-9]{24}$/.test(newVal.toString())) {
-              } else if(scope.$parent[`f_${attrs['fld']}Options`]) {
-                // extract from lookups
-                let i = scope.$parent[`f_${attrs['fld']}Options`].indexOf(newVal);
-                if (i > -1) {
-                  newVal = scope.$parent[`f_${attrs['fld']}_ids`][i];
-                } else {
-                  newVal = undefined;
-                }
-              } else {
-                newVal = undefined;
-              }
-              if (newVal) {
-                scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
-              } else {
-                scope['link'] = undefined;
-              }
-            } else {
               scope['link'] = undefined;
             }
           }, true);
@@ -156,7 +128,7 @@ module fng.directives {
       template: function (element, attrs) {
 
         function handleAnchor(contents: string) : string {
-          return `<a ng-click="checkNotModal()" href="{{ link }}" class="fng-link">${contents}</a>`;
+          return `<a ng-click="checkNotModal()" ng-href="{{ link || '#' }}" class="fng-link">${contents}</a>`;
         }
 
         let retVal: string;
