@@ -3,6 +3,7 @@ var path = require('path');
 
 exports.config = {
   specs: [
+    './find_functions.spec.js',
     './selects.spec.js'
   ],
   capabilities: {
