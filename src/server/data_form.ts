@@ -1327,9 +1327,9 @@ DataForm.prototype.entityPut = function () {
             let cleansedBody = that.cleanseRequest(req);
 
             // Merge
-            _.each(cleansedBody, function (value, name) {
-                req.doc[name] = (value === '') ? undefined : value;
-            });
+            for (let prop in cleansedBody) {
+                req.doc.set(prop, cleansedBody[prop] === '' ? undefined : cleansedBody[prop])
+            }
 
             if (req.resource.options.hide !== undefined) {
                 let hiddenFields = that.generateHiddenFields(req.resource, true);
