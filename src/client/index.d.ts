@@ -147,11 +147,11 @@ declare module fng {
     /*
     The next few options relate to the handling and display of arrays (including arrays of subdocuments)
      */
-    noAdd?: boolean; // inhibits an Add button being generated for arrays.
+    noAdd?: boolean | string; // inhibits an Add button being generated for arrays.
     unshift?: boolean; // (for arrays of sub documents) puts an add button in the sub schema header which allows insertion of new sub documents at the beginning of the array.
-    noRemove?: boolean;  // inhibits a Remove button being generated for array elements.
+    noRemove?: boolean | string;  // inhibits a Remove button being generated for array elements.
     formstyle?: formStyle;  // (only valid on a sub schema) sets style of sub form.
-    sortable? : boolean;  // Allows drag and drop sorting of arrays - requires angular-ui-sortable
+    sortable? : boolean | string;  // Allows drag and drop sorting of arrays - requires angular-ui-sortable
 
     /*
     The next section relates to the display of sub documents
