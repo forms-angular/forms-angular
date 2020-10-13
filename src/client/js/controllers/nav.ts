@@ -91,6 +91,11 @@ module fng.controllers {
 
     $scope.$on('fngControllersLoaded', function(evt, sharedData, modelName) {
       $scope.contextMenu = sharedData.dropDownDisplay || sharedData.modelNameDisplay || $filter('titleCase')(modelName, false);
+      if (sharedData.dropDownDisplayPromise) {
+        sharedData.dropDownDisplayPromise.then((value) => {
+          $scope.contextMenu = value;
+        });
+      }
     });
 
     $scope.$on('fngControllersUnloaded', function(evt) {

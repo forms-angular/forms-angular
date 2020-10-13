@@ -17,8 +17,6 @@ module.exports = {
       useUnifiedTopology: true,
       keepAlive: 1,
       connectTimeoutMS: 30000,
-      reconnectTries: 30,
-      reconnectInterval: 5000
     });
 
     mongoose.connection.on("error", function() {

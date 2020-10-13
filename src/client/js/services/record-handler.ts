@@ -101,7 +101,7 @@ module fng.services {
       // Update the master and the record with the lookup values, master first
       if (!$scope.topLevelFormName || ($scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine)) {
         updateObject(schemaElement.name, ctrlState.master, function(value) {
-          if (value.toString().match(/^[a-f0-9]{24}$/)) {
+          if (typeof value !== "object") {
             return convertForeignKeys(schemaElement, value, $scope[suffixCleanId(schemaElement, "Options")], $scope[suffixCleanId(schemaElement, "_ids")]);
           } else {
             return value;

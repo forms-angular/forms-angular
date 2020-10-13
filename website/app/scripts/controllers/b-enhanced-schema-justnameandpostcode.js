@@ -13,6 +13,12 @@ websiteApp.controller('BEnhancedSchemaJustnameandpostcodeCtrl', ['$scope', '$q',
       resolve('Promise Surprise!!');
     }, 1000);
   });
+  $scope.sharedData.dropDownDisplayPromise = $q((resolve) => {
+    setTimeout(() => {
+      console.log('resolving dropdown display promise');
+      resolve('Dropdown Surprise!!');
+    }, 1000);
+  });
 
   $scope.contextMenu = [
     {
