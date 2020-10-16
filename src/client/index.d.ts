@@ -152,6 +152,7 @@ declare module fng {
     noRemove?: boolean | string;  // inhibits a Remove button being generated for array elements.
     formstyle?: formStyle;  // (only valid on a sub schema) sets style of sub form.
     sortable? : boolean | string;  // Allows drag and drop sorting of arrays - requires angular-ui-sortable
+    ngClass?: string; // Allows for conditional per-item styling through the addition of an ng-class expression to the class list of li elements created for each item in the array
 
     /*
     The next section relates to the display of sub documents
