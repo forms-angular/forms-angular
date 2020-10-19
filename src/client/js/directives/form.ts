@@ -115,10 +115,13 @@ module fng.directives {
           function handleReadOnlyDisabled(readonly: any): string {
             let retVal = '';
             if (readonly) {
+              // despite the option being "readonly", we should use disabled and ng-disabled rather than their readonly
+              // equivalents (which give controls the appearance of being read-only, but don't actually prevent user
+              // interaction)
               if (typeof readonly === "boolean") {
                 retVal = ` disabled `;
               } else {
-                retVal = ` ng-readonly="${readonly}" `;
+                retVal = ` ng-disabled="${readonly}" `;
               }
             }
             return retVal;

@@ -362,6 +362,7 @@ declare module fng {
     readingRecord?: Promise<any>;
     onSchemaFetch?: (description: string, source: IFieldViewInfo[]) => void;
     onSchemaProcessed? : (description: string, formSchema: IFormInstruction[]) => void;
+    updateQueryForTab?: (tab: string) => void;
   }
 
   export interface IContextMenuDivider {

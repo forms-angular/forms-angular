@@ -463,6 +463,9 @@ module fng.services {
           const schemaElement = $scope.formSchema.find(f => f.name === fieldName);  // In case someone is using the formSchema directly
           const subSchema = schemaElement ? schemaElement.schema : null;
           let obj = subSchema ? $scope.setDefaults(subSchema, fieldName + '.') : {};
+          if (typeof $scope.dataEventFunctions?.onInitialiseNewSubDoc === "function") {
+            $scope.dataEventFunctions.onInitialiseNewSubDoc(fieldName, subSchema, obj);
+          }          
           arrayField.push(obj);
           $scope.setFormDirty($event);
         }
