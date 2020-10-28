@@ -138,7 +138,31 @@ module fng.controllers {
     };
 
     $scope.isHidden = function (index) {
-      return $scope.items[index].isHidden ? $scope.items[index].isHidden() : false;
+
+      function explicitlyHidden(item): boolean {
+        return item.isHidden ? item.isHidden() : false
+      }
+
+      let dividerHide = false
+      // Hide a divider if it appears under another
+      if ($scope.items[index].divider) {
+        if (index === 0) {
+          dividerHide = true;
+        } else {
+          let foundVisible = false;
+          let check = index - 1;
+          while (check >= 0 && !dividerHide && !foundVisible) {
+            if ($scope.items[check].divider) {
+              dividerHide = true;
+            } else if (!explicitlyHidden($scope.items[check])) {
+              foundVisible = true;
+            } else {
+              --check;
+            }
+          }
+        }
+      }
+      return dividerHide || explicitlyHidden($scope.items[index]);
     };
 
     $scope.isDisabled = function (index) {
