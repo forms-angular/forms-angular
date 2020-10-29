@@ -45,11 +45,11 @@ module fng.services {
                 (array) => addMenuOptions(array)
               )
             }
-            if (sharedData.modelNameDisplayPromise) {
-              sharedData.modelNameDisplayPromise.then(value => {
-                parentScope.modelNameDisplay = value;
-              })
-            }
+          }
+          if (sharedData.modelNameDisplayPromise) {
+            sharedData.modelNameDisplayPromise.then(value => {
+              parentScope.modelNameDisplay = value;
+            })
           }
         } catch (error) {
           // Check to see if error is no such controller - don't care
