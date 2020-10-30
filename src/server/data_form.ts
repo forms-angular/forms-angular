@@ -367,6 +367,21 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
         searchFor = searchFor.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
         multiMatchPossible = searchFor.includes(' ');
         let modifiedSearchStr = multiMatchPossible ? searchFor.split(' ').join('|') : searchFor;
+
+/*
+Want to do seomthing along the lines of
+        searchFor = searchFor.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
+        if (searchFor.includes(' ')) {
+            let arrayOfTerms = searchFor.split(' ')
+            arrayOfTerms.push(searchFor);
+            searchFor = arrayOfTerms.join('|');
+        }
+But keep multimatch possible as it is used below
+
+To deal with matching long strings like Acme Dev Inc where Acme, Dev and Inc are common terms
+ */
+
+
         // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
         searchCriteria = {$regex: '^(' + modifiedSearchStr + ')', $options: 'i'};
     }
@@ -465,15 +480,15 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                 }
             }
 
-            // The +60 in the next line is an arbitrary safety zone for situations where items that match the string
+            // The +200 in the next line is an arbitrary safety zone for situations where items that match the string
             // in more than one index get filtered out.
             // TODO : Figure out a better way to deal with this
             if (item.resource.options.searchFunc) {
-                item.resource.options.searchFunc(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 60, null, function (err, docs) {
+                item.resource.options.searchFunc(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 200, null, function (err, docs) {
                     handleSearchResultsFromIndex(err, docs, item, cb);
                 });
             } else {
-                that.filteredFind(item.resource, req, null, searchDoc, null, item.resource.options.searchOrder, limit + 60, null, function (err, docs) {
+                that.filteredFind(item.resource, req, null, searchDoc, null, item.resource.options.searchOrder, limit + 200, null, function (err, docs) {
                     handleSearchResultsFromIndex(err, docs, item, cb);
                 });
             }
