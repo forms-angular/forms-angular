@@ -479,13 +479,30 @@ module fng.services {
 
       remove: function remove(fieldName, value, $event, $scope) {
         // Remove an element from an array
-        var fieldParts = fieldName.split('.');
+        var fieldParts = fieldName.split(".");
         var arrayField = $scope.record;
         for (var i = 0, l = fieldParts.length; i < l; i++) {
           arrayField = arrayField[fieldParts[i]];
         }
-        arrayField.splice(value, 1);
-        $scope.setFormDirty($event);
+        var err;
+        if (typeof $scope.dataEventFunctions.onDeleteSubDoc === "function") {
+          var schemaElement = $scope.formSchema.find(function (f) {
+            return f.name === fieldName;
+          });
+          var subSchema = schemaElement ? schemaElement.schema : null;
+          err = $scope.dataEventFunctions.onDeleteSubDoc(
+            fieldName,
+            subSchema,
+            arrayField,
+            value
+          );
+        }
+        if (err) {
+          $scope.showError(err);
+        } else {
+          arrayField.splice(value, 1);
+          $scope.setFormDirty($event);
+        }
       },
 
       hasError: function hasError(formName, name, index, $scope) {

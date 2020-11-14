@@ -366,11 +366,16 @@ you can easily switch between modes without having to manually change all the in
     </ul>
     <p>In all onBefore... cases passing an error back will stop the event completing. There is a trivial example of
       how a data event hook might be used in <a href="/scripts/controllers/d-array-example.js">this</a> controller, which shows
-      how such event handlers are set up.  In the case of the onBeforeCreate or onBeforeUpdate events the update/create
+      how such event handlers are set up as properties of $scope.dataEventFunctions.  In the case of the onBeforeCreate or onBeforeUpdate events the update/create
       can be handled within the function by passing back the special err of '_update_handled_'.  In these cases it will
       usually be helpful to call <code>baseScope.prepareForSave(cb: (error: string, dataToSave?: any) => void): void</code>
       to convert the client-side model into the format that needs to be written back to MongoDb.
     </p>
+    <p>There is also a hook (again a property on $scope.dataEventFunctions) which can be used to prevent deletion of sub documents.</p>
+    <ul>
+    <li>onDeleteSubDoc(fieldName, subSchema, arrayField, value) returns an error string if the deletion is to be prevented.
+    </li>
+</ul>
     <h5 id="#button-hooks">Controlling CRUD button enabled state</h5>
     <p>There are hooks to override the default CRUD button enabled state behaviour.  There is a trivial example which uses this capability to create
         a read-only view can be found in the controller <a href="/scripts/controllers/b-enhanced-schema-readonly.js">here</a> (which is much the same as using the /view routes family).  The functions are
