@@ -1360,11 +1360,11 @@ DataForm.prototype.entityPut = function () {
     }, this);
 };
 
-class ForeignKeyError extends Error {
+class ForeignKeyError extends global.Error {
     constructor(resourceName, foreignKeyOnResource, foreignItem, id) {
         super(`Cannot delete this ${resourceName}, as it is the ${foreignItem} on ${foreignKeyOnResource} ${id}`);
         this.name = "ForeignKeyError";
-        this.stack = (<any> new Error('')).stack;
+        this.stack = (<any> new global.Error('')).stack;
     }
 }
 
