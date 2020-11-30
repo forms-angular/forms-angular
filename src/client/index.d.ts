@@ -369,9 +369,10 @@ declare module fng {
     divider: boolean;
   }
   export interface IContextMenuOption {
-    // For it to make any sense, a menu option needs one of the next two properties
+    // For it to make any sense, a menu option needs one of the next three properties
     url?: string;
     fn?: () => void;
+    urlFunc?: () => string;
 
     text: string;
     isDisabled?: () => boolean;
