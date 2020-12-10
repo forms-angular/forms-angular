@@ -377,7 +377,10 @@ module fng.services {
       }
       var index = idsArray.indexOf(id);
       if (index === -1) {
-        throw new Error("convertIdToListValue: Invalid data - id " + id + " not found in " + idsArray + " processing " + fname);
+        index = valuesArray.indexOf(id);    // This can get called twice (not sure how atm) so protect against that...
+        if (index === -1) {
+          throw new Error("convertIdToListValue: Invalid data - id " + id + " not found in " + idsArray + " processing " + fname);
+        }
       }
       return valuesArray[index];
     };
