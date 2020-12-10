@@ -9,7 +9,7 @@ module fng.services {
    */
 
   /*@ngInject*/
-  export function recordHandler($http, $location, $window, $filter, $timeout, routingService, cssFrameworkService, SubmissionsService, SchemasService): fng.IRecordHandler {
+  export function recordHandler($location, $window, $filter, $timeout, routingService, cssFrameworkService, SubmissionsService, SchemasService): fng.IRecordHandler {
 
     // TODO: Put this in a service
     const makeMongoId = (rnd = r16 => Math.floor(r16).toString(16)) => rnd(Date.now() / 1000) + " ".repeat(16).replace(/./g, () => rnd(Math.random() * 16));
@@ -377,7 +377,7 @@ module fng.services {
       }
       var index = idsArray.indexOf(id);
       if (index === -1) {
-        index = valuesArray.indexOf(id);    // This can get called twice (not sure how atm) so protect against that...
+        index = valuesArray.indexOf(id);    // This can get called twice - second time with converted value (not sure how atm) so protect against that...
         if (index === -1) {
           throw new Error("convertIdToListValue: Invalid data - id " + id + " not found in " + idsArray + " processing " + fname);
         }

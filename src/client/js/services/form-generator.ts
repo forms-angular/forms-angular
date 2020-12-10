@@ -12,7 +12,7 @@ module fng.services {
   /*@ngInject*/
   import IFormInstruction = fng.IFormInstruction;
 
-  export function formGenerator($location, $timeout, $filter, SubmissionsService, routingService, recordHandler) : IFormGenerator {
+  export function formGenerator($location, $timeout, $filter, routingService, recordHandler) : IFormGenerator {
 
     function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
 
@@ -624,6 +624,6 @@ module fng.services {
     };
   }
 
-  formGenerator.$inject = ["$location", "$timeout", "$filter", "SubmissionsService", "routingService", "recordHandler"];
+  formGenerator.$inject = ["$location", "$timeout", "$filter", "routingService", "recordHandler"];
 
   }
