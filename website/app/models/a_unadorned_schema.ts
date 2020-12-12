@@ -15,10 +15,10 @@ const aSchemaDef: IFngSchemaDefinition = {
 
 const ASchema = new Schema(aSchemaDef);
 
-ASchema.pre("save", function (next) {
-  this.set("surname", this.get("surname").replace(/[\d]/g, "") + new Date().valueOf());
-  next();
-});
+// ASchema.pre("save", function (next) {
+//   this.set("surname", this.get("surname").replace(/[\d]/g, "") + new Date().valueOf());
+//   next();
+// });
 
 let A;
 
