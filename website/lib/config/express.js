@@ -50,8 +50,9 @@ module.exports = function(app) {
     app.use(express.static(path.join(config.root, 'dist')));
     app.use(express.static(path.join(config.root, 'dist/public')));
     app.use(express.static(path.join(config.root, 'app')));
+    app.use(express.static(path.join(config.root, '.')));
   } else {
-    throw new Error("Unsupported node environment");
+    throw new Error('Unsupported node environment');
   }
   app.use(express.static(path.join(config.root, 'node_modules')));
 

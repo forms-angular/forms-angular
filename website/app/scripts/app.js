@@ -97,7 +97,7 @@ websiteApp.cssLoaded = false;
 
 websiteApp
   .run(['$location', '$css', 'cssFrameworkService', function($location, $css, cssFrameworkService) {
-    // Don't mess around with switching CSS files if were aren't running in dev or test config
+    // Potentially switch CSS files if running in dev or test config
     if ($location.$$port === 9000) {
       var framework = $location.path().slice(1);
       var newPath;
@@ -115,8 +115,6 @@ websiteApp
       if (newPath) {
         $location.path(newPath);
       }
-    } else {
-      $css.add(['styles/201803140110app.css']);
     }
     }])
   .controller('CSSSwitchCtrl', ['$location', '$scope', 'cssFrameworkService', '$css', function($location, $scope, cssFrameworkService, $css) {
