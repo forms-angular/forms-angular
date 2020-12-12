@@ -8,13 +8,13 @@ websiteApp.controller('BEnhancedSchemaJustnameandpostcodeCtrl', ['$scope', '$q',
   $scope.sharedData.dropDownDisplay = 'Custom 2nd Level';
 
   /* Alternatively you could do something async with $q type promise... */
-  $scope.sharedData.modelNameDisplayPromise = $q((resolve) => {
-    setTimeout(() => {
+  $scope.sharedData.modelNameDisplayPromise = $q(function(resolve) {
+    setTimeout(function () {
       resolve('Promise Surprise!!');
     }, 1000);
   });
-  $scope.sharedData.dropDownDisplayPromise = $q((resolve) => {
-    setTimeout(() => {
+  $scope.sharedData.dropDownDisplayPromise = $q(function(resolve) {
+    setTimeout(function() {
       console.log('resolving dropdown display promise');
       resolve('Dropdown Surprise!!');
     }, 1000);

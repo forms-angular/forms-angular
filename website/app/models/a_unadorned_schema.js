@@ -13,10 +13,10 @@ var aSchemaDef = {
     accepted: { type: Boolean, default: true }
 };
 var ASchema = new mongoose_1.Schema(aSchemaDef);
-ASchema.pre("save", function (next) {
-    this.set("surname", this.get("surname").replace(/[\d]/g, "") + new Date().valueOf());
-    next();
-});
+// ASchema.pre("save", function (next) {
+//   this.set("surname", this.get("surname").replace(/[\d]/g, "") + new Date().valueOf());
+//   next();
+// });
 var A;
 try {
     A = mongoose_1.model('a_unadorned_schema');
