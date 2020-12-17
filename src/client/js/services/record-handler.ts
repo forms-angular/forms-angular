@@ -253,7 +253,12 @@ module fng.services {
           }
           // Convert {array:['item 1']} to {array:[{x:'item 1'}]}
           var thisField = getListData(anObject, fieldName, null, $scope);
-          if (schemaEntry.array && simpleArrayNeedsX(schemaEntry) && thisField) {
+          if (
+              schemaEntry.array &&
+              simpleArrayNeedsX(schemaEntry) &&
+              thisField &&
+              !(thisField.length > 0 && thisField[0].x)      // Don't keep on coverting
+          ) {
             for (var k = 0; k < thisField.length; k++) {
               thisField[k] = { x: thisField[k] };
             }
