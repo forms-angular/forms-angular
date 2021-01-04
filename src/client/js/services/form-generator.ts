@@ -237,9 +237,9 @@ module fng.services {
       return formInstructions;
     }
 
-    function getArrayFieldToExtend(fieldName, $scope) {
+    function getArrayFieldToExtend(fieldName: string, $scope: IFormScope, modelOverride?: any) {
       var fieldParts = fieldName.split('.');
-      var arrayField = $scope.record;
+      var arrayField = modelOverride || $scope.record;
       for (var i = 0, l = fieldParts.length; i < l; i++) {
         if (!arrayField[fieldParts[i]]) {
           if (i === l - 1) {
@@ -455,10 +455,10 @@ module fng.services {
         return forceNextTime;
       },
 
-      add: function add(fieldName, $event, $scope) {
+      add: function add(fieldName: string, $event, $scope: IFormScope, modelOverride?: any) {
         // check that target element is visible.  May not be reliable - see https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
         if ($event.target.offsetParent) {
-          var arrayField = getArrayFieldToExtend(fieldName, $scope);
+          var arrayField = getArrayFieldToExtend(fieldName, $scope, modelOverride);
 
           const schemaElement = $scope.formSchema.find(f => f.name === fieldName);  // In case someone is using the formSchema directly
           const subSchema = schemaElement ? schemaElement.schema : null;
@@ -471,19 +471,15 @@ module fng.services {
         }
       },
 
-      unshift: function unshift(fieldName, $event, $scope) {
-        var arrayField = getArrayFieldToExtend(fieldName, $scope);
+      unshift: function unshift(fieldName: string, $event, $scope: IFormScope, modelOverride?: any) {
+        var arrayField = getArrayFieldToExtend(fieldName, $scope, modelOverride);
         arrayField.unshift({});
         $scope.setFormDirty($event);
       },
 
-      remove: function remove(fieldName, value, $event, $scope) {
+      remove: function remove(fieldName: string, value: number, $event, $scope: IFormScope, modelOverride?: any) {
         // Remove an element from an array
-        var fieldParts = fieldName.split(".");
-        var arrayField = $scope.record;
-        for (var i = 0, l = fieldParts.length; i < l; i++) {
-          arrayField = arrayField[fieldParts[i]];
-        }
+        var arrayField = getArrayFieldToExtend(fieldName, $scope, modelOverride);
         var err;
         if (typeof $scope.dataEventFunctions.onDeleteSubDoc === "function") {
           var schemaElement = $scope.formSchema.find(function (f) {
@@ -595,20 +591,20 @@ module fng.services {
           }
         };
 
-        $scope.add = function (fieldName, $event) {
-          return formGeneratorInstance.add(fieldName, $event, $scope);
+        $scope.add = function (fieldName: string, $event, modelOverride?: any) {
+          return formGeneratorInstance.add(fieldName, $event, $scope, modelOverride);
         };
 
         $scope.hasError = function (form, name, index) {
           return formGeneratorInstance.hasError(form, name, index, $scope);
         };
 
-        $scope.unshift = function (fieldName, $event) {
-          return formGeneratorInstance.unshift(fieldName, $event, $scope);
+        $scope.unshift = function (fieldName: string, $event, modelOverride?: any) {
+          return formGeneratorInstance.unshift(fieldName, $event, $scope, modelOverride);
         };
 
-        $scope.remove = function (fieldName, value, $event) {
-          return formGeneratorInstance.remove(fieldName, value, $event, $scope);
+        $scope.remove = function (fieldName: string, value, $event, modelOverride?: any) {
+          return formGeneratorInstance.remove(fieldName, value, $event, $scope, modelOverride);
         };
 
         $scope.baseSchema = function () {
