@@ -262,9 +262,9 @@ declare module fng {
     handleFieldType(formInstructions, mongooseType, mongooseOptions, $scope: IFormScope, ctrlState);
     handleSchema(description: string, source, destForm, destList, prefix, doRecursion: boolean, $scope: IFormScope, ctrlState);
     updateDataDependentDisplay(curValue, oldValue, force, $scope: IFormScope);
-    add(fieldName, $event, $scope: IFormScope);
-    unshift(fieldName, $event, $scope: IFormScope);
-    remove(fieldName, value, $event, $scope: IFormScope);
+    add(fieldName: string, $event, $scope: IFormScope, modelOverride?: any);
+    unshift(fieldName: string, $event, $scope: IFormScope, modelOverride?: any);
+    remove(fieldName: string, value, $event, $scope: IFormScope, modelOverride?: any);
     hasError(formName, name, index, $scope: IFormScope);
     decorateScope($scope: IFormScope, formGeneratorInstance, recordHandlerInstance: IRecordHandler, sharedStuff);
   }
