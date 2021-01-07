@@ -569,20 +569,30 @@ DataForm.prototype.applySchemaSubset = function (vanilla, schema) {
         outPath = {};
         for (let fld in schema) {
             if (schema.hasOwnProperty(fld)) {
-                if (!vanilla[fld]) {
-                    throw new Error('No such field as ' + fld + '.  Is it part of a sub-doc? If so you need the bit before the period.');
-                }
-                outPath[fld] = _.cloneDeep(vanilla[fld]);
-                if (vanilla[fld].schema) {
-                    outPath[fld].schema = this.applySchemaSubset(outPath[fld].schema, schema[fld].schema);
+                if (vanilla[fld]) {
+                    outPath[fld] = _.cloneDeep(vanilla[fld]);
+                    if (vanilla[fld].schema) {
+                        outPath[fld].schema = this.applySchemaSubset(outPath[fld].schema, schema[fld].schema);
+                    }
+                } else {
+                    if (fld.slice(0, 8) === "_bespoke") {
+                        outPath[fld] = {
+                            "path": fld,
+                            "instance": schema[fld]._type,
+                        }
+                    } else {
+                        throw new Error('No such field as ' + fld + '.  Is it part of a sub-doc? If so you need the bit before the period.');
+                    }
                 }
                 outPath[fld].options = outPath[fld].options || {};
-                for (let override in schema[fld]) {
-                    if (schema[fld].hasOwnProperty(override)) {
-                        if (!outPath[fld].options.form) {
-                            outPath[fld].options.form = {};
+                for (var override in schema[fld]) {
+                    if (override.slice(0,1) !== '_') {
+                        if (schema[fld].hasOwnProperty(override)) {
+                            if (!outPath[fld].options.form) {
+                                outPath[fld].options.form = {};
+                            }
+                            outPath[fld].options.form[override] = schema[fld][override];
                         }
-                        outPath[fld].options.form[override] = schema[fld][override];
                     }
                 }
             }
