@@ -9,8 +9,11 @@ declare module fng {
    */
   type formStyle = 'inline' | 'vertical' | 'horizontal' | 'horizontalCompact' | 'stacked';
 
+  export interface IBaseArrayLookupReference {
+    property: string;
+    value: string;
+  }
   /*
-
   IInternalLookupreference makes it possible to look up from a list (of key / value pairs) in the current record.  For example
 
   var ShelfSchema = new Schema({
@@ -23,9 +26,7 @@ declare module fng {
     favouriteShelf: {type: Schema.Types.ObjectId, internalRef: {property: 'shelves', value:'location'};
   });
    */
-  export interface IFngInternalLookupReference {
-    property: string;
-    value: string;
+  export interface IFngInternalLookupReference extends IBaseArrayLookupReference {
     noConvert? : boolean;    // can be used by a tricksy hack to get around nesting limitations
   }
 
@@ -39,14 +40,12 @@ declare module fng {
     shelf: {type: Schema.Types.ObjectId, lookupListRef: {collection:'k_referencing_self_collection', id:'$warehouse', property: 'shelves', value:'location'}},
   };
   */
-  export interface IFngLookupListReference {
+  export interface IFngLookupListReference extends IBaseArrayLookupReference {
     collection: string;   // collection that contains the list
     /*
     Some means of calculating _id in collection.  If it starts with $ then it is property in record
     */
     id: string;
-    property: string;
-    value: string;
   }
 
   /*

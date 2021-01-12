@@ -42,7 +42,7 @@ module fng.controllers {
     function processTheForm() {
       recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
 
-      // Tell the 'model controllers' that they can start fiddling with basescope
+      // Tell the 'model controllers' that they can start fiddling with baseScope
       for (let i = 0; i < $scope.sharedData.modelControllers.length; i++) {
         if ($scope.sharedData.modelControllers[i].onBaseCtrlReady) {
           $scope.sharedData.modelControllers[i].onBaseCtrlReady($scope);

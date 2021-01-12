@@ -68,16 +68,20 @@ module fng.services {
       };
     };
 
-    var setData = function setData(object, fieldname, element, value) {
-      var leafData = walkTree(object, fieldname, element, true);
+    var setData = function setData(object, fieldname, element?, value?) {
+      var leafData = walkTree(object, fieldname, element, !!value);
 
       if (leafData.lastObject && leafData.key) {
-        if (angular.isArray(leafData.lastObject)) {
-          for (var i = 0; i < leafData.lastObject.length; i++) {
-            leafData.lastObject[i][leafData.key] = value[i];
+        if (value) {
+          if (angular.isArray(leafData.lastObject)) {
+            for (var i = 0; i < leafData.lastObject.length; i++) {
+              leafData.lastObject[i][leafData.key] = value[i];
+            }
+          } else {
+            leafData.lastObject[leafData.key] = value;
           }
         } else {
-          leafData.lastObject[leafData.key] = value;
+          delete leafData.lastObject[leafData.key];
         }
       }
     };
@@ -97,9 +101,9 @@ module fng.services {
       return retVal;
     };
 
-    var updateRecordWithLookupValues = function(schemaElement, $scope, ctrlState: IFngCtrlState) {
+    var updateRecordWithLookupValues = function(schemaElement, $scope, ctrlState: IFngCtrlState, ignoreDirty = false) {
       // Update the master and the record with the lookup values, master first
-      if (!$scope.topLevelFormName || ($scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine)) {
+      if (!$scope.topLevelFormName || ($scope[$scope.topLevelFormName] && (ignoreDirty || $scope[$scope.topLevelFormName].$pristine))) {
         updateObject(schemaElement.name, ctrlState.master, function(value) {
           if (typeof value == "object" && value.id) {
             return value;
@@ -451,6 +455,10 @@ module fng.services {
             return retVal;
           }
 
+          function blankListLookup(inst: IFormInstruction) {
+            setData($scope.record, inst.name);
+          }
+
           let idString = lkp.ref.id.slice(1);
           if (idString.includes(".")) {
             throw new Error(`No support for nested list lookups yet - ${JSON.stringify(lkp.ref)}`);
@@ -480,13 +488,20 @@ module fng.services {
                       optionsList.splice(pos, 0, option);
                       idList.splice(pos, 0, data[i]._id);
                     }
-                    updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState);
+                    if (Object.keys(oldValue).length === 0) {
+                      // Not sure how safe this is, but the record is fresh so I think it's OK...
+                      updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState, true);
+                    } else {
+                      // Here we are reacting to a change in the lookup pointer in the record.
+                      // We need to blank our lookup field as it will not exist
+                      blankListLookup(h.formInstructions)
+                    }
                   });
                 }
               );
             } else {
               lkp.handlers.forEach((h) => {
-                updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState);
+                blankListLookup(h.formInstructions);
               });
             }
           }
@@ -613,6 +628,35 @@ module fng.services {
       }
       $scope.originalData = data;
       processServerData(data, $scope, ctrlState);
+    }
+
+    function addArrayLookupToLookupList($scope: IFormScope, formInstructions: IFormInstruction, ref: IBaseArrayLookupReference,
+                                                      lookups: (IFngInternalLookupHandlerInfo | IFngLookupListHandlerInfo)[]) {
+      let nameElements = formInstructions.name.split(".");
+
+      let refHandler: IFngInternalLookupHandlerInfo | IFngLookupListHandlerInfo = lookups.find((lkp) => {
+        return lkp.ref.property === ref.property && lkp.ref.value === ref.value;
+      });
+
+      let thisHandler: IFngSingleLookupHandler = {
+        formInstructions: formInstructions,
+        lastPart: nameElements.pop(),
+        possibleArray: nameElements.join(".")
+      };
+
+      if (!refHandler) {
+        refHandler = {
+          ref: ref,
+          lookupOptions: [],
+          lookupIds: [],
+          handlers: []
+        };
+        lookups.push(refHandler);
+      }
+      refHandler.handlers.push(thisHandler);
+      $scope[formInstructions.options] = refHandler.lookupOptions;
+      $scope[formInstructions.ids] = refHandler.lookupIds;
+
     }
 
     return {
@@ -775,33 +819,8 @@ module fng.services {
         let optionsList = $scope[formInstructions.options] = [];
         let idList = $scope[formInstructions.ids] = [];
         if (ref.id[0] === "$") {
-          // id of document we are doing lookup from comes from record, so we need to deal with in $watch
-          // by adding it to listLookups
-          let nameElements = formInstructions.name.split(".");
-
-          let refHandler: IFngLookupListHandlerInfo = $scope.listLookups.find((lkp) => {
-            return lkp.ref.property === ref.property && lkp.ref.value === ref.value;
-          });
-
-          let thisHandler: IFngSingleLookupHandler = {
-            formInstructions: formInstructions,
-            lastPart: nameElements.pop(),
-            possibleArray: nameElements.join(".")
-          };
-
-          if (!refHandler) {
-            refHandler = {
-              ref: ref,
-              lookupOptions: [],
-              lookupIds: [],
-              handlers: []
-            };
-            $scope.listLookups.push(refHandler);
-          }
-          refHandler.handlers.push(thisHandler);
-          $scope[formInstructions.options] = refHandler.lookupOptions;
-          $scope[formInstructions.ids] = refHandler.lookupIds;
-          // TODO DRY this and handleInternalLookup below
+          // id of document that contains out lookup list comes from record, so we need to deal with in $watch by adding it to listLookups
+          addArrayLookupToLookupList($scope, formInstructions, ref, $scope.listLookups)
         } else {
           // we can do it now
           SubmissionsService.readRecord(ref.collection, $scope.$eval(ref.id)).then(
@@ -825,30 +844,7 @@ module fng.services {
       },
 
       handleInternalLookup: function handleInternalLookup($scope: IFormScope, formInstructions: IFormInstruction, ref: IFngInternalLookupReference) {
-        let nameElements = formInstructions.name.split(".");
-
-        let refHandler: IFngInternalLookupHandlerInfo = $scope.internalLookups.find((lkp) => {
-          return lkp.ref.property === ref.property && lkp.ref.value === ref.value;
-        });
-
-        let thisHandler: IFngSingleLookupHandler = {
-          formInstructions: formInstructions,
-          lastPart: nameElements.pop(),
-          possibleArray: nameElements.join(".")
-        };
-
-        if (!refHandler) {
-          refHandler = {
-            ref: ref,
-            lookupOptions: [],
-            lookupIds: [],
-            handlers: []
-          };
-          $scope.internalLookups.push(refHandler);
-        }
-        refHandler.handlers.push(thisHandler);
-        $scope[formInstructions.options] = refHandler.lookupOptions;
-        $scope[formInstructions.ids] = refHandler.lookupIds;
+        addArrayLookupToLookupList($scope, formInstructions, ref, $scope.internalLookups);
       },
 
       preservePristine: preservePristine,
