@@ -560,11 +560,11 @@ module fng.services {
 
               // Although this is a new record we are making it dirty from the url so we need to $setDirty
               $scope.$on("fngCancel", () => {
-                setTimeout(() => {
+                $timeout(() => {
                   if ($scope[$scope.topLevelFormName]) {
                     $scope[$scope.topLevelFormName].$setDirty();
                   }
-                }, 2);  // Has to fire after the setPristime timeout.
+                }, 1000);  // Has to fire after the setPristime timeout.
               });
 
             } catch (e) {
