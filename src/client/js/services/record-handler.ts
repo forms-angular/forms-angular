@@ -933,7 +933,10 @@ module fng.services {
         // or
         //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
         $scope.$on("showErrorMessage", function(event, args) {
-          $scope.showError(args.body, args.title);
+          if (!event.defaultPrevented) {
+            event.defaultPrevented = true;
+            $scope.showError(args.body, args.title);
+          }
         });
 
         $scope.showError = function(error: any, alertTitle?: string) {
