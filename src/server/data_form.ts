@@ -484,11 +484,11 @@ To deal with matching long strings like Acme Dev Inc where Acme, Dev and Inc are
             // in more than one index get filtered out.
             // TODO : Figure out a better way to deal with this
             if (item.resource.options.searchFunc) {
-                item.resource.options.searchFunc(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit + 200, null, function (err, docs) {
+                item.resource.options.searchFunc(item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit ? limit + 200 : 0, null, function (err, docs) {
                     handleSearchResultsFromIndex(err, docs, item, cb);
                 });
             } else {
-                that.filteredFind(item.resource, req, null, searchDoc, null, item.resource.options.searchOrder, limit + 200, null, function (err, docs) {
+                that.filteredFind(item.resource, req, null, searchDoc, null, item.resource.options.searchOrder, limit ? limit + 200 : 0, null, function (err, docs) {
                     handleSearchResultsFromIndex(err, docs, item, cb);
                 });
             }
@@ -503,7 +503,7 @@ To deal with matching long strings like Acme Dev Inc where Acme, Dev and Inc are
                     delete aResult.weighting;
                     return aResult;
                 });
-                if (results.length > limit) {
+                if (limit && results.length > limit) {
                     moreCount += results.length - limit;
                     results.splice(limit);
                 }
@@ -528,7 +528,7 @@ DataForm.prototype.search = function () {
         if (!(req.resource = this.getResource(req.params.resourceName))) {
             return next();
         }
-        this.wrapInternalSearch(req, res, [req.resource], false, 10);
+        this.wrapInternalSearch(req, res, [req.resource], false, 0);
     }, this);
 };
 
