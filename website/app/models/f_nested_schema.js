@@ -88,6 +88,18 @@ FSchema.statics.form = function (layout) {
                 }
             };
             break;
+        case 'link':
+            formSchema = {
+                surname: {},
+                forename: {},
+                exams: {
+                    schema: {
+                        subject: {}, examDate: {}, score: {}, result: {},
+                        grader: { link: { linkOnly: false, label: true } }
+                    }
+                }
+            };
+            break;
     }
     return formSchema;
 };
