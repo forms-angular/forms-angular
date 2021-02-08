@@ -133,6 +133,8 @@ module fng.services {
           } else if (mongooseOptions.internalRef) {
             recordHandler.handleInternalLookup($scope, formInstructions, mongooseOptions.internalRef);
             formInstructions.internalRef = mongooseOptions.internalRef;
+          } else if (mongooseOptions.customLookupOptions) {
+              // nothing to do - call setUpCustomLookupOptions() when ready to provide id and option arrays
           } else {
             throw new Error(`No supported select lookup type found in ${formInstructions.name}`);
           }
