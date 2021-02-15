@@ -282,7 +282,7 @@ describe('formInput', function () {
       scope.$digest();
     }));
 
-    it('should have correct help blocks', function () {
+    xit('should have correct help blocks', function () {
       var help = elm.find('span');
       expect(help.length).toBe(2);
 
