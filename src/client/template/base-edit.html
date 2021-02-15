@@ -4,7 +4,8 @@
         <div class="header-lhs col-sm-8 span8">
             <h4 id="header-text">{{modelNameDisplay}} :
                 <span id="header-data-desc">
-                    <span ng-repeat="field in listSchema">{{getListData(record, field.name)}} </span>
+                    <span ng-show="!!editFormHeader" >{{ editFormHeader() }}</span>
+                    <span ng-hide="!!editFormHeader" ng-repeat=" field in listSchema">{{getListData(record, field.name)}} </span>
                 </span>
             </h4>
         </div>
@@ -16,9 +17,9 @@
         <form-input name="baseForm" schema="baseSchema()" formstyle="compact"></form-input>
     </div>
 <!--    <pre>-->
-<!--Record-->
-<!--{{ record | json }}-->
-<!--formSchema-->
-<!--{{ formSchema | json }}-->
-<!--</pre>-->
+    <!--Record-->
+    <!--{{ record | json }}-->
+    <!--formSchema-->
+    <!--{{ formSchema | json }}-->
+<!--    </pre>-->
 </div>

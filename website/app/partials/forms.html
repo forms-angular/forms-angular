@@ -83,7 +83,7 @@
     <a href="https://github.com/forms-angular/forms-angular/blob/master/template/base-analysis.html"><code>base-analysis.html</code></a>
     if the <a href="{{ buildUrl('plugins#reports')}}">fng-reports plugin</a> is used).</p>
 
-    <p>If you prefer HTML5Mode (which gives routes without the /#) then you can also use the<code><pre>
+    <p>If you prefer HTML5Mode (which gives routes without the /#) then you can also use the<pre><code>
   html5Mode: true,
   hashPrefix: '!'
 </code></pre> properties.</p>
@@ -101,7 +101,7 @@ you can easily switch between modes without having to manually change all the in
     The <a href="https://github.com/forms-angular/forms-angular/blob/master/template/base-edit.html">
     built-in edit form</a> also gives you:</p>
 <ul>
-    <li>Header section showing the key fields from the record.</li>
+    <li>Header section showing the key (or "list") fields from the record, or, if an editFormHeader function is found on the base scope, the value returned from that is displayed.</li>
     <li><p>Buttons to perform the usual Save, Cancel, New and Delete operations.  forms-angular handles all
         the back-end stuff for you.  There a number of keyboard short cuts that can be used in the forms. Hit <span class="key">?</span> to find out more.
         There are hooks that can be used to disable the buttons - see the <a href="#button-hooks">Client Side Customization</a> section.</p>
@@ -215,7 +215,7 @@ you can easily switch between modes without having to manually change all the in
                   <td>
                     <p class="lead">horizontalCompact / compact (default)</p>
                     <img src="/images/horizontalCompact.png" alt="Example of horizonalCompact layout">
-                  </p>
+                  </td>
                 </tr>
                 <tr class="info">
                   <td>This layout generates forms that use the Bootstrap <strong>form-horizontal</strong> class and the
