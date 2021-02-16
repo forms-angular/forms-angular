@@ -60,12 +60,19 @@ module fng.directives {
             workString = workString + '$parent.';
           }
           let attrib = attrs['fld'];
-          if (typeof workScope['$index'] !== "undefined") {
-            let splitAttrib = attrib.split('.');
-            attrib = splitAttrib.pop();
-            attrib = splitAttrib.join('.') + '[' + workScope['$index'] + '].' + attrib;
+          var watchExpression;
+          if ((scope.$parent as any).subDoc) {
+            // Support for use in directives in arrays
+            watchExpression = workString + 'subDoc.' + attrib;
+          } else {
+            if (typeof workScope['$index'] !== "undefined") {
+              var splitAttrib = attrib.split('.');
+              attrib = splitAttrib.pop();
+              attrib = splitAttrib.join('.') + '[' + workScope['$index'] + '].' + attrib;
+            }
+            watchExpression = workString + 'record.' + attrib;
           }
-          var watchRecord = scope.$watch(workString + 'record.' + attrib, function (newVal: any) {
+          scope.$watch(watchExpression, function (newVal: any) {
             if (newVal) {
               if (/^[a-f0-9]{24}/.test(newVal.toString())) {
                 newVal = newVal.slice(0,24);

@@ -187,7 +187,8 @@ module fng.services {
           // Hack to cope with inline help in directives
           var inlineHelp = (fieldInfo.helpInline || '') + (fieldInfo.helpinline || '');
           if (inlineHelp.length > 0) {
-            value += '<span class="' + (cssFrameworkService.framework() === 'bs2' ? 'help-inline' : 'help-block') + '">' + inlineHelp + '</span>';
+            let helpMarkup = cssFrameworkService.framework() === 'bs2' ? { el: 'span', cl: 'help-inline'} : {el: 'div', cl: 'help-block'};
+            value += `<${helpMarkup.el} class="${helpMarkup.cl}">${inlineHelp}</${helpMarkup.el}>`;
           }
           if (!options.noid) {
             value += '<div ng-if="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$dirty" class="help-block">' +
@@ -198,7 +199,7 @@ module fng.services {
                 '</div>';
           }
           if (fieldInfo.help) {
-            value += '<span class="help-block">' + fieldInfo.help + '</span>';
+            value += '<div class="help-block">' + fieldInfo.help + '</div>';
           }
           return value;
         },

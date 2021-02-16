@@ -2,8 +2,16 @@
     <error-display></error-display>
     <div ng-class="css('rowFluid')" class="page-header edit-header">
         <div class="header-lhs col-sm-8 span8">
+<<<<<<< HEAD
             <h4>{{modelNameDisplay}} :
                 <span ng-repeat="field in listSchema" ng-bind-html="getListData(record, field.name) + ' '"></span>
+=======
+            <h4 id="header-text">{{modelNameDisplay}} :
+                <span id="header-data-desc">
+                    <span ng-show="!!editFormHeader" >{{ editFormHeader() }}</span>
+                    <span ng-hide="!!editFormHeader" ng-repeat=" field in listSchema">{{getListData(record, field.name)}} </span>
+                </span>
+>>>>>>> origin/master
             </h4>
         </div>
         <div class="header-rhs col-sm-2 span2">
@@ -14,9 +22,9 @@
         <form-input name="baseForm" schema="baseSchema()" formstyle="compact"></form-input>
     </div>
 <!--    <pre>-->
-<!--Record-->
-<!--{{ record | json }}-->
-<!--formSchema-->
-<!--{{ formSchema | json }}-->
-<!--</pre>-->
+    <!--Record-->
+    <!--{{ record | json }}-->
+    <!--formSchema-->
+    <!--{{ formSchema | json }}-->
+<!--    </pre>-->
 </div>
