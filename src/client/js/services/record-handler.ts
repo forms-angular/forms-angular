@@ -557,16 +557,16 @@ module fng.services {
           if (passedRecord) {
             try {
               Object.assign(ctrlState.master, JSON.parse(passedRecord));
-
-              // Although this is a new record we are making it dirty from the url so we need to $setDirty
-              $scope.$on("fngCancel", () => {
-                $timeout(() => {
-                  if ($scope[$scope.topLevelFormName]) {
-                    $scope[$scope.topLevelFormName].$setDirty();
-                  }
-                }, 1000);  // Has to fire after the setPristime timeout.
-              });
-
+              if (!$scope["newRecordsStartPristine"]) {
+                // Although this is a new record we are making it dirty from the url so we need to $setDirty
+                $scope.$on("fngCancel", () => {
+                  $timeout(() => {
+                    if ($scope[$scope.topLevelFormName]) {
+                      $scope[$scope.topLevelFormName].$setDirty();
+                    }
+                  }, 1000);  // Has to fire after the setPristime timeout.
+                });
+              }
             } catch (e) {
               console.log("Error parsing specified record : " + e.message);
             }
