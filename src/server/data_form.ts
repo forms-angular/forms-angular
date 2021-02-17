@@ -1256,8 +1256,21 @@ DataForm.prototype.generateQueryForEntity = function (req, resource, id, cb) {
         if (err) {
             cb(err);
         } else {
-            let idSel = {_id: id};
-            let crit = queryObj ? extend(queryObj, idSel) : idSel;
+            const idSel = { _id: id };
+            let crit;
+            if (queryObj) {
+                if (queryObj._id) {
+                    crit = {$and:[idSel, {_id: queryObj._id}]};
+                    delete queryObj._id;
+                    if (Object.keys(queryObj).length > 0) {
+                        crit = extend(crit, queryObj);
+                    }
+                } else {
+                    crit = extend(queryObj, idSel);
+                }
+            } else {
+                crit = idSel;
+            }
             cb(null, resource.model.findOne(crit).select(that.generateProjection(hiddenFields, req.query.p)));
         }
     });
