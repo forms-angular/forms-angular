@@ -5,7 +5,7 @@
             <h4 id="header-text">{{modelNameDisplay}} :
                 <span id="header-data-desc">
                     <span ng-show="!!editFormHeader" >{{ editFormHeader() }}</span>
-                    <span ng-hide="!!editFormHeader" ng-repeat=" field in listSchema">{{getListData(record, field.name)}} </span>
+                    <span ng-hide="!!editFormHeader" ng-repeat="field in listSchema" ng-bind-html="getListData(record, field.name) + ' '"></span>
                 </span>
             </h4>
         </div>

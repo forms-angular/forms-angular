@@ -360,8 +360,9 @@ declare module fng {
     dropConversionWatcher: () => void;
     readingRecord?: Promise<any>;
     onSchemaFetch?: (description: string, source: IFieldViewInfo[]) => void;
-    onSchemaProcessed? : (description: string, formSchema: IFormInstruction[]) => void;
+    onSchemaProcessed?: (description: string, formSchema: IFormInstruction[]) => void;
     updateQueryForTab?: (tab: string) => void;
+    setUpCustomLookupOptions?: (schemaElement: IFormInstruction, ids: string[], options: string[], baseScope: any) => void;
   }
 
   export interface IContextMenuDivider {
