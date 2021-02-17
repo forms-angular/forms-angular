@@ -557,16 +557,16 @@ module fng.services {
           if (passedRecord) {
             try {
               Object.assign(ctrlState.master, JSON.parse(passedRecord));
-
-              // Although this is a new record we are making it dirty from the url so we need to $setDirty
-              $scope.$on("fngCancel", () => {
-                $timeout(() => {
-                  if ($scope[$scope.topLevelFormName]) {
-                    $scope[$scope.topLevelFormName].$setDirty();
-                  }
-                }, 1000);  // Has to fire after the setPristime timeout.
-              });
-
+              if (!$scope["newRecordsStartPristine"]) {
+                // Although this is a new record we are making it dirty from the url so we need to $setDirty
+                $scope.$on("fngCancel", () => {
+                  $timeout(() => {
+                    if ($scope[$scope.topLevelFormName]) {
+                      $scope[$scope.topLevelFormName].$setDirty();
+                    }
+                  }, 1000);  // Has to fire after the setPristime timeout.
+                });
+              }
             } catch (e) {
               console.log("Error parsing specified record : " + e.message);
             }
@@ -872,7 +872,7 @@ module fng.services {
           if (schemaI.schema) {
             if (thisField) {
               for (let j = 0; j < thisField.length; j++) {
-                thisField[j] = convertToMongoModel(schemaI.schema, thisField[j], prefixLength + 1 + fieldname.length, $scope, fieldname);
+                thisField[j] = convertToMongoModel(schemaI.schema, thisField[j], 1 + fieldname.length, $scope, fieldname);
               }
             }
           } else {
@@ -1278,6 +1278,24 @@ module fng.services {
           }
         };
 
+        $scope.setUpCustomLookupOptions = function (schemaElement: IFormInstruction, ids: string[], options: string[], baseScope: any): void {
+          for (const scope of [$scope, baseScope]) {
+            if (scope) {
+              // need to be accessible on our scope for generation of the select options, and - for nested schemas -
+              // on baseScope for the conversion back to ids done by prepareForSave 
+              scope[schemaElement.ids] = ids;
+              scope[schemaElement.options] = options;
+            }                            
+          }
+          const array = getData($scope.record, schemaElement.name);
+          if (!array) {
+            return;
+          }
+          for (let i = 0; i < array.length; i++) {
+            array[i] = convertIdToListValue(array[i], ids, options, schemaElement.name);
+          }
+          setData($scope.record, schemaElement.name, undefined, array);
+        }        
       },
 
       fillFormFromBackendCustomSchema: fillFormFromBackendCustomSchema,

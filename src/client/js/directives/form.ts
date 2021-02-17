@@ -346,7 +346,42 @@ module fng.directives {
           return result;
         };
 
-        var handleField = function (info, options:fng.IFormOptions) {
+        var generateInlineHeaders = function (instructionsArray, options: fng.IFormOptions, model: string, evenWhenEmpty: boolean) {
+          // "column" headers for nested schemas that use formStyle: "inline" will only line up with their respective
+          // controls when widths are applied to both the cg_f_xxxx and col_label_xxxx element using css.
+          // Likely, the widths will need to be the same, so consider using the following:
+          //    div[id$="_f_<collection>_<field>"] {
+          //      width: 100px;
+          //    }
+          // one column can grow to the remaining available width thus:
+          //    div[id$="_f_<collection>_<field>"] {
+          //      flex-grow: 1;
+          //    }
+          let hideWhenEmpty = evenWhenEmpty ? "" : `ng-hide="!${model} || ${model}.length === 0"`;
+          let res = `<div class="inline-col-headers" style="display:flex" ${hideWhenEmpty}>`;
+          for (const info of instructionsArray) {
+              // need to call this now to ensure the id is set. will probably be (harmlessly) called again later. 
+              inferMissingProperties(info, options);
+              res += '<div ';
+              info.showWhen = info.showWhen || info.showwhen; // deal with use within a directive
+              if (info.showWhen) {
+                  if (typeof info.showWhen === 'string') {
+                      res += 'ng-show="' + info.showWhen + '"';
+                  }
+                  else {
+                      res += 'ng-show="' + formMarkupHelper.generateNgShow(info.showWhen, model) + '"';
+                  }
+              }
+              if (info.id && typeof info.id.replace === "function") {
+                  res += ' id="col_label_' + info.id.replace(/\./g, '-') + '"';
+              }
+              res += ` class="inline-col-header"><label for="${info.id}" class="control-label">${info.label}</label></div>`;
+          }
+          res += "</div>";
+          return res;
+        };        
+
+        var handleField = function (info, options: fng.IFormOptions) {
           var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options);
           var template = fieldChrome.template;
 
@@ -401,6 +436,9 @@ module fng.directives {
                   }
 
                   /* Array body */
+                  if (info.formStyle === "inline" && info.inlineHeaders) {
+                    template += generateInlineHeaders(info.schema, options, model, info.inlineHeaders === "always");
+                  }
                   template += '<ol class="sub-doc"' + (info.sortable ? ` ui-sortable="sortableOptions" ng-model="${model}"` : '') + '>';
 
                   template += '<li ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
