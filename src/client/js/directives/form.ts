@@ -442,6 +442,7 @@ module fng.directives {
                   template += '<ol class="sub-doc"' + (info.sortable ? ` ui-sortable="sortableOptions" ng-model="${model}"` : '') + '>';
 
                   template += '<li ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
+                    (info.inlineHeaders ? 'width-controlled ' : '') + 
                     convertFormStyleToClass(info.formStyle) + ' ' + (info.ngClass ? "ng-class:" + info.ngClass : "") + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
                     ' ng-repeat="subDoc in ' + model + ' track by $index">';
                   if (cssFrameworkService.framework() === 'bs2') {
