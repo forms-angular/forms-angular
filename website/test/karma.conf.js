@@ -2,6 +2,7 @@
 // http://karma-runner.github.io/0.12/config/configuration-file.html
 // Generated on 2014-06-21 using
 // generator-karma 0.8.1
+'use strict';
 
 module.exports = function (config) {
   config.set({
@@ -16,65 +17,54 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'app/bower_components/jquery/jquery.js',
-      'app/bower_components/angular/angular.js',
-      'app/bower_components/angular-route/angular-route.js',
-      'app/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js',
-      'app/bower_components/angular-sanitize/angular-sanitize.js',
-      'app/bower_components/underscore/underscore.js',
-      'app/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js',
-      'app/bower_components/angular-elastic/elastic.js',
-      'app/bower_components/forms-angular/dist/forms-angular.js',
-      'app/bower_components/angular-ui-select/dist/select.js',
-      'app/bower_components/fng-ui-select/src/fng-ui-select.js',
-      'app/bower_components/jquery-ui/jquery-ui.js',
-      'app/bower_components/angular-ui-date/src/date.js',
-      'app/bower_components/angular-ui-grid/ui-grid.js',
-      'app/bower_components/jspdf/dist/jspdf.min.js',
-      'app/bower_components/fng-reports/dist/fng-reports.js',
-      'app/bower_components/ng-ckeditor/ng-ckeditor.js',
-      'app/bower_components/ckeditor/ckeditor.js',
-      'app/bower_components/angular-css/angular-css.js',
-      'app/bower_components/blueimp-tmpl/js/tmpl.js',
-      'app/bower_components/blueimp-load-image/js/load-image.js',
-      'app/bower_components/blueimp-load-image/js/load-image-ios.js',
-      'app/bower_components/blueimp-load-image/js/load-image-orientation.js',
-      'app/bower_components/blueimp-load-image/js/load-image-meta.js',
-      'app/bower_components/blueimp-load-image/js/load-image-exif.js',
-      'app/bower_components/blueimp-load-image/js/load-image-exif-map.js',
-      'app/bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js',
-      'app/bower_components/blueimp-file-upload/js/cors/jquery.postmessage-transport.js',
-      'app/bower_components/blueimp-file-upload/js/cors/jquery.xdr-transport.js',
-      'app/bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-process.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-validate.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-image.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-audio.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-video.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-ui.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-jquery-ui.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-angular.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.iframe-transport.js',
-      'app/bower_components/blueimp-gallery/js/blueimp-helper.js',
-      'app/bower_components/blueimp-gallery/js/blueimp-gallery.js',
-      'app/bower_components/blueimp-gallery/js/blueimp-gallery-fullscreen.js',
-      'app/bower_components/blueimp-gallery/js/blueimp-gallery-indicator.js',
-      'app/bower_components/blueimp-gallery/js/blueimp-gallery-video.js',
-      'app/bower_components/blueimp-gallery/js/blueimp-gallery-vimeo.js',
-      'app/bower_components/blueimp-gallery/js/blueimp-gallery-youtube.js',
-      'app/bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-process.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-validate.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-image.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-audio.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-video.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.fileupload-angular.js',
-      'app/bower_components/blueimp-file-upload/js/jquery.iframe-transport.js',
-      'app/bower_components/fng-jq-upload/dist/fng-jq-upload.js',
-      'app/bower_components/angular-mocks/angular-mocks.js',
-      'app/bower_components/angular-messages/angular-messages.js',
+      'node_modules/jquery/dist/jquery.js',
+      'node_modules/angular/angular.js',
+      'node_modules/angular-route/angular-route.js',
+      'node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
+      'node_modules/angular-ui-date/dist/date.js',
+      'node_modules/angular-sanitize/angular-sanitize.js',
+      'node_modules/fng-bootstrap-date/fng-bootstrap-date.js',
+      'node_modules/fng-bootstrap-datetime/fng-bootstrap-datetime.js',
+      'node_modules/underscore/underscore.js',
+      'node_modules/ng-infinite-scroll/build/ng-infinite-scroll.js',
+      'node_modules/angular-elastic/elastic.js',
+      'node_modules/forms-angular/dist/client/forms-angular.js',
+      'node_modules/ui-select/dist/select.js',
+      'node_modules/fng-ckeditor/index.js',
+      'node_modules/fng-ui-select/src/fng-ui-select.js',
+      'node_modules/jquery-ui/ui/widget.js',
+      'node_modules/jquery-ui/ui/data.js',
+      'node_modules/jquery-ui/ui/scroll-parent.js',
+      'node_modules/jquery-ui/ui/widgets/mouse.js',
+      'node_modules/jquery-ui/ui/widgets/sortable.js',
+      'node_modules/jquery-ui/ui/widgets/datepicker.js',
+      'node_modules/angular-ui-date/dist/date.js',
+      'node_modules/angular-ui-grid/ui-grid.js',
+      'node_modules/angular-ui-sortable/dist/sortable.js',
+      'node_modules/jspdf/dist/jspdf.umd.js',
+      'node_modules/fng-reports/dist/fng-reports.js',
+      'node_modules/ng-ckeditor/ng-ckeditor.js',
+      'node_modules/ckeditor/ckeditor.js',
+      'node_modules/angular-css/angular-css.js',
+      'node_modules/fng-colour-picker/fng-colour-picker.js',
+      'node_modules/tinycolor2/dist/tinycolor-min.js',
+      'node_modules/angularjs-color-picker/dist/angularjs-color-picker.min.js',
+      'node_modules/blueimp-load-image/js/load-image.all.min.js',
+      'node_modules/blueimp-file-upload/js/cors/jquery.postmessage-transport.js',
+      'node_modules/blueimp-file-upload/js/cors/jquery.xdr-transport.js',
+      'node_modules/blueimp-file-upload/js/vendor/jquery.ui.widget.js',
+      'node_modules/blueimp-file-upload/js/jquery.fileupload.js',
+      'node_modules/blueimp-file-upload/js/jquery.fileupload-process.js',
+      'node_modules/blueimp-file-upload/js/jquery.fileupload-validate.js',
+      'node_modules/blueimp-file-upload/js/jquery.fileupload-image.js',
+      'node_modules/blueimp-file-upload/js/jquery.fileupload-audio.js',
+      'node_modules/blueimp-file-upload/js/jquery.fileupload-video.js',
+      'node_modules/blueimp-file-upload/js/jquery.fileupload-angular.js',
+      'node_modules/blueimp-file-upload/js/jquery.iframe-transport.js',
+      'node_modules/fng-jq-upload/dist/fng-jq-upload.js',
+      'node_modules/angular-mocks/angular-mocks.js',
+      'node_modules/angular-messages/angular-messages.js',
+      'node_modules/fng-audit/dist/client/fng-audit.js',
       'app/scripts/**/*.js',
       'app/scripts/template/*.html',
       'test/client/spec/**/*.js'
@@ -86,44 +76,46 @@ module.exports = function (config) {
     // web server port
     port: 8080,
 
-    // Start these browsers, currently available:
-    // - Chrome
-    // - ChromeCanary
-    // - Firefox
-    // - Opera
-    // - Safari (only Mac)
-    // - PhantomJS
-    // - IE (only Windows)
-    browsers: [
-      'PhantomJS'
-    ],
+    usePolling: true,
 
-    // Which plugins to enable
-    plugins: [
-      'karma-phantomjs-launcher',
-      'karma-ng-html2js-preprocessor',
-      'karma-jasmine'
-    ],
-
-    preprocessors: {
-      'app/scripts/template/*.html': 'ng-html2js'
+    customLaunchers: {
+      ChromeHeadless: {
+        base: 'Chrome',
+        flags: [
+          '--headless',
+          '--disable-gpu',
+          // Without a remote debugging port, Google Chrome exits immediately.
+          '--remote-debugging-port=9222'
+        ]
+      }
     },
 
-    // Continuous Integration mode
-    // if true, it capture browsers, run tests and exit
-    singleRun: false,
+    browsers : ['Chrome'],
+    // browsers : ['Firefox', 'ChromeHeadless'],
 
-    colors: true,
+    // use dots reporter, as travis terminal does not support escaping sequences
+    // possible values: 'dots', 'progress'
+    // CLI --reporters progress
+    reporters: ['progress', 'junit'],
 
-    // level of logging
-    // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
-    logLevel: config.LOG_INFO
-
-    // Uncomment the following lines if you are using grunt's server to run the tests
-    // proxies: {
-    //   '/': 'http://localhost:9000/'
-    // },
-    // URL root prevent conflicts with the site root
-    // urlRoot: '_karma_'
+    junitReporter:  {
+      outputDir: 'test_out',
+      outputFile: 'test_out/unit.xml',
+      suite: 'unit'
+    },
+    plugins: [
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-firefox-launcher',
+      'karma-ng-html2js-preprocessor',
+      'karma-junit-reporter'
+    ],
+    ngHtml2JsPreprocessor: {
+      // strip this from the file path
+      stripPrefix: 'src/client/'
+    },
+    preprocessors: {
+      'src/client/template/*.html': 'ng-html2js'
+    }
   });
 };

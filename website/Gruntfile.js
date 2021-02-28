@@ -229,7 +229,7 @@ module.exports = function (grunt) {
         process: function(src, filepath) {
           // output an extra semicolon when concatenating javascripts
           if (/\.js$/.test(filepath)) {
-            return src + ";";
+            return src + ';';
           }
 
           return src;
@@ -451,7 +451,7 @@ module.exports = function (grunt) {
     // Test settings
     karma: {
       unit: {
-        configFile: 'karma.conf.js',
+        configFile: 'test/karma.conf.js',
         singleRun: true
       }
     },
