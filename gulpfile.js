@@ -114,8 +114,12 @@ gulp.task('uglify', function(cb) {
 });
 
 gulp.task('copyTypes', function () {
-  return gulp.src('./src/client/index.d.ts')
-    .pipe(gulp.dest(distDirectory + '/client'));
+  var files = [
+      './src/client/index.d.ts',
+      './src/server/index.d.ts'
+  ]
+  return gulp.src(files, {base: './src/'})
+    .pipe(gulp.dest(distDirectory));
 });
 
 gulp.task('copyLess', function () {
