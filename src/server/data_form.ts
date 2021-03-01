@@ -314,7 +314,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
 
     let handleSearchResultsFromIndex = function (err, docs, item, cb) {
         if (!err && docs && docs.length > 0) {
-            async.map(docs, function (aDoc, cbdoc) {
+            async.map(docs, async function (aDoc, cbdoc) {
                 // Do we already have them in the list?
                 let thisId: string = aDoc._id.toString(),
                     resultObject: IInternalSearchResult,
@@ -378,7 +378,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                     // Use special listings format if defined
                     let specialListingFormat = item.resource.options.searchResultFormat;
                     if (specialListingFormat) {
-                        resultObject = specialListingFormat.apply(aDoc);
+                        resultObject = await specialListingFormat.apply(aDoc);
                         resultObject.addHits = addHits;
                         handleResultsInList();
                     } else {
@@ -432,8 +432,14 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                 }
             }
 
-            // The +200 in the next line is an arbitrary safety zone for situations where items that match the string
-            // in more than one index get filtered out.
+            /*
+            The +200 below line is an (imperfect) arbitrary safety zone for situations where items that match the string in more than one index get filtered out.
+            An example where it fails is searching for "e c" which fails to get a old record Emily Carpenter in a big dataset sorted by date last accessed as they
+            are not returned within the first 200 in forenames so don't get the additional hit score and languish outside the visible results, though those visible
+            results end up containing people who only match either c or e (but have been accessed much more recently).
+
+            Increasing the number would be a short term fix at the cost of slowing down the search.
+             */
             // TODO : Figure out a better way to deal with this
             if (item.resource.options.searchFunc) {
                 item.resource.options.searchFunc( item.resource, req, null, searchDoc, item.resource.options.searchOrder, limit ? limit + 200 : 0, null, function (err, docs) {
