@@ -61,7 +61,7 @@ module fng.directives {
           }
           let attrib = attrs['fld'];
           var watchExpression;
-          if ((scope.$parent as any).subDoc) {
+          if ((scope.$parent as any).subDoc && (scope.$parent as any).subDoc[attrib]) {
             // Support for use in directives in arrays
             watchExpression = workString + 'subDoc.' + attrib;
           } else {
