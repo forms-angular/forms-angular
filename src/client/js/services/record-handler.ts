@@ -943,6 +943,8 @@ module fng.services {
           $scope.alertTitle = alertTitle ? alertTitle : "Error!";
           if (typeof error === "string") {
             $scope.errorMessage = error;
+          } else if (!error) {
+            $scope.errorMessage = `An error occurred - that's all we got.  Sorry.`;
           } else if (error.message && typeof error.message === "string") {
             $scope.errorMessage = error.message;
           } else if (error.data && error.data.message) {
