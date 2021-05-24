@@ -729,6 +729,58 @@ DataForm.prototype.hackVariables = function (obj) {
     }
 };
 
+DataForm.prototype.sanitisePipeline = function(
+    aggregationParam: any | any[],
+    hiddenFields: string[],
+    findFuncQry: any): any[]
+{
+    let that = this;
+    let array = Array.isArray(aggregationParam) ? aggregationParam : [aggregationParam];
+    let retVal = [];
+    if (Object.keys(hiddenFields) && Object.keys(hiddenFields).length > 0)
+        retVal.push({$project:hiddenFields});
+    if (findFuncQry) {
+        retVal.unshift({$match: findFuncQry});
+    }
+    for (let pipelineSection = 0; pipelineSection < array.length; pipelineSection++) {
+        let stage = array[pipelineSection];
+        let keys = Object.keys(stage);
+        if (keys.length !== 1) {
+            throw new Error('Invalid pipeline instruction');
+        }
+        switch (keys[0]) {
+            case '$merge':
+            case '$out':
+                throw new Error('Cannot use potentially destructive pipeline stages')
+                break;
+            case '$match':
+                this.hackVariables(array[pipelineSection]['$match']);
+                retVal.push(array[pipelineSection]);
+                break;
+            case '$lookup':
+                // hide any hiddenfields in the lookup collection
+                const collectionName = stage.$lookup.from;
+                const lookupField = stage.$lookup.as;
+                if ((collectionName + lookupField).indexOf('$') !== -1) {
+                    throw new Error('No support for lookups where the "from" or "as" is anything other than a simple string')
+                }
+                const resource = that.getResourceFromCollection(collectionName);
+                const hiddenLookupFields = this.generateHiddenFields(resource, false);
+                let hiddenFieldsObj: any = {}
+                Object.keys(hiddenLookupFields).forEach(hf => {
+                    hiddenFieldsObj[`${lookupField}.${hf}`] = false;
+                })
+                retVal.push({$project:hiddenFieldsObj});
+            default:
+                // nothing
+                break;
+        }
+        retVal.push(stage);
+    }
+    return retVal;
+}
+
+
 DataForm.prototype.reportInternal = function (req, resource, schema, callback) {
     let runPipelineStr: string;
     let runPipelineObj: any;
@@ -768,29 +820,12 @@ DataForm.prototype.reportInternal = function (req, resource, schema, callback) {
                 });
             }
 
-            // Don't send the 'secure' fields
-            let hiddenFields = self.generateHiddenFields(resource, false);
-            for (const hiddenField in hiddenFields) {
-                if (hiddenFields.hasOwnProperty(hiddenField)) {
-                    if (runPipelineStr.indexOf(hiddenField) !== -1) {
-                        return callback('You cannot access ' + hiddenField);
-                    }
-                }
-            }
-
             runPipelineObj = JSON.parse(runPipelineStr);
-            if (!_.isArray(runPipelineObj)) {
-                runPipelineObj = [runPipelineObj];
-            }
-            self.hackVariablesInPipeline(runPipelineObj);
-
-            // Add the findFunc query to the pipeline
-            if (queryObj) {
-                runPipelineObj.unshift({$match: queryObj});
-            }
+            let hiddenFields = self.generateHiddenFields(resource, false);
 
             let toDo: any = {
                 runAggregation: function (cb) {
+                    runPipelineObj = self.sanitisePipeline(runPipelineObj, hiddenFields, queryObj);
                     resource.model.aggregate(runPipelineObj, cb);
                 }
             };
@@ -1091,8 +1126,9 @@ DataForm.prototype.filteredFind = function (
     let hiddenFields = this.generateHiddenFields(resource, false);
     let stashAggregationResults;
 
-    function doAggregation(cb) {
+    function doAggregation(queryObj, cb) {
         if (aggregationParam) {
+            aggregationParam = that.sanitisePipeline(aggregationParam, hiddenFields, queryObj);
             resource.model.aggregate(aggregationParam, function (err, aggregationResults) {
                 if (err) {
                     throw err;
@@ -1112,10 +1148,7 @@ DataForm.prototype.filteredFind = function (
         if (err) {
             callback(err);
         } else {
-            if (queryObj && aggregationParam) {
-                aggregationParam.unshift({$match: queryObj});
-            }
-            doAggregation(function (idArray) {
+            doAggregation(queryObj, function (idArray) {
                 if (aggregationParam && idArray.length === 0) {
                     callback(null, []);
                 } else {
