@@ -205,7 +205,10 @@ module fng.services {
         },
 
         generateSimpleInput: function generateSimpleInput(common, fieldInfo, options) {
-          var result = '<input ' + common + 'type="' + fieldInfo.type + '"';
+          var result = '<input ' + common + 'type="' + fieldInfo.type + '" ';
+          if (!fieldInfo.label) {
+            result += `placeholder="${fieldInfo.name.replace(/\./g,' ')}" `
+          }
           if (options.formstyle === 'inline' && cssFrameworkService.framework() === 'bs2' && !fieldInfo.size) {
             result += 'class="input-small"';
           }

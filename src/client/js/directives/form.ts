@@ -190,8 +190,7 @@ module fng.directives {
                 let thisCommon: string;
                 angular.forEach(fieldInfo.options, function (optValue, idx) {
                   thisCommon = common.replace('id="', 'id="' + idx + '-');
-                  value += '<input ' + thisCommon + 'type="radio"';
-                  value += ' value="' + optValue + '">' + optValue;
+                  value += `<input ${thisCommon} type="radio" aria-label="${optValue}" value="${optValue}">${optValue}`;
                   if (separateLines) {
                     value += '<br />';
                   }
@@ -205,9 +204,7 @@ module fng.directives {
                 }
                 enumInstruction = generateEnumInstructions();
                 value += '<' + tagType + ' ng-repeat="option in ' + enumInstruction.repeat + '">';
-                value +=   '<input ' + common.replace('id="', 'id="{{$index}}-') + ' type="radio" value="{{' + enumInstruction.value + '}}"> {{';
-                value += enumInstruction.label || enumInstruction.value;
-                value += ' }} </' + tagType + '> ';
+                value += `<input ${common.replace('id="', 'id="{{$index}}-')} type="radio" aria-label="${enumInstruction.value}" value="{{ ${enumInstruction.value} }}"> {{ ${enumInstruction.label || enumInstruction.value} }} </${tagType}> `;
               }
               break;
             case 'checkbox' :
@@ -525,9 +522,6 @@ module fng.directives {
             } else {
               // Single fields here
               template += formMarkupHelper.label(scope, info, null, options);
-              if ((<any>options).required) {
-                console.log("*********  Options required - found it ********");
-              }
               template += formMarkupHelper.handleInputAndControlDiv(generateInput(info, null, (<any>options).required, info.id, options), controlDivClasses);
             }
           }
