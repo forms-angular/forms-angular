@@ -765,12 +765,16 @@ DataForm.prototype.sanitisePipeline = function(
                     throw new Error('No support for lookups where the "from" or "as" is anything other than a simple string')
                 }
                 const resource = that.getResourceFromCollection(collectionName);
-                const hiddenLookupFields = this.generateHiddenFields(resource, false);
-                let hiddenFieldsObj: any = {}
-                Object.keys(hiddenLookupFields).forEach(hf => {
-                    hiddenFieldsObj[`${lookupField}.${hf}`] = false;
-                })
-                retVal.push({$project:hiddenFieldsObj});
+                if (resource) {
+                    if (resource.options?.hide?.length > 0) {
+                        const hiddenLookupFields = this.generateHiddenFields(resource, false);
+                        let hiddenFieldsObj: any = {}
+                        Object.keys(hiddenLookupFields).forEach(hf => {
+                            hiddenFieldsObj[`${lookupField}.${hf}`] = false;
+                        })
+                        retVal.push({$project: hiddenFieldsObj});
+                    }
+                }
             default:
                 // nothing
                 break;
