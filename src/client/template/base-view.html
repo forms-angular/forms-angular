@@ -2,9 +2,9 @@
     <error-display></error-display>
     <div ng-class="css('rowFluid')" class="page-header edit-header">
         <div class="header-lhs col-sm-8 span8">
-            <h4>{{modelNameDisplay}} :
+            <h1 id="header-text">{{modelNameDisplay}} :
                 <span ng-repeat="field in listSchema" ng-bind-html="getListData(record, field.name) + ' '"></span>
-            </h4>
+            </h1>
         </div>
     </div>
     <div class="container-fluid page-body edit-body">

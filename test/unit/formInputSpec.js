@@ -742,7 +742,7 @@ describe('formInput', function () {
       input = angular.element(elm.find('input')[11]);
 
       expect(input.attr('name')).toBe('1-exams-result');
-      expect(input.attr('ng-model')).toBe('record.exams[$parent.$index].result');
+      expect(input.attr('data-ng-model')).toBe('record.exams[$parent.$index].result');
     });
 
   });
@@ -898,9 +898,9 @@ describe('formInput', function () {
 
     it('should put the index in the correct place in the ng-model attribute', function () {
       var input = angular.element(elm.find('input')[1]);
-      expect(input.attr('ng-model')).toBe('record.mentions[$index].someString');
+      expect(input.attr('data-ng-model')).toBe('record.mentions[$index].someString');
       input = angular.element(elm.find('input')[2]);
-      expect(input.attr('ng-model')).toBe('record.mentions[$index].grades.low');
+      expect(input.attr('data-ng-model')).toBe('record.mentions[$index].grades.low');
     });
 
   });

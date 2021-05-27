@@ -3,7 +3,7 @@
 module fng.services {
 
   /*@ngInject*/
-  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService) {
+  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, $filter) {
 
       function generateNgShow(showWhen, model) {
 
@@ -165,10 +165,13 @@ module fng.services {
           if (['inline','stacked'].includes(options.formstyle)) {
             placeHolder = placeHolder || fieldInfo.label;
           }
-          common = 'ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' name="' + nameString + '" ');
+          common = 'data-ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' name="' + nameString + '" ');
           common += (placeHolder ? ('placeholder="' + placeHolder + '" ') : '');
           if (fieldInfo.popup) {
             common += 'title="' + fieldInfo.popup + '" ';
+          }
+          if (fieldInfo.ariaLabel) {
+            common += 'aria-label="' + fieldInfo.ariaLabel + '" ';
           }
           common += addAllService.addAll(scope, 'Field', null, options);
           return {
@@ -206,8 +209,10 @@ module fng.services {
 
         generateSimpleInput: function generateSimpleInput(common, fieldInfo, options) {
           var result = '<input ' + common + 'type="' + fieldInfo.type + '" ';
-          if (!fieldInfo.label) {
-            result += `placeholder="${fieldInfo.name.replace(/\./g,' ')}" `
+          if (!fieldInfo.label && !fieldInfo.ariaLabel) {
+            result += `aria-label="${fieldInfo.name.replace(/\./g,' ')}" `
+          } else if (options.subschema) {
+            result += `aria-label="${fieldInfo.label ? ($filter('titleCase')(options.subschemaroot) + ' ' + fieldInfo.label) : (fieldInfo.popup || fieldInfo.name.replace(/\./g,' '))}" `
           }
           if (options.formstyle === 'inline' && cssFrameworkService.framework() === 'bs2' && !fieldInfo.size) {
             result += 'class="input-small"';

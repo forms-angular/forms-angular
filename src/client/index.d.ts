@@ -106,7 +106,8 @@ declare module fng {
     placeHolder?: string // adds placeholder text to the input (depending on data type).
     help?: string;  // adds help text under the input.
     helpInline?: string;  // adds help to the right of the input.
-    popup?: string;  // adds popup help as specified.
+    popup?: string;  // adds title (popup help) as specified.
+    ariaLabel?: string;  // adds aria-label as specified.
     order?: number;  // allows user to specify the order / tab order of this field in the form. This overrides the position in the Mongoose schema.
     size?: 'mini' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'block-level';  // sets control width.  Default is 'medium''
     readonly?: boolean | string;  // adds the readonly or ng-readonly attribute to the generated input (currently doesn't work with date - and perhaps other types).

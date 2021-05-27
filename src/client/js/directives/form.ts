@@ -134,6 +134,7 @@ module fng.directives {
               } else {
                 common += handleReadOnlyDisabled(fieldInfo.readonly);
                 common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
+                common += ` aria-label="${fieldInfo.label && fieldInfo.label !== "" ? fieldInfo.label : fieldInfo.name}" `;
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
 
                 if (!isRequired) {
@@ -210,10 +211,9 @@ module fng.directives {
             case 'checkbox' :
               common += requiredStr;
               common += handleReadOnlyDisabled(fieldInfo.readonly);
+              value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
               if (cssFrameworkService.framework() === 'bs3') {
-                value = '<div class="checkbox"><input ' + common + 'type="checkbox"></div>';
-              } else {
-                value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
+                value = '<div class="checkbox">' + value + '</div>';
               }
               break;
             default:
