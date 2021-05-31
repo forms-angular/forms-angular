@@ -148,6 +148,7 @@ declare module fng {
     The next few options relate to the handling and display of arrays (including arrays of subdocuments)
      */
     noAdd?: boolean | string; // inhibits an Add button being generated for arrays.
+    noneIndicator?: boolean; // show "None" where there's no add button and no array items
     unshift?: boolean; // (for arrays of sub documents) puts an add button in the sub schema header which allows insertion of new sub documents at the beginning of the array.
     noRemove?: boolean | string;  // inhibits a Remove button being generated for array elements.
     formstyle?: formStyle;  // (only valid on a sub schema) sets style of sub form.
