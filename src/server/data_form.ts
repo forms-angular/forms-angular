@@ -639,7 +639,7 @@ DataForm.prototype.schema = function () {
 };
 
 DataForm.prototype.report = function () {
-    return _.bind(function (req, res, next) {
+    return _.bind(async function (req, res, next) {
         if (!(req.resource = this.getResource(req.params.resourceName))) {
             return next();
         }
@@ -652,7 +652,7 @@ DataForm.prototype.report = function () {
         let reportSchema;
 
         if (req.params.reportName) {
-            reportSchema = req.resource.model.schema.statics['report'](req.params.reportName, req);
+            reportSchema = await req.resource.model.schema.statics['report'](req.params.reportName, req);
         } else if (req.query.r) {
             switch (req.query.r[0]) {
                 case '[':

@@ -77,8 +77,8 @@ var bSchemaDef = {
         form: {
             type: 'textarea',
             size: 'block-level',
-            add: 'ckeditor5',
-            help: 'This field uses <a href="http://ckeditor.com">CKEditor V5</a> and the <a href="https://github.com/forms-angular/fng-ckeditor">fng-ckeditor</a> module'
+            add: 'ckeditor5 custom',
+            help: 'This field uses <a href="http://ckeditor.com">CKEditor V5</a> and the <a href="https://github.com/forms-angular/fng-ckeditor">fng-ckeditor</a> module (with the custom build)'
         }
     },
     ipAddress: { type: String, form: { hidden: true } },
