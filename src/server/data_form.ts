@@ -224,6 +224,7 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
     if (typeof req.query === 'undefined') {
         req.query = {};
     }
+    const timestamps = { sentAt: req.query.sentAt, startedAt: new Date(), completedAt: undefined };
     let searches = [],
         resourceCount = resourcesToSearch.length,
         searchFor = req.query.q || '',
@@ -465,7 +466,8 @@ DataForm.prototype.internalSearch = function (req, resourcesToSearch, includeRes
                     moreCount += results.length - limit;
                     results.splice(limit);
                 }
-                callback(null, {results: results, moreCount: moreCount});
+                timestamps.completedAt = new Date();
+                callback(null, { results, moreCount, timestamps });
             }
         }
     );
