@@ -483,20 +483,33 @@ module fng.directives {
                   template += '</ol>';
 
                   /* Array footer */
-                  if (info.noAdd !== true || typeof info.customFooter == 'string') {
-
+                  if (info.noAdd !== true || typeof info.customFooter == 'string' || info.noneIndicator) {
                     let footer: string = '';
                     if (typeof info.customFooter == 'string') {
                       footer = info.customFooter;
                     }
                     let hideCond = '';
-                    if (info.noAdd !== true) {
-                      hideCond = info.noAdd ? 'ng-hide="' + info.noAdd + '"' : ''
+                    let indicatorShowCond = `${options.model}.${info.name}.length == 0`;
+                    if (info.noAdd === true) {
+                      indicatorShowCond = `ng-show="${indicatorShowCond}"`;
+                    } else {                    
+                      hideCond = info.noAdd ? `ng-hide="${info.noAdd}"` : '';
+                      indicatorShowCond = info.noAdd ? `ng-show="${info.noAdd} && ${indicatorShowCond}"` : '';
                       footer += `<button ${hideCond} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">
                                    <i class="' + formMarkupHelper.glyphClass() + '-plus"></i> 
                                    Add
                                  </button>`;
                     }
+                    if (info.noneIndicator) {
+                      footer += `<span ${indicatorShowCond} class="none_indicator" id="no_${info.id}_indicator">None</span>`;
+                      // hideCond for the schema-foot is if there's no add button and no indicator
+                      hideCond = `${options.model}.${info.name}.length > 0`;
+                      if (info.noAdd === true) {
+                        hideCond = `ng-hide="${hideCond}"`;
+                      } else {
+                        hideCond = info.noAdd ? `ng-hide="${info.noAdd} && ${hideCond}"` : '';
+                      }
+                    }                    
                     if (footer !== '') {
                       if (cssFrameworkService.framework() === 'bs3') {
                         template += `<div ${hideCond} class="row schema-foot"><div class="col-sm-offset-3">${footer}</div></div>`;
