@@ -6,7 +6,6 @@ module fng.controllers {
   export function SearchCtrl($scope, $http, $location, routingService) {
 
     var lastSearchSent;
-
     var _isNotMobile;
 
     _isNotMobile = (function () {
@@ -89,7 +88,7 @@ module fng.controllers {
 
     $scope.$watch('searchTarget', function (newValue) {
       if (newValue && newValue.length > 0) {
-        lastSearchSent = new Date().valueOf();
+        lastSearchSent = $scope.testTime || new Date().valueOf();
         $http.get('/api/search?q=' + newValue + '&sentAt=' + lastSearchSent).then(function (response) {
           let data: any = response.data;
           // Check that we haven't fired off a subsequent request, in which
