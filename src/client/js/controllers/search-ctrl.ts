@@ -5,7 +5,7 @@ module fng.controllers {
   /*@ngInject*/
   export function SearchCtrl($scope, $http, $location, routingService) {
 
-    var currentRequest = '';
+    var lastSearchSent;
 
     var _isNotMobile;
 
@@ -89,12 +89,12 @@ module fng.controllers {
 
     $scope.$watch('searchTarget', function (newValue) {
       if (newValue && newValue.length > 0) {
-        currentRequest = newValue;
-        $http.get('/api/search?q=' + newValue).then(function (response) {
+        lastSearchSent = new Date().valueOf();
+        $http.get('/api/search?q=' + newValue + '&sentAt=' + lastSearchSent).then(function (response) {
           let data: any = response.data;
           // Check that we haven't fired off a subsequent request, in which
           // case we are no longer interested in these results
-          if (currentRequest === newValue) {
+          if (!data.timestamps || !data.timestamps.sentAt || Number.parseInt(data.timestamps.sentAt) === lastSearchSent) {
             if ($scope.searchTarget.length > 0) {
               $scope.results = data.results;
               $scope.moreCount = data.moreCount;
