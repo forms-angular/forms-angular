@@ -178,6 +178,7 @@ module fng.services {
             console.log('Unsupported link setup')
           }
           formInstructions.form = formInstructions.link.form;
+          formInstructions.linktab = formInstructions.link.linktab;
           delete formInstructions.link;
         }
         if (formInstructions.type !== 'link') {

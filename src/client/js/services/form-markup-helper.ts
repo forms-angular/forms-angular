@@ -135,6 +135,9 @@ module fng.services {
               if (fieldInfo.form) {
                 value += ' form="' + fieldInfo.form + '"';
               }
+              if (fieldInfo.linktab) {
+                value += ' linktab="' + fieldInfo.linktab + '"';
+              }
               value += '></fng-link>';
               labelHTML = value;
             }

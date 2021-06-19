@@ -45,9 +45,11 @@ module fng.directives {
         const ref = attrs['ref'];
         const isLabel = attrs['text'] && (unescape(attrs['text']) !== attrs['text']);
         var form: string = attrs['form'];
+        var linktab: string = attrs['linktab'];
         scope['readonly'] = attrs['readonly'];
         scope['element'] = element;
         form = form ? form + '/' : '';
+        linktab = linktab ? '/' + linktab : '';
 
         if (isLabel) {
           let workScope = scope;
@@ -94,7 +96,7 @@ module fng.directives {
                 newVal = undefined;
               }
               if (newVal) {
-                scope['link'] = routingService.buildUrl(ref + '/' + form + (newVal.id || newVal) + '/edit');
+                scope['link'] = routingService.buildUrl(ref + '/' + form + (newVal.id || newVal) + '/edit' + linktab);
               }
               else {
                 scope['link'] = undefined;
@@ -114,7 +116,7 @@ module fng.directives {
               if (typeof index !== 'undefined' && angular.isArray(newVal)) {
                 newVal = newVal[index];
               }
-              scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit');
+              scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit' + linktab);
               if (!scope['text']) {
                 SubmissionsService.getListAttributes(ref, newVal).then(function(response) {
                   let data: any = response.data;

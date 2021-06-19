@@ -165,6 +165,9 @@ module fng.directives {
               if (fieldInfo.form) {
                 value += ' form="' + fieldInfo.form + '"';
               }
+              if (fieldInfo.linktab) {
+                value += ' linktab="' + fieldInfo.linktab + '"';
+              }
               if (fieldInfo.linktext) {
                 value += ' text="' + fieldInfo.linktext + '"';
               }

@@ -75,6 +75,7 @@ declare module fng {
     linkOnly?: boolean;  // if true then the input element is not generated (this overrides label)
     label?: boolean;   // Make a link out of the label (causes text to be overridden) (this overrides text)
     form?: string;    // can be used to generate a link to a custom schema
+    linktab?: string;    // can be used to generate a link to a tab on a form
     text?: string;   // the literal value used for the link. If this property is omitted then text is generated from the field values of the document referred to by the link.
   }
 
