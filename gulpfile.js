@@ -1,7 +1,10 @@
+'use strict';
+
 var gulp = require('gulp');
 var del = require('del');
 var rename = require('gulp-rename');
 var Server = require('karma').Server;
+var parseConfig = require('karma').config.parseConfig;
 var typeScriptCompiler = require('gulp-typescript');
 var uglify = require('gulp-uglify');
 var replace  =  require('gulp-replace');
@@ -78,17 +81,25 @@ gulp.task('tidy', function() {
 });
 
 gulp.task('karmaTest', function(done) {
-  return new Server({
-    configFile: rootDir + '/test/karma.conf.js',
-    singleRun: true
-  }, done).start();
+    parseConfig(
+        rootDir + '/test/karma.conf.js',
+        {singleRun: true},
+        {promiseConfig: true, throwErrors: true}
+    ).then(function (config) {
+         var server = new Server(config, done);
+         server.start();
+        });
 });
 
 gulp.task('midwayTest', function(done) {
-  return new Server({
-    configFile: rootDir + '/test/karma.midway.conf.js',
-    singleRun: true
-  }, done).start();
+    parseConfig(
+        rootDir + '/test/karma.midway.conf.js',
+        {singleRun: true},
+        {promiseConfig: true, throwErrors: true}
+    ).then(function (config) {
+        var server = new Server(config, done);
+        server.start();
+    });
 });
 
 gulp.task('apiTest', function () {
