@@ -49,7 +49,7 @@ module fng.controllers {
 
       function filter(event){
         var tagName = (event.target || event.srcElement).tagName;
-        return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+        return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA' || tagName == "DIV" && event.target.classList.contains('ck-editor__editable'));
       }
 
       //console.log(event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.metaKey);
