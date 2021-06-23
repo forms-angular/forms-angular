@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
+    "target": "es2017",
     "lib": [
       "es5",
       "es2015",
       "dom"
     ],
-    "sourceMap": true
+    "sourceMap": true,
+    "typeRoots": ["node_modules/@types"]
   },
   "exclude": [
     "node_modules",

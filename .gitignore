@@ -12,6 +12,8 @@ dist
 .idea
 .vscode
 npm-debug.log
+server.js
+server.js.map
 src/**/*.js
 src/**/*.js.map
 website/app/models/**/*.js.map
@@ -20,3 +22,5 @@ website/node_modules
 website/app/bower_components
 website/failed_tests
 website/test/e2e/failed_tests
+/test/helpers/db-helpers.js
+/test/helpers/db-helpers.js.map
