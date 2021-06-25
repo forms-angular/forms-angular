@@ -48,7 +48,7 @@ module fng.controllers {
       }
 
       function filter(event){
-        var tagName = (event.target || event.srcElement).tagName;
+        var tagName = (event.target).tagName;
         return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA' || tagName == "DIV" && event.target.classList.contains('ck-editor__editable'));
       }
 
