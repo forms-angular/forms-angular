@@ -5,8 +5,9 @@ declare module fngServer {
     export interface ISearchResult {
         id: any,
         text: string,
+        url?: string,
         additional?: string,
-        resource: string,
+        resource?: string,
         resourceText: string,
         resourceTab?: string,
         weighting: number,

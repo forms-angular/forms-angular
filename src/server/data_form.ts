@@ -89,11 +89,6 @@ export class FormsAngular {
         }
     }
 
-    static extractTimestampFromMongoID(record: any): Date {
-        let timestamp = record.toString().substring(0, 8);
-        return new Date(parseInt(timestamp, 16) * 1000);
-    };
-
     getListFields(resource: Resource, doc: Document, cb) {
 
         function getFirstMatchingField(keyList, type?) {
@@ -133,7 +128,7 @@ export class FormsAngular {
                                 throw new Error('No support for ref type ' + aField.params.ref.type)
                             }
                         } else if (aField.params.params === 'timestamp') {
-                            let date = FormsAngular.extractTimestampFromMongoID(doc[aField.field]);
+                            let date = that.extractTimestampFromMongoID(doc[aField.field]);
                             cbm(null, date.toLocaleDateString() + ' ' + date.toLocaleTimeString());
                         }
                     } else {
@@ -1519,6 +1514,12 @@ export class FormsAngular {
             });
         }, this);
     };
+
+    extractTimestampFromMongoID(record: any): Date {
+        let timestamp = record.toString().substring(0, 8);
+        return new Date(parseInt(timestamp, 16) * 1000);
+    }
+
 }
 
 class ForeignKeyError extends global.Error {

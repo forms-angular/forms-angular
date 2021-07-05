@@ -63,10 +63,15 @@ module fng.controllers {
     };
 
     $scope.selectResult = function (resultNo) {
-      var result = $scope.results[resultNo];
-      var newURL = routingService.prefix() + '/' + result.resource + '/' + result.id + '/edit';
-      if (result.resourceTab) {
-        newURL += '/' + result.resourceTab;
+      let result = $scope.results[resultNo];
+      let newURL;
+      if (result.url) {
+        newURL = result.url.replace('|id|', result.id);
+      } else {
+        newURL = routingService.prefix() + '/' + result.resource + '/' + result.id + '/edit';
+        if (result.resourceTab) {
+          newURL += '/' + result.resourceTab;
+        }
       }
       $location.url(newURL);
     };

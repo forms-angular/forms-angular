@@ -47,6 +47,7 @@ module fng {
   .directive('fngNakedDate',fng.directives.fngNakedDate)
   .filter('camelCase', fng.filters.camelCase)
   .filter('titleCase', fng.filters.titleCase)
+  .filter('extractTimestampFromMongoID', fng.filters.extractTimestampFromMongoID)
   .service('addAllService', fng.services.addAllService)
   .provider('cssFrameworkService', fng.services.cssFrameworkService)
   .provider('routingService', fng.services.routingService)

@@ -180,10 +180,12 @@ declare module fng {
     step? : number;
   }
 
+  export type fieldType = 'string' | 'text' | 'textarea' | 'number' | 'select' | 'link' | 'date' | 'checkbox' | 'password' | 'radio';
+
   // Schema used internally on client - often derived from IFieldViewInfo passed from server
   export interface IFormInstruction extends IFieldViewInfo {
     id? : string;   // id of generated DOM element
-    type?: 'string' | 'text' | 'textarea' | 'number' | 'select' | 'link' | 'date' | 'checkbox' | 'password' | 'radio';
+    type?: fieldType;
     defaultValue? : any;
     rows? : number;
     label?: string;
