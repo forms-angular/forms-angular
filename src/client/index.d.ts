@@ -79,6 +79,8 @@ declare module fng {
     text?: string;   // the literal value used for the link. If this property is omitted then text is generated from the field values of the document referred to by the link.
   }
 
+  export type FieldSizeString = 'mini' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'block-level';  // sets control width.  Default is 'medium''
+
   export interface IFngSchemaTypeFormOpts {
     /*
       The input type to be generated - which must be compatible with the Mongoose type.
@@ -110,7 +112,7 @@ declare module fng {
     popup?: string;  // adds title (popup help) as specified.
     ariaLabel?: string;  // adds aria-label as specified.
     order?: number;  // allows user to specify the order / tab order of this field in the form. This overrides the position in the Mongoose schema.
-    size?: 'mini' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'block-level';  // sets control width.  Default is 'medium''
+    size?: FieldSizeString;
     readonly?: boolean | string;  // adds the readonly or ng-readonly attribute to the generated input (currently doesn't work with date - and perhaps other types).
     rows?: number | 'auto';  // sets the number of rows in inputs (such as textarea) that support this. Setting rows to "auto" makes the textarea expand to fit the content, rather than create a scrollbar.
     tab?: string;  // Used to divide a large form up into a tabset with multiple tabs
