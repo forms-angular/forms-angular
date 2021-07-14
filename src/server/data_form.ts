@@ -579,6 +579,12 @@ export class FormsAngular {
                     if (paths[element].options.form) {
                         outPath[element].options = {form: extend(true, {}, paths[element].options.form)};
                     }
+                    // this provides support for entire nested schemas that wish to remain hidden
+                    if (paths[element].options.secure) {
+                        hiddenFields.push(element);
+                    }
+                    // to support hiding individual properties of nested schema would require us
+                    // to do something with subSchemaInfo.hide here
                 } else {
                     // check for arrays
                     let realType = paths[element].caster ? paths[element].caster : paths[element];
