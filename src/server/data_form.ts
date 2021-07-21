@@ -640,7 +640,17 @@ export class FormsAngular {
                 formSchema = req.resource.model.schema.statics['form'](req.params.formName, req);
             }
             let paths = this.preprocess(req.resource, req.resource.model.schema.paths, formSchema).paths;
-            res.send(paths);
+            if (typeof req.resource.options?.onSchemaRequest === 'function') {
+                req.resource.options.onSchemaRequest(req, paths, function (err, newPaths) {
+                    if (err) {
+                        throw err;
+                    }
+                    res.send(newPaths);
+                });
+            }
+            else {
+                res.send(paths);
+            }
         }, this);
     };
 
