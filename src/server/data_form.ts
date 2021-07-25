@@ -1347,7 +1347,7 @@ export class FormsAngular {
         if (record) {
             record._replacingHiddenFields = true;
             _.each(data, function (value, name) {
-                if (_.isObject(value)) {
+                if (_.isObject(value) && !Array.isArray(value)) {
                     self.replaceHiddenFields(record[name], value);
                 } else if (!record[name]) {
                     record[name] = value;

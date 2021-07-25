@@ -22,7 +22,7 @@ mongoose.Promise = global.Promise;
 // Setup Express
 var app = express();
 require('./lib/config/express')(app);
-var fngHandler = new FormsAngular(mongoose, app, {
+var fngHandler = new FormsAngular.FormsAngular(mongoose, app, {
     urlPrefix: '/api/',
     plugins: {
         JQMongoFileUploader: { plugin: fngJqUpload.Controller, options: {} },

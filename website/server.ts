@@ -26,7 +26,7 @@ mongoose.Promise = global.Promise;
 const app = express();
 require('./lib/config/express')(app);
 
-const fngHandler = new FormsAngular(mongoose, app, {
+const fngHandler = new FormsAngular.FormsAngular(mongoose, app, {
   urlPrefix: '/api/',
   plugins: {
     JQMongoFileUploader:  {plugin: fngJqUpload.Controller, options: { } },
