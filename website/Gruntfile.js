@@ -465,12 +465,12 @@ module.exports = function (grunt) {
 
     protractor: {
       options: {
-        configFile: 'protractor.conf.js'
+        configFile: 'test/e2e/protractor-chrome.conf.js'
       },
       firefox: {
         options: {
           args: {
-            browser: 'firefox'
+            browser: 'chrome'
           }
         }
       }
@@ -553,6 +553,7 @@ module.exports = function (grunt) {
     shell: {
       makeProductionIndex: 'node setUpIndexHTML.js production',
       resetDevelopmentIndex: 'node setUpIndexHTML.js development',
+      webDriverUpdate: './node_modules/webdriver-manager/bin/webdriver-manager update',
     }
   });
 
@@ -634,6 +635,7 @@ module.exports = function (grunt) {
     else if (target === 'e2e') {
       return grunt.task.run([
         'clean:server',
+        'shell:webDriverUpdate',
         'less',
         'env:all',
         'env:test',

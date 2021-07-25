@@ -16,7 +16,7 @@ describe('Select', function () {
     expect(element.all(by.css('.select2-container a > span.select2-chosen')).get(1).getText()).toMatch(/IsAccepted/);
   });
 
-  it('should do all the arrays in d as expected', function(){
+  fit('should do all the arrays in d as expected', function(){
 
     function addToArray(field, number) {
       var input;
@@ -32,12 +32,10 @@ describe('Select', function () {
     }
 
     function checkArray(field, number) {
-      var input;
       if (!number) { number = 2; }
-      for (var i = 0; i < number; i++)
-        {
+      for (var i = 0; i < number; i++) {
         expect(element(by.id('f_' + field + '_' + i)).getAttribute('value')).toBe(field + ' ' + i);
-        }
+      }
     }
 
     function checkValues() {
@@ -67,7 +65,7 @@ describe('Select', function () {
     // Save the record and check they all refresh OK
     element(by.css('#saveButton')).click();
     browser.sleep(400);
-    browser.switchTo().alert().then(function (alert) {alert.accept() });    // THis model has an onSave event
+    browser.switchTo().alert().then(function (alert) {alert.accept(); });    // THis model has an onSave event
     expect(browser.getCurrentUrl()).toMatch(/d_array_example\/[0-9a-f]{24}\/edit/);
     checkValues();
 
