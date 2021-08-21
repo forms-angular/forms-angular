@@ -742,8 +742,7 @@ export class FormsAngular {
         let that = this;
         let array = Array.isArray(aggregationParam) ? aggregationParam : [aggregationParam];
         let retVal = [];
-        if (Object.keys(hiddenFields) && Object.keys(hiddenFields).length > 0)
-            retVal.push({$project: hiddenFields});
+        let doneHiddenFields = false;
         if (findFuncQry) {
             retVal.unshift({$match: findFuncQry});
         }
@@ -760,6 +759,13 @@ export class FormsAngular {
                 case '$match':
                     this.hackVariables(array[pipelineSection]['$match']);
                     retVal.push(array[pipelineSection]);
+                    if (!doneHiddenFields && Object.keys(hiddenFields) && Object.keys(hiddenFields).length > 0) {
+                        // We can now project out the hidden fields (we wait for the $match to make sure we don't break
+                        // a select that uses a hidden field
+                        retVal.push({$project: hiddenFields});
+                        doneHiddenFields = true;
+                    }
+                    stage = null;
                     break;
                 case '$lookup':
                     // hide any hiddenfields in the lookup collection
@@ -784,7 +790,13 @@ export class FormsAngular {
                     // nothing
                     break;
             }
-            retVal.push(stage);
+            if (stage) {
+                retVal.push(stage);
+            }
+        }
+        if (!doneHiddenFields && Object.keys(hiddenFields) && Object.keys(hiddenFields).length > 0) {
+            // If there was no $match we still need to hide the hidden fields
+            retVal.unshift({$project: hiddenFields});
         }
         return retVal;
     }
