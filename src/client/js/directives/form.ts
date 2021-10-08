@@ -184,6 +184,7 @@ module fng.directives {
               value = '';
               common += requiredStr;
               common += handleReadOnlyDisabled(fieldInfo.readonly);
+              common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
               var separateLines = options.formstyle === 'vertical' || (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
               if (angular.isArray(fieldInfo.options)) {
