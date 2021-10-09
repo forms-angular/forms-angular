@@ -197,8 +197,8 @@ module fng.services {
             value += `<${helpMarkup.el} class="${helpMarkup.cl}">${inlineHelp}</${helpMarkup.el}>`;
           }
           if (!options.noid) {
-            value += '<div ng-if="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$dirty" class="help-block">' +
-                ' <div ng-messages="' + (options.name || 'myForm') + '.' + fieldInfo.id + '.$error">' +
+            value += `<div ng-if="${(options.name || 'myForm')}['${fieldInfo.id}'].$dirty" class="help-block">` +
+                ` <div ng-messages="${(options.name || 'myForm')}['${fieldInfo.id}'].$error">` +
                 '  <div ng-messages-include="error-messages.html">' +
                 '  </div>' +
                 ' </div>' +
