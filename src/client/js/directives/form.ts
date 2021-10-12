@@ -215,6 +215,7 @@ module fng.directives {
             case 'checkbox' :
               common += requiredStr;
               common += handleReadOnlyDisabled(fieldInfo.readonly);
+              common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
               value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
               if (cssFrameworkService.framework() === 'bs3') {
                 value = '<div class="checkbox">' + value + '</div>';
