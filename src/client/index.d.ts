@@ -321,7 +321,6 @@ declare module fng {
     unconfirmedDelete: boolean;
     getVal: any;
     sortableOptions: any;
-    tabDeselect: any;
     tabs?: Array<any>;              // In the case of forms that contain a tab set
     tab?: string;                   // title of the active tab - from the route
     activeTabNo?: number;
@@ -369,6 +368,7 @@ declare module fng {
     onSchemaFetch?: (description: string, source: IFieldViewInfo[]) => void;
     onSchemaProcessed?: (description: string, formSchema: IFormInstruction[]) => void;
     updateQueryForTab?: (tab: string) => void;
+    tabDeselect?: ($event: any, $selectedIndex: number) => void;
     setUpCustomLookupOptions?: (schemaElement: IFormInstruction, ids: string[], options: string[], baseScope: any) => void;
   }
 
