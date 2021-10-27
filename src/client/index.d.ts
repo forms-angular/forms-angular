@@ -157,6 +157,8 @@ declare module fng {
     formstyle?: formStyle;  // (only valid on a sub schema) sets style of sub form.
     sortable? : boolean | string;  // Allows drag and drop sorting of arrays - requires angular-ui-sortable
     ngClass?: string; // Allows for conditional per-item styling through the addition of an ng-class expression to the class list of li elements created for each item in the array
+    subDocContainerType?: 'fieldset' | 'well' | 'tabset' | 'tab' | 'well-large' | 'well-small' | string | ((info) => {before: '', after: ''}); // allows each element in the array to be nested in a container
+    subDocContainerProps?: any; // the parameters that will be passed if subDocContainerType is a function
 
     /*
     The next section relates to the display of sub documents

@@ -471,7 +471,15 @@ module fng.directives {
                     }
                     template += '</div> ';
                   }
-
+                  let parts: { before: string, after: string };
+                  if (info.subDocContainerType) {
+                      const containerType = scope[info.subDocContainerType] || info.subDocContainerType;
+                      const containerProps = Object.assign({ containerType }, info.subDocContainerProps);
+                      parts = containerInstructions(containerProps);
+                  }
+                  if (parts?.before) {
+                      template += parts.before;
+                  }
                   template += processInstructions(info.schema, false, {
                     subschema: 'true',
                     formstyle: info.formStyle,
@@ -479,7 +487,9 @@ module fng.directives {
                     subschemaroot: info.name,
                     suppressNestingWarning: info.suppressNestingWarning
                   });
-
+                  if (parts?.after) {
+                    template += parts.after;
+                  }
                   if (cssFrameworkService.framework() === 'bs2') {
                     template += '   </div>';
                   }
@@ -585,7 +595,8 @@ module fng.directives {
               var callHandleField = true;
               if (info.directive) {
                 var directiveName = info.directive;
-                var newElement = '<' + directiveName + ' model="' + (options.model || 'record') + '"';
+                var newElement = info.customHeader || "";
+                newElement += '<' + directiveName + ' model="' + (options.model || 'record') + '"';
                 var thisElement = element[0];
                 inferMissingProperties(info, options);
                 for (var i = 0; i < thisElement.attributes.length; i++) {
@@ -663,6 +674,7 @@ module fng.directives {
                 }
 
                 newElement += 'ng-model="' + info.name + '"></' + directiveName + '>';
+                newElement += (info.customFooter || "");
                 result += newElement;
                 callHandleField = false;
               } else if (info.containerType) {
