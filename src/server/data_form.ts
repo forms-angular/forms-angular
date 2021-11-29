@@ -257,9 +257,27 @@ export class FormsAngular {
             filter = JSON.parse(filter);
         }
 
+        // See if we are narrowing down the resources
+        let collectionName: string;
+        let colonPos = searchFor.indexOf(':');
+        switch (colonPos) {
+            case -1:
+                // Original behaviour = do nothing different
+                break;
+            case 0:
+                // "Special search" - yet to be implemented
+                break;
+            default:
+                collectionName = searchFor.slice(0, colonPos);
+                searchFor = searchFor.slice(colonPos + 1, 999);
+                if (searchFor === '') {
+                    searchFor = '?';
+                }
+                break;
+        }
         for (let i = 0; i < resourceCount; i++) {
             let resource = resourcesToSearch[i];
-            if (resourceCount === 1 || resource.options.searchImportance !== false) {
+            if (resourceCount === 1 || (resource.options.searchImportance !== false && (!collectionName || collectionName === resource.resourceName || resource.options?.synonyms?.includes(collectionName.toLowerCase())))) {
                 let schema = resource.model.schema;
                 let indexedFields = [];
                 for (let j = 0; j < schema._indexes.length; j++) {
