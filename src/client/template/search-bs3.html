@@ -1,6 +1,6 @@
 <form class="pull-right navbar-form">
     <div id="search-cg" class="form-group" ng-class="errorClass">
-        <input type="text" autocomplete="off" id="searchinput" ng-model="searchTarget" ng-model-options="{debounce:250}" class="search-query form-control" placeholder="{{searchPlaceholder}}" ng-keyup="handleKey($event)">
+        <input type="text" spellcheck="false" autocomplete="off" id="searchinput" ng-model="searchTarget" ng-model-options="{debounce:250}" class="search-query form-control" placeholder="{{searchPlaceholder}}" ng-keyup="handleKey($event)">
     </div>
 </form>
 <div class="results-container" ng-show="results.length >= 1">

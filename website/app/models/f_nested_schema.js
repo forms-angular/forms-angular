@@ -20,10 +20,10 @@ var fSchemaDef = {
 var FSchema = new mongoose_1.Schema(fSchemaDef);
 var F;
 try {
-    F = mongoose_1.model('f_nested_schema');
+    F = (0, mongoose_1.model)('f_nested_schema');
 }
 catch (e) {
-    F = mongoose_1.model('f_nested_schema', FSchema);
+    F = (0, mongoose_1.model)('f_nested_schema', FSchema);
 }
 F.prototype.searchResultFormat = function () {
     // You can set up a function to modify search result display and the
@@ -106,7 +106,8 @@ FSchema.statics.form = function (layout) {
 module.exports = {
     model: F,
     options: {
-        searchResultFormat: F.prototype.searchResultFormat
+        searchResultFormat: F.prototype.searchResultFormat,
+        synonyms: ['exams'],
     }
 };
 //# sourceMappingURL=f_nested_schema.js.map

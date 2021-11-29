@@ -114,7 +114,8 @@ FSchema.statics.form = function (layout) {
 module.exports = {
   model: F,
   options: {
-    searchResultFormat: F.prototype.searchResultFormat
+    searchResultFormat: F.prototype.searchResultFormat,
+    synonyms: ['exams'],
   }
 };
 
