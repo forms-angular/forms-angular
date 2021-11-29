@@ -71,8 +71,10 @@ module fng.directives {
               var splitAttrib = attrib.split('.');
               attrib = splitAttrib.pop();
               attrib = splitAttrib.join('.') + '[' + workScope['$index'] + '].' + attrib;
+            } else {
+              attrib = '.' + attrib;
             }
-            watchExpression = workString + 'record.' + attrib;
+            watchExpression = workString + 'record' + attrib;
           }
           scope.$watch(watchExpression, function (newVal: any) {
             if (newVal) {

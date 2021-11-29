@@ -150,6 +150,8 @@ you can easily switch between modes without having to manually change all the in
     <p>The smallest form is the search form, in the navbar at the top of this page. It is implemented as a directive - <strong>global-search</strong>.
         When you enter text into it the controller makes a call to the server which looks for matching data by searching the indexed
         fields in each model for values starting with the search string.</p>
+    <p>You can restrict the search to a particular model by entering the model name, then a colon, then the search string.  So searching for employees:John would exclude
+    customers called John, etc.  Entering collection: (with nothing following the colon) will return everything from the collection (up to the limit of search results that are returned).</p>
 
     <p>There are a number of options that can be added to model exports to modify the search behaviour. Examples can be
         found
@@ -180,6 +182,7 @@ you can easily switch between modes without having to manually change all the in
             Both the resource, resourceText and resourceTab can be localised by a line of code like
             <pre><code>DataFormHandler.getResource('person').options.localisationData = [{from: 'person/customer', to: 'person/client', context: 'resource'},{from:'Customer', to:'Client', context: 'resourceText'}];</code></pre>
         </li>
+        <li><string>synonyms</string> for the model name may be specified, so that users can search for synomyn:searchstring rather can the exact model name.</li>
     </ul>
 
     A truthy <strong>noSearch</strong> key means index on a schema type is not used in the searchBox searches.

@@ -16,7 +16,7 @@ describe('Select', function () {
     expect(element.all(by.css('.select2-container a > span.select2-chosen')).get(1).getText()).toMatch(/IsAccepted/);
   });
 
-  fit('should do all the arrays in d as expected', function(){
+  it('should do all the arrays in d as expected', function(){
 
     function addToArray(field, number) {
       var input;
