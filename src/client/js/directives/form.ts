@@ -494,7 +494,7 @@ module fng.directives {
                       footer = info.customFooter;
                     }
                     let hideCond = '';
-                    let indicatorShowCond = `${options.model}.${info.name}.length == 0`;
+                    let indicatorShowCond = `(!${options.model}.${info.name} || ${options.model}.${info.name}.length === 0)`;
                     if (info.noAdd === true) {
                       indicatorShowCond = `ng-show="${indicatorShowCond}"`;
                     } else {                    
