@@ -393,7 +393,7 @@ export class FormsAngular {
                         // Use special listings format if defined
                         let specialListingFormat = item.resource.options.searchResultFormat;
                         if (specialListingFormat) {
-                            resultObject = await specialListingFormat.apply(aDoc);
+                            resultObject = await specialListingFormat.apply(aDoc, [req]);
                             resultObject.addHits = addHits;
                             handleResultsInList();
                         } else {
