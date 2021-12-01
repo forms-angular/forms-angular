@@ -105,7 +105,7 @@ gulp.task('midwayTest', function(done) {
 gulp.task('apiTest', function () {
   return gulp.src('test/api/API-Spec.js', {read: false})
     // gulp-mocha needs filepaths so you can't have any plugins before it
-    .pipe(require('gulp-mocha')({reporter: 'dot'}));
+    .pipe(require('gulp-mocha')({reporter: 'dot', 'forbid-only': true}));
 });
 
 gulp.task('saveDebug', function () {

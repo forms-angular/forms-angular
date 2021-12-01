@@ -1,6 +1,9 @@
+import {fngServer} from "../../../src/server";
+
 const jqUploads = require('fng-jq-upload');
 import { Schema, model } from "mongoose";
 import { IFngSchemaDefinition } from "../../../src/fng-schema";
+import ResourceExport = fngServer.ResourceExport;
 
 const ExamsSchemaDef : IFngSchemaDefinition = {
   subject: {type: String, required: true, form:{popup:'Exam subject'}},
@@ -46,7 +49,7 @@ F.prototype.searchResultFormat = function (req) {
   if (req.query && req.query.q && req.query.q.length > 0 && req.query.q.slice(0,6).toLowerCase() === "exams:") {
     retVal.resourceText = '';
   }
-  return retVal;
+  return Promise.resolve(retVal);
 };
 
 FSchema.statics.form = function (layout) {
@@ -115,12 +118,14 @@ FSchema.statics.form = function (layout) {
   return formSchema;
 };
 
-module.exports = {
+const resourceExport: ResourceExport = {
   model: F,
   options: {
     searchResultFormat: F.prototype.searchResultFormat,
     synonyms: ['exams'],
   }
 };
+
+module.exports = resourceExport;
 
 
