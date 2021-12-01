@@ -4,7 +4,8 @@
 module.exports = function (grunt) {
   var localConfig;
   try {
-    localConfig = require('./server/config/local.env');
+    // noinspection JSFileReferences
+    localConfig = require('./lib/config/env/local.env');
   } catch(e) {
     localConfig = {};
   }
@@ -460,7 +461,7 @@ module.exports = function (grunt) {
       options: {
         reporter: 'spec'
       },
-      src: ['server/**/*.spec.js']
+      src: ['server/**/*.spec.js', 'test/server/**/*.spec.js']
     },
 
     protractor: {
