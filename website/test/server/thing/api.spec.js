@@ -1,8 +1,8 @@
 'use strict';
 
-var should = require('should'),
-    app = require('../../../server'),
-    request = require('supertest');
+const assert = require('assert');
+const app = require('../../../server');
+const request = require('supertest');
 
 describe('GET /api/schema/a_unadorned_schema', function() {
 
@@ -11,8 +11,10 @@ describe('GET /api/schema/a_unadorned_schema', function() {
       .get('/api/schema/a_unadorned_schema')
       .expect(200)
       .end(function(err, res) {
-        if (err) return done(err);
-        JSON.parse(res.text)._id.path.should.be.equal('_id');
+        if (err) {
+            return done(err);
+        }
+        assert.strictEqual(JSON.parse(res.text)._id.path, '_id');
         done();
       });
   });
