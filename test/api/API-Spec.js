@@ -166,7 +166,7 @@ describe('API tests', function() {
 
   describe('API', function() {
 
-    describe.only('document read', function() {
+    describe('document read', function() {
 
       var bData, status;
 
@@ -485,8 +485,11 @@ describe('API tests', function() {
           params: { resourceName: 'b_using_options', id: id }
         };
         var mockRes = {
-          send: function(data) {
-            assert(data.success, 'Failed to delete document');
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
+          send: function() {
             done();
           }
         };
@@ -529,6 +532,10 @@ describe('API tests', function() {
           }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
           send: function(data) {
             assert.equal(data.surname, 'Anderson');
             assert.equal(data.passwordHash, undefined);
@@ -608,6 +615,10 @@ describe('API tests', function() {
           body: { 'forename': 'Alfie' }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 404);
+            return this;
+          },
           send: function(data) {
             assert.equal(data.success, false);
             done();
@@ -622,6 +633,10 @@ describe('API tests', function() {
           params: { resourceName: 'b_using_options', id: id }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 404);
+            return this;
+          },
           send: function(data) {
             assert(!data.success, 'Was allowed to delete document');
             done();
@@ -642,6 +657,10 @@ describe('API tests', function() {
           }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
           send: function(data) {
             assert.equal(data.results.length, 1);
             done();
@@ -658,6 +677,10 @@ describe('API tests', function() {
           }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
           send: function(data) {
             assert.equal(data.results.length, 2);
             done();
@@ -708,6 +731,10 @@ describe('API tests', function() {
           }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
           send: function(data) {
             assert.equal(data.results.length, 10);
             assert.equal(data.results[0].text, 'Smith00 John00');
@@ -727,6 +754,10 @@ describe('API tests', function() {
           }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
           send: function(data) {
             assert.equal(data.results.length, 1);
             assert.equal(data.results[0].id, '51c583d5b5c51226db418f16');
@@ -748,6 +779,10 @@ describe('API tests', function() {
           route: { path: '/api/search' }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
           send: function(data) {
             assert.notEqual(data.moreCount, 0);
             assert.equal(data.results[0].text, 'Smith04 John04');  // Double hit should come first
@@ -789,6 +824,10 @@ describe('API tests', function() {
           route: { path: '/api/search' }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
           send: function(data) {
             assert.equal(data.results.length, 1);
             assert.equal(data.results[0].text, 'Smith04 John04');
@@ -808,6 +847,10 @@ describe('API tests', function() {
           route: { path: '/api/search' }
         };
         var mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
           send: function(data) {
             assert.equal(data.results.length, 2);
             assert.equal(data.results[0].resourceText, 'Exams');
@@ -1192,7 +1235,7 @@ describe('API tests', function() {
       var mockReq = {
         url: 'report/b_using_options',
         query: {
-          r: '[{"$project":{"passwordHash":1}}]'
+          r: '[{"$project":{"passwordHash":true, "surname": true}}]'
         },
         params : {
           resourceName: 'b_using_options'
@@ -1200,7 +1243,11 @@ describe('API tests', function() {
       };
       var mockRes = {
         send: function (data) {
-          assert.equal(data, 'You cannot access passwordHash');
+          assert.equal(data.report.length, 2);
+          assert.strictEqual(typeof data.report[0].passwordHash, "undefined");
+          assert.notStrictEqual(typeof data.report[0].surname, "undefined");
+          assert.strictEqual(typeof data.report[1].passwordHash, "undefined");
+          assert.notStrictEqual(typeof data.report[1].surname, "undefined");
           done();
         }
       };

@@ -6,6 +6,7 @@ import ListField = fngServer.ListField;
 import FngOptions = fngServer.FngOptions;
 import IFngPlugin = fngServer.IFngPlugin;
 import IInternalSearchResult = fngServer.IInternalSearchResult;
+import ISearchResultFormatter = fngServer.ISearchResultFormatter;
 import Path = fngServer.Path;
 
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
@@ -310,96 +311,100 @@ export class FormsAngular {
         }
 
         let handleSearchResultsFromIndex = function (err, docs, item, cb) {
-            if (!err && docs && docs.length > 0) {
-                async.map(docs, async function (aDoc, cbdoc) {
-                    // Do we already have them in the list?
-                    let thisId: string = aDoc._id.toString(),
-                        resultObject: IInternalSearchResult,
-                        resultPos: number;
 
-                    function handleResultsInList() {
-                        if (multiMatchPossible) {
-                            resultObject.matched = resultObject.matched || [];
+            function handleSingleSearchResult(aDoc: Document, cbdoc) {
+                let thisId: string = aDoc._id.toString(),
+                    resultObject: IInternalSearchResult,
+                    resultPos: number;
 
-                            // record the index of string that matched, so we don't count it against another field
-                            for (let i = 0; i < searchStrings.length; i++) {
-                                if (aDoc[item.field].toLowerCase().indexOf(searchStrings[i]) === 0) {
-                                    resultObject.matched.push(i);
-                                    break;
-                                }
+                function handleResultsInList() {
+                    if (multiMatchPossible) {
+                        resultObject.matched = resultObject.matched || [];
+
+                        // record the index of string that matched, so we don't count it against another field
+                        for (let i = 0; i < searchStrings.length; i++) {
+                            if (aDoc[item.field].toLowerCase().indexOf(searchStrings[i]) === 0) {
+                                resultObject.matched.push(i);
+                                break;
                             }
                         }
-
-                        resultObject.searchImportance = item.resource.options.searchImportance || 99;
-                        if (item.resource.options.localisationData) {
-                            resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, "resource");
-                            resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, "resourceText");
-                            resultObject.resourceTab = translate(resultObject.resourceTab, item.resource.options.localisationData, "resourceTab");
-                        }
-                        results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
-                        cbdoc(null);
                     }
 
-                    for (resultPos = results.length - 1; resultPos >= 0; resultPos--) {
-                        if (results[resultPos].id.toString() === thisId) {
-                            break;
+                    resultObject.searchImportance = item.resource.options.searchImportance || 99;
+                    if (item.resource.options.localisationData) {
+                        resultObject.resource = translate(resultObject.resource, item.resource.options.localisationData, "resource");
+                        resultObject.resourceText = translate(resultObject.resourceText, item.resource.options.localisationData, "resourceText");
+                        resultObject.resourceTab = translate(resultObject.resourceTab, item.resource.options.localisationData, "resourceTab");
+                    }
+                    results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
+                    cbdoc(null);
+                }
+
+                // Do we already have them in the list?
+                for (resultPos = results.length - 1; resultPos >= 0; resultPos--) {
+                    if (results[resultPos].id.toString() === thisId) {
+                        break;
+                    }
+                }
+                if (resultPos >= 0) {
+                    resultObject = Object.assign({}, results[resultPos]);
+                    // If they have already matched then improve their weighting
+                    if (multiMatchPossible) {
+                        // record the index of string that matched, so we don't count it against another field
+                        for (let i = 0; i < searchStrings.length; i++) {
+                            if (!resultObject.matched.includes(i) && aDoc[item.field].toLowerCase().indexOf(searchStrings[i]) === 0) {
+                                resultObject.matched.push(i);
+                                resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 0);
+                                // remove it from current position
+                                results.splice(resultPos, 1);
+                                // and re-insert where appropriate
+                                results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
+                                break;
+                            }
                         }
                     }
-                    if (resultPos >= 0) {
-                        resultObject = Object.assign({}, results[resultPos]);
-                        // If they have already matched then improve their weighting
-                        if (multiMatchPossible) {
-                            // record the index of string that matched, so we don't count it against another field
-                            for (let i = 0; i < searchStrings.length; i++) {
-                                if (!resultObject.matched.includes(i) && aDoc[item.field].toLowerCase().indexOf(searchStrings[i]) === 0) {
-                                    resultObject.matched.push(i);
-                                    resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 0);
-                                    // remove it from current position
-                                    results.splice(resultPos, 1);
-                                    // and re-insert where appropriate
-                                    results.splice(_.sortedIndexBy(results, resultObject, calcResultValue), 0, resultObject);
-                                    break;
-                                }
-                            }
+                    cbdoc(null);
+                } else {
+                    // Otherwise add them new...
+                    let addHits;
+                    if (multiMatchPossible)
+                        // If they match the whole search phrase in one index they get smaller addHits (so they sort higher)
+                        if (aDoc[item.field].toLowerCase().indexOf(searchFor) === 0) {
+                            addHits = 7;
                         }
-                        cbdoc(null);
-                    } else {
-                        // Otherwise add them new...
-                        let addHits;
-                        if (multiMatchPossible)
-                            // If they match the whole search phrase in one index they get smaller addHits (so they sort higher)
-                            if (aDoc[item.field].toLowerCase().indexOf(searchFor) === 0) {
-                                addHits = 7;
-                            }
 
-                        // Use special listings format if defined
-                        let specialListingFormat = item.resource.options.searchResultFormat;
-                        if (specialListingFormat) {
-                            resultObject = await specialListingFormat.apply(aDoc);
-                            resultObject.addHits = addHits;
-                            handleResultsInList();
-                        } else {
-                            that.getListFields(item.resource, aDoc, function (err, description) {
-                                if (err) {
-                                    cbdoc(err);
-                                } else {
-                                    (resultObject as any) = {
-                                        id: aDoc._id,
-                                        weighting: 9999,
-                                        addHits,
-                                        text: description
-                                    };
-                                    if (resourceCount > 1 || includeResourceInResults) {
-                                        resultObject.resource = resultObject.resourceText = item.resource.resourceName;
-                                    }
-                                    handleResultsInList();
-                                }
+                    // Use special listings format if defined
+                    let specialListingFormat: ISearchResultFormatter = item.resource.options.searchResultFormat;
+                    if (specialListingFormat) {
+                        specialListingFormat.apply(aDoc)
+                            .then((resultObj) => {
+                                resultObject = resultObj;
+                                resultObject.addHits = addHits;
+                                handleResultsInList();
                             });
-                        }
+                    } else {
+                        that.getListFields(item.resource, aDoc, function (err, description) {
+                            if (err) {
+                                cbdoc(err);
+                            } else {
+                                (resultObject as any) = {
+                                    id: aDoc._id,
+                                    weighting: 9999,
+                                    addHits,
+                                    text: description
+                                };
+                                if (resourceCount > 1 || includeResourceInResults) {
+                                    resultObject.resource = resultObject.resourceText = item.resource.resourceName;
+                                }
+                                handleResultsInList();
+                            }
+                        });
                     }
-                }, function (err) {
-                    cb(err);
-                });
+                }
+            }
+
+            if (!err && docs && docs.length > 0) {
+                async.map(docs, handleSingleSearchResult, cb);
             } else {
                 cb(err);
             }
@@ -541,7 +546,7 @@ export class FormsAngular {
                         }
                     }
                     outPath[fld].options = outPath[fld].options || {};
-                    for (var override in schema[fld]) {
+                    for (const override in schema[fld]) {
                         if (schema[fld].hasOwnProperty(override)) {
                             if (override.slice(0, 1) !== '_') {
                                 if (schema[fld].hasOwnProperty(override)) {
@@ -668,7 +673,7 @@ export class FormsAngular {
                         reportSchema = JSON.parse(req.query.r);
                         break;
                     default:
-                        return self.renderError(new Error('Invalid "r" parameter'), null, req, res, next);
+                        return self.renderError( new Error('Invalid "r" parameter'), null, req, res);
                 }
             } else {
                 let fields = {};
@@ -695,7 +700,7 @@ export class FormsAngular {
 
             self.reportInternal(req, req.resource, schemaCopy, function (err, result) {
                 if (err) {
-                    self.renderError(err, null, req, res, next);
+                    self.renderError(err, null, req, res);
                 } else {
                     res.send(result);
                 }
@@ -912,8 +917,8 @@ export class FormsAngular {
                                                         // TODO - this ref func can probably be done away with now that list fields can have ref
                                                         let j = 0;
                                                         async.whilst(
-                                                            function () {
-                                                                return j < findResults.length;
+                                                            function (cbtest) {
+                                                                cbtest(null, j < findResults.length);
                                                             },
                                                             function (cbres) {
                                                                 let theResult = findResults[j];
@@ -1072,7 +1077,7 @@ export class FormsAngular {
                 const self = this;
                 this.filteredFind(req.resource, req, aggregationParam, findParam, projectParam, orderParam, limitParam, skipParam, function (err, docs) {
                     if (err) {
-                        return self.renderError(err, null, req, res, next);
+                        return self.renderError(err, null, req, res);
                     } else {
                         res.send(docs);
                     }
@@ -1150,7 +1155,7 @@ export class FormsAngular {
         function doAggregation(queryObj, cb) {
             if (aggregationParam) {
                 aggregationParam = that.sanitisePipeline(aggregationParam, hiddenFields, queryObj);
-                resource.model.aggregate(aggregationParam, function (err, aggregationResults) {
+                void resource.model.aggregate(aggregationParam, function (err, aggregationResults) {
                     if (err) {
                         throw err;
                     } else {
@@ -1291,7 +1296,7 @@ export class FormsAngular {
                 } else {
                     crit = idSel;
                 }
-                cb(null, resource.model.findOne(crit).select(that.generateProjection(hiddenFields, req.query.p)));
+                cb(null, resource.model.findOne(crit).select(that.generateProjection(hiddenFields, req.query?.p)));
             }
         });
     };

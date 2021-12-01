@@ -31,6 +31,8 @@ declare module fngServer {
         [pathName: string]: Path;
     }
 
+    export type ISearchResultFormatter = () => Promise<ISearchResult>;
+
     export interface ResourceOptions {
         suppressDeprecatedMessage?: boolean;
         onRemove?: (doc, req, cb) => void;
@@ -40,7 +42,7 @@ declare module fngServer {
         findFunc?: (req, cb) => void,
         getOrgCriteria?: (userOrganisation: string) => Promise<any>
         idIsList?: IIdIsList,
-        searchResultFormat?: ISearchResult,
+        searchResultFormat?: ISearchResultFormatter,
         searchOrder?: any,
         listOrder?: any,
         onAccess?: (req, cb) => void,
@@ -62,10 +64,13 @@ declare module fngServer {
                        callback: (err: Error, docs?: any[]) => void
     ) => void;
 
-    interface Resource {
-        resourceName: string;
+    interface ResourceExport {
         model?: Model<any>;            // TODO TS Get rid of the ? here
         options?: ResourceOptions;
+    }
+
+    interface Resource extends ResourceExport {
+        resourceName: string;
     }
 
     interface ListParams {

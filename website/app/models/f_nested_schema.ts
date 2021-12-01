@@ -1,6 +1,9 @@
+import {fngServer} from "../../../src/server";
+
 const jqUploads = require('fng-jq-upload');
 import { Schema, model } from "mongoose";
 import { IFngSchemaDefinition } from "../../../src/fng-schema";
+import ResourceExport = fngServer.ResourceExport;
 
 const ExamsSchemaDef : IFngSchemaDefinition = {
   subject: {type: String, required: true, form:{popup:'Exam subject'}},
@@ -36,13 +39,13 @@ F.prototype.searchResultFormat = function () {
 
   weighting = this.forename === 'John' ? 2 : 3;
 
-  return {
+  return Promise.resolve({
     resource: 'f_nested_schema',
     resourceText: 'Exams',
     id: this._id,
     weighting: weighting,
     text: this.surname + (this.forename ? ', ' + this.forename : '')
-  };
+  });
 };
 
 FSchema.statics.form = function (layout) {
@@ -111,11 +114,13 @@ FSchema.statics.form = function (layout) {
   return formSchema;
 };
 
-module.exports = {
+const resourceExport: ResourceExport = {
   model: F,
   options: {
     searchResultFormat: F.prototype.searchResultFormat
   }
 };
+
+module.exports = resourceExport;
 
 

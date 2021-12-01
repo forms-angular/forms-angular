@@ -36,13 +36,13 @@ F.prototype.searchResultFormat = function () {
 
   weighting = this.forename === 'John' ? 2 : 3;
 
-  return {
+  return Promise.resolve({
     resource: 'f_nested_schema',
     resourceText: 'Exams',
     id: this._id,
     weighting: weighting,
     text: this.surname + ', ' + this.forename
-  };
+  });
 };
 
 FSchema.statics.form = function (layout) {
