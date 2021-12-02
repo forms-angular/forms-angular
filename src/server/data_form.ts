@@ -2,6 +2,7 @@ import {Document, Error, Mongoose} from "mongoose";
 import {Express} from "express";
 import {fngServer} from "./index";
 import Resource = fngServer.Resource;
+import ResourceOptions = fngServer.ResourceOptions;
 import ListField = fngServer.ListField;
 import FngOptions = fngServer.FngOptions;
 import IFngPlugin = fngServer.IFngPlugin;
@@ -159,7 +160,7 @@ export class FormsAngular {
         }
     };
 
-    newResource(model, options) {
+    newResource(model, options: ResourceOptions) {
         options = options || {};
         options.suppressDeprecatedMessage = true;
         let passModel = model;
@@ -171,7 +172,7 @@ export class FormsAngular {
 
 //    Add a resource, specifying the model and any options.
 //    Models may include their own options, which means they can be passed through from the model file
-    addResource(resourceName, model, options) {
+    addResource(resourceName: string, model, options: ResourceOptions) {
         let resource: Resource = {
             resourceName: resourceName,
             options: options || {}
@@ -260,6 +261,7 @@ export class FormsAngular {
 
         // See if we are narrowing down the resources
         let collectionName: string;
+        let collectionNameLower: string;
         let colonPos = searchFor.indexOf(':');
         switch (colonPos) {
             case -1:
@@ -270,6 +272,7 @@ export class FormsAngular {
                 break;
             default:
                 collectionName = searchFor.slice(0, colonPos);
+                collectionNameLower = collectionName.toLowerCase();
                 searchFor = searchFor.slice(colonPos + 1, 999);
                 if (searchFor === '') {
                     searchFor = '?';
@@ -278,7 +281,7 @@ export class FormsAngular {
         }
         for (let i = 0; i < resourceCount; i++) {
             let resource = resourcesToSearch[i];
-            if (resourceCount === 1 || (resource.options.searchImportance !== false && (!collectionName || collectionName === resource.resourceName || resource.options?.synonyms?.includes(collectionName.toLowerCase())))) {
+            if (resourceCount === 1 || (resource.options.searchImportance !== false && (!collectionName || collectionName === resource.resourceName || resource.options?.synonyms?.find(s => s.name.toLowerCase() === collectionNameLower)))) {
                 let schema = resource.model.schema;
                 let indexedFields = [];
                 for (let j = 0; j < schema._indexes.length; j++) {

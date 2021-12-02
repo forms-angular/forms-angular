@@ -28,21 +28,25 @@ try {
   F = mongoose.model('F', FSchema);
 }
 
-F.prototype.searchResultFormat = function () {
+F.prototype.searchResultFormat = function (req) {
 
   // You can set up a function to modify search result display and the
   // ordering within a collection
-  var weighting;
+  let weighting;
 
   weighting = this.forename === 'John' ? 2 : 3;
 
-  return Promise.resolve({
+  const retVal = {
     resource: 'f_nested_schema',
     resourceText: 'Exams',
     id: this._id,
     weighting: weighting,
-    text: this.surname + ', ' + this.forename
-  });
+    text: this.surname + (this.forename ? ', ' + this.forename : '')
+  };
+  if (req.query && req.query.q && req.query.q.length > 0 && req.query.q.slice(0,6).toLowerCase() === 'exams:') {
+    retVal.resourceText = ' ';
+  }
+  return Promise.resolve(retVal);
 };
 
 FSchema.statics.form = function (layout) {
@@ -84,10 +88,8 @@ FSchema.statics.form = function (layout) {
 
 module.exports = {
   model: F,
-  options : {
-    synonyms: [{name: 'Exams'}],
-    searchResultFormat: F.prototype.searchResultFormat
-  }
+  synonyms: [{name: 'Exams'}],
+  searchResultFormat: F.prototype.searchResultFormat
 };
 
 

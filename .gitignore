@@ -24,3 +24,5 @@ website/failed_tests
 website/test/e2e/failed_tests
 /test/helpers/db-helpers.js
 /test/helpers/db-helpers.js.map
+/test/api/API-Spec.js
+/test/api/API-Spec.js.map

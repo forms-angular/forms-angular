@@ -1,16 +1,16 @@
 'use strict';
 
-var assert = require('assert');
-var _ = require('lodash');
-var mongoose = require('mongoose');
-var dbHelpers = require('../helpers/db-helpers');
-var async = require("async");
+const assert = require('assert');
+const _ = require('lodash');
+const mongoose = require('mongoose');
+const dbHelpers = require('../helpers/db-helpers');
+const async = require("async");
 
-var fng;
+let fngInstance: any;
 
 before(function(done) {
   dbHelpers.setUpDB(mongoose, function(fngRet) {
-    fng = fngRet;
+    fngInstance = fngRet;
     done();
   });
 });
@@ -26,8 +26,8 @@ describe('API tests', function() {
   describe('original API', function() {
 
     it('returns models', function() {
-      var mockReq = null;
-      var mockRes = {
+      const mockReq = null;
+      const mockRes = {
         send: function(models) {
           assert.equal(models.length, 11);
           assert(_.find(models, function(resource) {
@@ -35,14 +35,14 @@ describe('API tests', function() {
           }).options.hide.indexOf('login') > -1, 'must send login as a hidden field');
         }
       };
-      fng.models()(mockReq, mockRes);
+      fngInstance.models()(mockReq, mockRes);
     });
 
     it('returns straight schema', function(done) {
-      var mockReq = { params: { resourceName: 'a_unadorned_mongoose' } };
-      var mockRes = {
+      const mockReq = { params: { resourceName: 'a_unadorned_mongoose' } };
+      const mockRes = {
         send: function(schema) {
-          var keys = Object.keys(schema);
+          let keys = Object.keys(schema);
           assert.equal(keys.length, 8);
           assert.equal(schema[keys[0]].path, 'surname');
           assert.equal(schema[keys[1]].path, 'forename');
@@ -55,14 +55,14 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.schema()(mockReq, mockRes);
+      fngInstance.schema()(mockReq, mockRes);
     });
 
     it('returns nested schema', function(done) {
-      var mockReq = { params: { resourceName: 'f_nested_schema' } };
-      var mockRes = {
+      const mockReq = { params: { resourceName: 'f_nested_schema' } };
+      const mockRes = {
         send: function(schema) {
-          var keys = Object.keys(schema);
+          let keys = Object.keys(schema);
           assert.equal(keys.length, 5);
           assert.equal(keys[0], 'surname');
           assert.equal(schema[keys[0]].path, 'surname');
@@ -80,29 +80,29 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.schema()(mockReq, mockRes);
+      fngInstance.schema()(mockReq, mockRes);
     });
 
 
     it('returns forms schema', function(done) {
-      var mockReq = { params: { resourceName: 'b_using_options', formName: 'justnameandpostcode' } };
-      var mockRes = {
+      const mockReq = { params: { resourceName: 'b_using_options', formName: 'justnameandpostcode' } };
+      const mockRes = {
         send: function(schema) {
-          var keys = Object.keys(schema);
+          let keys = Object.keys(schema);
           assert.equal(keys.length, 4);
           assert.equal(schema[keys[0]].path, 'surname');
           assert.equal(schema[keys[1]].path, 'address.postcode');
           done();
         }
       };
-      fng.schema()(mockReq, mockRes);
+      fngInstance.schema()(mockReq, mockRes);
     });
 
     it('supports nested schemas within form schemas', function(done) {
-      var mockReq = { params: { resourceName: 'f_nested_schema', formName: 'EnglishAndMaths' } };
-      var mockRes = {
+      const mockReq = { params: { resourceName: 'f_nested_schema', formName: 'EnglishAndMaths' } };
+      const mockRes = {
         send: function(schema) {
-          var keys = Object.keys(schema);
+          let keys = Object.keys(schema);
           assert.equal(keys.length, 3);
           assert.equal(schema[keys[0]].path, 'surname');
           assert.equal(keys[0], 'surname');
@@ -120,14 +120,14 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.schema()(mockReq, mockRes);
+      fngInstance.schema()(mockReq, mockRes);
     });
 
     it('allows form schemas to override nested schemas', function(done) {
-      var mockReq = { params: { resourceName: 'f_nested_schema', formName: 'ResultsOnly' } };
-      var mockRes = {
+      const mockReq = { params: { resourceName: 'f_nested_schema', formName: 'ResultsOnly' } };
+      const mockRes = {
         send: function(schema) {
-          var keys = Object.keys(schema);
+          let keys = Object.keys(schema);
           assert.equal(keys.length, 3);
           assert.equal(schema[keys[0]].path, 'surname');
           assert.equal(keys[0], 'surname');
@@ -144,14 +144,13 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.schema()(mockReq, mockRes);
+      fngInstance.schema()(mockReq, mockRes);
     });
 
     it('supports enums with values and labels', function(done) {
-      var mockReq = { params: { resourceName: 'b_using_options' } };
-      var mockRes = {
+      const mockReq = { params: { resourceName: 'b_using_options' } };
+      const mockRes = {
         send: function(schema) {
-          var keys = Object.keys(schema);
           assert.equal(schema['education'].enumValues[1], 'univ');
           assert.equal(schema['education'].options.enum.values[1], 'univ');
           assert.equal(schema['education'].options.enum.labels[1], 'University');
@@ -159,7 +158,7 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.schema()(mockReq, mockRes);
+      fngInstance.schema()(mockReq, mockRes);
     });
 
   });
@@ -168,15 +167,15 @@ describe('API tests', function() {
 
     describe('document read', function() {
 
-      var bData, status;
+      let bData, status;
 
       function getItem(id, query, cb) {
-        var mockReq = {
+        const mockReq = {
           url: '/b_using_options/' + id,
           params: { resourceName: 'b_using_options', id: id },
           query: query
         };
-        var mockRes = {
+        const mockRes = {
           status: function(data) {
             status = data;
             return this;
@@ -185,7 +184,7 @@ describe('API tests', function() {
             cb(null, data);
           }
         };
-        fng.entityGet()(mockReq, mockRes);
+        fngInstance.entityGet()(mockReq, mockRes);
       }
 
       describe('simple', function() {
@@ -281,19 +280,19 @@ describe('API tests', function() {
 
     describe('collection read', function() {
 
-      var aData, aPtr, bData, bPtr;
+      let aData, aPtr, bData, bPtr;
 
       function getCollection(model, cb) {
-        var mockReq = {
+        const mockReq = {
           url: '/' + model,
           params: { resourceName: model }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             cb(null, data);
           }
         };
-        fng.collectionGet()(mockReq, mockRes);
+        fngInstance.collectionGet()(mockReq, mockRes);
       }
 
       before(function(done) {
@@ -363,20 +362,20 @@ describe('API tests', function() {
 
     describe('collection projection', function() {
 
-      var aData, aPtr, bData, bPtr;
+      let aData, aPtr, bData, bPtr;
 
       function getCollectionProjection(model, proj, cb) {
-        var mockReq = {
+        const mockReq = {
           url: '/' + model,
           query : {p : JSON.stringify(proj)},
           params: { resourceName: model }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             cb(null, data);
           }
         };
-        fng.collectionGet()(mockReq, mockRes);
+        fngInstance.collectionGet()(mockReq, mockRes);
       }
 
       before(function(done) {
@@ -442,16 +441,16 @@ describe('API tests', function() {
 
     describe('data update', function() {
 
-      var id;
+      let id;
 
       it('should create a record', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/b_using_options',
           params: { resourceName: 'b_using_options' },
           body: { 'surname': 'TestCreate', 'accepted': true },
           ip: '192.168.99.99'
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert(data._id, 'Must return the id');
             id = data._id;
@@ -461,30 +460,30 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.collectionPost()(mockReq, mockRes);
+        fngInstance.collectionPost()(mockReq, mockRes);
       });
 
       it('should update a record', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/b_using_options/' + id,
           params: { resourceName: 'b_using_options', id: id },
           body: { 'forename': 'Alfie' }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert.equal(data.forename, 'Alfie');
             done();
           }
         };
-        fng.entityPut()(mockReq, mockRes);
+        fngInstance.entityPut()(mockReq, mockRes);
       });
 
       it('should delete a record', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/b_using_options/' + id,
           params: { resourceName: 'b_using_options', id: id }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 200);
             return this;
@@ -493,7 +492,7 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.entityDelete()(mockReq, mockRes);
+        fngInstance.entityDelete()(mockReq, mockRes);
       });
 
     });
@@ -501,17 +500,17 @@ describe('API tests', function() {
     describe('Secure fields', function() {
 
       it('should not be transmitted in a listing', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: 'c_subdoc_example',
           params: {
             resourceName: 'c_subdoc_example',
             id: '519aaaaab320153869b175e0'
           }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert.equal(data.length, 2);
-            var dataPtr = data.find(function(obj) {
+            const dataPtr = data.find(function(obj) {
               return obj.surname === 'Anderson'
             });
             assert.equal(dataPtr.passwordHash, undefined);
@@ -520,18 +519,18 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.collectionGet()(mockReq, mockRes);
+        fngInstance.collectionGet()(mockReq, mockRes);
       });
 
       it('should not be transmitted in an entity get', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: 'c_subdoc_example/519aaaaab320153869b175e0',
           params: {
             resourceName: 'c_subdoc_example',
             id: '519aaaaab320153869b175e0'
           }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 200);
             return this;
@@ -544,12 +543,12 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.entityGet()(mockReq, mockRes);
+        fngInstance.entityGet()(mockReq, mockRes);
       });
 
 
       it('should not be overwritten by nulls and should not be transmitted on update', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/c_subdoc_example/519aaaaab320153869b175e0',
           params: { resourceName: 'c_subdoc_example', id: '519aaaaab320153869b175e0' },
           body: {
@@ -561,13 +560,13 @@ describe('API tests', function() {
             'interview': { 'score': 97, 'date': '23 Mar 2013' }
           }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert.equal(data.weight, 124);
             assert.equal(data.passwordHash, undefined);
             assert.equal(data.interview.score, 97);
             assert.equal(data.interview.interviewHash, undefined);
-            var resource = fng.getResource('c_subdoc_example');
+            const resource = fngInstance.getResource('c_subdoc_example');
             resource.model.findById('519aaaaab320153869b175e0', function(err, dataOnDisk) {
               if (err) {
                 throw err;
@@ -580,22 +579,22 @@ describe('API tests', function() {
             });
           }
         };
-        fng.entityPut()(mockReq, mockRes);
+        fngInstance.entityPut()(mockReq, mockRes);
       });
     });
 
     describe('Filtering records', function() {
 
-      var id;
+      let id;
 
       it('should create a record', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/b_using_options',
           params: { resourceName: 'b_using_options' },
           body: { 'surname': 'TestCreate', 'forename': 'Alice', 'accepted': false },
           ip: '192.168.99.99'
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert(data._id, 'Must return the id');
             id = data._id;
@@ -605,16 +604,16 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.collectionPost()(mockReq, mockRes);
+        fngInstance.collectionPost()(mockReq, mockRes);
       });
 
       it('should not update a record', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/b_using_options/' + id,
           params: { resourceName: 'b_using_options', id: id },
           body: { 'forename': 'Alfie' }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 404);
             return this;
@@ -624,15 +623,15 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.entityPut()(mockReq, mockRes);
+        fngInstance.entityPut()(mockReq, mockRes);
       });
 
       it('should not delete a record', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/b_using_options/' + id,
           params: { resourceName: 'b_using_options', id: id }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 404);
             return this;
@@ -642,7 +641,7 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.entityDelete()(mockReq, mockRes);
+        fngInstance.entityDelete()(mockReq, mockRes);
       });
 
     });
@@ -650,13 +649,13 @@ describe('API tests', function() {
     describe('Search API', function() {
 
       it('should find a single match', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'IsAccepted1'
           }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 200);
             return this;
@@ -666,17 +665,17 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       it('should find two matches', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'Test'
           }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 200);
             return this;
@@ -686,51 +685,51 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
 
       it('should not find records that do not meet find function', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'Jones'
           }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert.equal(data.results.length, 0);
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       it('should not find records indexed on a no-search field', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'ReportingIndex'
           }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert.equal(data.results.length, 0);
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
 
       it('should support searchOrder option', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'Smi'
           }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 200);
             return this;
@@ -743,17 +742,17 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       it('should find a record from a partial initial string', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'ann'
           }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 200);
             return this;
@@ -767,18 +766,18 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       it('should find a record from multiple partial initial strings', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'smi john04'
           },
           route: { path: '/api/search' }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 200);
             return this;
@@ -790,21 +789,21 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       /*
         Thought about doing this, but decided it would make it too complicated for users
        */
       it.skip('should find only records that match all partial initial strings concatenated by &', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'smi&john04'
           },
           route: { path: '/api/search' }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert.notEqual(data.moreCount, 0);
             assert.equal(data.results.length, 1);
@@ -812,18 +811,18 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       it('should not repeat a record in the results', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'smith04 john04'
           },
           route: { path: '/api/search' }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 200);
             return this;
@@ -834,18 +833,18 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       it('should support searchResultFormat option', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/search',
           query: {
             q: 'Br'
           },
           route: { path: '/api/search' }
         };
-        var mockRes = {
+        const mockRes = {
           status: function(code) {
             assert.strictEqual(code, 200);
             return this;
@@ -858,7 +857,7 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       it('will select from a given collection if specified', (done) => {
@@ -882,7 +881,7 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       it.only('will select from a synonym collection if specified', (done) => {
@@ -906,7 +905,7 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.searchAll()(mockReq, mockRes);
+        fngInstance.searchAll()(mockReq, mockRes);
       });
 
       it('will select from a filtered synonym collection if specified');
@@ -916,31 +915,31 @@ describe('API tests', function() {
     describe('MongoDB selection', function() {
 
       it('Should filter', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/f_nested_schema',
           query: {
             f: '{"exams.subject":"Physics"}'
           },
           params: { resourceName: 'f_nested_schema' }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert.equal(data.length, 1);
             done();
           }
         };
-        fng.collectionGet()(mockReq, mockRes);
+        fngInstance.collectionGet()(mockReq, mockRes);
       });
 
       it('Should aggregate and return appropriate records', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/api/f_nested_schema',
           query: {
             a: '[{"$unwind":"$exams"},{"$sort":{"exams.score":1}},{"$group":{"_id":{"id":"$_id"},"bestSubject":{"$last":"$exams.subject"}}},{"$match":{"bestSubject":"English"}},{"$project":{"_id":"$_id.id"}}]'
           },
           params: { resourceName: 'f_nested_schema' }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert.equal(data.length, 2);
             assert.notEqual(null, data.find(function(obj) {
@@ -952,11 +951,11 @@ describe('API tests', function() {
             done();
           }
         };
-        fng.collectionGet()(mockReq, mockRes);
+        fngInstance.collectionGet()(mockReq, mockRes);
       });
 
       it('Should combine aggregation and filtering', function(done) {
-        var mockReq = {
+        const mockReq = {
           url: '/api/f_nested_schema',
           query: {
             f: '{"_id":"51c583d5b5c51226db418f15"}',
@@ -966,14 +965,14 @@ describe('API tests', function() {
           },
           params: { resourceName: 'f_nested_schema' }
         };
-        var mockRes = {
+        const mockRes = {
           send: function(data) {
             assert.equal(data.length, 1);
             assert.equal(data[0].forename, 'John');
             done();
           }
         };
-        fng.collectionGet()(mockReq, mockRes);
+        fngInstance.collectionGet()(mockReq, mockRes);
       });
     });
 
@@ -982,45 +981,45 @@ describe('API tests', function() {
   describe('List API', function () {
 
     it('returns explicit list fields', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: '/api/c_subdoc_example/519aaaaab320153869b175e0/list',
         params: {resourceName: 'c_subdoc_example', id: '519aaaaab320153869b175e0'}
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.list, 'Anderson John');
           done();
         }
       };
-      fng.entityList()(mockReq, mockRes);
+      fngInstance.entityList()(mockReq, mockRes);
     });
 
     it('returns hidden list fields', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: '/api/b_using_options/519a6075b320153869b175e0/list',
         params: {resourceName: 'b_using_options', id: '519a6075b320153869b175e0'}
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.list, 'IsAccepted1 John true 89');
           done();
         }
       };
-      fng.entityList()(mockReq, mockRes);
+      fngInstance.entityList()(mockReq, mockRes);
     });
 
     it('returns first string field if no explicit list fields', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: '/api/a_unadorned_mongoose/519a6075b320153869b17599/list',
         params: {resourceName: 'a_unadorned_mongoose', id: '519a6075b320153869b17599'}
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.list, 'TestPerson1');
           done();
         }
       };
-      fng.entityList()(mockReq, mockRes);
+      fngInstance.entityList()(mockReq, mockRes);
     });
 
     it('returns looked up fields', function() {
@@ -1036,8 +1035,8 @@ describe('API tests', function() {
   describe('mongoose collection name API', function () {
 
     it('returns models', function () {
-      var mockReq = null;
-      var mockRes = {
+      const mockReq = null;
+      const mockRes = {
         send: function (models) {
           assert.equal(models.length, 11);
           assert(_.find(models, function (resource) {
@@ -1045,14 +1044,14 @@ describe('API tests', function() {
           }).options.hide.indexOf('login') > -1, 'must send login as a hidden field');
         }
       };
-      fng.models()(mockReq, mockRes);
+      fngInstance.models()(mockReq, mockRes);
     });
 
     it('returns straight schema', function (done) {
-      var mockReq = {params : {resourceName: 'a_unadorned_mongoose'}};
-      var mockRes = {
+      const mockReq = {params : {resourceName: 'a_unadorned_mongoose'}};
+      const mockRes = {
         send: function (schema) {
-          var keys = Object.keys(schema);
+          let keys = Object.keys(schema);
           assert.equal(keys.length, 8);
           assert.equal(schema[keys[0]].path, 'surname');
           assert.equal(schema[keys[1]].path, 'forename');
@@ -1065,7 +1064,7 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.schema()(mockReq, mockRes);
+      fngInstance.schema()(mockReq, mockRes);
     });
 
   });
@@ -1073,48 +1072,48 @@ describe('API tests', function() {
   describe('Report API', function () {
 
     it('handles pipeline request', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: '/report/g_conditional_fields',
         query: {r:'{"pipeline":{"$group":{"_id":"x","count":{"$sum":1}}}}'},
         params: {resourceName: 'g_conditional_fields'}
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 1);
           assert.deepEqual(data.report[0], {_id: 'x', count: 17});
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('handles complex pipeline request', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: 'report/e_referencing_another_collection',
         query: {r:'{"pipeline":[{"$group":{"_id":"$teacher","count":{"$' +
           'sum":1}}}],"title":"Class Sizes","columnDefs":[{"field":"_id","displayName":"Teacher"},{"field":"' +
           'count","displayName":"Number in Class"}],"columnTranslations":[{"field":"_id","ref":"b_using_options"}]}'},
         params: {resourceName: 'e_referencing_another_collection'}
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 1);
           assert.deepEqual(data.report[0], {_id: 'IsAccepted2 Johan true 89', count: 1});
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('looks up schema and does a simple translate', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: 'report/g_conditional_fields/breakdownbysex',
         params : {
           resourceName: 'g_conditional_fields',
           reportName: 'breakdownbysex'
         }
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 2);
           assert.deepEqual(data.report[0], {_id: 'Female', count: 11});
@@ -1122,21 +1121,21 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('supports two reference lookups', function (done) {
-      var reportSpec = {
+      const reportSpec = {
         'pipeline': [{'$project': {'surname': 1, 'forename': 1, 'teacher': 1, 'mentor': 1}}],
         'title': 'Class Sizes',
         'columnTranslations': [{'field': 'teacher', 'ref': 'b_using_options'}, {'field': 'mentor', 'ref': 'c_subdoc_example'}]
       };
-      var mockReq = {
+      const mockReq = {
         url: 'report/e_referencing_another_collection',
         query: {r : JSON.stringify(reportSpec)},
         params: {resourceName: 'e_referencing_another_collection'}
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 1);
           assert.equal(data.report[0].surname, 'Smith');
@@ -1146,18 +1145,18 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('supports functions in column translate', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: 'report/g_conditional_fields/functiondemo',
         params : {
           resourceName: 'g_conditional_fields',
           reportName: 'functiondemo'
         }
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 2);
           assert.deepEqual(data.report[0], {_id: 'Female', count: 11, functionResult: 21});
@@ -1165,29 +1164,29 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('looks up schema and does a table lookup', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: 'report/e_referencing_another_collection/class-sizes',
         params : {
           resourceName: 'e_referencing_another_collection',
           reportName: 'class-sizes'
         }
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 1);
           assert.deepEqual(data.report[0], {_id: 'IsAccepted2 Johan true 89', count: 1});
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('handles invalid lookup table error', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: 'report/e_referencing_another_collection',
         query: {r: '{"pipeline":[{"$group":{"' +
           '_id":"$teacher","count":{"$sum":1}}}],"title":"Class Sizes","columnDefs' +
@@ -1196,35 +1195,35 @@ describe('API tests', function() {
           '"}]}'},
         params : {resourceName: 'g_conditional_fields'}
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data, 'Invalid ref property of b_usissng_options in columnTranslations _id');
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('supports selection by text parameter', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: 'report/g_conditional_fields/totalforonesex',
         params : {
           resourceName: 'g_conditional_fields',
           reportName: 'totalforonesex'
         }
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 1);
           assert.deepEqual(data.report[0], {_id: 'Male', count: 6});
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('supports selection by query text parameter', function (done) {
-      var mockReq = {
+      const mockReq = {
         query: {sex: 'F'},
         url: 'report/g_conditional_fields/totalforonesex',
         params : {
@@ -1232,18 +1231,18 @@ describe('API tests', function() {
           reportName: 'totalforonesex'
         }
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 1);
           assert.deepEqual(data.report[0], {_id: 'Female', count: 11});
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('supports selection by numeric parameter', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: 'report/g_conditional_fields/selectbynumber',
         query:{
           number_param:11
@@ -1253,36 +1252,36 @@ describe('API tests', function() {
           reportName: 'selectbynumber'
         }
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 1);
           assert.deepEqual(data.report[0], {_id: 'F', count: 11});
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('honours findfunc', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: 'report/b_using_options/allVisible',
         params : {
           resourceName: 'b_using_options',
           reportName: 'allVisible'
         }
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 1);
           assert.deepEqual(data.report[0], {_id: true, count: 2});
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('prevents access to secure fields', function (done) {
-      var mockReq = {
+      const mockReq = {
         url: 'report/b_using_options',
         query: {
           r: '[{"$project":{"passwordHash":true, "surname": true}}]'
@@ -1291,7 +1290,7 @@ describe('API tests', function() {
           resourceName: 'b_using_options'
         }
       };
-      var mockRes = {
+      const mockRes = {
         send: function (data) {
           assert.equal(data.report.length, 2);
           assert.strictEqual(typeof data.report[0].passwordHash, "undefined");
@@ -1301,7 +1300,7 @@ describe('API tests', function() {
           done();
         }
       };
-      fng.report()(mockReq, mockRes);
+      fngInstance.report()(mockReq, mockRes);
     });
 
     it('supports lookups where the list item is a lookup', function() {
