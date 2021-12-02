@@ -1,6 +1,6 @@
 import { FormsAngular } from "../../src/server/data_form";
 const express = require("express");
-const async = require("async");
+const asyncLib = require("async");
 const path = require("path");
 const fs = require("fs");
 const exec = require("child_process").exec;
@@ -25,10 +25,12 @@ module.exports = {
       // Import test data
       const dataPath = path.join(__dirname, "../api/data");
       fs.readdir(dataPath, function(err, files) {
-        async.each(files, function(file, cb2) {
+
+        function importData(file, cb2) {
           const fname = dataPath + "/" + file;
           if (fs.statSync(fname).isFile()) {
-            const command = "mongoimport --db forms-ng_test --drop --collection " + file.slice(0, 1) + "s --jsonArray < " + fname;                  exec(command, function(error, stdout, stderr) {
+            const command = "mongoimport --db forms-ng_test --drop --collection " + file.slice(0, 1) + "s --jsonArray < " + fname;
+            exec(command, function(error, stdout, stderr) {
               if (error !== null) {
                 cb2(new Error("Error executing " + command + " : " + error + " (Code = " + error.code + "    " + error.signal + ") : " + stderr + " : " + stdout));
               } else {
@@ -36,20 +38,23 @@ module.exports = {
               }
             });
           }
-        }, function(err) {
+        }
+
+        asyncLib.each(files, importData, function(err) {
           if (err) {
             throw new Error(err);
           } else {
             // Bootstrap models
             const modelsPath = path.join(__dirname, "../api/models");
             fs.readdir(modelsPath, function(err, files) {
-              async.each(files, function(file, cb2) {
+              function addAResource(file, cb3) {
                 const fname = modelsPath + "/" + file;
                 if (fs.statSync(fname).isFile()) {
                   fng.addResource(file.slice(0, -3), require(fname), { suppressDeprecatedMessage: true });
                 }
-                cb2();
-              }, function(err) {
+                cb3();
+              }
+              asyncLib.each(files, addAResource, function(err) {
                 if (err) {
                   throw new Error(err);
                 } else {

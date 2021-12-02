@@ -837,7 +837,6 @@ describe('API tests', function() {
         fng.searchAll()(mockReq, mockRes);
       });
 
-
       it('should support searchResultFormat option', function(done) {
         var mockReq = {
           url: '/search',
@@ -861,6 +860,57 @@ describe('API tests', function() {
         };
         fng.searchAll()(mockReq, mockRes);
       });
+
+      it('will select from a given collection if specified', (done) => {
+        const mockReq = {
+          url: '/search',
+          query: {
+            q: 'f_nested_schema:a'
+          },
+          route: { path: '/api/search' }
+        };
+        const mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
+          send: function(data) {
+            assert.equal(data.results.length, 1);
+            assert.equal(data.results[0].resourceText, 'Exams');
+            assert.equal(data.results[0].resource, 'f_nested_schema');
+            assert.equal(data.results[0].text, 'Smith, Anne');
+            done();
+          }
+        };
+        fng.searchAll()(mockReq, mockRes);
+      });
+
+      it.only('will select from a synonym collection if specified', (done) => {
+        const mockReq = {
+          url: '/search',
+          query: {
+            q: 'Exams:a'
+          },
+          route: { path: '/api/search' }
+        };
+        const mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
+          send: function(data) {
+            assert.equal(data.results.length, 1);
+            assert.equal(data.results[0].resourceText, ' ');
+            assert.equal(data.results[0].resource, 'f_nested_schema');
+            assert.equal(data.results[0].text, 'Smith, Anne');
+            done();
+          }
+        };
+        fng.searchAll()(mockReq, mockRes);
+      });
+
+      it('will select from a filtered synonym collection if specified');
+
     });
 
     describe('MongoDB selection', function() {
