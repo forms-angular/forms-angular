@@ -43,8 +43,12 @@ F.prototype.searchResultFormat = function (req) {
     weighting: weighting,
     text: this.surname + (this.forename ? ', ' + this.forename : '')
   };
-  if (req.query && req.query.q && req.query.q.length > 0 && req.query.q.slice(0,6).toLowerCase() === 'exams:') {
-    retVal.resourceText = ' ';
+  if (req.query && req.query.q && req.query.q.length > 0) {
+    if (req.query.q.slice(0, 6).toLowerCase() === 'exams:') {
+      retVal.resourceText = ' ';
+    } else if (req.query.q.slice(0, 8).toLowerCase() === 'retakes:') {
+      retVal.resourceText = 'Retakes';
+    }
   }
   return Promise.resolve(retVal);
 };
@@ -88,7 +92,7 @@ FSchema.statics.form = function (layout) {
 
 module.exports = {
   model: F,
-  synonyms: [{name: 'Exams'}],
+  synonyms: [{name:'exams'}, {name: 'retakes', filter:{'exams.result':'fail'}}],
   searchResultFormat: F.prototype.searchResultFormat
 };
 

@@ -884,7 +884,7 @@ describe('API tests', function() {
         fngInstance.searchAll()(mockReq, mockRes);
       });
 
-      it.only('will select from a synonym collection if specified', (done) => {
+      it('will select from a synonym collection if specified', (done) => {
         const mockReq = {
           url: '/search',
           query: {
@@ -908,7 +908,29 @@ describe('API tests', function() {
         fngInstance.searchAll()(mockReq, mockRes);
       });
 
-      it('will select from a filtered synonym collection if specified');
+      it('will select from a filtered synonym collection if specified', (done) => {
+        const mockReq = {
+          url: '/search',
+          query: {
+            q: 'Retakes:'
+          },
+          route: { path: '/api/search' }
+        };
+        const mockRes = {
+          status: function(code) {
+            assert.strictEqual(code, 200);
+            return this;
+          },
+          send: function(data) {
+            assert.equal(data.results.length, 1);
+            assert.equal(data.results[0].resource, 'f_nested_schema');
+            assert.equal(data.results[0].text, 'Brown, Jenny');
+            assert.equal(data.results[0].resourceText, 'Retakes');
+            done();
+          }
+        };
+        fngInstance.searchAll()(mockReq, mockRes);
+      });
 
     });
 

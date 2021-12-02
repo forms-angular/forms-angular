@@ -303,8 +303,15 @@ export class FormsAngular {
                 if (indexedFields.length === 0) {
                     console.log('ERROR: Searching on a collection with no indexes ' + resource.resourceName);
                 }
+
+                let synonymObj = resource.options?.synonyms?.find(s => s.name.toLowerCase() === collectionNameLower);
+                const synonymFilter = synonymObj?.filter;
                 for (let m = 0; m < indexedFields.length; m++) {
-                    searches.push({resource: resource, field: indexedFields[m]});
+                    let searchObj: {resource: Resource, field: string, filter?: any} = {resource: resource, field: indexedFields[m]}
+                    if (synonymFilter) {
+                        searchObj.filter = synonymFilter;
+                    }
+                    searches.push(searchObj);
                 }
             }
         }
@@ -435,13 +442,14 @@ export class FormsAngular {
             searches,
             function (item, cb) {
                 let searchDoc = {};
-                if (filter) {
-                    that.hackVariables(filter);
-                    extend(searchDoc, filter);
-                    if (filter[item.field]) {
+                let searchFilter = filter || item.filter;
+                if (searchFilter) {
+                    that.hackVariables(searchFilter);
+                    extend(searchDoc, searchFilter);
+                    if (searchFilter[item.field]) {
                         delete searchDoc[item.field];
                         let obj1 = {}, obj2 = {};
-                        obj1[item.field] = filter[item.field];
+                        obj1[item.field] = searchFilter[item.field];
                         obj2[item.field] = searchCriteria;
                         searchDoc['$and'] = [obj1, obj2];
                     } else {

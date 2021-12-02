@@ -122,7 +122,7 @@ const resourceExport: ResourceExport = {
   model: F,
   options: {
     searchResultFormat: F.prototype.searchResultFormat,
-    synonyms: ['exams'],
+    synonyms: [{name:'exams'}, {name: 'retakes', filter:{'exams.result':'fail'}}],
   }
 };
 
