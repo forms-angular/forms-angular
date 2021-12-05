@@ -281,7 +281,7 @@ export class FormsAngular {
         }
         for (let i = 0; i < resourceCount; i++) {
             let resource = resourcesToSearch[i];
-            if (resourceCount === 1 || (resource.options.searchImportance !== false && (!collectionName || collectionName === resource.resourceName || resource.options?.synonyms?.find(s => s.name.toLowerCase() === collectionNameLower)))) {
+            if (resourceCount === 1 || (resource.options.searchImportance !== false && (!collectionName || collectionName === resource.resourceName || resource.options?.synonyms?.find(s => s.name?.toLowerCase() === collectionNameLower)))) {
                 let schema = resource.model.schema;
                 let indexedFields = [];
                 for (let j = 0; j < schema._indexes.length; j++) {
