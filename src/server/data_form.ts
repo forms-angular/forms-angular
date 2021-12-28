@@ -790,6 +790,20 @@ export class FormsAngular {
                 case '$merge':
                 case '$out':
                     throw new Error('Cannot use potentially destructive pipeline stages')
+                case '$unionWith':
+                    /*
+                        Sanitise the pipeline we are doing a union with, removing hidden fields from that collection
+                     */
+                    const unionCollectionName = stage.$unionWith.coll;
+                    const unionResource = that.getResourceFromCollection(unionCollectionName);
+                    let unionHiddenLookupFields = {};
+                    if (unionResource) {
+                        if (unionResource.options?.hide?.length > 0) {
+                            unionHiddenLookupFields = this.generateHiddenFields(unionResource, false);
+                        }
+                    }
+                    stage.$unionWith.pipeline = that.sanitisePipeline(stage.$unionWith.pipeline, unionHiddenLookupFields, findFuncQry);
+                    break;
                 case '$match':
                     this.hackVariables(array[pipelineSection]['$match']);
                     retVal.push(array[pipelineSection]);
