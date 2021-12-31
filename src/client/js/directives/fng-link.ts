@@ -63,12 +63,16 @@ module fng.directives {
           }
           let attrib = attrs['fld'];
           var watchExpression;
-          if ((scope.$parent as any).subDoc && (scope.$parent as any).subDoc[attrib]) {
+          var splitAttrib = attrib.split('.');
+          if ((scope.$parent as any).subDoc && ((scope.$parent as any).subDoc[attrib] || (scope.$parent as any).subDoc[splitAttrib[splitAttrib.length-1]])) {
             // Support for use in directives in arrays
-            watchExpression = workString + 'subDoc.' + attrib;
+            if ((scope.$parent as any).subDoc[attrib]) {
+              watchExpression = workString + 'subDoc.' + attrib;
+            } else {
+              watchExpression = workString + 'subDoc.' + splitAttrib[splitAttrib.length-1];
+            }
           } else {
             if (typeof workScope['$index'] !== "undefined") {
-              var splitAttrib = attrib.split('.');
               attrib = splitAttrib.pop();
               attrib = splitAttrib.join('.') + '[' + workScope['$index'] + '].' + attrib;
             } else {
