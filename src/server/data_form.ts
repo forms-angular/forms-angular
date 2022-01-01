@@ -1126,7 +1126,7 @@ export class FormsAngular {
                     }
                 });
             } catch (e) {
-                res.send(e);
+                res.status(400).send(e.message);
             }
         }, this);
     };
