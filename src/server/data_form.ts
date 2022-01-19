@@ -325,6 +325,13 @@ export class FormsAngular {
             // interpret this as a wildcard (so there is no way to search for ?
             searchCriteria = null;
         } else {
+            // Support for searching anywhere in a field by starting with *
+            let startAnchor = '^';
+            if (searchFor.slice(0,1) === '*') {
+                startAnchor = '';
+                searchFor = searchFor.slice(1)
+            }
+
             // THe snippet to escape the special characters comes from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
             searchFor = searchFor.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
             multiMatchPossible = searchFor.includes(' ');
@@ -335,7 +342,7 @@ export class FormsAngular {
             searchFor = searchFor.toLowerCase();   // For later case-insensitive comparison
 
             // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
-            searchCriteria = {$regex: '^(' + modifiedSearchStr + ')', $options: 'i'};
+            searchCriteria = {$regex: `${startAnchor}(${modifiedSearchStr})`, $options: 'i'};
         }
 
         let handleSearchResultsFromIndex = function (err, docs, item, cb) {
