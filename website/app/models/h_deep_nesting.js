@@ -38,10 +38,10 @@ var HSchemaDef = {
 var HSchema = new mongoose_1.Schema(HSchemaDef);
 var H;
 try {
-    H = mongoose_1.model('h_deep_nesting');
+    H = (0, mongoose_1.model)('h_deep_nesting');
 }
 catch (e) {
-    H = mongoose_1.model('h_deep_nesting', HSchema);
+    H = (0, mongoose_1.model)('h_deep_nesting', HSchema);
 }
 module.exports = {
     model: H

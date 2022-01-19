@@ -23,10 +23,10 @@ var GSchemaDef = {
 var GSchema = new mongoose_1.Schema(GSchemaDef);
 var G;
 try {
-    G = mongoose_1.model('g_conditional_field');
+    G = (0, mongoose_1.model)('g_conditional_field');
 }
 catch (e) {
-    G = mongoose_1.model('g_conditional_field', GSchema);
+    G = (0, mongoose_1.model)('g_conditional_field', GSchema);
 }
 GSchema.statics.report = function (report) {
     var reportSchema = '', fullDescription = { field: '_id', translations: [{ value: 'M', display: 'Male' }, { value: 'F', display: 'Female' }, { 'value': '', 'display': 'Unspecified' }] };

@@ -17,10 +17,10 @@ var TestNestedSelectSchemaDef = {
 var TestNestedSelectSchema = new mongoose_1.Schema(TestNestedSelectSchemaDef);
 var N;
 try {
-    N = mongoose_1.model('test_nested_select');
+    N = (0, mongoose_1.model)('test_nested_select');
 }
 catch (e) {
-    N = mongoose_1.model('test_nested_select', TestNestedSelectSchema);
+    N = (0, mongoose_1.model)('test_nested_select', TestNestedSelectSchema);
 }
 module.exports = {
     model: N

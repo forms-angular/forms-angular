@@ -96,10 +96,10 @@ BSchema.pre('save', function (next) {
 });
 var B;
 try {
-    B = mongoose_1.model('b_enhanced_schema');
+    B = (0, mongoose_1.model)('b_enhanced_schema');
 }
 catch (e) {
-    B = mongoose_1.model('b_enhanced_schema', BSchema);
+    B = (0, mongoose_1.model)('b_enhanced_schema', BSchema);
 }
 // Alternative form schemas can be defined as shown below
 BSchema.statics.form = function (layout) {

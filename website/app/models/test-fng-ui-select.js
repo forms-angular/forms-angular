@@ -21,10 +21,10 @@ var TestFngUiSelectSchemaDef = {
 var TestFngUiSelectSchema = new mongoose_1.Schema(TestFngUiSelectSchemaDef);
 var E;
 try {
-    E = mongoose_1.model('test_fng_ui_select');
+    E = (0, mongoose_1.model)('test_fng_ui_select');
 }
 catch (e) {
-    E = mongoose_1.model('test_fng_ui_select', TestFngUiSelectSchema);
+    E = (0, mongoose_1.model)('test_fng_ui_select', TestFngUiSelectSchema);
 }
 module.exports = {
     model: E

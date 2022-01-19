@@ -11,10 +11,10 @@ var LSchema = new mongoose_1.Schema(LSchemaDef);
 var L;
 var name = 'l_referencing_list_in_other_document';
 try {
-    L = mongoose_1.model(name);
+    L = (0, mongoose_1.model)(name);
 }
 catch (e) {
-    L = mongoose_1.model(name, LSchema);
+    L = (0, mongoose_1.model)(name, LSchema);
 }
 module.exports = {
     model: L

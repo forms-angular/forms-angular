@@ -23,10 +23,10 @@ var KSchema = new mongoose_1.Schema(KSchemaDef);
 var K;
 var name = 'k_referencing_self_collection';
 try {
-    K = mongoose_1.model(name);
+    K = (0, mongoose_1.model)(name);
 }
 catch (e) {
-    K = mongoose_1.model(name, KSchema);
+    K = (0, mongoose_1.model)(name, KSchema);
 }
 module.exports = {
     model: K

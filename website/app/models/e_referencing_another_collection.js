@@ -19,10 +19,10 @@ var eSchemaDef = {
 var ESchema = new mongoose_1.Schema(eSchemaDef);
 var E;
 try {
-    E = mongoose_1.model('e_referencing_another_collection');
+    E = (0, mongoose_1.model)('e_referencing_another_collection');
 }
 catch (e) {
-    E = mongoose_1.model('e_referencing_another_collection', ESchema);
+    E = (0, mongoose_1.model)('e_referencing_another_collection', ESchema);
 }
 ESchema.statics.report = function (report) {
     var reportSchema = '';

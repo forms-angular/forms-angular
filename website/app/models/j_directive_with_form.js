@@ -15,10 +15,10 @@ var JSchemaDef = {
 var JSchema = new mongoose_1.Schema(JSchemaDef);
 var J;
 try {
-    J = mongoose_1.model('j_directive_with_form');
+    J = (0, mongoose_1.model)('j_directive_with_form');
 }
 catch (e) {
-    J = mongoose_1.model('j_directive_with_form', JSchema);
+    J = (0, mongoose_1.model)('j_directive_with_form', JSchema);
 }
 module.exports = {
     model: J

@@ -19,11 +19,11 @@ var ASchema = new mongoose_1.Schema(aSchemaDef);
 // });
 var A;
 try {
-    A = mongoose_1.model('a_unadorned_schema');
+    A = (0, mongoose_1.model)('a_unadorned_schema');
 }
 catch (e) {
     ASchema.plugin(fngAudit.plugin, {});
-    A = mongoose_1.model('a_unadorned_schema', ASchema);
+    A = (0, mongoose_1.model)('a_unadorned_schema', ASchema);
 }
 module.exports = {
     model: A

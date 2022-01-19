@@ -29,10 +29,10 @@ var TestDatePickerSchemaDef = {
 var TestDatePickerSchema = new mongoose_1.Schema(TestDatePickerSchemaDef);
 var E;
 try {
-    E = mongoose_1.model('test_date_picker');
+    E = (0, mongoose_1.model)('test_date_picker');
 }
 catch (e) {
-    E = mongoose_1.model('test_date_picker', TestDatePickerSchema);
+    E = (0, mongoose_1.model)('test_date_picker', TestDatePickerSchema);
 }
 module.exports = {
     model: E

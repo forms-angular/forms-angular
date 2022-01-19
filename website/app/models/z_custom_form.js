@@ -11,10 +11,10 @@ var ZSchemaDef = {
 var ZSchema = new mongoose_1.Schema(ZSchemaDef);
 var Z;
 try {
-    Z = mongoose_1.model('z_custom_form');
+    Z = (0, mongoose_1.model)('z_custom_form');
 }
 catch (e) {
-    Z = mongoose_1.model('z_custom_form', ZSchema);
+    Z = (0, mongoose_1.model)('z_custom_form', ZSchema);
 }
 module.exports = {
     model: Z

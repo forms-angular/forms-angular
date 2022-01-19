@@ -25,18 +25,22 @@ try {
 catch (e) {
     F = (0, mongoose_1.model)('f_nested_schema', FSchema);
 }
-F.prototype.searchResultFormat = function () {
+F.prototype.searchResultFormat = function (req) {
     // You can set up a function to modify search result display and the
     // ordering within a collection
     var weighting;
     weighting = this.forename === 'John' ? 2 : 3;
-    return {
+    var retVal = {
         resource: 'f_nested_schema',
         resourceText: 'Exams',
         id: this._id,
         weighting: weighting,
         text: this.surname + (this.forename ? ', ' + this.forename : '')
     };
+    if (req.query && req.query.q && req.query.q.length > 0 && req.query.q.slice(0, 6).toLowerCase() === "exams:") {
+        retVal.resourceText = '';
+    }
+    return Promise.resolve(retVal);
 };
 FSchema.statics.form = function (layout) {
     var formSchema = '';
@@ -103,11 +107,12 @@ FSchema.statics.form = function (layout) {
     }
     return formSchema;
 };
-module.exports = {
+var resourceExport = {
     model: F,
     options: {
         searchResultFormat: F.prototype.searchResultFormat,
-        synonyms: ['exams'],
+        synonyms: [{ name: 'exams' }, { name: 'retakes', filter: { 'exams.result': 'fail' } }],
     }
 };
+module.exports = resourceExport;
 //# sourceMappingURL=f_nested_schema.js.map

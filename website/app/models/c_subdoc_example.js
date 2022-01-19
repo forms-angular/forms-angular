@@ -18,10 +18,10 @@ var cSchemaDef = {
 var CSchema = new mongoose_1.Schema(cSchemaDef);
 var C;
 try {
-    C = mongoose_1.model('c_subdoc_example');
+    C = (0, mongoose_1.model)('c_subdoc_example');
 }
 catch (e) {
-    C = mongoose_1.model('c_subdoc_example', CSchema);
+    C = (0, mongoose_1.model)('c_subdoc_example', CSchema);
 }
 module.exports = {
     model: C

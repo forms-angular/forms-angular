@@ -19,10 +19,10 @@ var dSchemaDef = { surname: { type: String, list: {} },
 var DSchema = new mongoose_1.Schema(dSchemaDef);
 var D;
 try {
-    D = mongoose_1.model('d_array_example');
+    D = (0, mongoose_1.model)('d_array_example');
 }
 catch (e) {
-    D = mongoose_1.model('d_array_example', DSchema);
+    D = (0, mongoose_1.model)('d_array_example', DSchema);
 }
 module.exports = {
     model: D

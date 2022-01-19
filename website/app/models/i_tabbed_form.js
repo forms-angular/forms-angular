@@ -20,10 +20,10 @@ var ISchemaDef = {
 var ISchema = new mongoose_1.Schema(ISchemaDef);
 var I;
 try {
-    I = mongoose_1.model('i_tabbed_form');
+    I = (0, mongoose_1.model)('i_tabbed_form');
 }
 catch (e) {
-    I = mongoose_1.model('i_tabbed_form', ISchema);
+    I = (0, mongoose_1.model)('i_tabbed_form', ISchema);
 }
 module.exports = {
     model: I
