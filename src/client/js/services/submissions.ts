@@ -1,10 +1,46 @@
 /// <reference path="../../../../node_modules/@types/angular/index.d.ts" />
+class ExpirationCache {
+  private store;
+  private timeout;
+
+  constructor(timeout = 60 * 1000) {
+    this.store = new Map();
+    this.timeout = timeout;
+  }
+
+  get(key) {
+    // this.store.has(key) ? console.log(`cache hit`) : console.log(`cache miss`);
+    return this.store.get(key);
+  }
+
+  put(key, val) {
+    this.store.set(key, val);
+    // remove it once it's expired
+    setTimeout(() => {
+      // console.log(`removing expired key ${key}`);
+      this.remove(key);
+    }, this.timeout);
+  }
+
+  remove(key) {
+    this.store.delete(key);
+  }
+
+  removeAll() {
+    this.store = new Map();
+  }
+
+  delete() {
+    //no op here because this is standalone, not a part of $cacheFactory
+  }
+}
 
 module fng.services {
 
   /*@ngInject*/
-  export function SubmissionsService($http, $cacheFactory) {
+  export function SubmissionsService($http) {
     let useCacheForGetAll = true;
+    const expCache = new ExpirationCache();
     /*
      generate a query string for a filtered and paginated query for submissions.
      options consists of the following:
@@ -66,7 +102,7 @@ module fng.services {
 //         };
 //       },
       getListAttributes: function (ref: string, id) {
-        return $http.get('/api/' + ref + '/' + id + '/list');
+        return $http.get('/api/' + ref + '/' + id + '/list', {cache: expCache});
       },
       readRecord: function (modelName, id): Promise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
@@ -82,7 +118,7 @@ module fng.services {
       },
       getAll: function (modelName, _options) {
         var options = angular.extend({
-          cache: useCacheForGetAll
+          cache: useCacheForGetAll ? expCache : false
         }, _options);
         return $http.get('/api/' + modelName, options);
       },
@@ -93,21 +129,21 @@ module fng.services {
         return $http.delete('/api/' + model + '/' + id);
       },
       updateRecord: function (modelName, id, dataToSave) {
-        $cacheFactory.get('$http').remove('/api/' + modelName);
+        expCache.remove('/api/' + modelName);
         return $http.post('/api/' + modelName + '/' + id, dataToSave);
       },
       createRecord: function (modelName, dataToSave) {
-        $cacheFactory.get('$http').remove('/api/' + modelName);
+        expCache.remove('/api/' + modelName);
         return $http.post('/api/' + modelName, dataToSave);
       },
       useCache: function(val: boolean) {
         useCacheForGetAll = val;
       },
       getCache: function(): boolean {
-        return !!$cacheFactory.get('$http')
+        return !!expCache;
       },
       clearCache: function() {
-        $cacheFactory.get('$http').removeAll();
+        expCache.removeAll();
       }
     };
   }
