@@ -54,7 +54,7 @@
   },
   "peerDependencies": {
     "express": "^4",
-    "mongoose": "^5.10"
+    "mongoose": "^6.1.8"
   },
   "devDependencies": {
     "@types/angular": "1.8.3",
