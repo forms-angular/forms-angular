@@ -609,9 +609,9 @@ module fng.services {
             }
           }
           if (errorMessage.length > 0) {
-            errorMessage = response.data.message + "<br /><ul>" + errorMessage + "</ul>";
+            errorMessage = (response.data.message || response.data._message) + "<br /><ul>" + errorMessage + "</ul>";
           } else {
-            errorMessage = response.data.message || response.data.err || "Error!  Sorry - No further details available.";
+            errorMessage = response.data.message || response.data._message || response.data.err || "Error!  Sorry - No further details available.";
           }
           $scope.showError(errorMessage);
         } else {
