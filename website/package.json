@@ -95,7 +95,7 @@
     "grunt-wiredep": "3.0.1",
     "jit-grunt": "0.10.0",
     "jshint-stylish": "2.2.1",
-    "karma": "6.3.6",
+    "karma": "6.3.14",
     "karma-chrome-launcher": "3.1.0",
     "karma-html2js-preprocessor": "1.1.0",
     "karma-jade-preprocessor": "0.0.11",
