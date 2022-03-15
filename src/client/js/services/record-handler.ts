@@ -1293,13 +1293,7 @@ module fng.services {
           if (!data) {
             return;
           }
-          if (angular.isArray(data)) {
-            for (let i = 0; i < data.length; i++) {
-              data[i] = convertIdToListValue(data[i], ids, options, schemaElement.name);
-            }
-          } else {
-            data = convertIdToListValue(data, ids, options, schemaElement.name);
-          }
+          data = convertForeignKeys(schemaElement, data, options, ids);
           setData($scope.record, schemaElement.name, undefined, data);
         }        
       },
