@@ -314,9 +314,9 @@ module fng.services {
 
 // No support for nested schemas here as it is called from convertToAngularModel which does that
     function convertForeignKeys(schemaElement, input, values, ids) {
-      if (schemaElement.array) {
+      if (schemaElement.array || angular.isArray(input)) {
         var returnArray = [];
-        var needsX = !schemaElement.directive || simpleArrayNeedsX(schemaElement);
+        var needsX = schemaElement.array && (!schemaElement.directive || simpleArrayNeedsX(schemaElement));
         for (var j = 0; j < input.length; j++) {
           var val = input[j];
           if (val && val.x) {
