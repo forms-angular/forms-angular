@@ -9,10 +9,7 @@ module.exports = {
   setUpDB: function(mongoose, callback) {
     const app = express();
     const fng = new FormsAngular(mongoose, app, { urlPrefix: "/api/" });
-    mongoose.set('useCreateIndex', true);
     mongoose.connect("mongodb://localhost:27017/forms-ng_test", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       keepAlive: 1,
       connectTimeoutMS: 30000,
     });

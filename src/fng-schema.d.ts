@@ -1,6 +1,6 @@
 // TODO: subkeys etc, return types of statics.form & statics.report
 
-import { Schema, SchemaType, SchemaTypeOpts } from "mongoose";
+import { Schema, SchemaType, SchemaTypeOptions } from "mongoose";
 // @ts-ignore
 import IFngSchemaTypeFormOpts = fng.IFngSchemaTypeFormOpts;
 
@@ -13,7 +13,7 @@ import IFngSchemaTypeFormOpts = fng.IFngSchemaTypeFormOpts;
   collection.
    */
 
-  export interface IFngSchemaTypesOpts<T> extends SchemaTypeOpts<T> {
+  export interface IFngSchemaTypesOpts<T> extends SchemaTypeOptions<T> {
     secure?: boolean;     // // secure prevents the data from being sent by the API
     list?: {} | true;
     form?: IFngSchemaTypeFormOpts;
