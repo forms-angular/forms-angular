@@ -1,4 +1,4 @@
-import {Document, Error, Mongoose} from "mongoose";
+import {Document, Mongoose} from "mongoose";
 import {Express} from "express";
 import {fngServer} from "./index";
 import Resource = fngServer.Resource;
