@@ -547,13 +547,9 @@ export class FormsAngular {
         };
     };
 
-
     renderError(err, redirectUrl, req, res) {
-        if (typeof err === 'string') {
-            res.send(err);
-        } else {
-            res.send(err.message);
-        }
+        res.statusMessage = err?.message || err;
+        res.status(400).end(err?.message || err);
     };
 
     redirect(address, req, res) {
@@ -736,7 +732,7 @@ export class FormsAngular {
 
             self.reportInternal(req, req.resource, schemaCopy, function (err, result) {
                 if (err) {
-                    self.renderError(err, null, req, res);
+                    res.send({success:false, error: err.message || err});
                 } else {
                     res.send(result);
                 }

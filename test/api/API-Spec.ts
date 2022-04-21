@@ -1219,9 +1219,9 @@ describe('API tests', function() {
       };
       const mockRes = {
         send: function (data) {
-          assert.equal(data, 'Invalid ref property of b_usissng_options in columnTranslations _id');
+          assert.equal(data.error, 'Invalid ref property of b_usissng_options in columnTranslations _id');
           done();
-        }
+        },
       };
       fngInstance.report()(mockReq, mockRes);
     });
