@@ -870,7 +870,11 @@ export class FormsAngular {
                     if (req.query.hasOwnProperty(param)) {
                         if (req.query[param]) {
                             if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
-                                schema.params[param].value = req.query[param];
+                                if (schema.params[param] !== undefined) {
+                                    schema.params[param].value = req.query[param];
+                                } else {
+                                    callback(`No such parameter as ${param} - try one of ${Object.keys(schema.params).join()}`)
+                                }
                             }
                         }
                     }
