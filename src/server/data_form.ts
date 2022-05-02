@@ -884,14 +884,18 @@ export class FormsAngular {
                 if (runPipelineStr) {
                     runPipelineStr = runPipelineStr.replace(/"\(.+?\)"/g, function (match) {
                         let sparam = schema.params[match.slice(2, -2)];
-                        if (sparam.type === 'number') {
-                            return sparam.value;
-                        } else if (_.isObject(sparam.value)) {
-                            return JSON.stringify(sparam.value);
-                        } else if (sparam.value[0] === '{') {
-                            return sparam.value;
+                        if (sparam !== undefined) {
+                            if (sparam.type === 'number') {
+                                return sparam.value;
+                            } else if (_.isObject(sparam.value)) {
+                                return JSON.stringify(sparam.value);
+                            } else if (sparam.value[0] === '{') {
+                                return sparam.value;
+                            } else {
+                                return '"' + sparam.value + '"';
+                            }
                         } else {
-                            return '"' + sparam.value + '"';
+                            callback(`No such parameter as ${match.slice(2, -2)} - try one of ${Object.keys(schema.params).join()}`)
                         }
                     });
                 }
