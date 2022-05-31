@@ -1255,7 +1255,15 @@ module fng.services {
           const retVal = {};
           formSchema.forEach(s => {
             if (s.defaultValue !== undefined) {
-              retVal[s.name.replace(base, '')] = s.defaultValue;
+              const nameParts = s.name.split(".");
+              let target = retVal;
+              for (let i = 0; i < nameParts.length - 1; i++) {
+                  if (!target[nameParts[i]]) {
+                    target[nameParts[i]] = {};
+                  }                  
+                  target = target[nameParts[i]];
+              }
+              target[nameParts[nameParts.length - 1].replace(base, '')] = s.defaultValue;
             }
           });
           return retVal;
