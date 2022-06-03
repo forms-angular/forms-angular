@@ -102,7 +102,11 @@ module fng.services {
 //         };
 //       },
       getListAttributes: function (ref: string, id) {
-        return $http.get('/api/' + ref + '/' + id + '/list', {cache: expCache});
+        const actualId = typeof id === "string" ? id : id.id || id._id || id.x || id;
+        if (typeof actualId !== "string") {
+          throw new Error(`getListAttributes requires a string id but was provided with ${JSON.stringify(id)}`);
+        }
+        return $http.get('/api/' + ref + '/' + actualId + '/list', {cache: expCache});
       },
       readRecord: function (modelName, id): Promise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
