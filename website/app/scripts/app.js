@@ -81,6 +81,7 @@ formsAngular.config(['$locationProvider', 'cssFrameworkServiceProvider', 'routin
     // We aren't doing anything here, but we could be waiting for something async that a form might depend on
     cb(null);
   };
+  formsAngular.title = {prefix: 'FngDemo (', suffix: ')'};
 }]);
 
 /**

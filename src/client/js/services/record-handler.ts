@@ -533,6 +533,21 @@ module fng.services {
             }
             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
             processLookupHandlers(newValue, oldValue);
+
+            if (formsAngular.title) {
+              let title: string = formsAngular.title.prefix || '';
+              if ($scope['editFormHeader']) {
+                title = $scope['editFormHeader']();
+              } else {
+                for (let listElm in $scope.listSchema) {
+                  if ($scope.listSchema.hasOwnProperty(listElm)) {
+                    title += $scope.getListData($scope.record, $scope.listSchema[listElm].name) + ' ';
+                  }
+                }
+              }
+              title = title.trimEnd() + (formsAngular.title.suffix || '');
+              $window.document.title = title;
+            }
           }
         }, true);
 
