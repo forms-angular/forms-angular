@@ -537,7 +537,7 @@ module fng.services {
             if (formsAngular.title) {
               let title: string = formsAngular.title.prefix || '';
               if ($scope['editFormHeader']) {
-                title = $scope['editFormHeader']();
+                title += $scope['editFormHeader']();
               } else {
                 for (let listElm in $scope.listSchema) {
                   if ($scope.listSchema.hasOwnProperty(listElm)) {
