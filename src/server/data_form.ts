@@ -86,7 +86,7 @@ export class FormsAngular {
         for (let pluginName in this.options.plugins) {
             if (this.options.plugins.hasOwnProperty(pluginName)) {
                 let pluginObj: IFngPlugin = this.options.plugins[pluginName];
-                this[pluginName] = pluginObj.plugin(this, processArgs, pluginObj.options);
+                this.options.plugins[pluginName] = Object.assign(this.options.plugins[pluginName], pluginObj.plugin(this, processArgs, pluginObj.options));
             }
         }
     }
@@ -1502,6 +1502,12 @@ export class FormsAngular {
                         }
                         return acc;
                     }, []);
+                    for (let pluginName in that.options.plugins) {
+                        let thisPlugin: IFngPlugin = that.options.plugins[pluginName];
+                        if (thisPlugin.dependencyChecks[resource.resourceName]) {
+                            resource.options.dependents = resource.options.dependents.concat(thisPlugin.dependencyChecks[resource.resourceName])
+                        }
+                    }
                 }
             }
 
