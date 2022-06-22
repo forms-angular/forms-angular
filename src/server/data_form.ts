@@ -1504,7 +1504,7 @@ export class FormsAngular {
                     }, []);
                     for (let pluginName in that.options.plugins) {
                         let thisPlugin: IFngPlugin = that.options.plugins[pluginName];
-                        if (thisPlugin.dependencyChecks[resource.resourceName]) {
+                        if (thisPlugin.dependencyChecks && thisPlugin.dependencyChecks[resource.resourceName]) {
                             resource.options.dependents = resource.options.dependents.concat(thisPlugin.dependencyChecks[resource.resourceName])
                         }
                     }
