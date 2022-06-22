@@ -3,7 +3,7 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function NavCtrl($rootScope, $scope, $location, $filter, routingService, cssFrameworkService) {
+  export function NavCtrl($rootScope, $window, $scope, $location, $filter, routingService, cssFrameworkService) {
 
     function clearContextMenu() {
       $scope.items = [];
@@ -183,6 +183,11 @@ module fng.controllers {
       }
       return thisClass;
     };
+
+    let originalTitle = $window.document.title;
+    $scope.$on('$routeChangeSuccess', function () {
+      $window.document.title = originalTitle;
+    })
 
   }
 }
