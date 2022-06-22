@@ -1,7 +1,7 @@
 declare module fng {
   export interface IFng extends angular.IModule {
     beforeProcess? : (scope: IFormScope, cb: (err?: Error) => void) => void;
-    title: {prefix?: string, suffix?: string}
+    title?: {prefix?: string, suffix?: string}
   }
   var formsAngular: IFng;
 
