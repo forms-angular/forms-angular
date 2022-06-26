@@ -282,6 +282,9 @@ declare module fng {
     formInstructions: IFormInstruction;
     lastPart: string;
     possibleArray: string;
+    // If the looked-up record changes, we use these fields to see if the old lookup value also exists in the new lookup record
+    oldValue?: string | string[];
+    oldId?: string | string[];
   }
 
   export interface IFngLookupHandler {

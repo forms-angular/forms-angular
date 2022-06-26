@@ -466,41 +466,68 @@ module fng.services {
           let newVal = extractIdVal(newValue, idString);
           let oldVal = extractIdVal(oldValue, idString);
           if (newVal !== oldVal) {
-            lkp.handlers.forEach((h) => {
-              $scope[h.formInstructions.options].length = 0;
-              $scope[h.formInstructions.ids].length = 0;
-            });
             if (newVal) {
-              SubmissionsService.readRecord(lkp.ref.collection, newVal).then(
-                (response) => {
-                  lkp.handlers.forEach((h) => {
-                    let optionsList = $scope[h.formInstructions.options];
-                    let idList = $scope[h.formInstructions.ids];
-                    let data = response.data[lkp.ref.property] || [];
-                    for (var i = 0; i < data.length; i++) {
-                      var option = data[i][lkp.ref.value];
-                      var pos = _.sortedIndex(optionsList, option);
-                      // handle dupes
-                      if (optionsList[pos] === option) {
-                        option = option + "    (" + data[i]._id + ")";
-                        pos = _.sortedIndex(optionsList, option);
-                      }
-                      optionsList.splice(pos, 0, option);
-                      idList.splice(pos, 0, data[i]._id);
+              if (oldVal) {
+                lkp.handlers.forEach(function (h) {
+                  h.oldValue = getData($scope.record, h.formInstructions.name);
+                  if (angular.isArray(h.oldValue)) {
+                    h.oldId = h.oldValue.map(function (a) {
+                      return $scope[h.formInstructions.ids][$scope[h.formInstructions.options].indexOf(a)];
+                    });
+                  } else {
+                    h.oldId = $scope[h.formInstructions.ids][$scope[h.formInstructions.options].indexOf(h.oldValue)];
+                  }
+                })
+              }
+              SubmissionsService.readRecord(lkp.ref.collection, newVal).then(function (response) {
+                lkp.handlers.forEach(function (h) {
+                  var optionsList = $scope[h.formInstructions.options];
+                  optionsList.length = 0;
+                  var idList = $scope[h.formInstructions.ids];
+                  idList.length = 0;
+                  var data = response.data[lkp.ref.property] || [];
+                  for (var i = 0; i < data.length; i++) {
+                    var option = data[i][lkp.ref.value];
+                    var pos = _.sortedIndex(optionsList, option);
+                    // handle dupes
+                    if (optionsList[pos] === option) {
+                      option = option + "    (" + data[i]._id + ")";
+                      pos = _.sortedIndex(optionsList, option);
                     }
-                    if (Object.keys(oldValue).length === 0) {
-                      // Not sure how safe this is, but the record is fresh so I think it's OK...
-                      updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState, true);
+                    optionsList.splice(pos, 0, option);
+                    idList.splice(pos, 0, data[i]._id);
+                  }
+                  if (Object.keys(oldValue).length === 0) {
+                    // Not sure how safe this is, but the record is fresh so I think it's OK...
+                    updateRecordWithLookupValues(h.formInstructions, $scope, ctrlState, true);
+                  }
+                  else if (h.oldId) {
+                    // Here we are reacting to a change in the lookup pointer in the record.
+                    // If the old id exists in the new idList we can keep it, otherwise we need to blank it.
+                    // We need to remember that we can have an array of ids
+                    if (angular.isArray(h.oldId)) {
+                      h.oldId.forEach(function (id, idx) {
+                        let pos = idList.indexOf(id);
+                        setData($scope.record, h.formInstructions.name, idx, pos === -1 ? undefined : optionsList[pos]);
+                      });
                     } else {
-                      // Here we are reacting to a change in the lookup pointer in the record.
-                      // We need to blank our lookup field as it will not exist
-                      blankListLookup(h.formInstructions)
+                      let pos = idList.indexOf(h.oldId);
+                      if (pos !== -1) {
+                        setData($scope.record, h.formInstructions.name, undefined, optionsList[pos]);
+                      } else {
+                        blankListLookup(h.formInstructions);
+                      }
                     }
-                  });
-                }
-              );
-            } else {
-              lkp.handlers.forEach((h) => {
+                  } else {
+                    blankListLookup(h.formInstructions);
+                  }
+                });
+              });
+            }
+            else {
+              lkp.handlers.forEach(function (h) {
+                $scope[h.formInstructions.options].length = 0;
+                $scope[h.formInstructions.ids].length = 0;
                 blankListLookup(h.formInstructions);
               });
             }
