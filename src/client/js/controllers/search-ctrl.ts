@@ -78,7 +78,7 @@ module fng.controllers {
     };
 
     function makeUrlNoHtml5Hash(result: any) : string {
-      return result.url ? routingService.buildUrl(result.url.replace('|id|', result.id)) :
+      return result.url ? routingService.html5hash() + result.url.replace('|id|', result.id) :
       routingService.buildOperationUrl('edit', result.resource, undefined, result.id, result.resourceTab);
     }
 
