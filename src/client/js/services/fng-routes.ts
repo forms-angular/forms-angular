@@ -214,6 +214,9 @@ module fng.services {
 
             };
           },
+          html5hash: function (): string {
+            return config.html5Mode ? '' : '#';
+          },
           buildUrl: function (path) {
             var url = config.html5Mode ? '' : '#';
             url += config.hashPrefix;

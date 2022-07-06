@@ -47,7 +47,7 @@ module fng.controllers {
             break;
           case 13:
             if ($scope.focus != null) {
-              $scope.selectResult($scope.focus);
+              $location.url(makeUrlNoHtml5Hash($scope.results[$scope.focus]));
             }
             break;
         }
@@ -60,20 +60,6 @@ module fng.controllers {
       }
       $scope.results[index].focussed = true;
       $scope.focus = index;
-    };
-
-    $scope.selectResult = function (resultNo) {
-      let result = $scope.results[resultNo];
-      let newURL;
-      if (result.url) {
-        newURL = result.url.replace('|id|', result.id);
-      } else {
-        newURL = routingService.prefix() + '/' + result.resource + '/' + result.id + '/edit';
-        if (result.resourceTab) {
-          newURL += '/' + result.resourceTab;
-        }
-      }
-      $location.url(newURL);
     };
 
     $scope.resultClass = function (index) {
@@ -91,6 +77,11 @@ module fng.controllers {
       $scope.focus = null;
     };
 
+    function makeUrlNoHtml5Hash(result: any) : string {
+      return result.url ? routingService.buildUrl(result.url.replace('|id|', result.id)) :
+      routingService.buildOperationUrl('edit', result.resource, undefined, result.id, result.resourceTab);
+    }
+
     $scope.$watch('searchTarget', function (newValue) {
       if (newValue && newValue.length > 0) {
         lastSearchSent = $scope.testTime || new Date().valueOf();
@@ -101,6 +92,9 @@ module fng.controllers {
           if (!data.timestamps || !data.timestamps.sentAt || Number.parseInt(data.timestamps.sentAt) === lastSearchSent) {
             if ($scope.searchTarget.length > 0) {
               $scope.results = data.results;
+              $scope.results.forEach(result => {
+                  result.href = routingService.html5hash() + makeUrlNoHtml5Hash(result);
+              })
               $scope.moreCount = data.moreCount;
               if (data.results.length > 0) {
                 $scope.errorClass = '';

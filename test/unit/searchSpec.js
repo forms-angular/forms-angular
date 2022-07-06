@@ -45,7 +45,7 @@ describe('search', function () {
       scope.searchTarget = 'hello';
       scope.$digest();
       $httpBackend.flush();
-      var results = elm.find('span');
+      var results = elm.find('a');
       expect(results.length).toBe(1);
     });
 
@@ -57,7 +57,7 @@ describe('search', function () {
       scope.searchTarget = 'hello';
       scope.$digest();
       $httpBackend.flush();
-      var results = elm.find('span');
+      var results = elm.find('a');
       expect(results.length).toBe(2);
       var div = angular.element(elm.find('div')[0]);
       expect(div.attr('class')).toBe('form-group');
@@ -68,7 +68,7 @@ describe('search', function () {
       scope.searchTarget = 'hello';
       scope.$digest();
       $httpBackend.flush();
-      var results = elm.find('span');
+      var results = elm.find('a');
       expect(results.length).toBe(0);
       var div = angular.element(elm.find('div')[0]);
       expect(div.attr('class')).toBe('form-group error has-error');
@@ -85,9 +85,9 @@ describe('search', function () {
       scope.searchTarget = 'hello';
       scope.$digest();
       $httpBackend.flush();
-      var results = elm.find('span');
+      var results = elm.find('a');
       expect(results.length).toBe(2);
-      results = angular.element(elm.find('span')[0]);
+      results = angular.element(elm.find('a')[0]);
       expect(results.text()).toMatch('Exams');
       expect(results.text()).toMatch('Brown, ');
       expect(results.text()).toMatch('John');
