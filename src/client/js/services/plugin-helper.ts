@@ -30,9 +30,9 @@ module fng.services {
         for (var prop in attr) {
           if (attr.hasOwnProperty(prop)) {
             const lcProp = prop.toLowerCase();
-            if (lcProp.slice(0, 6) === 'fngFld') {
+            if (lcProp.slice(0, 6) === 'fngfld') {
               info[lcProp.slice(6)] = deserialize(attr[prop]);
-            } else if (lcProp.slice(0, 6) === 'fngOpt') {
+            } else if (lcProp.slice(0, 6) === 'fngopt') {
               options[lcProp.slice(6)] = deserialize(attr[prop]);
             } else if (directiveName && lcProp.slice(0, directiveNameLength) === lcDirectiveName) {
               directiveOptions[_.kebabCase(prop.slice(directiveNameLength))] = deserialize(attr[prop]);
