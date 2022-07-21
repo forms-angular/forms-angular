@@ -387,7 +387,8 @@ declare module fng {
     fn?: () => void;
     urlFunc?: () => string;
 
-    text: string;
+    text?: string;
+    textFunc?: () => string;
     isDisabled?: () => boolean;
     isHidden?: () => boolean;
 
