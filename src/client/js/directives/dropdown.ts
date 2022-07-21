@@ -13,8 +13,8 @@ module fng.directives {
         ' </a>' +
         ' <ul class="uib-dropdown-menu dropdown-menu">' +
         '  <li ng-repeat="choice in items" ng-hide="isHidden($index)" ng-class="dropdownClass($index)">' +
-        '   <a ng-show="choice.text" class="dropdown-option" ng-href="{{choice.url || choice.urlFunc()}}" ng-click="doClick($index, $event)">' +
-        '    {{choice.text}}' +
+        '   <a ng-show="choice.text || choice.textFunc" class="dropdown-option" ng-href="{{choice.url || choice.urlFunc()}}" ng-click="doClick($index, $event)">' +
+        '    {{ choice.text || choice.textFunc() }}' +
         '   </a>' +
         '  </li>' +
         ' </ul>' +
