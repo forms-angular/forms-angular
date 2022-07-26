@@ -636,18 +636,20 @@ module fng.services {
       return function(response: any): void {
         if ([200, 400].indexOf(response.status) !== -1) {
           var errorMessage = "";
-          for (var errorField in response.data.errors) {
-            if (response.data.errors.hasOwnProperty(errorField)) {
-              errorMessage += "<li><b>" + $filter("titleCase")(errorField) + ": </b> ";
-              switch (response.data.errors[errorField].type) {
-                case "enum" :
-                  errorMessage += "You need to select from the list of values";
-                  break;
-                default:
-                  errorMessage += response.data.errors[errorField].message;
-                  break;
+          if (response.data && response.data.errors) {
+            for (var errorField in response.data.errors) {
+              if (response.data.errors.hasOwnProperty(errorField)) {
+                errorMessage += "<li><b>" + $filter("titleCase")(errorField) + ": </b> ";
+                switch (response.data.errors[errorField].type) {
+                  case "enum" :
+                    errorMessage += "You need to select from the list of values";
+                    break;
+                  default:
+                    errorMessage += response.data.errors[errorField].message;
+                    break;
+                }
+                errorMessage += "</li>";
               }
-              errorMessage += "</li>";
             }
           }
           if (errorMessage.length > 0) {
