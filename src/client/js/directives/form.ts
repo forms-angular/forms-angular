@@ -446,7 +446,8 @@ module fng.directives {
                   template += '<li ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
                     (info.inlineHeaders ? 'width-controlled ' : '') + 
                     convertFormStyleToClass(info.formStyle) + ' ' + (info.ngClass ? "ng-class:" + info.ngClass : "") + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
-                    ' ng-repeat="subDoc in ' + model + ' track by $index">';
+                    ' ng-repeat="subDoc in ' + model + ' track by $index"' + 
+                    (info.filterable ? ' data-ng-hide="subDoc._hidden"' : "") + '>';
                   if (cssFrameworkService.framework() === 'bs2') {
                     template += '<div class="row-fluid sub-doc">';
                   }
