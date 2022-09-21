@@ -1496,10 +1496,7 @@ export class FormsAngular {
                                 acc.push({resource: r, keys: fldList});
                             }
                         }
-
-                        if (r !== resource) {
-                            searchPaths(r.model.schema, '');
-                        }
+                        searchPaths(r.model.schema, '');
                         return acc;
                     }, []);
                     for (let pluginName in that.options.plugins) {
