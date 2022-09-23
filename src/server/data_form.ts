@@ -273,7 +273,7 @@ export class FormsAngular {
             default:
                 collectionName = searchFor.slice(0, colonPos);
                 collectionNameLower = collectionName.toLowerCase();
-                searchFor = searchFor.slice(colonPos + 1, 999);
+                searchFor = searchFor.slice(colonPos + 1, 999).trim();
                 if (searchFor === '') {
                     searchFor = '?';
                 }
