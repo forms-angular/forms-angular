@@ -240,17 +240,19 @@ module fng.services {
         },
 
         handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup, controlDivClasses, info, options: fng.IFormOptions) {
-          var result = '<div ';
-          if (cssFrameworkService.framework() === 'bs3') {
-            result += 'ng-class="skipCols($index)" ';
-          }
-          result += 'class="' + controlDivClasses.join(' ') + '" id="' + info.id + 'List" ';
-          result += 'ng-repeat="arrayItem in ' + (options.model || 'record') + '.' + info.name + ' track by $index">';
+          let indentStr = cssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols($index)" ' : "";
+          const arrayStr = (options.model || 'record') + '.' + info.name;
+          let result = "";
+          result += '<div id="' + info.id + 'List" class="' + controlDivClasses.join(' ') + '" ' + indentStr + ' ng-repeat="arrayItem in ' + arrayStr + ' track by $index">';
           result += inputMarkup;
           if (info.type !== 'link') {
-            result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass() + '-minus-sign"></i>';
+              result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass() + '-minus-sign"></i>';
           }
           result += '</div>';
+          indentStr = cssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols(' + arrayStr + '.length)" ' : "";
+          if (info.help) {
+              result += '<div class="array-help-block ' + controlDivClasses.join(' ') + '" ' + indentStr + ' id="empty' + info.id + 'ListHelpBlock">' + info.help + '</div>';
+          }
           return result;
         },
 

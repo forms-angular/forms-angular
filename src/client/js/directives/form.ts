@@ -547,7 +547,11 @@ module fng.directives {
                 throw new Error('Cannot use arrays in an inline or stacked form');
               }
               template += formMarkupHelper.label(scope, info, info.type !== 'link', options);
-              template += formMarkupHelper.handleArrayInputAndControlDiv(generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, info.id + '_{{$index}}', options), controlDivClasses, info, options);
+              const stashedHelp = info.help;
+              delete info.help;
+              const inputHtml = generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, info.id + '_{{$index}}', options);
+              info.help = stashedHelp;
+              template += formMarkupHelper.handleArrayInputAndControlDiv(inputHtml, controlDivClasses, info, options);
             } else {
               // Single fields here
               template += formMarkupHelper.label(scope, info, null, options);
