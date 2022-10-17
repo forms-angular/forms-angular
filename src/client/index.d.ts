@@ -1,7 +1,11 @@
 declare module fng {
   export interface IFng extends angular.IModule {
     beforeProcess? : (scope: IFormScope, cb: (err?: Error) => void) => void;
-    title?: {prefix?: string, suffix?: string}
+    title?: {prefix?: string, suffix?: string};
+    // when provided, menu items and fields will call the named function (assumed to be present on $rootscope) to
+    // determine their visibility / disabled state.  to minimise performance overhead, this will be done
+    // using one-time binding, so the function should not refer to model-dependent values.
+    elemSecurityFuncName?: string;
   }
   var formsAngular: IFng;
 
@@ -129,6 +133,7 @@ declare module fng {
     class?: string;  // allows arbitrary classes to be added to the input tag.
     inlineRadio?: boolean;  // (only valid when type is radio) should be set to true to present all radio button options in a single line
     link?: IFngLinkSetup; // handles displaying links for ref lookups
+    asText?: boolean; // (only valid when type is ObjectId) should be set to true to force a simple text input rather than a select.  presumed for advanced cases where the objectid is going to be pasted in.
 
     /*
       With a select / radio type you can specify the options.
@@ -387,6 +392,9 @@ declare module fng {
     url?: string;
     fn?: () => void;
     urlFunc?: () => string;
+    
+    // provided to the security hook (see elemSecurityFuncName) - optional where that is not being used
+    id?: string;
 
     text?: string;
     textFunc?: () => string;

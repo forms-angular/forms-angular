@@ -11,6 +11,12 @@ module fng.controllers {
     }
 
     $rootScope.navScope = $scope;  // Lets plugins access menus
+    $rootScope.isSecurelyHidden = function (elemId) {
+      return formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName](elemId, "hidden");
+    }
+    $rootScope.isSecurelyDisabled = function (elemId) {
+      return formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName](elemId, "disabled");
+    }
     clearContextMenu();
 
     $scope.toggleCollapsed = function() {
@@ -143,9 +149,10 @@ module fng.controllers {
         return item.isHidden ? item.isHidden() : false
       }
 
-      let dividerHide = false
+      let dividerHide = false;
+      const item = $scope.items[index];
       // Hide a divider if it appears under another
-      if ($scope.items[index].divider) {
+      if (item.divider) {
         if (index === 0) {
           dividerHide = true;
         } else {
@@ -162,7 +169,7 @@ module fng.controllers {
           }
         }
       }
-      return dividerHide || explicitlyHidden($scope.items[index]);
+      return dividerHide || explicitlyHidden(item);
     };
 
     $scope.isDisabled = function (index) {
