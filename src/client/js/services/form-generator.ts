@@ -149,7 +149,7 @@ module fng.services {
           angular.extend(formInstructions, mongooseType.options.form);
         }
       }
-      if (mongooseType.instance === 'String') {
+      if (mongooseType.instance === 'String' || (mongooseType.instance === 'ObjectID' && formInstructions.asText)) {
         if (mongooseOptions.enum) {
           formInstructions.type = formInstructions.type || 'select';
           if (formInstructions.select2) {
