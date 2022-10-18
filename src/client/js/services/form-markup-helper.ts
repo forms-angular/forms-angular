@@ -48,6 +48,31 @@ module fng.services {
         return (cssFrameworkService.framework() === 'bs2' ? 'icon' : 'glyphicon glyphicon');
       }
 
+      function handleReadOnlyDisabled(fieldInfo: fng.IFngSchemaTypeFormOpts): string {
+        let retVal = '';
+        if (fieldInfo.readonly && typeof fieldInfo.readonly === "boolean") {
+            // if we have a boolean-type readonly property then this trumps whatever security rule might apply to this field
+            retVal += ` disabled `;
+        } else {
+            // if our field has a string-type readonly property *and* we need to do security, then we cannot simply combine
+            // these into a single ng-disabled expression, because we should be using regular binding for the former, and one-time
+            // binding for the latter.  the best we can do in this case is to use ng-disabled for the former, and
+            // ng-readonly for the latter.  this is not perfect, because in the case of selects, ng-readonly doesn't actually
+            // prevent the user from making a selection.  however, the select will be styled as if it is disabled (including
+            // the not-allowed cursor), which should deter the user in most cases.  
+            const doSecurity = fieldInfo.id && formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName];
+            if (fieldInfo.readonly) {
+                retVal += ` ng-disabled="${fieldInfo.readonly}" `;
+                if (doSecurity) {
+                    retVal += ` ng-readonly="::${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')" `;    
+                }
+            } else if (doSecurity) {
+                retVal += ` ng-disabled="::${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')" `;
+            }                        
+        }
+        return retVal;
+      }
+
       return {
         isHorizontalStyle: isHorizontalStyle,
 
@@ -131,7 +156,8 @@ module fng.services {
             }
             labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
             if (addButtonMarkup) {
-              labelHTML += ' <i id="add_' + fieldInfo.id + '" ng-click="add(\'' + fieldInfo.name + '\',$event)" class="' + glyphClass() + '-plus-sign"></i>';
+              const disableCond = handleReadOnlyDisabled(fieldInfo);
+              labelHTML += ` <i ${disableCond} id="add_${fieldInfo.id}" ng-click="add('${fieldInfo.name}', $event)" class="${glyphClass()}-plus-sign"></i>`;
             }
             labelHTML += '</label>';
             if (fieldInfo.linklabel) {
@@ -149,7 +175,7 @@ module fng.services {
           return labelHTML;
         },
 
-        glyphClass: glyphClass,
+        glyphClass,
 
         allInputsVars: function allInputsVars(scope, fieldInfo, options, modelString, idString, nameString) {
 
@@ -249,8 +275,9 @@ module fng.services {
           let result = "";
           result += '<div id="' + info.id + 'List" class="' + controlDivClasses.join(' ') + '" ' + indentStr + ' ng-repeat="arrayItem in ' + arrayStr + ' track by $index">';
           result += inputMarkup;
+          const disableCond = handleReadOnlyDisabled(info);
           if (info.type !== 'link') {
-              result += '<i ng-click="remove(\'' + info.name + '\',$index,$event)" id="remove_' + info.id + '_{{$index}}" class="' + glyphClass() + '-minus-sign"></i>';
+              result += `<i ${disableCond} ng-click="remove('${info.name}', $index, $event)" id="remove_${info.id}_{{$index}}" class="${glyphClass()}-minus-sign"></i>`;
           }
           result += '</div>';
           indentStr = cssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols(' + arrayStr + '.length)" ' : "";
@@ -273,30 +300,7 @@ module fng.services {
           return result;
         },
 
-        handleReadOnlyDisabled: function handleReadOnlyDisabled(fieldInfo: fng.IFngSchemaTypeFormOpts): string {
-          let retVal = '';
-          if (fieldInfo.readonly && typeof fieldInfo.readonly === "boolean") {
-              // if we have a boolean-type readonly property then this trumps whatever security rule might apply to this field
-              retVal += ` disabled `;
-          } else {
-              // if our field has a string-type readonly property *and* we need to do security, then we cannot simply combine
-              // these into a single ng-disabled expression, because we should be using regular binding for the former, and one-time
-              // binding for the latter.  the best we can do in this case is to use ng-disabled for the former, and
-              // ng-readonly for the latter.  this is not perfect, because in the case of selects, ng-readonly doesn't actually
-              // prevent the user from making a selection.  however, the select will be styled as if it is disabled (including
-              // the not-allowed cursor), which should deter the user in most cases.  
-              const doSecurity = fieldInfo.id && formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName];
-              if (fieldInfo.readonly) {
-                  retVal += ` ng-disabled="${fieldInfo.readonly}" `;
-                  if (doSecurity) {
-                      retVal += ` ng-readonly="::${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')" `;    
-                  }
-              } else if (doSecurity) {
-                  retVal += ` ng-disabled="::${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')" `;
-              }                        
-          }
-          return retVal;
-        }
+        handleReadOnlyDisabled
       }
     }
 }

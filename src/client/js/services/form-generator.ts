@@ -459,6 +459,11 @@ module fng.services {
       },
 
       add: function add(fieldName: string, $event, $scope: IFormScope, modelOverride?: any) {
+        // for buttons, the click event won't fire if the disabled attribute exists, but the same is not true of
+        // icons, so we need to check this for simple array item addition
+        if ($event?.target?.hasAttribute && $event.target.hasAttribute("disabled")) {
+          return $event.preventDefault();
+        }
         // check that target element is visible.  May not be reliable - see https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
         if ($event.target.offsetParent) {
           var arrayField = getArrayFieldToExtend(fieldName, $scope, modelOverride);
@@ -481,6 +486,11 @@ module fng.services {
       },
 
       remove: function remove(fieldName: string, value: number, $event, $scope: IFormScope, modelOverride?: any) {
+        // for buttons, the click event won't fire if the disabled attribute exists, but the same is not true of
+        // icons, so we need to check this for simple array item removal
+        if ($event?.target?.hasAttribute && $event.target.hasAttribute("disabled")) {
+          return $event.preventDefault();
+        }
         // Remove an element from an array
         var arrayField = getArrayFieldToExtend(fieldName, $scope, modelOverride);
         var err;
