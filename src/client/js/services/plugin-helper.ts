@@ -113,7 +113,10 @@ module fng.services {
           }
         }
         return foundIt;
-      }
+      },
+      handleReadOnlyDisabled: function handleReadOnlyDisabled(id, attr) {
+        return formMarkupHelper.handleReadOnlyDisabled({ id, readonly: attr.fngFldReadonly });
+      },
     };
   }
 }

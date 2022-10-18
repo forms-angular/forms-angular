@@ -112,27 +112,14 @@ module fng.directives {
           var requiredStr = isRequired ? ' required ' : '';
           var enumInstruction:IEnumInstruction;
 
-          function handleReadOnlyDisabled(readonly: any): string {
-            let retVal = '';
-            if (readonly) {
-              // despite the option being "readonly", we should use disabled and ng-disabled rather than their readonly
-              // equivalents (which give controls the appearance of being read-only, but don't actually prevent user
-              // interaction)
-              if (typeof readonly === "boolean") {
-                retVal = ` disabled `;
-              } else {
-                retVal = ` ng-disabled="${readonly}" `;
-              }
-            }
-            return retVal;
-          }
+
 
           switch (fieldInfo.type) {
             case 'select' :
               if (fieldInfo.select2) {
                 value = '<input placeholder="fng-select2 has been removed" readonly>';
               } else {
-                common += handleReadOnlyDisabled(fieldInfo.readonly);
+                common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo);
                 common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 common += ` aria-label="${fieldInfo.label && fieldInfo.label !== "" ? fieldInfo.label : fieldInfo.name}" `;
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
@@ -183,7 +170,7 @@ module fng.directives {
             case 'radio' :
               value = '';
               common += requiredStr;
-              common += handleReadOnlyDisabled(fieldInfo.readonly);
+              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo);
               common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
               var separateLines = options.formstyle === 'vertical' || (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
@@ -214,7 +201,7 @@ module fng.directives {
               break;
             case 'checkbox' :
               common += requiredStr;
-              common += handleReadOnlyDisabled(fieldInfo.readonly);
+              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo);
               common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
               value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
               if (cssFrameworkService.framework() === 'bs3') {
@@ -223,6 +210,7 @@ module fng.directives {
               break;
             default:
               common += formMarkupHelper.addTextInputMarkup(allInputsVars, fieldInfo, requiredStr);
+              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo);
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
                   if (fieldInfo.rows === 'auto') {

@@ -3,7 +3,7 @@
 module fng.services {
 
   /*@ngInject*/
-  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, $filter) {
+  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, $filter, $rootScope) {
 
       function generateNgShow(showWhen, model) {
 
@@ -67,7 +67,11 @@ module fng.services {
             }
           }
           if (info.id && typeof info.id.replace === "function") {
-            insert += ' id="cg_' + info.id.replace(/\./g, '-') + '"';
+            const id = `cg_${info.id.replace(/\./g, '-')}`;
+            insert += ` id="${id}"`;
+            if (formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName]) {
+              insert += ` data-ng-if="::!${formsAngular.elemSecurityFuncName}('${id}', 'hidden')"`;
+            }
           }
 
           if (cssFrameworkService.framework() === 'bs3') {
@@ -266,12 +270,32 @@ module fng.services {
             result += ' ' + fieldInfo.add + ' ';
           }
           result += requiredStr;
-          if (fieldInfo.readonly) {
-            result += ` ${typeof fieldInfo.readOnly === 'boolean' ? 'readonly' : 'ng-readonly="' + fieldInfo.readonly + '"'} `;
-          } else {
-            result += ' ';
-          }
           return result;
+        },
+
+        handleReadOnlyDisabled: function handleReadOnlyDisabled(fieldInfo: fng.IFngSchemaTypeFormOpts): string {
+          let retVal = '';
+          if (fieldInfo.readonly && typeof fieldInfo.readonly === "boolean") {
+              // if we have a boolean-type readonly property then this trumps whatever security rule might apply to this field
+              retVal += ` disabled `;
+          } else {
+              // if our field has a string-type readonly property *and* we need to do security, then we cannot simply combine
+              // these into a single ng-disabled expression, because we should be using regular binding for the former, and one-time
+              // binding for the latter.  the best we can do in this case is to use ng-disabled for the former, and
+              // ng-readonly for the latter.  this is not perfect, because in the case of selects, ng-readonly doesn't actually
+              // prevent the user from making a selection.  however, the select will be styled as if it is disabled (including
+              // the not-allowed cursor), which should deter the user in most cases.  
+              const doSecurity = fieldInfo.id && formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName];
+              if (fieldInfo.readonly) {
+                  retVal += ` ng-disabled="${fieldInfo.readonly}" `;
+                  if (doSecurity) {
+                      retVal += ` ng-readonly="::${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')" `;    
+                  }
+              } else if (doSecurity) {
+                  retVal += ` ng-disabled="::${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')" `;
+              }                        
+          }
+          return retVal;
         }
       }
     }
