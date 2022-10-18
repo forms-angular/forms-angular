@@ -445,7 +445,8 @@ module fng.directives {
                       template += info.customSubDoc;
                     }
                     if (info.noRemove !== true) {
-                      template += `<button ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove('${info.name}', $index, $event)"`;
+                      const disableCond = formMarkupHelper.handleReadOnlyDisabled(info);
+                      template += `<button ${disableCond} ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove('${info.name}', $index, $event)"`;
                       if (info.remove) {
                         template += ' class="remove-btn btn btn-mini btn-default btn-xs form-btn"><i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove';
                       } else {
