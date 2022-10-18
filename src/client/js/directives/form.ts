@@ -499,10 +499,11 @@ module fng.directives {
                     } else {                    
                       hideCond = info.noAdd ? `ng-hide="${info.noAdd}"` : '';
                       indicatorShowCond = info.noAdd ? `ng-show="${info.noAdd} && ${indicatorShowCond}"` : '';
-                      footer += `<button ${hideCond} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">
-                                   <i class="' + formMarkupHelper.glyphClass() + '-plus"></i> 
-                                   Add
-                                 </button>`;
+                      const disableCond = formMarkupHelper.handleReadOnlyDisabled(info);
+                      footer +=
+                        `<button ${hideCond} ${disableCond} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">` + 
+                        ` <i class="${formMarkupHelper.glyphClass()}-plus"></i> Add ` + 
+                        `</button>`;
                     }
                     if (info.noneIndicator) {
                       footer += `<span ${indicatorShowCond} class="none_indicator" id="no_${info.id}_indicator">None</span>`;
