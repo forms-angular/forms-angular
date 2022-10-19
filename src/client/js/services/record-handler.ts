@@ -1323,7 +1323,8 @@ module fng.services {
             if ($scope.topLevelFormName) {
               $scope[$scope.topLevelFormName].$setDirty();
             }
-          }
+          },
+          cancel: "ol[disabled]>li"
         };
 
         $scope.setUpCustomLookupOptions = function (schemaElement: IFormInstruction, ids: string[], options: string[], baseScope: any): void {

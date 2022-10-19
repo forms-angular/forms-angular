@@ -429,13 +429,19 @@ module fng.directives {
                   if (info.formStyle === "inline" && info.inlineHeaders) {
                     template += generateInlineHeaders(info.schema, options, model, info.inlineHeaders === "always");
                   }
-                  template += '<ol class="sub-doc"' + (info.sortable ? ` ui-sortable="sortableOptions" ng-model="${model}"` : '') + '>';
-
-                  template += '<li ng-form class="' + (cssFrameworkService.framework() === 'bs2' ? 'row-fluid ' : '') +
-                    (info.inlineHeaders ? 'width-controlled ' : '') + 
-                    convertFormStyleToClass(info.formStyle) + ' ' + (info.ngClass ? "ng-class:" + info.ngClass : "") + '" name="form_' + niceName + '{{$index}}" class="sub-doc well" id="' + info.id + 'List_{{$index}}" ' +
-                    ' ng-repeat="subDoc in ' + model + ' track by $index"' + 
-                    (info.filterable ? ' data-ng-hide="subDoc._hidden"' : "") + '>';
+                  const disableCond = formMarkupHelper.handleReadOnlyDisabled(info);
+                  // if the field is disabled and sortable, the ol needs a DISABLED attribute to prevent sorting (see sortableOptions)
+                  const sortableStr = info.sortable ? `${disableCond} ui-sortable="sortableOptions" ng-model="${model}"` : "";
+                  template += `<ol class="sub-doc" ${sortableStr}>`;
+                  template +=
+                    `<li ng-form id="${info.id}List_{{$index}}" name="form_${niceName}{{$index}}" ` + 
+                    `  class="${convertFormStyleToClass(info.formStyle)}` +
+                    `  ${cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : ''}`  +
+                    `  ${info.inlineHeaders ? 'width-controlled' : ''}` +
+                    `  ${info.ngClass ? "ng-class:" + info.ngClass : ''}"` +
+                    `  ng-repeat="subDoc in ${model} track by $index"` + 
+                    `  ${info.filterable ? ' data-ng-hide="subDoc._hidden"' : ''}` + 
+                    `>`;
                   if (cssFrameworkService.framework() === 'bs2') {
                     template += '<div class="row-fluid sub-doc">';
                   }
@@ -445,7 +451,7 @@ module fng.directives {
                       template += info.customSubDoc;
                     }
                     if (info.noRemove !== true) {
-                      const disableCond = formMarkupHelper.handleReadOnlyDisabled(info);
+                      
                       template += `<button ${disableCond} ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove('${info.name}', $index, $event)"`;
                       if (info.remove) {
                         template += ' class="remove-btn btn btn-mini btn-default btn-xs form-btn"><i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove';
