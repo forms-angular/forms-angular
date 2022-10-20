@@ -349,9 +349,9 @@ describe('formInput', function () {
 
     it('text and textarea', function () {
       var input = angular.element(elm.find('input')[0]);
-      expect(input.attr('readonly')).toBe('readonly');
+      expect(input.attr('disabled')).toBe('disabled');
       input = elm.find('textarea');
-      expect(input.attr('readonly')).toBe('readonly');
+      expect(input.attr('disabled')).toBe('disabled');
     });
 
     it('select', function () {
