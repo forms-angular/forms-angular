@@ -96,8 +96,11 @@ module fng.directives {
                   modelString += '[' + '$_arrayOffset_' + root.replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
                 } else {
                   modelString += '[$index].' + lastPart;
-                  idString = null;
                   nameString = compoundName.replace(/\./g, '-');
+                  // this used to be set to null, presumably because it was considered necessary for the id to be completely
+                  // unique.  however, that isn't strictly necessary, and to enable security rules to be based upon element ids,
+                  // we want there always to be one (and *not* based upon $index or similar)
+                  idString = idString || `f_${nameString}`;
                 }
               }
             } else {
