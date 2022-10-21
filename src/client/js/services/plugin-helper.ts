@@ -120,8 +120,14 @@ module fng.services {
         }
         return foundIt;
       },
-      handleReadOnlyDisabled: function handleReadOnlyDisabled(id, attr) {
-        return formMarkupHelper.handleReadOnlyDisabled({ id, readonly: attr.fngFldReadonly });
+      handleReadOnlyDisabled: function handleReadOnlyDisabled(id: string, attr, forceNg?: boolean) {
+        const result = formMarkupHelper.handleReadOnlyDisabled({ id, readonly: attr.fngFldReadonly });
+        // ui-select doesn't deal correctly with a DISABLED attribute - it needs ng-disabled, even when the expression is simply "true"
+        if (forceNg && result?.trim().toLowerCase() === "disabled") {
+            return 'ng-disabled="true"';
+        } else {
+            return result;
+        }
       },
     };
   }
