@@ -376,6 +376,9 @@ module fng.directives {
 
         var handleField = function (info, options: fng.IFormOptions) {
           var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options);
+          if (fieldChrome.omit) {
+            return "";
+          }
           var template = fieldChrome.template;
 
           if (info.schema) {

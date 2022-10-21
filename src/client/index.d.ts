@@ -2,10 +2,18 @@ declare module fng {
   export interface IFng extends angular.IModule {
     beforeProcess? : (scope: IFormScope, cb: (err?: Error) => void) => void;
     title?: {prefix?: string, suffix?: string};
-    // when provided, menu items and fields will call the named function (assumed to be present on $rootscope) to
-    // determine their visibility / disabled state.  to minimise performance overhead, this will be done
-    // using one-time binding, so the function should not refer to model-dependent values.
+    // when provided, the named function (assumed to be present on $rootscope) will be used to determine the visibility
+    // of menu items and control groups, and the disabled state of menu items and individual form input controls
     elemSecurityFuncName?: string;
+    // how the function identified by elemSecurityFuncName should be bound.  "instant" means that it will be called
+    // as the markup is being constructed, with 'hidden' elements not included in the markup at all, and disable elements
+    // given a simple DISABLED attribute.  this is the most efficient approach.  "one-time" will add ng-hide and
+    // ng-disabled directives to the relevant elements, with one-time binding to the security function.  this is
+    // also reasonably efficient (but not as efficient as "instant" due to the need for watches).  "normal" will not use 
+    // one-time binding, which has the potential to be highly resource-intensive on large forms.  which 
+    // option is chosen will depend upon when the function identified by elemSecurityFuncName will be ready to
+    // make the necessary determination.
+    elemSecurityFuncBinding?: "instant" | "one-time" | "normal";
   }
   var formsAngular: IFng;
 

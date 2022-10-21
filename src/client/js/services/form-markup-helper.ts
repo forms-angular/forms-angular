@@ -49,53 +49,83 @@ module fng.services {
       }
 
       function handleReadOnlyDisabled(fieldInfo: fng.IFngSchemaTypeFormOpts): string {
-        let retVal = '';
         if (fieldInfo.readonly && typeof fieldInfo.readonly === "boolean") {
-            // if we have a boolean-type readonly property then this trumps whatever security rule might apply to this field
-            retVal += ` disabled `;
-        } else {
-            // if our field has a string-type readonly property *and* we need to do security, then we cannot simply combine
-            // these into a single ng-disabled expression, because we should be using regular binding for the former, and one-time
-            // binding for the latter.  the best we can do in this case is to use ng-disabled for the former, and
-            // ng-readonly for the latter.  this is not perfect, because in the case of selects, ng-readonly doesn't actually
-            // prevent the user from making a selection.  however, the select will be styled as if it is disabled (including
-            // the not-allowed cursor), which should deter the user in most cases.  
-            const doSecurity = fieldInfo.id && formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName];
-            if (fieldInfo.readonly) {
-                retVal += ` ng-disabled="${fieldInfo.readonly}" `;
-                if (doSecurity) {
-                    retVal += ` ng-readonly="::${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')" `;    
-                }
-            } else if (doSecurity) {
-                retVal += ` ng-disabled="::${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')" `;
-            }                        
+          // if we have a true-valued readonly property then this trumps whatever security rule might apply to this field
+          return " disabled ";
         }
-        return retVal;
+        function wrapReadOnly(): string {
+          return fieldInfo.readonly ? ` ng-disabled="${fieldInfo.readonly}" ` : "";
+        }
+        if (!fieldInfo.id || !formsAngular.elemSecurityFuncBinding || !formsAngular.elemSecurityFuncName || !$rootScope[formsAngular.elemSecurityFuncName]) {
+          // no security, so we're just concerned about what value fieldInfo.readonly has
+          return wrapReadOnly();
+        }
+        if (formsAngular.elemSecurityFuncBinding === "instant") {
+          // "instant" security is evaluated now, and a positive result trumps whatever fieldInfo.readonly might be set to
+          if ($rootScope.isSecurelyDisabled(fieldInfo.id)) {
+            return " disabled ";
+          } else {
+            return wrapReadOnly();
+          }
+        }
+        const securityFuncStr = `${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')`;
+        const oneTimeBinding = formsAngular.elemSecurityFuncBinding === "one-time";
+        if (fieldInfo.readonly) {
+          // we have both security and a read-only attribute to deal with
+          if (oneTimeBinding) {
+            // if our field has a string-typed readonly attribute *and* one-time binding is required by our securityFunc, we
+            // cannot simply combine these into a single ng-disabled expression, because the readonly property is highly
+            // likely to be model-dependent and therefore cannot use one-time-binding.  the best we can do in this case is
+            // to use ng-disabled for the field's readonly property, and a one-time-bound ng-readonly for the securityFunc.
+            // this is not perfect, because in the case of selects, ng-readonly doesn't actually prevent the user from
+            // making a selection.  however, the select will be styled as if it is disabled (including the not-allowed
+            // cursor), which should deter the user in most cases.  
+            return wrapReadOnly() + `ng-readonly="::${securityFuncStr}" `;    
+          } else {
+            // if we have both things and we are *NOT* required to use one-time binding for the securityFunc, then they can
+            // simply be combined into a single ng-disabled expression
+            return ` ng-disabled="${securityFuncStr} || ${fieldInfo.readonly}" `;    
+          }
+        } else {
+          // we have security only
+          return ` ng-disabled="${oneTimeBinding ? "::" : ""}${securityFuncStr}" `;
+        }
       }
 
       return {
         isHorizontalStyle: isHorizontalStyle,
 
-        fieldChrome: function fieldChrome(scope, info, options) {
+        fieldChrome: function fieldChrome(scope, info, options): { omit?: boolean, template?: string, closeTag?: string } {
+          var insert = '';
+
+          if (info.id && typeof info.id.replace === "function") {
+            const id = `cg_${info.id.replace(/\./g, '-')}`;
+            insert += `id="${id}"`;
+            if (formsAngular.elemSecurityFuncBinding && formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName]) {
+              if (formsAngular.elemSecurityFuncBinding === "instant") {
+                if ($rootScope.isSecurelyHidden(id)) {
+                  // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be 
+                  // added to the dom for this field, which we indicate to our caller as follows...
+                  return { omit: true };
+                };
+              } else {
+                const bindingStr = formsAngular.elemSecurityFuncBinding === "one-time" ? "::" : "";
+                insert += ` data-ng-if="${bindingStr}!${formsAngular.elemSecurityFuncName}('${id}', 'hidden')"`;
+              }
+            }
+          }
+          
           var classes = info.classes || '';
           var template = '';
           var closeTag = '';
-          var insert = '';
 
           info.showWhen = info.showWhen || info.showwhen;  //  deal with use within a directive
 
           if (info.showWhen) {
             if (typeof info.showWhen === 'string') {
-              insert += 'ng-show="' + info.showWhen + '"';
+              insert += ' ng-show="' + info.showWhen + '"';
             } else {
-              insert += 'ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
-            }
-          }
-          if (info.id && typeof info.id.replace === "function") {
-            const id = `cg_${info.id.replace(/\./g, '-')}`;
-            insert += ` id="${id}"`;
-            if (formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName]) {
-              insert += ` data-ng-if="::!${formsAngular.elemSecurityFuncName}('${id}', 'hidden')"`;
+              insert += ' ng-show="' + generateNgShow(info.showWhen, options.model) + '"';
             }
           }
 

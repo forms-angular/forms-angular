@@ -43,6 +43,9 @@ module fng.services {
       },
       buildInputMarkup: function buildInputMarkup(scope, model, info, options, addButtons, needsX, generateInputControl) {
         var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options, ' id="cg_' + info.id + '"');
+        if (fieldChrome.omit) {
+          return "";
+        }
         var controlDivClasses = formMarkupHelper.controlDivClasses(options);
         var elementHtml = fieldChrome.template + formMarkupHelper.label(scope, info, addButtons, options);
         var modelString, idString, nameString;

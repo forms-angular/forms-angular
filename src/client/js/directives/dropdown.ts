@@ -1,35 +1,47 @@
 /// <reference path="../../../../node_modules/@types/angular/index.d.ts" />
 
 module fng.directives {
-
   /*@ngInject*/
-  export function modelControllerDropdown() : angular.IDirective {
-      return {
-        restrict: 'AE',
-        replace: true,
-        template: '<li ng-show="items.length > 0" class="mcdd" uib-dropdown>' +
+  export function modelControllerDropdown(): angular.IDirective {
+    let visibilityStr = "isHidden($index)";
+    let classStr = `ng-class="dropdownClass($index)"`;
+    if (formsAngular.elemSecurityFuncBinding) {
+      // without a more fundamental re-write, we cannot support "instant" binding here, so we'll fall-back to using
+      // the next-best alternative, which is one-time binding
+      const oneTimeBinding = formsAngular.elemSecurityFuncBinding !== "normal";
+      const bindingStr = oneTimeBinding ? "::" : "";
+      // as ng-class is already being used, we'll add the .disabled class if the menu item is securely disabled using
+      // class="{{ }}".  note that we "prevent" a disabled menu item from being clicked by checking for the DISABLED
+      // attribute in the doClick(...) function, and aborting if this is found.
+      // note that the 'normal' class introduced here might not actually do anything, but for one-time binding to work
+      // properly, we need a truthy value
+      classStr += ` class="{{ ${bindingStr}isSecurelyDisabled(choice.id) ? 'disabled' : 'normal' }}"`;
+      if (oneTimeBinding) {
+        // because the isHidden(...) logic is highly likely to be model dependent, that cannot be one-time bound.  to
+        // be able to combine one-time and regular binding, we'll use ng-if for the one-time bound stuff and ng-hide for the rest
+        visibilityStr = `ng-if="::!isSecurelyHidden(choice.id)" ng-hide="${visibilityStr}"`;
+      } else if (formsAngular.elemSecurityFuncBinding === "normal") {
+        visibilityStr = `ng-hide="isSecurelyHidden(choice.id) || ${visibilityStr}"`;
+      }
+    } else {
+      visibilityStr = `ng-hide="${visibilityStr}"`;
+    }
+    return {
+      restrict: "AE",
+      replace: true,
+      template:
+        '<li ng-show="items.length > 0" class="mcdd" uib-dropdown>' +
         ' <a href="#" uib-dropdown-toggle>' +
         '  {{contextMenu}} <b class="caret"></b>' +
-        ' </a>' +
+        " </a>" +
         ' <ul class="uib-dropdown-menu dropdown-menu">' +
-        // to reduce the performance overhead, we should minimise the number of times isSecurelyHidden() and
-        // isSecurelyDisabled() are called when determining the security state of menu items.
-        // this is achieved through the use of one-time binding.  as we cannot use one-time binding for the more general
-        // isHidden and isDisabled logic (since these functions are highly likely to include model-dependent logic),
-        // we need to seperate these two tasks, which we do as follows:
-        //   - for visibility, the security check uses a one-time-bound ng-if,
-        //       and the general isHidden check uses ng-hide
-        //   - for disabled state, the security check uses a one-time-bound class={{...}},
-        //       and the general isDisabled check uses ng-class
-        // note the 'normal' class might not be used, but for the one-time binding to work correctly, we need to return a truthy
-        // value
-        '  <li ng-repeat="choice in items" ng-if="::!isSecurelyHidden(choice.id)" ng-hide="isHidden($index)" ng-attr-id="{{choice.id}}" class="{{ ::isSecurelyDisabled(choice.id) ? \'disabled\' : \'normal\' }}" ng-class="dropdownClass($index)">' +
+        `  <li ng-repeat="choice in items" ng-attr-id="{{choice.id}}" ${visibilityStr} ${classStr}>` +
         '   <a ng-show="choice.text || choice.textFunc" class="dropdown-option" ng-href="{{choice.url || choice.urlFunc()}}" ng-click="doClick($index, $event)">' +
-        '    {{ choice.text || choice.textFunc() }}' +
-        '   </a>' +
-        '  </li>' +
-        ' </ul>' +
-        '</li>'
-      };
-    }
+        "    {{ choice.text || choice.textFunc() }}" +
+        "   </a>" +
+        "  </li>" +
+        " </ul>" +
+        "</li>",
+    };
+  }
 }
