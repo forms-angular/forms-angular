@@ -436,8 +436,13 @@ module fng.directives {
                     template += generateInlineHeaders(info.schema, options, model, info.inlineHeaders === "always");
                   }
                   const disableCond = formMarkupHelper.handleReadOnlyDisabled(info);
-                  // if the field is disabled and sortable, the ol needs a DISABLED attribute to prevent sorting (see sortableOptions)
-                  const sortableStr = info.sortable ? `${disableCond} ui-sortable="sortableOptions" ng-model="${model}"` : "";
+                  // if we already know that the field is disabled (only possible when formsAngular.elemSecurityFuncBinding === "instant")
+                  // then we don't need to add the sortable attribute at all
+                  // otherwise, we need to include the ng-disabled on the <ol> so this can be referenced by the ui-sortable directive
+                  // (see sortableOptions)
+                  const sortableStr = info.sortable && disableCond.trim().toLowerCase() !== "disabled"
+                    ? `${disableCond} ui-sortable="sortableOptions" ng-model="${model}"`
+                    : "";
                   template += `<ol class="sub-doc" ${sortableStr}>`;
                   template +=
                     `<li ng-form id="${info.id}List_{{$index}}" name="form_${niceName}{{$index}}" ` + 
@@ -446,7 +451,7 @@ module fng.directives {
                     `  ${info.inlineHeaders ? 'width-controlled' : ''}` +
                     `  ${info.ngClass ? "ng-class:" + info.ngClass : ''}"` +
                     `  ng-repeat="subDoc in ${model} track by $index"` + 
-                    `  ${info.filterable ? ' data-ng-hide="subDoc._hidden"' : ''}` + 
+                    `  ${info.filterable ? 'data-ng-hide="subDoc._hidden"' : ''}` + 
                     `>`;
                   if (cssFrameworkService.framework() === 'bs2') {
                     template += '<div class="row-fluid sub-doc">';

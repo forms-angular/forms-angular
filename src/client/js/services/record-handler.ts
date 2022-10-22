@@ -1319,13 +1319,25 @@ module fng.services {
         };
 
         $scope.sortableOptions = {
-          update: function() {
-            if ($scope.topLevelFormName) {
-              $scope[$scope.topLevelFormName].$setDirty();
-            }
+          update: function (e, ui) {
+              if (e.target.hasAttribute("disabled")) {
+                  // where formsAngular.elemSecurityFuncBinding is set to "one-time" or "normal", the <ol> that the
+                  // ui-sortable directive has been used with will have an ng-disabled that may or may not have caused
+                  // a disabled attribute to be added to that element.  in the case where this attribute has been
+                  // added, sorting should be prevented.
+                  // allowing the user to begin the drag, and then preventing it only once they release the mouse button,
+                  // doesn't seem like the best solution, but I've yet to find something that works better.  the
+                  // cancel property (see commented-out code below) looks like it should work (and kind of does), but this
+                  // screws up mouse events on input fields hosted within the draggable <li> items, so you're
+                  // basically prevented from updating any form element in the nested schema
+                  ui.item.sortable.cancel();
+              } else if ($scope.topLevelFormName) {
+                  $scope[$scope.topLevelFormName].$setDirty();
+              }
           },
-          cancel: "ol[disabled]>li"
-        };
+          // don't do this (see comment above)
+          //cancel: "ol[disabled]>li"
+      };
 
         $scope.setUpCustomLookupOptions = function (schemaElement: IFormInstruction, ids: string[], options: string[], baseScope: any): void {
           for (const scope of [$scope, baseScope]) {
