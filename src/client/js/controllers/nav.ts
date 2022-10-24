@@ -8,6 +8,9 @@ module fng.controllers {
     function clearContextMenu() {
       $scope.items = [];
       $scope.contextMenu = undefined;
+      $scope.contextMenuId = undefined;
+      $scope.contextMenuHidden = undefined;
+      $scope.contextMenuDisabled = undefined;
     }
 
     $rootScope.navScope = $scope;  // Lets plugins access menus
@@ -95,11 +98,19 @@ module fng.controllers {
       return result;
     };
 
+    function initialiseContextMenu(menuCaption: string): void {
+      $scope.contextMenu = menuCaption;
+      const menuId = `${_.camelCase(menuCaption)}ContextMenu`;
+      $scope.contextMenuId = menuId;
+      $scope.contextMenuHidden = $rootScope.isSecurelyHidden(menuId);
+      $scope.contextMenuDisabled = $rootScope.isSecurelyDisabled(menuId);
+    }
+
     $scope.$on('fngControllersLoaded', function(evt, sharedData, modelName) {
-      $scope.contextMenu = sharedData.dropDownDisplay || sharedData.modelNameDisplay || $filter('titleCase')(modelName, false);
+      initialiseContextMenu(sharedData.dropDownDisplay || sharedData.modelNameDisplay || $filter('titleCase')(modelName, false));
       if (sharedData.dropDownDisplayPromise) {
         sharedData.dropDownDisplayPromise.then((value) => {
-          $scope.contextMenu = value;
+          initialiseContextMenu(value);
         });
       }
     });
