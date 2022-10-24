@@ -228,13 +228,23 @@ module fng.services {
           if (['inline','stacked'].includes(options.formstyle)) {
             placeHolder = placeHolder || fieldInfo.label;
           }
-          common = 'data-ng-model="' + modelString + '"' + (idString ? ' id="' + idString + '" name="' + idString + '" ' : ' name="' + nameString + '" ');
-          common += (placeHolder ? ('placeholder="' + placeHolder + '" ') : '');
+          common = 'data-ng-model="' + modelString + '"';
+          if (idString) {
+            common += ` id="${idString}"`;
+          }
+          if (nameString) {
+            common += ` name="${nameString}"`;
+          } else if (idString) {
+            common += ` name="${idString}"`;
+          }
+          if (placeHolder) {
+            common += ` placeholder="${placeHolder}"`;
+          }
           if (fieldInfo.popup) {
-            common += 'title="' + fieldInfo.popup + '" ';
+            common += ` title="${fieldInfo.popup}"`;
           }
           if (fieldInfo.ariaLabel) {
-            common += 'aria-label="' + fieldInfo.ariaLabel + '" ';
+            common += ` aria-label="${fieldInfo.ariaLabel}"`;
           }
           common += addAllService.addAll(scope, 'Field', null, options);
           return {
@@ -256,6 +266,9 @@ module fng.services {
             let helpMarkup = cssFrameworkService.framework() === 'bs2' ? { el: 'span', cl: 'help-inline'} : {el: 'div', cl: 'help-block'};
             value += `<${helpMarkup.el} class="${helpMarkup.cl}">${inlineHelp}</${helpMarkup.el}>`;
           }
+          // this is a dummy tag identifying where the input ends and the messages block (that is only visible when the form field is $dirty)
+          // begins.  our caller could replace this tag with anything it needs to insert between these two things.
+          value += "<dms/>";
           if (!options.noid) {
             value += `<div ng-if="${(options.name || 'myForm')}['${fieldInfo.id}'].$dirty" class="help-block">` +
                 ` <div ng-messages="${(options.name || 'myForm')}['${fieldInfo.id}'].$error">` +
@@ -304,11 +317,11 @@ module fng.services {
           const arrayStr = (options.model || 'record') + '.' + info.name;
           let result = "";
           result += '<div id="' + info.id + 'List" class="' + controlDivClasses.join(' ') + '" ' + indentStr + ' ng-repeat="arrayItem in ' + arrayStr + ' track by $index">';
-          result += inputMarkup;
           const disableCond = handleReadOnlyDisabled(info);
-          if (info.type !== 'link') {
-              result += `<i ${disableCond} ng-click="remove('${info.name}', $index, $event)" id="remove_${info.id}_{{$index}}" class="${glyphClass()}-minus-sign"></i>`;
-          }
+          const removeBtn = info.type !== 'link'
+            ? `<i ${disableCond} ng-click="remove('${info.name}', $index, $event)" id="remove_${info.id}_{{$index}}" class="${glyphClass()}-minus-sign"></i>`
+            : "";
+          result += inputMarkup.replace("<dms/>", removeBtn);
           result += '</div>';
           indentStr = cssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols(' + arrayStr + '.length)" ' : "";
           if (info.help) {
