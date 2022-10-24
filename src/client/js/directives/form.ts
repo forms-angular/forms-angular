@@ -52,7 +52,7 @@ module fng.directives {
         var subkeys = [];
         var tabsSetup:tabsSetupState = tabsSetupState.N;
 
-        var generateInput = function (fieldInfo, modelString, isRequired, idString, options) {
+        var generateInput = function (fieldInfo, modelString, isRequired, options) {
 
           function generateEnumInstructions() : IEnumInstruction{
             var enumInstruction:IEnumInstruction;
@@ -77,7 +77,8 @@ module fng.directives {
             return enumInstruction;
           }
 
-          var nameString;
+          let idString = fieldInfo.id;
+          let nameString: string;
           if (!modelString) {
             var modelBase = (options.model || 'record') + '.';
             modelString = modelBase;
@@ -99,8 +100,8 @@ module fng.directives {
                   nameString = compoundName.replace(/\./g, '-');
                   // this used to be set to null, presumably because it was considered necessary for the id to be completely
                   // unique.  however, that isn't strictly necessary, and to enable security rules to be based upon element ids,
-                  // we want there always to be one (and *not* based upon $index or similar)
-                  idString = idString || `f_${nameString}`;
+                  // we want there always to be one (and for this *not* based upon $index or similar)
+                  //idString = null;
                 }
               }
             } else {
@@ -113,9 +114,7 @@ module fng.directives {
           var value;
           isRequired = isRequired || fieldInfo.required;
           var requiredStr = isRequired ? ' required ' : '';
-          var enumInstruction:IEnumInstruction;
-
-
+          var enumInstruction: IEnumInstruction;
 
           switch (fieldInfo.type) {
             case 'select' :
@@ -556,13 +555,13 @@ module fng.directives {
               template += formMarkupHelper.label(scope, info, info.type !== 'link', options);
               const stashedHelp = info.help;
               delete info.help;
-              const inputHtml = generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, info.id + '_{{$index}}', options);
+              const inputHtml = generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, options);
               info.help = stashedHelp;
               template += formMarkupHelper.handleArrayInputAndControlDiv(inputHtml, controlDivClasses, info, options);
             } else {
               // Single fields here
               template += formMarkupHelper.label(scope, info, null, options);
-              template += formMarkupHelper.handleInputAndControlDiv(generateInput(info, null, (<any>options).required, info.id, options), controlDivClasses);
+              template += formMarkupHelper.handleInputAndControlDiv(generateInput(info, null, (<any>options).required, options), controlDivClasses);
             }
           }
           template += fieldChrome.closeTag;

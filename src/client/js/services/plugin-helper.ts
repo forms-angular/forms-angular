@@ -73,16 +73,13 @@ module fng.services {
         }
         var controlDivClasses = formMarkupHelper.controlDivClasses(options);
         var elementHtml = fieldChrome.template + formMarkupHelper.label(scope, info, addButtons, options);
-        var modelString, idString, nameString;
-
+        let idString = info.id;
+        let nameString = info.name;
+        let modelString: string;
         if (addButtons) {
           modelString = "arrayItem" + (needsX ? ".x" : "");
-          idString = info.id + "_{{$index}}";
-          nameString = info.name + "_{{$index}}";
         } else {
           modelString = model + "." + info.name;
-          idString = info.id;
-          nameString = info.name;
         }
 
         if (options.subschema && info.name.indexOf(".") !== -1) {
@@ -108,8 +105,8 @@ module fng.services {
               nameString = compoundName.replace(/\./g, "-");
               // this used to be set to null, presumably because it was considered necessary for the id to be completely
               // unique.  however, that isn't strictly necessary, and to enable security rules to be based upon element ids,
-              // we want there always to be one (and *not* based upon $index or similar)
-              idString = idString || `f_${nameString}`;
+              // we want there always to be one (and for this *not* based upon $index or similar)
+              //idString = null;
             }
           }
         }
