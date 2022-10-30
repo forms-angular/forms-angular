@@ -839,13 +839,13 @@ describe('formInput', function () {
 
     it('on nested field', function () {
       var cg = angular.element(elm.find('div')[10]);
-      expect(cg.attr('id')).toBe('cg_f_exams_subject');
+      expect(cg.attr('id')).toBe('cg_f_exams_subject_0');
       expect(cg.attr('ng-show')).toBe('record.boolean===true');
     });
 
     it('dependent on nested field', function () {
       var cg = angular.element(elm.find('div')[12]);
-      expect(cg.attr('id')).toBe('cg_f_exams_retakeDate');
+      expect(cg.attr('id')).toBe('cg_f_exams_retakeDate_0');
       expect(cg.attr('ng-show')).toBe('record.exams[$index].result===\'fail\'');
     });
 
