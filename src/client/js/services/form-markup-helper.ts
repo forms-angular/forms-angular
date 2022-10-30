@@ -92,25 +92,49 @@ module fng.services {
         }
       }
 
+      function generateArrayElementIdString(idString: string, info: fng.IFormInstruction, options: fng.IFormOptions): string {
+        if (options.subschema && options.model) {
+          // for subschemas, it is possible that our model will begin with $parent., or $parent.$parent. (etc).  though a bit of 
+          // a hack where this does occur (probably where a directive used by a sub-schema is using a nested <form-input>
+          // directive), we need to look for the $index in the same place as our model is looking for data.
+          let model = options.model;
+          let nestedSteps = 0;
+          const stepIndicator = "$parent.";
+          while (model.startsWith(stepIndicator)) {
+            nestedSteps++;
+            model = model.substring(stepIndicator.length);
+          }
+          return `${idString}_{{${stepIndicator.repeat(nestedSteps)}$index}}`;
+        } else {
+          return `${idString}_{{$index}}`;
+        }        
+      }
+
+      function isArrayElement(scope: angular.IScope, info: fng.IFormInstruction, options: fng.IFormOptions): boolean {
+        return scope["$index"] !== undefined || !!options.subschema;
+      }
+
       return {
         isHorizontalStyle: isHorizontalStyle,
 
-        fieldChrome: function fieldChrome(scope, info, options): { omit?: boolean, template?: string, closeTag?: string } {
+        isArrayElement,
+
+        fieldChrome: function fieldChrome(scope: angular.IScope, info: fng.IFormInstruction, options: fng.IFormOptions): { omit?: boolean, template?: string, closeTag?: string } {
           var insert = '';
 
           if (info.id && typeof info.id.replace === "function") {
-            const id = `cg_${info.id.replace(/\./g, '-')}`;
-            insert += `id="${id}"`;
+            const idStr = `cg_${info.id.replace(/\./g, '-')}`;
+            insert += `id="${isArrayElement(scope, info, options) ? generateArrayElementIdString(idStr, info, options) : idStr}"`;
             if (formsAngular.elemSecurityFuncBinding && formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName]) {
               if (formsAngular.elemSecurityFuncBinding === "instant") {
-                if ($rootScope.isSecurelyHidden(id)) {
+                if ($rootScope.isSecurelyHidden(idStr)) {
                   // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be 
                   // added to the dom for this field, which we indicate to our caller as follows...
                   return { omit: true };
                 };
               } else {
                 const bindingStr = formsAngular.elemSecurityFuncBinding === "one-time" ? "::" : "";
-                insert += ` data-ng-if="${bindingStr}!${formsAngular.elemSecurityFuncName}('${id}', 'hidden')"`;
+                insert += ` data-ng-if="${bindingStr}!${formsAngular.elemSecurityFuncName}('${idStr}', 'hidden')"`;
               }
             }
           }
@@ -165,7 +189,7 @@ module fng.services {
           return {template: template, closeTag: closeTag};
         },
 
-        label: function label(scope, fieldInfo, addButtonMarkup, options) {
+        label: function label(scope: angular.IScope, fieldInfo: fng.IFormInstruction, addButtonMarkup: boolean, options: fng.IFormOptions) {
           var labelHTML = '';
           if ((cssFrameworkService.framework() === 'bs3' || (!['inline','stacked'].includes(options.formstyle) && fieldInfo.label !== '')) || addButtonMarkup) {
             labelHTML = '<label';
@@ -207,11 +231,11 @@ module fng.services {
 
         glyphClass,
 
-        allInputsVars: function allInputsVars(scope, fieldInfo, options, modelString, idString, nameString) {
+        allInputsVars: function allInputsVars(scope: angular.IScope, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, modelString: string, idString: string, nameString: string): Partial<fng.IBuildingBlocks> {
 
           var placeHolder = fieldInfo.placeHolder;
 
-          var common;
+          var common: string;
           var compactClass = '';
           var sizeClassBS3 = '';
           var sizeClassBS2 = '';
@@ -256,7 +280,7 @@ module fng.services {
           };
         },
 
-        inputChrome: function inputChrome(value, fieldInfo, options: fng.IFormOptions, markupVars) {
+        inputChrome: function inputChrome(value, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, markupVars) {
           if (cssFrameworkService.framework() === 'bs3' && isHorizontalStyle(options.formstyle, true) && fieldInfo.type !== 'checkbox') {
             value = '<div class="bs3-input ' + markupVars.sizeClassBS3 + '">' + value + '</div>';
           }
@@ -283,7 +307,7 @@ module fng.services {
           return value;
         },
 
-        generateSimpleInput: function generateSimpleInput(common, fieldInfo, options) {
+        generateSimpleInput: function generateSimpleInput(common: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions) {
           var result = '<input ' + common + 'type="' + fieldInfo.type + '" ';
           if (!fieldInfo.label && !fieldInfo.ariaLabel) {
             result += `aria-label="${fieldInfo.name.replace(/\./g,' ')}" `
@@ -297,7 +321,7 @@ module fng.services {
           return result;
         },
 
-        controlDivClasses: function controlDivClasses(options) {
+        controlDivClasses: function controlDivClasses(options: fng.IFormOptions) {
           var result = [];
           if (isHorizontalStyle(options.formstyle, false)) {
             result.push(cssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-9');
@@ -305,14 +329,14 @@ module fng.services {
           return result;
         },
 
-        handleInputAndControlDiv: function handleInputAndControlDiv(inputMarkup, controlDivClasses) {
+        handleInputAndControlDiv: function handleInputAndControlDiv(inputMarkup: string, controlDivClasses: string[]): string {
           if (controlDivClasses.length > 0) {
             inputMarkup = '<div class="' + controlDivClasses.join(' ') + '">' + inputMarkup + '</div>';
           }
           return inputMarkup;
         },
 
-        handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup, controlDivClasses, info, options: fng.IFormOptions) {
+        handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup: string, controlDivClasses: string[], info: fng.IFormInstruction, options: fng.IFormOptions): string {
           let indentStr = cssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols($index)" ' : "";
           const arrayStr = (options.model || 'record') + '.' + info.name;
           let result = "";
@@ -343,7 +367,9 @@ module fng.services {
           return result;
         },
 
-        handleReadOnlyDisabled
+        handleReadOnlyDisabled,
+
+        generateArrayElementIdString
       }
     }
 }

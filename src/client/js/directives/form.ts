@@ -76,8 +76,10 @@ module fng.directives {
             }
             return enumInstruction;
           }
-
           let idString = fieldInfo.id;
+          if (fieldInfo.array || options.subschema) {
+            idString = formMarkupHelper.generateArrayElementIdString(idString, fieldInfo, options);
+          }
           let nameString: string;
           if (!modelString) {
             var modelBase = (options.model || 'record') + '.';
@@ -98,10 +100,6 @@ module fng.directives {
                 } else {
                   modelString += '[$index].' + lastPart;
                   nameString = compoundName.replace(/\./g, '-');
-                  // this used to be set to null, presumably because it was considered necessary for the id to be completely
-                  // unique.  however, that isn't strictly necessary, and to enable security rules to be based upon element ids,
-                  // we want there always to be one (and for this *not* based upon $index or similar)
-                  //idString = null;
                 }
               }
             } else {
