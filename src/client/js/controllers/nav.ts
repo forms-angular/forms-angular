@@ -98,12 +98,16 @@ module fng.controllers {
       return result;
     };
 
+    $scope.secureContextMenu = function(): void {
+      $scope.contextMenuHidden = $rootScope.isSecurelyHidden($scope.contextMenuId);
+      $scope.contextMenuDisabled = $rootScope.isSecurelyDisabled($scope.contextMenuId);
+    }
+
     function initialiseContextMenu(menuCaption: string): void {
       $scope.contextMenu = menuCaption;
       const menuId = `${_.camelCase(menuCaption)}ContextMenu`;
       $scope.contextMenuId = menuId;
-      $scope.contextMenuHidden = $rootScope.isSecurelyHidden(menuId);
-      $scope.contextMenuDisabled = $rootScope.isSecurelyDisabled(menuId);
+      $scope.secureContextMenu();
     }
 
     $scope.$on('fngControllersLoaded', function(evt, sharedData, modelName) {
