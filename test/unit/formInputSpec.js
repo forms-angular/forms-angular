@@ -349,9 +349,9 @@ describe('formInput', function () {
 
     it('text and textarea', function () {
       var input = angular.element(elm.find('input')[0]);
-      expect(input.attr('readonly')).toBe('readonly');
+      expect(input.attr('disabled')).toBe('disabled');
       input = elm.find('textarea');
-      expect(input.attr('readonly')).toBe('readonly');
+      expect(input.attr('disabled')).toBe('disabled');
     });
 
     it('select', function () {
@@ -839,13 +839,13 @@ describe('formInput', function () {
 
     it('on nested field', function () {
       var cg = angular.element(elm.find('div')[10]);
-      expect(cg.attr('id')).toBe('cg_f_exams_subject');
+      expect(cg.attr('id')).toBe('cg_f_exams_subject_0');
       expect(cg.attr('ng-show')).toBe('record.boolean===true');
     });
 
     it('dependent on nested field', function () {
       var cg = angular.element(elm.find('div')[12]);
-      expect(cg.attr('id')).toBe('cg_f_exams_retakeDate');
+      expect(cg.attr('id')).toBe('cg_f_exams_retakeDate_0');
       expect(cg.attr('ng-show')).toBe('record.exams[$index].result===\'fail\'');
     });
 

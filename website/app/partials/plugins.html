@@ -222,12 +222,10 @@
     return {
       restrict: 'E',
       link: function (scope, element, attr) {
-        var processedAttr = pluginHelper.extractFromAttr(attr);
         var elementHtml = pluginHelper.buildInputMarkup(
           scope,
-          attr.model,
-          processedAttr.info,
-          processedAttr.options,
+          attr,
+          {},
           function(buildingBlocks) {return '&lt;input type="text" ' + buildingBlocks.common + '&gt;'}
         );
         element.replaceWith($compile(elementHtml)(scope));
@@ -245,9 +243,10 @@
         var requiredStr = processedAttr.info.required ? ' required' : '';
         var elementHtml = pluginHelper.buildInputMarkup(
           scope,
-          attr.model,
-          processedAttr.info,
-          processedAttr.options,
+          attr,
+          {
+            processedAttr,
+          },
           function(buildingBlocks) {
             return formMarkupHelper.generateSimpleInput(
               buildingBlocks.common + formMarkupHelper.addTextInputMarkup(

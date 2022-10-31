@@ -272,19 +272,13 @@ module fng.services {
           var idList = $scope[suffixCleanId(schemaEntry, "_ids")];
           let thisConversion: any;
           if (fieldValue && idList && idList.length > 0) {
-            if (fieldName.indexOf(".") !== -1) {
-              throw new Error("Trying to directly assign to a nested field 332");
-            }  // Not sure that this can happen, but put in a runtime test
             if (
-                /*
-                 Check we are starting with an ObjectId (ie not being called because of $watch on conversion, with a
-                 converted value, which would cause an exception)
-                 */
-                fieldValue.toString().match(/^[a-f0-9]{24}$/) &&
-                /*
-                  We are not suppressing conversions
-                 */
-                (!schemaEntry.internalRef || !schemaEntry.internalRef.noConvert)
+              // it's not a nested field
+              !fieldName.includes(".") && 
+              // Check we are starting with an ObjectId (ie not being called because of $watch on conversion, with a converted value, which would cause an exception)
+              fieldValue.toString().match(/^[a-f0-9]{24}$/) &&
+              // We are not suppressing conversions
+              (!schemaEntry.internalRef || !schemaEntry.internalRef.noConvert)
             ) {
               anObject[fieldName] = convertForeignKeys(schemaEntry, fieldValue, $scope[suffixCleanId(schemaEntry, "Options")], idList);
             }
@@ -1325,12 +1319,25 @@ module fng.services {
         };
 
         $scope.sortableOptions = {
-          update: function() {
-            if ($scope.topLevelFormName) {
-              $scope[$scope.topLevelFormName].$setDirty();
-            }
-          }
-        };
+          update: function (e, ui) {
+              if (e.target.hasAttribute("disabled")) {
+                  // where formsAngular.elemSecurityFuncBinding is set to "one-time" or "normal", the <ol> that the
+                  // ui-sortable directive has been used with will have an ng-disabled that may or may not have caused
+                  // a disabled attribute to be added to that element.  in the case where this attribute has been
+                  // added, sorting should be prevented.
+                  // allowing the user to begin the drag, and then preventing it only once they release the mouse button,
+                  // doesn't seem like the best solution, but I've yet to find something that works better.  the
+                  // cancel property (see commented-out code below) looks like it should work (and kind of does), but this
+                  // screws up mouse events on input fields hosted within the draggable <li> items, so you're
+                  // basically prevented from updating any form element in the nested schema
+                  ui.item.sortable.cancel();
+              } else if ($scope.topLevelFormName) {
+                  $scope[$scope.topLevelFormName].$setDirty();
+              }
+          },
+          // don't do this (see comment above)
+          //cancel: "ol[disabled]>li"
+      };
 
         $scope.setUpCustomLookupOptions = function (schemaElement: IFormInstruction, ids: string[], options: string[], baseScope: any): void {
           for (const scope of [$scope, baseScope]) {

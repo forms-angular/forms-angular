@@ -8,9 +8,18 @@ module fng.controllers {
     function clearContextMenu() {
       $scope.items = [];
       $scope.contextMenu = undefined;
+      $scope.contextMenuId = undefined;
+      $scope.contextMenuHidden = undefined;
+      $scope.contextMenuDisabled = undefined;
     }
 
     $rootScope.navScope = $scope;  // Lets plugins access menus
+    $rootScope.isSecurelyHidden = function (elemId) {
+      return formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName](elemId, "hidden");
+    }
+    $rootScope.isSecurelyDisabled = function (elemId) {
+      return formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName](elemId, "disabled");
+    }
     clearContextMenu();
 
     $scope.toggleCollapsed = function() {
@@ -89,11 +98,23 @@ module fng.controllers {
       return result;
     };
 
+    $scope.secureContextMenu = function(): void {
+      $scope.contextMenuHidden = $rootScope.isSecurelyHidden($scope.contextMenuId);
+      $scope.contextMenuDisabled = $rootScope.isSecurelyDisabled($scope.contextMenuId);
+    }
+
+    function initialiseContextMenu(menuCaption: string): void {
+      $scope.contextMenu = menuCaption;
+      const menuId = `${_.camelCase(menuCaption)}ContextMenu`;
+      $scope.contextMenuId = menuId;
+      $scope.secureContextMenu();
+    }
+
     $scope.$on('fngControllersLoaded', function(evt, sharedData, modelName) {
-      $scope.contextMenu = sharedData.dropDownDisplay || sharedData.modelNameDisplay || $filter('titleCase')(modelName, false);
+      initialiseContextMenu(sharedData.dropDownDisplay || sharedData.modelNameDisplay || $filter('titleCase')(modelName, false));
       if (sharedData.dropDownDisplayPromise) {
         sharedData.dropDownDisplayPromise.then((value) => {
-          $scope.contextMenu = value;
+          initialiseContextMenu(value);
         });
       }
     });
@@ -143,9 +164,10 @@ module fng.controllers {
         return item.isHidden ? item.isHidden() : false
       }
 
-      let dividerHide = false
+      let dividerHide = false;
+      const item = $scope.items[index];
       // Hide a divider if it appears under another
-      if ($scope.items[index].divider) {
+      if (item.divider) {
         if (index === 0) {
           dividerHide = true;
         } else {
@@ -162,7 +184,7 @@ module fng.controllers {
           }
         }
       }
-      return dividerHide || explicitlyHidden($scope.items[index]);
+      return dividerHide || explicitlyHidden(item);
     };
 
     $scope.isDisabled = function (index) {
