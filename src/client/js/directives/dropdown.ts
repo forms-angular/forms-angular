@@ -2,12 +2,12 @@
 
 module fng.directives {
   /*@ngInject*/
-  export function modelControllerDropdown(): angular.IDirective {
+  export function modelControllerDropdown(securityService: fng.ISecurityService): angular.IDirective {
     let menuVisibilityStr: string;
     let menuDisabledStr: string;
     let itemVisibilityStr = "isHidden($index)";
     let itemClassStr = `ng-class="dropdownClass($index)"`;
-    if (formsAngular.elemSecurityFuncBinding) {
+    if (securityService.canDoSecurity()) {
       // without a more fundamental re-write, we cannot support "instant" binding here, so we'll fall-back to using
       // the next-best alternative, which is one-time binding
       const oneTimeBinding = formsAngular.elemSecurityFuncBinding !== "normal";
@@ -17,15 +17,15 @@ module fng.directives {
       // attribute in the doClick(...) function, and aborting if this is found.
       // note that the 'normal' class introduced here might not actually do anything, but for one-time binding to work
       // properly, we need a truthy value
-      itemClassStr += ` class="{{ ${bindingStr}isSecurelyDisabled(choice.id) ? 'disabled' : 'normal' }}"`;
+      itemClassStr += ` class="{{ ${bindingStr}(!choice.divider && isSecurelyDisabled(choice.id)) ? 'disabled' : 'normal' }}"`;
       if (oneTimeBinding) {
         // because the isHidden(...) logic is highly likely to be model dependent, that cannot be one-time bound.  to
         // be able to combine one-time and regular binding, we'll use ng-if for the one-time bound stuff and ng-hide for the rest
-        itemVisibilityStr = `ng-if="::!isSecurelyHidden(choice.id)" ng-hide="${itemVisibilityStr}"`;
+        itemVisibilityStr = `ng-if="::(choice.divider || !isSecurelyHidden(choice.id))" ng-hide="${itemVisibilityStr}"`;
       } else if (formsAngular.elemSecurityFuncBinding === "normal") {
-        itemVisibilityStr = `ng-hide="isSecurelyHidden(choice.id) || ${itemVisibilityStr}"`;
+        itemVisibilityStr = `ng-hide="${itemVisibilityStr} || (!choice.divider && isSecurelyHidden(choice.id))"`;
       }
-      menuVisibilityStr = `ng-if="!contextMenuHidden"`;
+      menuVisibilityStr = `ng-if="contextMenuId && !contextMenuHidden"`;
       menuDisabledStr = `disableable-link ng-disabled="contextMenuDisabled"`;
     } else {
       menuVisibilityStr = "";

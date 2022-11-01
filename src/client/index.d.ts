@@ -431,6 +431,8 @@ declare module fng {
       options: string[],
       baseScope: any
     ) => void;
+    isSecurelyHidden: (elemId: string) => boolean;
+    isSecurelyDisabled: (elemId: string) => boolean;
   }
 
   export interface IContextMenuDivider {
@@ -597,6 +599,15 @@ declare module fng {
       processedAttrs: IProcessedAttrs,
       idSuffix: string
     ) => string;
+  }
+  
+  interface ISecurityService {
+    canDoSecurity: () => boolean;
+    canDoSecurityNow: () => boolean;
+    isSecurelyHidden: (elemId: string) => boolean;
+    isSecurelyDisabled: (elemId: string) => boolean;
+    decorateFormScope: (formScope: IFormScope) => void;
+    doSecurityWhenReady: (cb: () => void) => void;
   }
 }
 

@@ -3,7 +3,7 @@
 module fng.services {
 
   /*@ngInject*/
-  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, $filter, $rootScope) {
+  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, securityService: fng.ISecurityService, $filter, $rootScope) {
 
       function generateNgShow(showWhen, model) {
 
@@ -56,7 +56,7 @@ module fng.services {
         function wrapReadOnly(): string {
           return fieldInfo.readonly ? ` ng-disabled="${fieldInfo.readonly}" ` : "";
         }
-        if (!fieldInfo.id || !formsAngular.elemSecurityFuncBinding || !formsAngular.elemSecurityFuncName || !$rootScope[formsAngular.elemSecurityFuncName]) {
+        if (!fieldInfo.id || !securityService.canDoSecurityNow()) {
           // no security, so we're just concerned about what value fieldInfo.readonly has
           return wrapReadOnly();
         }
@@ -125,7 +125,7 @@ module fng.services {
           if (info.id && typeof info.id.replace === "function") {
             const idStr = `cg_${info.id.replace(/\./g, '-')}`;
             insert += `id="${isArrayElement(scope, info, options) ? generateArrayElementIdString(idStr, info, options) : idStr}"`;
-            if (formsAngular.elemSecurityFuncBinding && formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName]) {
+            if (securityService.canDoSecurityNow()) {
               if (formsAngular.elemSecurityFuncBinding === "instant") {
                 if ($rootScope.isSecurelyHidden(idStr)) {
                   // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be 

@@ -59,6 +59,7 @@ module fng {
   .factory('recordHandler', fng.services.recordHandler)
   .factory('SchemasService', fng.services.SchemasService)
   .factory('SubmissionsService', fng.services.SubmissionsService)
+  .factory('securityService', fng.services.securityService)
   ;
 }
 
