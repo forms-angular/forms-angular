@@ -15,7 +15,7 @@ module fng.services {
         let parentScope = localScope.$parent;
         parentScope.items = parentScope.items || [];
 
-        let addMenuOptions = function (array) {
+        let addMenuOptions = function (array: Array<fng.IContextMenuOption & fng.IContextMenuDivider>) {
           angular.forEach(array, function (value) {
             if (value.divider) {
               needDivider = true;
@@ -23,6 +23,10 @@ module fng.services {
               if (needDivider) {
                 needDivider = false;
                 parentScope.items.push({divider: true});
+              }
+              if (!value.id) {
+                // if it doesn't have an id, give it one, so every menu item is possible to secure
+                value.id = _.camelCase(value.text || value.textFunc() || "");
               }
               parentScope.items.push(value);
             }
