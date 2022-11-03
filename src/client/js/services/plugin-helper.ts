@@ -7,18 +7,45 @@ module fng.services {
 
   /*@ngInject*/
   export function pluginHelper(formMarkupHelper): IPluginHelper {
-    function internalGenDisabledStr(id: string, processedAttrs: fng.IProcessedAttrs, forceNg?: boolean): string {
-      const result = formMarkupHelper.handleReadOnlyDisabled({ id, readonly: processedAttrs.info.readonly }).trim();
+    function internalGenDisabledStr(scope: fng.IFormScope, id: string, processedAttrs: fng.IProcessedAttrs, idSuffix: string, params?: fng.IGenDisableStrParams): string {
+      // Generally, when genIdAndDisabledStr is called from a directive, the idSuffix will be something like "select"
+      // or "hasValueCheckbox" (thus enabling a single directive to create a template that includes more than one form
+      // element - such as a checkbox and an input - each of which has a unique id).
+      // Where a directive is responsible for creating markup for an whole array of elements, it is likely to include an
+      // ng-repeat in the template that it generates, and in this case, the idSuffix that it passes to genIdAndDisabledStr
+      // will probably include a reference to $index to ensure uniqueness.
+      // Where idSuffix /does/ contain a reference to $index, the directive should provide a version of the idSuffix
+      // in the params object which does NOT include this.
+      // This is what we need to use for the ng-disabled/ng-readonly expression.
+      // (ReallyCare development hint: for an example of where this is needed, see or-opts.ts.)
+      if (params?.nonUniqueIdSuffix) {
+        id = id.replace(idSuffix, params.nonUniqueIdSuffix);
+      }
+      const result = formMarkupHelper.handleReadOnlyDisabled({ id, readonly: processedAttrs.info.readonly }, scope).trim();
       // some types of control (such as ui-select) don't deal correctly with a DISABLED attribute and
       // need ng-disabled, even when the expression is simply "true"
-      if (forceNg && result.toLowerCase() === "disabled") {
+      if (params?.forceNg && result.toLowerCase() === "disabled") {
         return 'ng-disabled="true"';
       } else {
         return result;
       }
     }
 
-    function makeIdStringUniqueForArrayElements(scope: angular.IScope, processedAttrs: fng.IProcessedAttrs, idString: string): string {
+    // text surrounded by @@ @@ is assumed to be something that can have a pseudonym.  We'll rely
+    // upon the relevant controller assigning a pseudo() function to baseScope.
+    function handlePseudos(str: string): string {
+      if (!str) {
+        return str;
+      }
+      let result = str;
+      while (result.includes("@@")) {
+        result = result.replace("@@", "{{ baseScope.pseudo('");
+        result = result.replace("@@", "', true) }}");
+      }
+      return result;
+    }
+
+    function makeIdStringUniqueForArrayElements(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idString: string): string {
       if (formMarkupHelper.isArrayElement(scope, processedAttrs.info, processedAttrs.options)) {
         return formMarkupHelper.generateArrayElementIdString(idString, processedAttrs.info, processedAttrs.options);
       } else {
@@ -26,7 +53,7 @@ module fng.services {
       }
     }
 
-    function internalGenIdString(scope: angular.IScope, processedAttrs: fng.IProcessedAttrs, suffix: string, makeUniqueForArrayElements: boolean): string {
+    function internalGenIdString(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, suffix: string, makeUniqueForArrayElements: boolean): string {
       let result = processedAttrs.info.id;
       if (suffix) {
         if (!suffix.startsWith("_")) {
@@ -40,8 +67,8 @@ module fng.services {
       return result;
     }
 
-    function internalGenDateTimePickerDisabledStr(processedAttrs: fng.IProcessedAttrs, idString: string) {
-      let rawDisabledStr = internalGenDisabledStr(idString, processedAttrs, true);
+    function internalGenDateTimePickerDisabledStr(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string, idString: string) {
+      let rawDisabledStr = internalGenDisabledStr(scope, idString, processedAttrs, idSuffix, { forceNg: true });
       let disabledStr = "";
       // disabledStr might now include an ng-disabled attribute.  To disable both the date and time inputs, we need to
       // take the value of that attribute and wrap it up as two new attributes: "disabledDate" and "readonlyTime"
@@ -109,14 +136,27 @@ module fng.services {
           }
         }
       }
-      return { info: info as IFormInstruction, options: options as IFormOptions, directiveOptions };
+      const result = { info: info as IFormInstruction, options: options as IFormOptions, directiveOptions };
+      // any part of the help text or label that is surrounded by @@ @@ is assumed to be something that can have
+      // a pseudonym.  We'll be relying upon the parent controller assigning a pseudo() function to baseScope to
+      // actually perform the translation.
+      // TODO - do this better when fng is re-written!
+      result.info.help = handlePseudos(result.info.help);
+      result.info.label = handlePseudos(result.info.label);
+      return result;
+    }
+
+    function genIdAndDisabledStr(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string, params?: fng.IGenDisableStrParams): string {
+      const idStr = internalGenIdString(scope, processedAttrs, idSuffix, false);
+      const uniqueIdStr = makeIdStringUniqueForArrayElements(scope, processedAttrs, idStr);
+      return `id="${uniqueIdStr}" ${internalGenDisabledStr(scope, idStr, processedAttrs, idSuffix, params)}`;
     }
 
     return {
       extractFromAttr,
 
       buildInputMarkup: function buildInputMarkup(
-        scope: angular.IScope,
+        scope: fng.IFormScope,
         attrs: any,
         params: {
           // most directives will need access to the processed attributes, so will have already called
@@ -195,37 +235,44 @@ module fng.services {
         // wrap this in a div that puts it into the correct bootstrap 'column' and adds validation messages and help text
         const wrappedInputHtml = formMarkupHelper.inputChrome(inputHtml, info, options, buildingBlocks);
         // further wrap this to add the control div classes, and in the case of an array, the button that allows array elements to be removed
-        const inputAndControlDivGenerator = params.addButtons
-          ? formMarkupHelper.handleArrayInputAndControlDiv
-          : formMarkupHelper.handleInputAndControlDiv;
-        elementHtml += inputAndControlDivGenerator(wrappedInputHtml, controlDivClasses, info, options);
+        if (params.addButtons) {
+          elementHtml += formMarkupHelper.handleArrayInputAndControlDiv(wrappedInputHtml, controlDivClasses, scope, info, options);
+        } else {
+          elementHtml += formMarkupHelper.handleInputAndControlDiv(wrappedInputHtml, controlDivClasses);
+        }
         elementHtml += fieldChrome.closeTag;
         return elementHtml;
       },
 
-      genIdString: function genIdString(scope: angular.IScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string): string {
+      genIdString: function genIdString(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string): string {
         return internalGenIdString(scope, processedAttrs, idSuffix, true);
       },
 
-      genDisabledStr: function genDisabledStr(scope: angular.IScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string, forceNg?: boolean): string {
+      genDisabledStr: function genDisabledStr(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string, params?: fng.IGenDisableStrParams): string {
         const idString = internalGenIdString(scope, processedAttrs, idSuffix, false);
-        return internalGenDisabledStr(idString, processedAttrs, forceNg);
+        return internalGenDisabledStr(scope, idString, processedAttrs, idSuffix, params);
       },
 
-      genIdAndDisabledStr: function genIdAndDisabledStr(scope: angular.IScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string, forceNg?: boolean): string {
+      genIdAndDisabledStr,
+
+      genDateTimePickerDisabledStr: function genDateTimePickerDisabledStr(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string): string {
         const idString = internalGenIdString(scope, processedAttrs, idSuffix, false);
-        return `id="${makeIdStringUniqueForArrayElements(scope, processedAttrs, idString)}" ` + internalGenDisabledStr(idString, processedAttrs, forceNg);
+        return internalGenDateTimePickerDisabledStr(scope, processedAttrs, idSuffix, idString);
       },
 
-      genDateTimePickerDisabledStr: function genDateTimePickerDisabledStr(scope: angular.IScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string): string {
-        const idString = internalGenIdString(scope, processedAttrs, idSuffix, false);
-        return internalGenDateTimePickerDisabledStr(processedAttrs, idString);
+      genDateTimePickerIdAndDisabledStr: function genDateTimePickerIdAndDisabledStr(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string): string {
+        const idStr = internalGenIdString(scope, processedAttrs, idSuffix, false);
+        const uniqueIdStr = makeIdStringUniqueForArrayElements(scope, processedAttrs, idStr);
+        return `id="${uniqueIdStr}" ${internalGenDateTimePickerDisabledStr(scope, processedAttrs, idSuffix, idStr)}`;
       },
 
-      genDateTimePickerIdAndDisabledStr: function genDateTimePickerIdAndDisabledStr(scope: angular.IScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string) {
-        const idString = internalGenIdString(scope, processedAttrs, idSuffix, false);
-        return `id="${makeIdStringUniqueForArrayElements(scope, processedAttrs, idString)}" ` + internalGenDateTimePickerDisabledStr(processedAttrs, idString);
+      genUiSelectIdAndDisabledStr: function genUiSelectIdAndDisabledStr(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string): string {
+        // ui-select won't be disabled when a simple DISABLED attribute is provided - it requires
+        // ng-disabled even when the value is simply "true"
+        return genIdAndDisabledStr(scope, processedAttrs, idSuffix, { forceNg: true });
       },
+
+      handlePseudos
     };
   }
 }
