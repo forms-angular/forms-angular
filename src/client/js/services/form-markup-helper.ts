@@ -3,7 +3,7 @@
 module fng.services {
 
   /*@ngInject*/
-  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, securityService: fng.ISecurityService, $filter, $rootScope) {
+  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, securityService: fng.ISecurityService, $filter) {
 
       function generateNgShow(showWhen, model) {
 
@@ -48,7 +48,7 @@ module fng.services {
         return (cssFrameworkService.framework() === 'bs2' ? 'icon' : 'glyphicon glyphicon');
       }
 
-      function handleReadOnlyDisabled(fieldInfo: fng.IFngSchemaTypeFormOpts): string {
+      function handleReadOnlyDisabled(fieldInfo: fng.IFieldViewInfo, scope: fng.IFormScope): string {
         if (fieldInfo.readonly && typeof fieldInfo.readonly === "boolean") {
           // if we have a true-valued readonly property then this trumps whatever security rule might apply to this field
           return " disabled ";
@@ -62,13 +62,13 @@ module fng.services {
         }
         if (formsAngular.elemSecurityFuncBinding === "instant") {
           // "instant" security is evaluated now, and a positive result trumps whatever fieldInfo.readonly might be set to
-          if ($rootScope.isSecurelyDisabled(fieldInfo.id)) {
+          if (scope.isSecurelyDisabled(fieldInfo.id)) {
             return " disabled ";
           } else {
             return wrapReadOnly();
           }
         }
-        const securityFuncStr = `${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')`;
+        const securityFuncStr = `isSecurelyDisabled('${fieldInfo.id}')`;
         const oneTimeBinding = formsAngular.elemSecurityFuncBinding === "one-time";
         if (fieldInfo.readonly) {
           // we have both security and a read-only attribute to deal with
@@ -119,7 +119,7 @@ module fng.services {
 
         isArrayElement,
 
-        fieldChrome: function fieldChrome(scope: angular.IScope, info: fng.IFormInstruction, options: fng.IFormOptions): { omit?: boolean, template?: string, closeTag?: string } {
+        fieldChrome: function fieldChrome(scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions): { omit?: boolean, template?: string, closeTag?: string } {
           var insert = '';
 
           if (info.id && typeof info.id.replace === "function") {
@@ -127,14 +127,14 @@ module fng.services {
             insert += `id="${isArrayElement(scope, info, options) ? generateArrayElementIdString(idStr, info, options) : idStr}"`;
             if (securityService.canDoSecurityNow()) {
               if (formsAngular.elemSecurityFuncBinding === "instant") {
-                if ($rootScope.isSecurelyHidden(idStr)) {
+                if (scope.isSecurelyHidden(idStr)) {
                   // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be 
                   // added to the dom for this field, which we indicate to our caller as follows...
                   return { omit: true };
                 };
               } else {
                 const bindingStr = formsAngular.elemSecurityFuncBinding === "one-time" ? "::" : "";
-                insert += ` data-ng-if="${bindingStr}!${formsAngular.elemSecurityFuncName}('${idStr}', 'hidden')"`;
+                insert += ` data-ng-if="${bindingStr}!isSecurelyHidden('${idStr}')"`;
               }
             }
           }
@@ -189,7 +189,7 @@ module fng.services {
           return {template: template, closeTag: closeTag};
         },
 
-        label: function label(scope: angular.IScope, fieldInfo: fng.IFormInstruction, addButtonMarkup: boolean, options: fng.IFormOptions) {
+        label: function label(scope: fng.IFormScope, fieldInfo: fng.IFormInstruction, addButtonMarkup: boolean, options: fng.IFormOptions) {
           var labelHTML = '';
           if ((cssFrameworkService.framework() === 'bs3' || (!['inline','stacked'].includes(options.formstyle) && fieldInfo.label !== '')) || addButtonMarkup) {
             labelHTML = '<label';
@@ -210,7 +210,7 @@ module fng.services {
             }
             labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
             if (addButtonMarkup) {
-              const disableCond = handleReadOnlyDisabled(fieldInfo);
+              const disableCond = handleReadOnlyDisabled(fieldInfo, scope);
               labelHTML += ` <i ${disableCond} id="add_${fieldInfo.id}" ng-click="add('${fieldInfo.name}', $event)" class="${glyphClass()}-plus-sign"></i>`;
             }
             labelHTML += '</label>';
@@ -336,12 +336,12 @@ module fng.services {
           return inputMarkup;
         },
 
-        handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup: string, controlDivClasses: string[], info: fng.IFormInstruction, options: fng.IFormOptions): string {
+        handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup: string, controlDivClasses: string[], scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions): string {
           let indentStr = cssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols($index)" ' : "";
           const arrayStr = (options.model || 'record') + '.' + info.name;
           let result = "";
           result += '<div id="' + info.id + 'List" class="' + controlDivClasses.join(' ') + '" ' + indentStr + ' ng-repeat="arrayItem in ' + arrayStr + ' track by $index">';
-          const disableCond = handleReadOnlyDisabled(info);
+          const disableCond = handleReadOnlyDisabled(info, scope);
           const removeBtn = info.type !== 'link'
             ? `<i ${disableCond} ng-click="remove('${info.name}', $index, $event)" id="remove_${info.id}_{{$index}}" class="${glyphClass()}-minus-sign"></i>`
             : "";

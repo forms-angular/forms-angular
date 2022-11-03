@@ -119,7 +119,7 @@ module fng.directives {
               if (fieldInfo.select2) {
                 value = '<input placeholder="fng-select2 has been removed" readonly>';
               } else {
-                common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo);
+                common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope);
                 common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 common += ` aria-label="${fieldInfo.label && fieldInfo.label !== "" ? fieldInfo.label : fieldInfo.name}" `;
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
@@ -170,7 +170,7 @@ module fng.directives {
             case 'radio' :
               value = '';
               common += requiredStr;
-              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo);
+              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope);
               common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
               var separateLines = options.formstyle === 'vertical' || (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
@@ -201,7 +201,7 @@ module fng.directives {
               break;
             case 'checkbox' :
               common += requiredStr;
-              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo);
+              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope);
               common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
               value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
               if (cssFrameworkService.framework() === 'bs3') {
@@ -210,7 +210,7 @@ module fng.directives {
               break;
             default:
               common += formMarkupHelper.addTextInputMarkup(allInputsVars, fieldInfo, requiredStr);
-              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo);
+              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope);
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
                   if (fieldInfo.rows === 'auto') {
@@ -432,7 +432,7 @@ module fng.directives {
                   if (info.formStyle === "inline" && info.inlineHeaders) {
                     template += generateInlineHeaders(info.schema, options, model, info.inlineHeaders === "always");
                   }
-                  const disableCond = formMarkupHelper.handleReadOnlyDisabled(info);
+                  const disableCond = formMarkupHelper.handleReadOnlyDisabled(info, scope);
                   // if we already know that the field is disabled (only possible when formsAngular.elemSecurityFuncBinding === "instant")
                   // then we don't need to add the sortable attribute at all
                   // otherwise, we need to include the ng-disabled on the <ol> so this can be referenced by the ui-sortable directive
@@ -514,7 +514,7 @@ module fng.directives {
                     } else {                    
                       hideCond = info.noAdd ? `ng-hide="${info.noAdd}"` : '';
                       indicatorShowCond = info.noAdd ? `ng-show="${info.noAdd} && ${indicatorShowCond}"` : '';
-                      const disableCond = formMarkupHelper.handleReadOnlyDisabled(info);
+                      const disableCond = formMarkupHelper.handleReadOnlyDisabled(info, scope);
                       footer +=
                         `<button ${hideCond} ${disableCond} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">` + 
                         ` <i class="${formMarkupHelper.glyphClass()}-plus"></i> Add ` + 
@@ -555,7 +555,7 @@ module fng.directives {
               delete info.help;
               const inputHtml = generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, options);
               info.help = stashedHelp;
-              template += formMarkupHelper.handleArrayInputAndControlDiv(inputHtml, controlDivClasses, info, options);
+              template += formMarkupHelper.handleArrayInputAndControlDiv(inputHtml, controlDivClasses, scope, info, options);
             } else {
               // Single fields here
               template += formMarkupHelper.label(scope, info, null, options);

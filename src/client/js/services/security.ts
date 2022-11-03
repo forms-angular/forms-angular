@@ -11,12 +11,12 @@ module fng.services {
       return canDoSecurity() && $rootScope[formsAngular.elemSecurityFuncName];
     }
 
-    function isSecurelyHidden(elemId: string) {
-      return $rootScope[formsAngular.elemSecurityFuncName](elemId, "hidden");
+    function isSecurelyHidden(elemId: string, pseudoUrl?: string) {
+      return $rootScope[formsAngular.elemSecurityFuncName](elemId, "hidden", pseudoUrl);
     };
 
-    function isSecurelyDisabled(elemId: string) {
-      return $rootScope[formsAngular.elemSecurityFuncName](elemId, "disabled");
+    function isSecurelyDisabled(elemId: string, pseudoUrl?: string) {
+      return $rootScope[formsAngular.elemSecurityFuncName](elemId, "disabled", pseudoUrl);
     };
 
     return {
@@ -28,10 +28,14 @@ module fng.services {
 
       isSecurelyDisabled,
 
-      decorateFormScope: function (formScope: fng.IFormScope): void {
+      decorateFormScope: function (formScope: fng.IFormScope, pseudoUrl?: string): void {
         if (canDoSecurity()) {
-          formScope.isSecurelyHidden = isSecurelyHidden;
-          formScope.isSecurelyDisabled = isSecurelyDisabled;
+          formScope.isSecurelyHidden = function (elemId: string) {
+            return isSecurelyHidden(elemId, pseudoUrl); 
+          }
+          formScope.isSecurelyDisabled = function (elemId: string) {
+            return isSecurelyDisabled(elemId, pseudoUrl);
+          }
         }
       },
 

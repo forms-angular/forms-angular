@@ -325,7 +325,7 @@ declare module fng {
     unshift(fieldName: string, $event, $scope: IFormScope, modelOverride?: any);
     remove(fieldName: string, value, $event, $scope: IFormScope, modelOverride?: any);
     hasError(formName, name, index, $scope: IFormScope);
-    decorateScope($scope: IFormScope, formGeneratorInstance, recordHandlerInstance: IRecordHandler, sharedStuff);
+    decorateScope($scope: IFormScope, formGeneratorInstance, recordHandlerInstance: IRecordHandler, sharedStuff, pseudoUrl?: string);
   }
 
   export interface IFngSingleLookupHandler {
@@ -563,6 +563,12 @@ declare module fng {
     directiveOptions: any;
   }
 
+  interface IGenDisableStrParams {
+    forceNg?: boolean;
+    nonUniqueIdSuffix?: string;
+  }
+  
+
   interface IPluginHelper {
     extractFromAttr: (
       attr: any,
@@ -585,13 +591,13 @@ declare module fng {
       scope: angular.IScope,
       processedAttrs: IProcessedAttrs,
       idSuffix: string,
-      forceNg?: boolean
+      params?: fng.IGenDisableStrParams
     ) => string;
     genIdAndDisabledStr: (
       scope: angular.IScope,
       processedAttrs: IProcessedAttrs,
       idSuffix: string,
-      forceNg?: boolean
+      params?: fng.IGenDisableStrParams
     ) => string;
     genDateTimePickerDisabledStr: (scope: angular.IScope, processedAttrs: IProcessedAttrs, idSuffix: string) => string;
     genDateTimePickerIdAndDisabledStr: (
@@ -599,14 +605,20 @@ declare module fng {
       processedAttrs: IProcessedAttrs,
       idSuffix: string
     ) => string;
+    genUiSelectIdAndDisabledStr: (
+      scope: angular.IScope,
+      processedAttrs: IProcessedAttrs,
+      idSuffix: string
+    ) => string;
+    handlePseudos: (str: string) => string;
   }
   
   interface ISecurityService {
     canDoSecurity: () => boolean;
     canDoSecurityNow: () => boolean;
-    isSecurelyHidden: (elemId: string) => boolean;
-    isSecurelyDisabled: (elemId: string) => boolean;
-    decorateFormScope: (formScope: IFormScope) => void;
+    isSecurelyHidden: (elemId: string, pseudoUrl?: string) => boolean;
+    isSecurelyDisabled: (elemId: string, pseudoUrl?: string) => boolean;
+    decorateFormScope: (formScope: IFormScope, pseudoUrl?: string) => void;
     doSecurityWhenReady: (cb: () => void) => void;
   }
 }

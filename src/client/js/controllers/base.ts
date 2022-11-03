@@ -3,7 +3,7 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function BaseCtrl($scope: fng.IFormScope, $rootScope, $location, $filter, $uibModal, fngModelCtrlService, routingService, formGenerator, recordHandler, securityService: fng.ISecurityService) {
+  export function BaseCtrl($scope: fng.IFormScope, $rootScope, $location, $filter, $uibModal, fngModelCtrlService, routingService, formGenerator, recordHandler) {
 
     $scope.sharedData = {
       record: {},
@@ -20,8 +20,6 @@ module fng.controllers {
 
     $scope.errorVisible = false;
     angular.extend($scope, routingService.parsePathFunc()($location.$$path));
-
-    securityService.decorateFormScope($scope);
 
     // Load context menu.  For /person/client/:id/edit we need
     // to load PersonCtrl and PersonClientCtrl

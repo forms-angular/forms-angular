@@ -12,7 +12,7 @@ module fng.services {
   /*@ngInject*/
   import IFormInstruction = fng.IFormInstruction;
 
-  export function formGenerator($location, $timeout, $filter, routingService, recordHandler) : IFormGenerator {
+  export function formGenerator($filter, routingService, recordHandler, securityService: fng.ISecurityService) : IFormGenerator {
 
     function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
 
@@ -543,7 +543,7 @@ module fng.services {
         return result;
       },
 
-      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedData) {
+      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedData, pseudoUrl?: string) {
         $scope.record = sharedData.record;
         $scope.phase = 'init';
         $scope.disableFunctions = sharedData.disableFunctions;
@@ -561,6 +561,8 @@ module fng.services {
         $scope.pagesLoaded = 0;
 
         sharedData.baseScope = $scope;
+
+        securityService.decorateFormScope($scope, pseudoUrl);
 
         $scope.generateEditUrl = function (obj) {
           return formGeneratorInstance.generateEditUrl(obj, $scope);
@@ -633,6 +635,6 @@ module fng.services {
     };
   }
 
-  formGenerator.$inject = ["$location", "$timeout", "$filter", "routingService", "recordHandler"];
+  formGenerator.$inject = ["$filter", "routingService", "recordHandler", "securityService"];
 
   }
