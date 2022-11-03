@@ -103,8 +103,8 @@ module fng.services {
 //       },
       getListAttributes: function (ref: string, id) {
         const actualId = typeof id === "string" ? id : id.id || id._id || id.x || id;
-        if (typeof actualId !== "string") {
-          throw new Error(`getListAttributes requires a string id but was provided with ${JSON.stringify(id)}`);
+        if (typeof actualId === "object") {
+          throw new Error(`getListAttributes doesn't expect an object but was provided with ${JSON.stringify(id)}`);
         }
         return $http.get('/api/' + ref + '/' + actualId + '/list', {cache: expCache});
       },
@@ -114,7 +114,11 @@ module fng.services {
 //         if (tabChangeData && tabChangeData.model === modelName && tabChangeData.id === id) {
 //           retVal = Promise.resolve({data:tabChangeData.record, changed: tabChangeData.changed, master: tabChangeData.master});
 //         } else {
-           return $http.get('/api/' + modelName + '/' + id);
+          const actualId = typeof id === "string" ? id : id.id || id._id || id.x || id;
+          if (typeof actualId === "object") {
+            throw new Error(`readRecord doesn't expect an object but was provided with ${JSON.stringify(id)}`);
+          }
+           return $http.get('/api/' + modelName + '/' + actualId);
 //           retVal = $http.get('/api/' + modelName + '/' + id);
 //         }
 //         tabChangeData = null;
