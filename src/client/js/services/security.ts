@@ -19,6 +19,10 @@ module fng.services {
       return $rootScope[formsAngular.elemSecurityFuncName](elemId, "disabled", pseudoUrl);
     };
 
+    function getBindingStr(): string {
+      return formsAngular.elemSecurityFuncBinding === "one-time" ? "::" : ""
+    }
+
     return {
       canDoSecurity,
 
@@ -51,6 +55,67 @@ module fng.services {
             }
           })
         }
+      },
+
+      considerVisibility: function (id: string, scope: fng.IFormScope): fng.ISecurityVisibility {
+        if (canDoSecurityNow()) {
+          if (formsAngular.elemSecurityFuncBinding === "instant") {
+            if (scope.isSecurelyHidden(id)) {
+              // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be 
+              // added to the dom for this field, which we indicate to our caller as follows...
+              return { omit: true };
+            };
+          } else {
+            return { visibilityAttr: `data-ng-if="${getBindingStr()}!isSecurelyHidden('${id}')"` };
+          }
+        }
+        return {};
+      },
+
+      // Generate an attribute that could be added to the element with the given id to enable or disable it
+      // according to the prevailing security rules.  In most cases, the attribute will either be "disabled"
+      // (in the case of 'instant' binding) or data-ng-disabled="xxxx" (in the case of one-time or normal
+      // binding).  For directives that require something different, use params:
+      //  - forceNg will wrap a positive (disabled) result in an angular directive (e.g., data-ng-disabled="true")
+      //    rather than returning simply "disabled"
+      //  - attrRequiresValue will translate a positive (disabled) result into an attribute with a truthy value
+      //    (e.g., disabled="true") rather than returning simply "disabled"
+      //  - attr can be used in the case where a directive expects an attribute other than "disabled".  
+      //    (for example, uib-tab expects "disable").
+      // Because they can also have a readonly attribute which needs to be taken into consideration, this
+      // function is NOT suitable for fields, which are instead handled by fieldformMarkupHelper.handleReadOnlyDisabled().
+      generateDisabledAttr: function (id: string, scope: fng.IFormScope, params?: IGenerateDisableAttrParams): string {
+        let result = "";
+        if (canDoSecurityNow()) {
+          if (!params) {
+            params = {};
+          }
+          if (params.attrRequiresValue && params.forceNg) {
+            throw new Error("Invalid combination of parameters provided to generateDisabledAttr() [attrRequiresValue and forceNg]")
+          }
+          let attr = params.attr || "disabled";
+          if (formsAngular.elemSecurityFuncBinding === "instant") {
+            if (scope.isSecurelyDisabled(id)) {
+              if (params.attrRequiresValue) {
+                return ` ${attr}="true"`;
+              } else if (params.forceNg) {
+                result = "true";
+              } else {
+                return ` ${attr}`;
+              }
+            }
+          } else {
+            result = `${getBindingStr()}isSecurelyDisabled('${id}')`;
+          }
+          if (result) {
+            if (attr === "disabled") {
+              return ` data-ng-disabled="${result}"`;
+            } else {
+              return ` data-ng-attr-${attr}="${result}"`;
+            }            
+          }
+        }
+        return result;
       }
     };
   }

@@ -48,6 +48,10 @@ module fng.services {
         return (cssFrameworkService.framework() === 'bs2' ? 'icon' : 'glyphicon glyphicon');
       }
 
+      // Generate an attribute that could be added to element(s) representing the field with the given
+      // parameters to enable or disable it according to the prevailing security rules.
+      // This function is a more complicated version of securityService.generateDisabledAttr, also taking into
+      // account the fact that fieldInfo.readonly can influence the disabled state of a field/
       function handleReadOnlyDisabled(fieldInfo: fng.IFieldViewInfo, scope: fng.IFormScope): string {
         if (fieldInfo.readonly && typeof fieldInfo.readonly === "boolean") {
           // if we have a true-valued readonly property then this trumps whatever security rule might apply to this field
@@ -83,7 +87,7 @@ module fng.services {
             return wrapReadOnly() + `ng-readonly="::${securityFuncStr}" `;    
           } else {
             // if we have both things and we are *NOT* required to use one-time binding for the securityFunc, then they can
-            // simply be combined into a single ng-disabled expression
+            // be combined into a single ng-disabled expression
             return ` ng-disabled="${securityFuncStr} || ${fieldInfo.readonly}" `;    
           }
         } else {
@@ -124,18 +128,15 @@ module fng.services {
 
           if (info.id && typeof info.id.replace === "function") {
             const idStr = `cg_${info.id.replace(/\./g, '-')}`;
+            const visibility = securityService.considerVisibility(idStr, scope);
+            if (visibility.omit) {
+              // we already know this field should be invisible, so we needn't add anything for it
+              return { omit: true };
+            }
             insert += `id="${isArrayElement(scope, info, options) ? generateArrayElementIdString(idStr, info, options) : idStr}"`;
-            if (securityService.canDoSecurityNow()) {
-              if (formsAngular.elemSecurityFuncBinding === "instant") {
-                if (scope.isSecurelyHidden(idStr)) {
-                  // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be 
-                  // added to the dom for this field, which we indicate to our caller as follows...
-                  return { omit: true };
-                };
-              } else {
-                const bindingStr = formsAngular.elemSecurityFuncBinding === "one-time" ? "::" : "";
-                insert += ` data-ng-if="${bindingStr}!isSecurelyHidden('${idStr}')"`;
-              }
+            if (visibility.visibilityAttr) {
+              // an angular expression to determine the visibility of this field later...
+              insert += ` ${visibility.visibilityAttr}`;
             }
           }
           

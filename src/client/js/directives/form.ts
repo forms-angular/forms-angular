@@ -5,7 +5,7 @@ module fng.directives {
   enum tabsSetupState {Y, N, Forced}
 
   /*@ngInject*/
-  export function formInput($compile, $rootScope, $filter, $timeout, cssFrameworkService, formGenerator, formMarkupHelper):angular.IDirective {
+  export function formInput($compile, $rootScope, $filter, $timeout, cssFrameworkService, formGenerator, formMarkupHelper, securityService: fng.ISecurityService): angular.IDirective {
     return {
       restrict: 'EA',
       link: function (scope:fng.IFormScope, element, attrs:fng.IFormAttrs) {
@@ -259,11 +259,12 @@ module fng.directives {
           return result;
         };
 
-        var containerInstructions = function (info) {
-          var result = {before: '', after: ''};
+        var containerInstructions = function (info: IContainer): fng.IContainerInstructions {
+          var result: fng.IContainerInstructions;
           if (typeof info.containerType === 'function') {
             result = info.containerType(info);
           } else {
+            result = {};
             switch (info.containerType) {
               case 'tab' :
                 var tabNo = -1;
@@ -274,14 +275,27 @@ module fng.directives {
                   }
                 }
                 if (tabNo >= 0) {
-// TODO Figure out tab history updates (check for other tab-history-todos)
+                  // TODO Figure out tab history updates (check for other tab-history-todos)
                   // result.before = '<uib-tab deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
-                  result.before = '<uib-tab deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"';
-                  if (tabNo > 0) {
-                    result.before += 'active="tabs[' + tabNo + '].active"';
+                  const idStr = `${_.camelCase(info.title)}Tab`;
+                  const visibility = securityService.considerVisibility(idStr, scope);
+                  if (visibility.omit) {
+                    // we already know this field should be invisible, so we needn't add anything for it
+                    result.omit = true;
+                  } else {
+                    let attrs = `id="${idStr}"`;
+                    if (visibility.visibilityAttr) {
+                      // an angular expression to determine the visibility of this field later...
+                      attrs += ` ${visibility.visibilityAttr}`;
+                    }
+                    attrs += securityService.generateDisabledAttr(idStr, scope, { attr: "disable", attrRequiresValue: true }); // uib-tab expects 'disable="true"` rather than 'disabled="true"' or just disabled
+                    result.before = `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${info.title}')" heading="${info.title}"`;
+                    if (tabNo > 0) {
+                      result.before += 'active="tabs[' + tabNo + '].active"';
+                    }
+                    result.before += '>';
+                    result.after = '</uib-tab>';
                   }
-                  result.before += '>';
-                  result.after = '</uib-tab>';
                 } else {
                   result.before = '<p>Error!  Tab ' + info.title + ' not found in tab list</p>';
                   result.after = '';
@@ -475,7 +489,7 @@ module fng.directives {
                     }
                     template += '</div> ';
                   }
-                  let parts: { before: string, after: string };
+                  let parts: fng.IContainerInstructions;
                   if (info.subDocContainerType) {
                       const containerType = scope[info.subDocContainerType] || info.subDocContainerType;
                       const containerProps = Object.assign({ containerType }, info.subDocContainerProps);
@@ -687,6 +701,8 @@ module fng.directives {
                 result += newElement;
                 callHandleField = false;
               } else if (info.containerType) {
+                // for now, the following call will only consider security for tabs and not other container types.
+                // hence why we...
                 var parts = containerInstructions(info);
                 switch (info.containerType) {
                   case 'tab' :
@@ -697,10 +713,12 @@ module fng.directives {
                       let activeTabNo: number = _.findIndex(scope.tabs, (tab) => (tab.active));
                       scope.activeTabNo = activeTabNo >= 0 ? activeTabNo : 0;
                     }
-
-                    result += parts.before;
-                    result += processInstructions(info.content, null, options);
-                    result += parts.after;
+                    // ...only check for this here!
+                    if (!parts.omit) {
+                      result += parts.before;
+                      result += processInstructions(info.content, null, options);
+                      result += parts.after;
+                    }
                     break;
                   case 'tabset' :
                     tabsSetup = tabsSetupState.Y;
