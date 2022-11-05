@@ -7,8 +7,12 @@ module fng.services {
       return !!formsAngular.elemSecurityFuncBinding && !!formsAngular.elemSecurityFuncName;
     }
 
-    function canDoSecurityNow(): boolean {
-      return canDoSecurity() && $rootScope[formsAngular.elemSecurityFuncName];
+    function canDoSecurityNow(scope: fng.IFormScope): boolean {
+      return (
+        canDoSecurity() && // we have security configured
+        $rootScope[formsAngular.elemSecurityFuncName] && // the host app have provided the security callback that is specified in that configuration
+        (!scope || (!!scope.isSecurelyDisabled && !!scope.isSecurelyHidden)) // the provided scope (if any) has been decorated (by us).  pages and popups which aren't form controllers will need to use (either directly, or through formMar)
+      );
     }
 
     function isSecurelyHidden(elemId: string, pseudoUrl?: string) {
@@ -44,7 +48,7 @@ module fng.services {
       },
 
       doSecurityWhenReady: function (cb: () => void): void {
-        if (canDoSecurityNow()) {
+        if (canDoSecurityNow(undefined)) {
           cb();
         } else if (canDoSecurity()) {
           // wait until elemSecurityFunc has been provided (externally) before proceeding with the callback...
@@ -58,7 +62,7 @@ module fng.services {
       },
 
       considerVisibility: function (id: string, scope: fng.IFormScope): fng.ISecurityVisibility {
-        if (canDoSecurityNow()) {
+        if (canDoSecurityNow(scope)) {
           if (formsAngular.elemSecurityFuncBinding === "instant") {
             if (scope.isSecurelyHidden(id)) {
               // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be 
@@ -86,7 +90,7 @@ module fng.services {
       // function is NOT suitable for fields, which are instead handled by fieldformMarkupHelper.handleReadOnlyDisabled().
       generateDisabledAttr: function (id: string, scope: fng.IFormScope, params?: IGenerateDisableAttrParams): string {
         let result = "";
-        if (canDoSecurityNow()) {
+        if (canDoSecurityNow(scope)) {
           if (!params) {
             params = {};
           }

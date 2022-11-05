@@ -632,7 +632,7 @@ declare module fng {
   
   interface ISecurityService {
     canDoSecurity: () => boolean;
-    canDoSecurityNow: () => boolean;
+    canDoSecurityNow: (scope: fng.IFormScope) => boolean;
     isSecurelyHidden: (elemId: string, pseudoUrl?: string) => boolean;
     isSecurelyDisabled: (elemId: string, pseudoUrl?: string) => boolean;
     decorateFormScope: (formScope: IFormScope, pseudoUrl?: string) => void;

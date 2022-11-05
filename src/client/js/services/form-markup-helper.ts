@@ -60,7 +60,7 @@ module fng.services {
         function wrapReadOnly(): string {
           return fieldInfo.readonly ? ` ng-disabled="${fieldInfo.readonly}" ` : "";
         }
-        if (!fieldInfo.id || !securityService.canDoSecurityNow()) {
+        if (!fieldInfo.id || !securityService.canDoSecurityNow(scope)) {
           // no security, so we're just concerned about what value fieldInfo.readonly has
           return wrapReadOnly();
         }
