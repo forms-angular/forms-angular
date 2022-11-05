@@ -1,6 +1,7 @@
 /// <reference path="../../../../node_modules/@types/angular/index.d.ts" />
 
 module fng.directives {
+
   /*@ngInject*/
   export function modelControllerDropdown(securityService: fng.ISecurityService): angular.IDirective {
     let menuVisibilityStr: string;
