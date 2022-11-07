@@ -52,29 +52,45 @@ module fng.services {
       // parameters to enable or disable it according to the prevailing security rules.
       // This function is a more complicated version of securityService.generateDisabledAttr, also taking into
       // account the fact that fieldInfo.readonly can influence the disabled state of a field/
-      function handleReadOnlyDisabled(fieldInfo: fng.IFieldViewInfo, scope: fng.IFormScope): string {
-        if (fieldInfo.readonly && typeof fieldInfo.readonly === "boolean") {
+      function handleReadOnlyDisabled(partialFieldInfo: { name: string, id?: string, readonly?: boolean | string }, scope: fng.IFormScope): string {
+        if (partialFieldInfo.readonly && typeof partialFieldInfo.readonly === "boolean") {
           // if we have a true-valued readonly property then this trumps whatever security rule might apply to this field
           return " disabled ";
         }
         function wrapReadOnly(): string {
-          return fieldInfo.readonly ? ` ng-disabled="${fieldInfo.readonly}" ` : "";
+          return partialFieldInfo.readonly ? ` ng-disabled="${partialFieldInfo.readonly}" ` : "";
         }
-        if (!fieldInfo.id || !securityService.canDoSecurityNow(scope)) {
+        if (!partialFieldInfo.id || !securityService.canDoSecurityNow(scope)) {
           // no security, so we're just concerned about what value fieldInfo.readonly has
           return wrapReadOnly();
         }
+        const ancestors = partialFieldInfo.name.split(".");
+        ancestors.pop();
+        let ancestorIds: string[] = [];
+        while (ancestors.length > 0) {
+          ancestorIds.push(`f_${ancestors.join("_")}`);
+          ancestors.pop();
+        }
         if (formsAngular.elemSecurityFuncBinding === "instant") {
           // "instant" security is evaluated now, and a positive result trumps whatever fieldInfo.readonly might be set to
-          if (scope.isSecurelyDisabled(fieldInfo.id)) {
+          if (scope.isSecurelyDisabled(partialFieldInfo.id)) {
             return " disabled ";
           } else {
+            for (const ancestorId of ancestorIds) {
+              if (scope.requiresDisabledChildren(ancestorId)) {
+                return " disabled ";
+              }
+            }
             return wrapReadOnly();
           }
         }
-        const securityFuncStr = `isSecurelyDisabled('${fieldInfo.id}')`;
+        let securityFuncStr = `isSecurelyDisabled('${partialFieldInfo.id}')`;
+        if (ancestorIds.length > 0) {
+          const ancestorStr = ancestorIds.map((aid) => `requiresDisabledChildren('${aid}')`);
+          securityFuncStr = `(${securityFuncStr} || ${ancestorStr.join(" || ")})`;
+        }
         const oneTimeBinding = formsAngular.elemSecurityFuncBinding === "one-time";
-        if (fieldInfo.readonly) {
+        if (partialFieldInfo.readonly) {
           // we have both security and a read-only attribute to deal with
           if (oneTimeBinding) {
             // if our field has a string-typed readonly attribute *and* one-time binding is required by our securityFunc, we
@@ -88,7 +104,7 @@ module fng.services {
           } else {
             // if we have both things and we are *NOT* required to use one-time binding for the securityFunc, then they can
             // be combined into a single ng-disabled expression
-            return ` ng-disabled="${securityFuncStr} || ${fieldInfo.readonly}" `;    
+            return ` ng-disabled="${securityFuncStr} || ${partialFieldInfo.readonly}" `;    
           }
         } else {
           // we have security only

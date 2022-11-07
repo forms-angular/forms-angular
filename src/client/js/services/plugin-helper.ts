@@ -8,20 +8,30 @@ module fng.services {
   /*@ngInject*/
   export function pluginHelper(formMarkupHelper): IPluginHelper {
     function internalGenDisabledStr(scope: fng.IFormScope, id: string, processedAttrs: fng.IProcessedAttrs, idSuffix: string, params?: fng.IGenDisableStrParams): string {
-      // Generally, when genIdAndDisabledStr is called from a directive, the idSuffix will be something like "select"
-      // or "hasValueCheckbox" (thus enabling a single directive to create a template that includes more than one form
-      // element - such as a checkbox and an input - each of which has a unique id).
-      // Where a directive is responsible for creating markup for an whole array of elements, it is likely to include an
-      // ng-repeat in the template that it generates, and in this case, the idSuffix that it passes to genIdAndDisabledStr
-      // will probably include a reference to $index to ensure uniqueness.
-      // Where idSuffix /does/ contain a reference to $index, the directive should provide a version of the idSuffix
-      // in the params object which does NOT include this.
-      // This is what we need to use for the ng-disabled/ng-readonly expression.
-      // (ReallyCare development hint: for an example of where this is needed, see or-opts.ts.)
-      if (params?.nonUniqueIdSuffix) {
-        id = id.replace(idSuffix, params.nonUniqueIdSuffix);
-      }
-      const result = formMarkupHelper.handleReadOnlyDisabled({ id, readonly: processedAttrs.info.readonly }, scope).trim();
+      // Though id will already have the value of idSuffix appended, processedAttrs.info.name will not.
+      // For handleReadOnlyDisabled() to disable "sub-elements" included in a directive template with an idsuffix when their
+      // 'parent' field is disabled, we need the name to include that suffix as if it were an additional level
+      // of field nesting.
+      let name = processedAttrs.info.name;
+      if (idSuffix) {
+        if (params?.nonUniqueIdSuffix) {
+          // Generally, when genIdAndDisabledStr is called from a directive, the idSuffix will be something like "select"
+          // or "hasValueCheckbox" (thus enabling a single directive to create a template that includes more than one form
+          // element - such as a checkbox and an input - each of which has a unique id).
+          // Where a directive is responsible for creating markup for an whole array of elements, it is likely to include an
+          // ng-repeat in the template that it generates, and in this case, the idSuffix that it passes to genIdAndDisabledStr
+          // will probably include a reference to $index to ensure uniqueness.
+          // Where idSuffix /does/ contain a reference to $index, the directive should provide a version of the idSuffix
+          // in the params object which does NOT include this.
+          // This is what we need to use for the ng-disabled/ng-readonly expression.
+          // (ReallyCare development hint: for an example of where this is needed, see or-opts.ts.)
+          id = id.replace(idSuffix, params.nonUniqueIdSuffix);
+          name += `.${params.nonUniqueIdSuffix}`;
+        } else {
+          name += `.${idSuffix}`;
+        }
+      }      
+      const result = formMarkupHelper.handleReadOnlyDisabled({ id, name, readonly: processedAttrs.info.readonly }, scope).trim();
       // some types of control (such as ui-select) don't deal correctly with a DISABLED attribute and
       // need ng-disabled, even when the expression is simply "true"
       if (params?.forceNg && result.toLowerCase() === "disabled") {

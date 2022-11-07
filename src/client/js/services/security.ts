@@ -4,27 +4,36 @@ module fng.services {
   /*@ngInject*/
   export function securityService($rootScope): fng.ISecurityService {
     function canDoSecurity(): boolean {
-      return !!formsAngular.elemSecurityFuncBinding && !!formsAngular.elemSecurityFuncName;
+      return (
+        !!formsAngular.elemSecurityFuncBinding &&
+        !!formsAngular.hiddenSecurityFuncName &&
+        !!formsAngular.disabledSecurityFuncName
+      );
     }
 
     function canDoSecurityNow(scope: fng.IFormScope): boolean {
       return (
         canDoSecurity() && // we have security configured
-        $rootScope[formsAngular.elemSecurityFuncName] && // the host app have provided the security callback that is specified in that configuration
+        $rootScope[formsAngular.hiddenSecurityFuncName] && // the host app has provided the security callbacks that are specified in that configuration
+        $rootScope[formsAngular.disabledSecurityFuncName] && 
         (!scope || (!!scope.isSecurelyDisabled && !!scope.isSecurelyHidden)) // the provided scope (if any) has been decorated (by us).  pages and popups which aren't form controllers will need to use (either directly, or through formMar)
       );
     }
 
-    function isSecurelyHidden(elemId: string, pseudoUrl?: string) {
-      return $rootScope[formsAngular.elemSecurityFuncName](elemId, "hidden", pseudoUrl);
-    };
+    function isSecurelyHidden(elemId: string, pseudoUrl?: string): boolean {
+      return $rootScope[formsAngular.hiddenSecurityFuncName](elemId, pseudoUrl);
+    }
 
-    function isSecurelyDisabled(elemId: string, pseudoUrl?: string) {
-      return $rootScope[formsAngular.elemSecurityFuncName](elemId, "disabled", pseudoUrl);
-    };
+    function getSecureDisabledState(elemId: string, pseudoUrl?: string): fng.DisabledOutcome {
+      return $rootScope[formsAngular.disabledSecurityFuncName](elemId, pseudoUrl);
+    }
+
+    function isSecurelyDisabled(elemId: string, pseudoUrl?: string): boolean {
+      return !!getSecureDisabledState(elemId, pseudoUrl); // either true or "+"
+    }
 
     function getBindingStr(): string {
-      return formsAngular.elemSecurityFuncBinding === "one-time" ? "::" : ""
+      return formsAngular.elemSecurityFuncBinding === "one-time" ? "::" : "";
     }
 
     return {
@@ -38,12 +47,15 @@ module fng.services {
 
       decorateFormScope: function (formScope: fng.IFormScope, pseudoUrl?: string): void {
         if (canDoSecurity()) {
-          formScope.isSecurelyHidden = function (elemId: string) {
-            return isSecurelyHidden(elemId, pseudoUrl); 
-          }
-          formScope.isSecurelyDisabled = function (elemId: string) {
+          formScope.isSecurelyHidden = function (elemId: string): boolean {
+            return isSecurelyHidden(elemId, pseudoUrl);
+          };
+          formScope.isSecurelyDisabled = function (elemId: string): boolean {
             return isSecurelyDisabled(elemId, pseudoUrl);
-          }
+          };
+          formScope.requiresDisabledChildren = function (elemId: string): boolean {
+            return getSecureDisabledState(elemId, pseudoUrl) === "+";
+          };
         }
       },
 
@@ -51,13 +63,15 @@ module fng.services {
         if (canDoSecurityNow(undefined)) {
           cb();
         } else if (canDoSecurity()) {
-          // wait until elemSecurityFunc has been provided (externally) before proceeding with the callback...
-          const unwatch = $rootScope.$watch(formsAngular.elemSecurityFuncName, (newValue) => {
+          // wait until the hidden security function has been provided (externally) before proceeding with the callback...
+          // we assume here that the hidden security and disabled security functions are both going to be provided at the
+          // same time (and could therefore watch for either of these things)
+          const unwatch = $rootScope.$watch(formsAngular.hiddenSecurityFuncName, (newValue) => {
             if (newValue) {
               unwatch();
               cb();
             }
-          })
+          });
         }
       },
 
@@ -65,10 +79,10 @@ module fng.services {
         if (canDoSecurityNow(scope)) {
           if (formsAngular.elemSecurityFuncBinding === "instant") {
             if (scope.isSecurelyHidden(id)) {
-              // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be 
+              // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be
               // added to the dom for this field, which we indicate to our caller as follows...
               return { omit: true };
-            };
+            }
           } else {
             return { visibilityAttr: `data-ng-if="${getBindingStr()}!isSecurelyHidden('${id}')"` };
           }
@@ -84,7 +98,7 @@ module fng.services {
       //    rather than returning simply "disabled"
       //  - attrRequiresValue will translate a positive (disabled) result into an attribute with a truthy value
       //    (e.g., disabled="true") rather than returning simply "disabled"
-      //  - attr can be used in the case where a directive expects an attribute other than "disabled".  
+      //  - attr can be used in the case where a directive expects an attribute other than "disabled".
       //    (for example, uib-tab expects "disable").
       // Because they can also have a readonly attribute which needs to be taken into consideration, this
       // function is NOT suitable for fields, which are instead handled by fieldformMarkupHelper.handleReadOnlyDisabled().
@@ -95,7 +109,9 @@ module fng.services {
             params = {};
           }
           if (params.attrRequiresValue && params.forceNg) {
-            throw new Error("Invalid combination of parameters provided to generateDisabledAttr() [attrRequiresValue and forceNg]")
+            throw new Error(
+              "Invalid combination of parameters provided to generateDisabledAttr() [attrRequiresValue and forceNg]"
+            );
           }
           let attr = params.attr || "disabled";
           if (formsAngular.elemSecurityFuncBinding === "instant") {
@@ -116,11 +132,11 @@ module fng.services {
               return ` data-ng-disabled="${result}"`;
             } else {
               return ` data-ng-attr-${attr}="${result}"`;
-            }            
+            }
           }
         }
         return result;
-      }
+      },
     };
   }
 }

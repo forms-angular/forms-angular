@@ -3,8 +3,11 @@ declare module fng {
     beforeProcess?: (scope: IFormScope, cb: (err?: Error) => void) => void;
     title?: { prefix?: string; suffix?: string };
     // when provided, the named function (assumed to be present on $rootscope) will be used to determine the visibility
-    // of menu items and control groups, and the disabled state of menu items and individual form input controls
-    elemSecurityFuncName?: string;
+    // of menu items and control groups
+    hiddenSecurityFuncName?: string;
+    // when provided, the named function (assumed to be present on $rootscope) will be used to determine the disabled
+    // state of menu items and individual form input controls
+    disabledSecurityFuncName?: string;
     // how the function identified by elemSecurityFuncName should be bound.  "instant" means that it will be called
     // as the markup is being constructed, with 'hidden' elements not included in the markup at all, and disable elements
     // given a simple DISABLED attribute.  this is the most efficient approach.  "one-time" will add ng-hide and
@@ -357,6 +360,13 @@ declare module fng {
     ref: IFngLookupListReference;
   }
 
+  // we cannot use an enum here, so this will have to do.  these are the values expected to be returned by the
+  // function on $rootScope with the name formsAngular.disabledSecurityFuncName.
+  //   false = not disabled,
+  //   true = disabled,
+  //   "+" = this and all child elements disabled
+  export type DisabledOutcome = boolean | "+";
+
   /*
     The scope which contains form data
    */
@@ -439,6 +449,7 @@ declare module fng {
     ) => void;
     isSecurelyHidden: (elemId: string) => boolean;
     isSecurelyDisabled: (elemId: string) => boolean;
+    requiresDisabledChildren: (elemId: string) => boolean;
   }
 
   export interface IContextMenuDivider {
