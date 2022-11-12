@@ -455,6 +455,12 @@ describe('nesting', function () {
           }
         }
       ]);
+      $httpBackend.whenGET('/api/b_using_options/listAll').respond([
+        {
+          'id': '519a6075b320153869b155e0',
+          'text': 'IsAccepted John',
+        }
+      ]);
 
       $httpBackend.whenGET('/api/collection/123').respond({
         '_id': 123,

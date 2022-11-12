@@ -38,9 +38,14 @@ describe('Select.', function () {
         ], 'options': {'enum': ['F', 'M'], 'form': {'pane': 'Personal'}}}
       });
       $httpBackend.whenGET('/api/person').respond([
-        {'_id': '1', 'givenName': 'John', 'familyName': 'Smith', 'title': 'Mr' },
-        {'_id': '2', 'givenName': 'Anne', 'familyName': 'Brown', 'title': 'Mrs' },
-        {'_id': '3', 'givenName': 'Jenny', 'familyName': 'Rogers', 'title': 'Ms' }
+        { '_id': '1', 'givenName': 'John', 'familyName': 'Smith', 'title': 'Mr' },
+        { '_id': '2', 'givenName': 'Anne', 'familyName': 'Brown', 'title': 'Mrs' },
+        { '_id': '3', 'givenName': 'Jenny', 'familyName': 'Rogers', 'title': 'Ms' }
+      ]);
+      $httpBackend.whenGET('/api/person/listAll').respond([
+        { 'id': '1', 'text': 'John Smith' },
+        { 'id': '2', 'text': 'Anne Brown' },
+        { 'id': '3', 'text': 'Jenny Rogers' }
       ]);
 
       $location.$$path = '/collection/3/edit';
@@ -122,7 +127,16 @@ describe('Select.', function () {
         '_id': {'path': '_id', 'instance': 'ObjectID', 'validators': [], 'setters': [null], 'getters': [], 'options': {'auto': true}, '_index': null, '$conditionalHandlers': {}}
       }, 'options': {'form': {'formStyle': 'inline'}}}, '_id': {'path': '_id', 'instance': 'ObjectID', 'options': {'auto': true}, '_index': null, '$conditionalHandlers': {}}});
       $httpBackend.whenGET('/api/Car/3').respond({name: '2O + W', _id: '3', ComponentDescriptions: [{component: '12', quantity: 2}, {quantity: 1, component: '45'}]});
-      $httpBackend.whenGET('/api/Component').respond([{name: 'Widget', weight: 2, _id: '45'}, {name: 'Thingummy', weight: 5, _id: '99' }, {name: 'Ooojamaflip', weight: 8, _id: '12'}]);
+      $httpBackend.whenGET('/api/Component').respond([
+        { name: 'Widget', weight: 2, _id: '45' },
+        { name: 'Thingummy', weight: 5, _id: '99' },
+        { name: 'Ooojamaflip', weight: 8, _id: '12' }
+      ]);
+      $httpBackend.whenGET('/api/Component/listAll').respond([
+        { id: '45', text: 'Widget' },
+        { id: '99', text: 'Thingummy' },
+        { id: '12', text: 'Ooojamaflip' }
+      ]);
       $location.$$path = '/Car/3/edit';
       scope = $rootScope.$new();
       ctrl = $controller('BaseCtrl', {$scope: scope});

@@ -628,7 +628,7 @@ module fng.services {
 
     function handleError($scope: fng.IFormScope) {
       return function(response: any): void {
-        if ([200, 400].indexOf(response.status) !== -1) {
+        if ([200, 400, 403].indexOf(response.status) !== -1) {
           var errorMessage = "";
           if (response.data && response.data.errors) {
             for (var errorField in response.data.errors) {
@@ -807,49 +807,44 @@ module fng.services {
       setData: setData,
 
       setUpLookupOptions: function setUpLookupOptions(lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
-        var optionsList = $scope[schemaElement.options] = [];
-        var idList = $scope[schemaElement.ids] = [];
-
-        SchemasService.getSchema(lookupCollection)
-          .then(function(response) {
-            let data: any = response.data;
-            var listInstructions = [];
-            handleSchema("Lookup " + lookupCollection, data, null, listInstructions, "", false, $scope, ctrlState);
-
-            var dataRequest;
-            if (typeof schemaElement.filter !== "undefined" && schemaElement.filter) {
-              dataRequest = SubmissionsService.getPagedAndFilteredList(lookupCollection, schemaElement.filter);
-            } else {
-              dataRequest = SubmissionsService.getAll(lookupCollection);
-            }
-            dataRequest
-              .then(function(response) {
-                let data: any = angular.copy(response.data);
-                if (data) {
-                  for (var i = 0; i < data.length; i++) {
-                    var option = "";
-                    for (var j = 0; j < listInstructions.length; j++) {
-                      let thisVal: string = data[i][listInstructions[j].name];
-                      option += thisVal ? thisVal + " " : "";
-                    }
-                    option = option.trim();
-                    var pos = _.sortedIndex(optionsList, option);
-                    // handle dupes (ideally people will use unique indexes to stop them but...)
-                    if (optionsList[pos] === option) {
-                      option = option + "    (" + data[i]._id + ")";
-                      pos = _.sortedIndex(optionsList, option);
-                    }
-                    optionsList.splice(pos, 0, option);
-                    idList.splice(pos, 0, data[i]._id);
-                  }
-                  if ($scope.readingRecord) {
-                    $scope.readingRecord
-                        .then(() => {
-                          updateRecordWithLookupValues(schemaElement, $scope, ctrlState);
-                        })
+        const optionsList = $scope[schemaElement.options] = [];
+        const idList = $scope[schemaElement.ids] = [];
+        const dataRequest = !!schemaElement.filter
+          ? SubmissionsService.getPagedAndFilteredList(lookupCollection, schemaElement.filter) 
+          : SubmissionsService.getAllListAttributes(lookupCollection);
+        dataRequest
+          .then((response: angular.IHttpResponse<fng.ILookupItem[]>) => {
+            const items = response.data;
+            if (items) {
+              items.sort((a, b) => a.text.localeCompare(b.text));
+              optionsList.push(...items.map((i) => i.text));
+              idList.push(...items.map((i) => i.id));
+              const dupes = new Set<string>();
+              for (let i = 0; i < optionsList.length - 1; i++) {
+                for (let j = i + 1; j < optionsList.length; j++) {
+                  if (_.isEqual(optionsList[i], optionsList[j])) {
+                    dupes.add(optionsList[i]);
                   }
                 }
-              });
+              }
+              // append the id to any duplicates to make them unique
+              dupes.forEach((d) => {
+                for (let i = 0; i < optionsList.length; i++) {
+                  if (optionsList[i] === d) {
+                    optionsList[i] += "(" + idList[i] + ")";
+                  }
+                }
+              })
+              if ($scope.readingRecord) {
+                $scope.readingRecord
+                  .then(() => {
+                    updateRecordWithLookupValues(schemaElement, $scope, ctrlState);
+                  })
+              }
+            }
+          })
+          .catch ((e) => {
+            $scope.handleHttpError(e)
           });
       },
 

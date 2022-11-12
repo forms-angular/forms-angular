@@ -16,7 +16,7 @@ module fng.services {
         canDoSecurity() && // we have security configured
         $rootScope[formsAngular.hiddenSecurityFuncName] && // the host app has provided the security callbacks that are specified in that configuration
         $rootScope[formsAngular.disabledSecurityFuncName] && 
-        (!scope || (!!scope.isSecurelyDisabled && !!scope.isSecurelyHidden)) // the provided scope (if any) has been decorated (by us).  pages and popups which aren't form controllers will need to use (either directly, or through formMar)
+        (!scope || (!!scope.isSecurelyDisabled && !!scope.isSecurelyHidden)) // the provided scope (if any) has been decorated (by us).  pages and popups which aren't form controllers will need to use (either directly, or through formMarkupHelper, the decorateFormScope() function below)
       );
     }
 

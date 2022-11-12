@@ -29,6 +29,11 @@ declare module fng {
     property: string;
     value: string;
   }
+
+  interface ILookupItem {
+    id: string;
+    text: string;
+  }
   /*
   IInternalLookupreference makes it possible to look up from a list (of key / value pairs) in the current record.  For example
 

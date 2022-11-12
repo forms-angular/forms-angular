@@ -108,6 +108,9 @@ module fng.services {
         }
         return $http.get('/api/' + ref + '/' + actualId + '/list', {cache: expCache});
       },
+      getAllListAttributes: function (ref: string) {
+        return $http.get('/api/' + ref + "/listAll", {cache: expCache});
+      },
       readRecord: function (modelName, id): Promise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
 //         let retVal;

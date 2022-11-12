@@ -74,12 +74,16 @@ export class FormsAngular {
         this.app.get.apply(this.app, processArgs(this.options, [resourceName, this.collectionGet()]));
         this.app.post.apply(this.app, processArgs(this.options, [resourceName, this.collectionPost()]));
 
+        // return the List attributes for all records - used by record-handler's setUpLookupOptions() method, for cases
+        // where there's a lookup that doesn't use the fngajax option 
+        this.app.get.apply(this.app, processArgs(this.options, [resourceName + '/listAll', this.entityListAll()]));
+
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + id, this.entityGet()]));
         this.app.post.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()]));  // You can POST or PUT to update data
         this.app.put.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()]));
         this.app.delete.apply(this.app, processArgs(this.options, [resourceName + id, this.entityDelete()]));
 
-        // return the List attributes for a record - used by select2
+        // return the List attributes for a record - used by fng-ui-select
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + id + '/list', this.entityList()]));
 
         this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
@@ -91,22 +95,20 @@ export class FormsAngular {
         }
     }
 
-    getListFields(resource: Resource, doc: Document, cb) {
-
-        function getFirstMatchingField(keyList, type?) {
-            for (let i = 0; i < keyList.length; i++) {
-                let fieldDetails = resource.model.schema['tree'][keyList[i]];
-                if (fieldDetails.type && (!type || fieldDetails.type.name === type) && keyList[i] !== '_id') {
-                    resource.options.listFields = [{field: keyList[i]}];
-                    return doc[keyList[i]];
-                }
+    getFirstMatchingField(resource: Resource, doc: Document, keyList: string[], type?: string) {
+        for (let i = 0; i < keyList.length; i++) {
+            let fieldDetails = resource.model.schema['tree'][keyList[i]];
+            if (fieldDetails.type && (!type || fieldDetails.type.name === type) && keyList[i] !== '_id') {
+                resource.options.listFields = [{field: keyList[i]}];
+                return doc ? doc[keyList[i]] : keyList[i];
             }
         }
+    }
 
+    getListFields(resource: Resource, doc: Document, cb) {
         const that = this;
         let display = '';
         let listFields = resource.options.listFields;
-
         if (listFields) {
             async.map(listFields, function (aField, cbm) {
                 if (typeof doc[aField.field] !== 'undefined') {
@@ -153,11 +155,31 @@ export class FormsAngular {
         } else {
             const keyList = Object.keys(resource.model.schema['tree']);
             // No list field specified - use the first String field,
-            display = getFirstMatchingField(keyList, 'String') ||
+            display = this.getFirstMatchingField(resource, doc, keyList, 'String') ||
                 // and if there aren't any then just take the first field
-                getFirstMatchingField(keyList);
+                this.getFirstMatchingField(resource, doc, keyList);
             cb(null, display.trim());
         }
+    };
+
+    generateListFieldProjection(resource: Resource) {
+        const projection = {};
+        const listFields = resource.options.listFields;
+        if (listFields) {
+            for (const field of listFields) {
+                projection[field.field] = 1;
+            }
+        } else {
+            const keyList = Object.keys(resource.model.schema['tree']);
+            const firstField = (
+                // No list field specified - use the first String field,
+                this.getFirstMatchingField(resource, undefined, keyList, 'String') ||
+                // and if there aren't any then just take the first field
+                this.getFirstMatchingField(resource, undefined, keyList)
+            );
+            projection[firstField] = 1;
+        }
+        return projection;
     };
 
     newResource(model, options: ResourceOptions) {
@@ -1591,6 +1613,37 @@ export class FormsAngular {
                         return res.send({list: display});
                     }
                 })
+            });
+        }, this);
+    };
+
+    entityListAll() {
+        return _.bind(function (req, res, next) {
+            const that = this;
+            this.processCollection(req);
+            if (!req.resource) {
+                return next();
+            }
+            const projection = this.generateListFieldProjection(req.resource);
+            this.filteredFind(req.resource, req, null, {}, projection, req.resource.options.listOrder, 0, 0, function (err, docs) {
+                if (err) {
+                    return that.renderError(err, null, req, res);
+                } else {
+                    const listFields = Object.keys(projection);
+                    const transformed = docs.map((doc: any) => {
+                        let text = "";
+                        for (const field of listFields) {
+                            if (doc[field]) {
+                                if (text !== "") {
+                                    text += " ";
+                                }
+                                text += doc[field];
+                            }                            
+                        }
+                        return { id: doc._id, text };
+                    })
+                    res.send(transformed);
+                }
             });
         }, this);
     };
