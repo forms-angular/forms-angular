@@ -651,6 +651,9 @@ module fng.services {
           } else {
             errorMessage = response.data.message || response.data._message || response.data.err || "Error!  Sorry - No further details available.";
           }
+          // anyone using a watch on $scope.phase, and waiting for it to become "ready" before proceeding, will probably
+          // want to know that an error has occurred.  This value is NOT used anywhere in forms-angular.
+          $scope.phase = "error";
           $scope.showError(errorMessage);
         } else {
           $scope.showError(response.status + " " + JSON.stringify(response.data));
