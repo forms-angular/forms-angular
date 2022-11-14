@@ -50,6 +50,7 @@ module fng.services {
      limit - limit results to this number of records
      skip - skip this number of records before returning results
      order - sort order
+     concatenate - whether to concatenate all of the list fields into a single text field (and return { id, text }[]), or not (in which case the documents - albeit only list fields and _id - are returned without transformation)
      }
      */
     var generateListQuery = function (options) {
@@ -74,6 +75,7 @@ module fng.services {
       addParameter('a', options.aggregate);
       addParameter('o', options.order);
       addParameter('s', options.skip);
+      addParameter('c', options.concatenate);
 
       return queryString;
     };
@@ -111,6 +113,9 @@ module fng.services {
       getAllListAttributes: function (ref: string) {
         return $http.get('/api/' + ref + "/listAll", {cache: expCache});
       },
+      getPagedAndFilteredList: function (ref: string, options) {
+        return $http.get('/api/' + ref + "/listAll" + generateListQuery(options));
+      },
       readRecord: function (modelName, id): Promise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
 //         let retVal;
@@ -132,9 +137,6 @@ module fng.services {
           cache: useCacheForGetAll ? expCache : false
         }, _options);
         return $http.get('/api/' + modelName, options);
-      },
-      getPagedAndFilteredList: function (modelName, options) {
-        return $http.get('/api/' + modelName + generateListQuery(options));
       },
       deleteRecord: function (model, id) {
         return $http.delete('/api/' + model + '/' + id);

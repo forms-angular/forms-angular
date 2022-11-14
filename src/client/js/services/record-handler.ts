@@ -723,7 +723,8 @@ module fng.services {
           find: $location.$$search.f,
           limit: $scope.pageSize,
           skip: pagesLoaded * $scope.pageSize,
-          order: $location.$$search.o
+          order: $location.$$search.o,
+          concatenate: false
         })
           .then(function(response) {
             let data: any = response.data;
@@ -813,7 +814,7 @@ module fng.services {
         const optionsList = $scope[schemaElement.options] = [];
         const idList = $scope[schemaElement.ids] = [];
         const dataRequest = !!schemaElement.filter
-          ? SubmissionsService.getPagedAndFilteredList(lookupCollection, schemaElement.filter) 
+          ? SubmissionsService.getPagedAndFilteredList(lookupCollection, Object.assign({ concatenate: true }, schemaElement.filter)) // { concatenate: true } causes it to concatenate the list fields into the .text property of ILookupItem objects
           : SubmissionsService.getAllListAttributes(lookupCollection);
         dataRequest
           .then((response: angular.IHttpResponse<fng.ILookupItem[]>) => {

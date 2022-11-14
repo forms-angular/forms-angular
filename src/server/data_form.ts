@@ -1625,24 +1625,36 @@ export class FormsAngular {
                 return next();
             }
             const projection = this.generateListFieldProjection(req.resource);
-            this.filteredFind(req.resource, req, null, {}, projection, req.resource.options.listOrder, 0, 0, function (err, docs) {
+            const aggregationParam = req.query.a ? JSON.parse(req.query.a) : null;
+            const findParam = req.query.f ? JSON.parse(req.query.f) : {};
+            const limitParam = req.query.l ? JSON.parse(req.query.l) : 0;
+            const skipParam = req.query.s ? JSON.parse(req.query.s) : 0;
+            const orderParam = req.query.o ? JSON.parse(req.query.o) : req.resource.options.listOrder;
+            // should we concatenate the list fields into a single string and return { id, text }[], or should we return the docs (albeit just their
+            // list fields and _id) untransformed?
+            const concatenateParam = req.query.c ? JSON.parse(req.query.c) : true;
+            this.filteredFind(req.resource, req, aggregationParam, findParam, projection, orderParam, limitParam, skipParam, function (err, docs) {
                 if (err) {
                     return that.renderError(err, null, req, res);
                 } else {
-                    const listFields = Object.keys(projection);
-                    const transformed = docs.map((doc: any) => {
-                        let text = "";
-                        for (const field of listFields) {
-                            if (doc[field]) {
-                                if (text !== "") {
-                                    text += " ";
-                                }
-                                text += doc[field];
-                            }                            
-                        }
-                        return { id: doc._id, text };
-                    })
-                    res.send(transformed);
+                    if (concatenateParam) {
+                        const listFields = Object.keys(projection);
+                        const transformed = docs.map((doc: any) => {
+                            let text = "";
+                            for (const field of listFields) {
+                                if (doc[field]) {
+                                    if (text !== "") {
+                                        text += " ";
+                                    }
+                                    text += doc[field];
+                                }                            
+                            }
+                            return { id: doc._id, text };
+                        })
+                        res.send(transformed);
+                    } else {
+                        res.send(docs);
+                    }                    
                 }
             });
         }, this);
