@@ -162,12 +162,24 @@ export class FormsAngular {
         }
     };
 
+    // generate a Mongo projection that can be used to restrict a query to return only those fields from the given
+    // resource that are identified as "list" fields (i.e., ones that should appear whenever records of that type are
+    // displayed in a list)
     generateListFieldProjection(resource: Resource) {
         const projection = {};
         const listFields = resource.options.listFields;
+        // resource.options.listFields will identify all of the fields from resource that have a value for .list.
+        // generally, that value will be "true", identifying the corresponding field as one which should be
+        // included whenever records of that type appear in a list.
+        // occasionally, it will instead be "{ ref: true }"", which means something entirely different -
+        // this means that the field requires a lookup translation before it can be displayed on a form.
+        // for our purposes, we're interested in only the first of these two cases, so we'll ignore anything where
+        // field.params.ref has a truthy value
         if (listFields) {
             for (const field of listFields) {
-                projection[field.field] = 1;
+                if (!field.params?.ref) {
+                    projection[field.field] = 1;
+                }
             }
         } else {
             const keyList = Object.keys(resource.model.schema['tree']);
@@ -1617,6 +1629,15 @@ export class FormsAngular {
         }, this);
     };
 
+    // return just the id and list fields for all of the records from the collection identified by req.resource.
+    // list fields are those whose schema entry has a value for the "list" attribute (except where this is { ref: true })
+    // if the resource has no explicit list fields identified, the first string field will be returned.  if the resource
+    // doesn't have any string fields either, the first (non-id) field will be returned.
+    // usually, we will respond with an array of ILookupItem objects, where the .text property of those objects is the concatenation
+    // of all of the document's list fields (space-seperated).
+    // to request the documents without this transformation applied, include "c=true" in the query string.
+    // the query string can also be used to filter and order the response, by providing values for "f" (find), "l" (limit),
+    // "s" (skip) and/or "o" (order).
     entityListAll() {
         return _.bind(function (req, res, next) {
             const that = this;
@@ -1630,8 +1651,6 @@ export class FormsAngular {
             const limitParam = req.query.l ? JSON.parse(req.query.l) : 0;
             const skipParam = req.query.s ? JSON.parse(req.query.s) : 0;
             const orderParam = req.query.o ? JSON.parse(req.query.o) : req.resource.options.listOrder;
-            // should we concatenate the list fields into a single string and return { id, text }[], or should we return the docs (albeit just their
-            // list fields and _id) untransformed?
             const concatenateParam = req.query.c ? JSON.parse(req.query.c) : true;
             this.filteredFind(req.resource, req, aggregationParam, findParam, projection, orderParam, limitParam, skipParam, function (err, docs) {
                 if (err) {
