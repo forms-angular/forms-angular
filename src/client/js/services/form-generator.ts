@@ -577,7 +577,18 @@ module fng.services {
         };
 
         $scope.scrollTheList = function () {
-          return recordHandlerInstance.scrollTheList($scope);
+          // wait until we have the list schema.  until we get a non-empty listSchema (which might never
+          // happen if we don't have permission to GET it), then there's no point requesting the data
+          if ($scope.listSchema?.length > 0) {
+            return recordHandlerInstance.scrollTheList($scope);
+          } else {
+            const unwatch = $scope.$watchCollection("listSchema", (newValue: fng.IFormInstruction[]) => {
+              if (newValue?.length > 0) {
+                unwatch();
+                return recordHandlerInstance.scrollTheList($scope);
+              }
+            })
+          }
         };
 
         $scope.getListData = function (record, fieldName) {
