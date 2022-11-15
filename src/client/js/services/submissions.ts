@@ -47,6 +47,7 @@ module fng.services {
      {
      aggregate - whether or not to aggregate results (http://docs.mongodb.org/manual/aggregation/)
      find - find parameter
+     projection - the fields to return
      limit - limit results to this number of records
      skip - skip this number of records before returning results
      order - sort order
@@ -72,6 +73,7 @@ module fng.services {
 
       addParameter('l', options.limit);
       addParameter('f', options.find);
+      addParameter('p', options.projection);
       addParameter('a', options.aggregate);
       addParameter('o', options.order);
       addParameter('s', options.skip);
@@ -110,11 +112,24 @@ module fng.services {
         }
         return $http.get('/api/' + ref + '/' + actualId + '/list', {cache: expCache});
       },
+      // return only the list attributes for ALL records in the given collection, returning ILookupItem[]
       getAllListAttributes: function (ref: string) {
         return $http.get('/api/' + ref + "/listAll", {cache: expCache});
       },
+      // return only the list attributes for records in the given collection that satisfy the given query conditions (filter, limit etc.)
+      // return ILookupItem[] if options.concatenate is true, else the raw documents
       getPagedAndFilteredList: function (ref: string, options) {
+        if (options.projection) {
+          throw new Error("Cannot use projection option for getPagedAndFilteredList, because it only returns list fields");
+        }
+        if (options.concatenate === undefined) {
+          options.concatenate = false;
+        }
         return $http.get('/api/' + ref + "/listAll" + generateListQuery(options));
+      },
+      // return ALL attributes for records in the given collection that satisfy the given query conditions (filter, limit etc.)
+      getPagedAndFilteredListFull: function (ref: string, options) {
+        return $http.get('/api/' + ref + generateListQuery(options));
       },
       readRecord: function (modelName, id): Promise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
