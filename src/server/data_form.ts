@@ -1618,13 +1618,22 @@ export class FormsAngular {
                 if (!req.resource) {
                     return next();
                 }
-                that.getListFields(req.resource, req.doc, function (err, display) {
-                    if (err) {
-                        return res.status(500).send(err);
-                    } else {
-                        return res.send({list: display});
+                const returnRawParam = req.query.returnRaw ? !!JSON.parse(req.query.returnRaw) : false;
+                if (returnRawParam) {
+                    const result = { _id: req.doc._id };
+                    for (const field of req.resource.options.listFields) {
+                        result[field.field] = req.doc[field.field];
                     }
-                })
+                    return res.send(result);                    
+                } else {
+                    that.getListFields(req.resource, req.doc, function (err, display) {
+                        if (err) {
+                            return res.status(500).send(err);
+                        } else {
+                            return res.send({list: display});
+                        }
+                    })
+                }
             });
         }, this);
     };
