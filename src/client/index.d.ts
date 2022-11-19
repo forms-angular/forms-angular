@@ -228,6 +228,7 @@ declare module fng {
   // Schema used internally on client - often derived from IFieldViewInfo passed from server
   export interface IFormInstruction extends IFieldViewInfo {
     id?: string; // id of generated DOM element
+    nonUniqueId?: string; // where this field is part of a sub-sub-schema, id is likely to include $index from the sub-schema, to ensure uniqueness.  provide it here without reference to $parent.$index for use in security evaluations.
     type?: fieldType;
     defaultValue?: any;
     rows?: number;

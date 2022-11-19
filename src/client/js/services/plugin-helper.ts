@@ -31,7 +31,15 @@ module fng.services {
           name += `.${idSuffix}`;
         }
       }      
-      const result = formMarkupHelper.handleReadOnlyDisabled({ id, name, readonly: processedAttrs.info.readonly }, scope).trim();
+      const result = formMarkupHelper.handleReadOnlyDisabled(
+        {
+          id,
+          name,
+          nonUniqueId: processedAttrs.info.nonuniqueid,
+          readonly: processedAttrs.info.readonly
+        },
+        scope
+      ).trim();
       // some types of control (such as ui-select) don't deal correctly with a DISABLED attribute and
       // need ng-disabled, even when the expression is simply "true"
       if (params?.forceNg && result.toLowerCase() === "disabled") {

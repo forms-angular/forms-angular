@@ -51,8 +51,17 @@ module fng.services {
       // Generate an attribute that could be added to element(s) representing the field with the given
       // parameters to enable or disable it according to the prevailing security rules.
       // This function is a more complicated version of securityService.generateDisabledAttr, also taking into
-      // account the fact that fieldInfo.readonly can influence the disabled state of a field/
-      function handleReadOnlyDisabled(partialFieldInfo: { name: string, id?: string, readonly?: boolean | string }, scope: fng.IFormScope): string {
+      // account the fact that fieldInfo.readonly can influence the disabled state of a field.
+      // nonUniqueId should be required only in cases where a sub-sub schema has been defined in a directive
+      // as a means of getting around the single-level-of-nesting limitation.  in that case, where the
+      // directive's template then includes a <form-input> tag, it is likely that the ids of the sub-sub-schema
+      // elements will include $index from a parent scope (responsible for the sub-schema) in order to
+      // ensure its uniqueness, and in this case (as we are not explicitely managing the addition of the
+      // {{ $index }} expr), we need to be given a version of the id that does not include that expression.
+      // where nonUniqueId is provided, we will also use this for determining ancestors, because in the
+      // nested sub-schema scenario described above, the names of the fields in the sub-sub-schema will
+      // probably not identify the full ancestry.
+      function handleReadOnlyDisabled(partialFieldInfo: { name: string, id?: string, nonUniqueId?: string, readonly?: boolean | string }, scope: fng.IFormScope): string {
         if (partialFieldInfo.readonly && typeof partialFieldInfo.readonly === "boolean") {
           // if we have a true-valued readonly property then this trumps whatever security rule might apply to this field
           return " disabled ";
@@ -60,11 +69,20 @@ module fng.services {
         function wrapReadOnly(): string {
           return partialFieldInfo.readonly ? ` ng-disabled="${partialFieldInfo.readonly}" ` : "";
         }
-        if (!partialFieldInfo.id || !securityService.canDoSecurityNow(scope)) {
+        const id = partialFieldInfo.nonUniqueId || partialFieldInfo.id;
+        if (!id || !securityService.canDoSecurityNow(scope)) {
           // no security, so we're just concerned about what value fieldInfo.readonly has
           return wrapReadOnly();
         }
-        const ancestors = partialFieldInfo.name.split(".");
+        let ancestors: string[];
+        // if we have been provided with a nonUniqueId, we should use that to determine ancestors, because in this case,
+        // the name will not be reliable
+        if (partialFieldInfo.nonUniqueId) {
+          let ancestorStr = partialFieldInfo.nonUniqueId.startsWith("f_") ? partialFieldInfo.nonUniqueId.substring(2) : partialFieldInfo.nonUniqueId;
+          ancestors = ancestorStr.split("_");
+        } else {
+          ancestors = partialFieldInfo.name.split(".");
+        }
         ancestors.pop();
         let ancestorIds: string[] = [];
         while (ancestors.length > 0) {
@@ -73,7 +91,7 @@ module fng.services {
         }
         if (formsAngular.elemSecurityFuncBinding === "instant") {
           // "instant" security is evaluated now, and a positive result trumps whatever fieldInfo.readonly might be set to
-          if (scope.isSecurelyDisabled(partialFieldInfo.id)) {
+          if (scope.isSecurelyDisabled(id)) {
             return " disabled ";
           } else {
             for (const ancestorId of ancestorIds) {
@@ -84,7 +102,7 @@ module fng.services {
             return wrapReadOnly();
           }
         }
-        let securityFuncStr = `isSecurelyDisabled('${partialFieldInfo.id}')`;
+        let securityFuncStr = `isSecurelyDisabled('${id}')`;
         if (ancestorIds.length > 0) {
           const ancestorStr = ancestorIds.map((aid) => `requiresDisabledChildren('${aid}')`);
           securityFuncStr = `(${securityFuncStr} || ${ancestorStr.join(" || ")})`;
@@ -143,8 +161,29 @@ module fng.services {
           var insert = '';
 
           if (info.id && typeof info.id.replace === "function") {
-            const idStr = `cg_${info.id.replace(/\./g, '-')}`;
-            const visibility = securityService.considerVisibility(idStr, scope);
+            let uniqueIdStr = info.nonUniqueId || info.nonuniqueid || info.id;
+            let idStr: string;
+            // replace any . that appear in info.id with "-", but not those that appear between {{ and }}
+            if (info.id.includes(".") && info.id.includes("{{")) {
+              idStr = "cg_";
+              let inExpr = false;
+              for (let i = 0; i < info.id.length; i++) {
+                if (info.id[i] === "{" && info.id[i-1] === "{") {
+                  inExpr = true;
+                } else if (info.id[i] === "}" && info.id[i-1] === "}") {
+                  inExpr = false;
+                }
+                if (inExpr || info.id[i] !== ".") {
+                  idStr += info.id[i];
+                } else {
+                  idStr += "-";
+                }
+              }
+            } else {
+                idStr = "cg_".concat(info.id.replace(/\./g, '-'));
+            }
+            uniqueIdStr = `cg_${uniqueIdStr.replace(/\./g, '-')}`;
+            const visibility = securityService.considerVisibility(uniqueIdStr, scope);
             if (visibility.omit) {
               // we already know this field should be invisible, so we needn't add anything for it
               return { omit: true };
