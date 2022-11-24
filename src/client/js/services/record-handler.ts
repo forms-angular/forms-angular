@@ -729,7 +729,16 @@ module fng.services {
           .then(function(response) {
             let data: any = response.data;
             if (angular.isArray(data)) {
-              //  I have seen an intermittent problem where a page is requested twice
+              // if the options for the resource identified by $scope.modelName has disambiguation parameters,
+              // and that resource has more than one list field, the items returned by getPagedAndFilteredList
+              // might include a "disambiguation" property.  for this to appear on the list page, we need
+              // to add an item for it to the list schema
+              if (!$scope.listSchema.find((f) => f.name === "disambiguation") && data.some((d) => d.disambiguation)) {
+                $scope.listSchema.push({
+                  name: "disambiguation",
+                })
+              }
+              // I have seen an intermittent problem where a page is requested twice
               if (pagesLoaded === $scope.pagesLoaded) {
                 $scope.pagesLoaded++;
                 $scope.recordList = $scope.recordList.concat(data);
