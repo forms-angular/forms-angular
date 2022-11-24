@@ -46,7 +46,8 @@ gulp.task('compileServerSide', function() {
   return gulp
     .src('src/server/*.ts')
     .pipe(typeScriptCompiler({
-      target: 'ES5'
+      target: 'ES6',
+      moduleResolution: "node",
     }))
     .pipe(gulp.dest(distDirectory + '/server'));
 });
