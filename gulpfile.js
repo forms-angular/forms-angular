@@ -48,6 +48,7 @@ gulp.task('compileServerSide', function() {
     .pipe(typeScriptCompiler({
       target: 'ES2020',
       moduleResolution: "node",
+      module: "commonjs",
     }))
     .pipe(gulp.dest(distDirectory + '/server'));
 });
