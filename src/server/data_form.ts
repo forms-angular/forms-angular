@@ -630,6 +630,11 @@ export class FormsAngular {
                             if (err) {
                                 callback(err);
                             } else {
+                                // the disambiguate() call will have deleted the disambiguationIds but we're responsible for
+                                // the disambiguationResources, which we shouldn't be returning to the client
+                                for (const result of results) {
+                                    delete result.disambiguationResource;
+                                }
                                 timestamps.completedAt = new Date().valueOf();
                                 callback(null, {results, moreCount, timestamps});
                             }
