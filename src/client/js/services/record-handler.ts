@@ -813,11 +813,13 @@ module fng.services {
           }, $scope.handleHttpError);
       },
 
-      getListData: getListData,
+      getListData,
 
-      suffixCleanId: suffixCleanId,
+      suffixCleanId,
 
-      setData: setData,
+      getData,
+
+      setData,
 
       setUpLookupOptions: function setUpLookupOptions(lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
         const optionsList = $scope[schemaElement.options] = [];
@@ -893,7 +895,7 @@ module fng.services {
         addArrayLookupToLookupList($scope, formInstructions, ref, $scope.internalLookups);
       },
 
-      preservePristine: preservePristine,
+      preservePristine,
 
       // Reverse the process of convertToAngularModel
       convertToMongoModel: function convertToMongoModel(schema, anObject, prefixLength, $scope, schemaName?: string) {

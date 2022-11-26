@@ -297,7 +297,8 @@ declare module fng {
     scrollTheList($scope: IFormScope);
     getListData(record, fieldName, listSchema?, $scope?: IFormScope);
     suffixCleanId(inst, suffix);
-    setData(object, fieldname, element, value);
+    setData(object, fieldname: string, element, value);
+    getData(object, fieldname: string, element?: any);
     setUpLookupOptions(lookupCollection, schemaElement, $scope: IFormScope, ctrlState, handleSchema);
     setUpLookupListOptions: (
       ref: IFngLookupListReference,
