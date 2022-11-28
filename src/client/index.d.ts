@@ -8,6 +8,19 @@ declare module fng {
     // when provided, the named function (assumed to be present on $rootscope) will be used to determine the disabled
     // state of menu items and individual form input controls
     disabledSecurityFuncName?: string;
+    // when provided, the named function (assumed to be present on $rootscope) will be called each time a new page
+    // or popup is accessed, providing the host app with the opportunity to confirm whether there are ANY hidden elements
+    // at all on that page.  where there are not, we can optimise by skipping logic relating to DOM element visibility.
+    skipHiddenSecurityFuncName?: string;
+    // when provided, the named function (assumed to be present on $rootscope) will be called each time a new page
+    // or popup is accessed, providing the host app with the opportunity to confirm whether there are ANY disabled elements
+    // at all on that page.  where there are not, we can optimise by skipping logic relating to disabling DOM elements.
+    skipDisabledSecurityFuncName?: string;
+    // when provided, the named function (assumed to be present on $rootscope) will be called each time a new page
+    // or popup is accessed, providing the host app with the opportunity to confirm whether there are ANY elements on that
+    // page that require their child elements to be disabled.  where there are not, we can optimise by skipping 
+    // disabled ancestor checks.
+    skipDisabledAncestorSecurityFuncName?: string;
     // how the function identified by elemSecurityFuncName should be bound.  "instant" means that it will be called
     // as the markup is being constructed, with 'hidden' elements not included in the markup at all, and disable elements
     // given a simple DISABLED attribute.  this is the most efficient approach.  "one-time" will add ng-hide and
@@ -647,10 +660,12 @@ declare module fng {
     attrRequiresValue?: boolean;
     forceNg?: boolean;
   }
+
+  type SecurityType = "hidden" | "disabled";
   
   interface ISecurityService {
-    canDoSecurity: () => boolean;
-    canDoSecurityNow: (scope: fng.IFormScope) => boolean;
+    canDoSecurity: (type: SecurityType) => boolean;
+    canDoSecurityNow: (scope: fng.IFormScope, type: SecurityType) => boolean;
     isSecurelyHidden: (elemId: string, pseudoUrl?: string) => boolean;
     isSecurelyDisabled: (elemId: string, pseudoUrl?: string) => boolean;
     decorateFormScope: (formScope: IFormScope, pseudoUrl?: string) => void;

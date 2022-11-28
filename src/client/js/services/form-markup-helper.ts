@@ -70,24 +70,28 @@ module fng.services {
           return partialFieldInfo.readonly ? ` ng-disabled="${partialFieldInfo.readonly}" ` : "";
         }
         const id = partialFieldInfo.nonUniqueId || partialFieldInfo.id;
-        if (!id || !securityService.canDoSecurityNow(scope)) {
+        if (!id || !securityService.canDoSecurityNow(scope, "disabled")) {
           // no security, so we're just concerned about what value fieldInfo.readonly has
           return wrapReadOnly();
         }
-        let ancestors: string[];
-        // if we have been provided with a nonUniqueId, we should use that to determine ancestors, because in this case,
-        // the name will not be reliable
-        if (partialFieldInfo.nonUniqueId) {
-          let ancestorStr = partialFieldInfo.nonUniqueId.startsWith("f_") ? partialFieldInfo.nonUniqueId.substring(2) : partialFieldInfo.nonUniqueId;
-          ancestors = ancestorStr.split("_");
-        } else {
-          ancestors = partialFieldInfo.name.split(".");
-        }
-        ancestors.pop();
+        // if scope has been decorated with a requiresDisabledChildren function, we will be using that to check whether any
+        // of the ancestors of this field's element require their children to be disabled.  if they do, that means us!
         let ancestorIds: string[] = [];
-        while (ancestors.length > 0) {
-          ancestorIds.push(`f_${ancestors.join("_")}`);
+        if (!!scope.requiresDisabledChildren) {          
+          let ancestors: string[];
+          // if we have been provided with a nonUniqueId, we should use that to determine ancestors, because in this case,
+          // the name will not be reliable
+          if (partialFieldInfo.nonUniqueId) {
+            let ancestorStr = partialFieldInfo.nonUniqueId.startsWith("f_") ? partialFieldInfo.nonUniqueId.substring(2) : partialFieldInfo.nonUniqueId;
+            ancestors = ancestorStr.split("_");
+          } else {
+            ancestors = partialFieldInfo.name.split(".");
+          }
           ancestors.pop();
+          while (ancestors.length > 0) {
+            ancestorIds.push(`f_${ancestors.join("_")}`);
+            ancestors.pop();
+          }
         }
         if (formsAngular.elemSecurityFuncBinding === "instant") {
           // "instant" security is evaluated now, and a positive result trumps whatever fieldInfo.readonly might be set to

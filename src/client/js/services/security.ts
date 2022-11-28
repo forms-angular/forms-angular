@@ -2,22 +2,39 @@
 
 module fng.services {
   /*@ngInject*/
-  export function securityService($rootScope): fng.ISecurityService {
-    function canDoSecurity(): boolean {
+  export function securityService($rootScope: angular.IRootScopeService): fng.ISecurityService {
+    function canDoSecurity(type: SecurityType): boolean {
       return (
         !!formsAngular.elemSecurityFuncBinding &&
-        !!formsAngular.hiddenSecurityFuncName &&
-        !!formsAngular.disabledSecurityFuncName
+        (
+          (type === "hidden" && !!formsAngular.hiddenSecurityFuncName) ||
+          (type === "disabled" && !!formsAngular.disabledSecurityFuncName)
+        )
       );
     }
 
-    function canDoSecurityNow(scope: fng.IFormScope): boolean {
+    function canDoSecurityNow(scope: fng.IFormScope, type: SecurityType): boolean {
       return (
-        canDoSecurity() && // we have security configured
-        $rootScope[formsAngular.hiddenSecurityFuncName] && // the host app has provided the security callbacks that are specified in that configuration
-        $rootScope[formsAngular.disabledSecurityFuncName] && 
-        (!scope || (!!scope.isSecurelyDisabled && !!scope.isSecurelyHidden)) // the provided scope (if any) has been decorated (by us).  pages and popups which aren't form controllers will need to use (either directly, or through formMarkupHelper, the decorateFormScope() function below)
-      );
+        canDoSecurity(type) && // we have security configured
+        (
+          // the host app has not (temporarily) disabled this security type (which it might do, as an optimisation, when there are
+          // currently no security rules to apply); and 
+          // it has provided the callbacks that are specified in the security configuration; and
+          // the provided scope (if any) has been decorated (by us).  pages and popups which aren't form controllers will need to use
+          // (either directly, or through formMarkupHelper), the decorateFormScope() function below
+          (
+            type === "hidden" &&
+            $rootScope[formsAngular.hiddenSecurityFuncName] && 
+            (!scope || !!scope.isSecurelyHidden)
+          )
+          ||
+          (
+            type === "disabled" &&
+            $rootScope[formsAngular.disabledSecurityFuncName] &&
+            (!scope || !!scope.isSecurelyDisabled)
+          )
+        )
+      )
     }
 
     function isSecurelyHidden(elemId: string, pseudoUrl?: string): boolean {
@@ -45,24 +62,34 @@ module fng.services {
 
       isSecurelyDisabled,
 
+      // whilst initialising new pages and popups, pass their scope here for decoration with functions that can be used to check
+      // the disabled / hidden state of DOM elements on that page according to the prevailing security rules.
+      // if the host app indicates that security checks should be skipped for this page, we will NOT assign the corresponding
+      // functions.  the presence of these functions will be checked later by canDoSecurityNow(), which will always be called
+      // before any security logic is applied.  this allows security to be bypassed entirely at the request of the host app,
+      // providing an opportunity for optimisation.
       decorateFormScope: function (formScope: fng.IFormScope, pseudoUrl?: string): void {
-        if (canDoSecurity()) {
+        if (canDoSecurity("hidden") && (!formsAngular.skipHiddenSecurityFuncName || !$rootScope[formsAngular.skipHiddenSecurityFuncName](pseudoUrl))) {
           formScope.isSecurelyHidden = function (elemId: string): boolean {
             return isSecurelyHidden(elemId, pseudoUrl);
           };
+        }
+        if (canDoSecurity("disabled") && (!formsAngular.skipDisabledSecurityFuncName || !$rootScope[formsAngular.skipDisabledSecurityFuncName](pseudoUrl))) {
           formScope.isSecurelyDisabled = function (elemId: string): boolean {
             return isSecurelyDisabled(elemId, pseudoUrl);
           };
-          formScope.requiresDisabledChildren = function (elemId: string): boolean {
-            return getSecureDisabledState(elemId, pseudoUrl) === "+";
-          };
+          if (!formsAngular.skipDisabledAncestorSecurityFuncName || !$rootScope[formsAngular.skipDisabledAncestorSecurityFuncName](pseudoUrl)) {
+            formScope.requiresDisabledChildren = function (elemId: string): boolean {
+              return getSecureDisabledState(elemId, pseudoUrl) === "+";
+            };
+          }
         }
       },
 
       doSecurityWhenReady: function (cb: () => void): void {
-        if (canDoSecurityNow(undefined)) {
+        if (canDoSecurityNow(undefined, "hidden")) {
           cb();
-        } else if (canDoSecurity()) {
+        } else if (canDoSecurity("hidden")) {
           // wait until the hidden security function has been provided (externally) before proceeding with the callback...
           // we assume here that the hidden security and disabled security functions are both going to be provided at the
           // same time (and could therefore watch for either of these things)
@@ -76,7 +103,7 @@ module fng.services {
       },
 
       considerVisibility: function (id: string, scope: fng.IFormScope): fng.ISecurityVisibility {
-        if (canDoSecurityNow(scope)) {
+        if (canDoSecurityNow(scope, "hidden")) {
           if (formsAngular.elemSecurityFuncBinding === "instant") {
             if (scope.isSecurelyHidden(id)) {
               // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be
@@ -104,7 +131,7 @@ module fng.services {
       // function is NOT suitable for fields, which are instead handled by fieldformMarkupHelper.handleReadOnlyDisabled().
       generateDisabledAttr: function (id: string, scope: fng.IFormScope, params?: IGenerateDisableAttrParams): string {
         let result = "";
-        if (canDoSecurityNow(scope)) {
+        if (canDoSecurityNow(scope, "disabled")) {
           if (!params) {
             params = {};
           }
