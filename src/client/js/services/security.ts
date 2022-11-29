@@ -53,6 +53,42 @@ module fng.services {
       return formsAngular.elemSecurityFuncBinding === "one-time" ? "::" : "";
     }
 
+    function ignoreElemId(elemId: string): boolean {
+      return fng.formsAngular.ignoreIdsForHideableOrDisableableAttrs?.some((id) => elemId.includes(id));
+    }
+
+    function getXableAttrs(elemId: string, attr: string): string {
+      if (elemId && attr && !ignoreElemId(elemId)) {
+        return ` ${attr} title="${elemId}"`;
+      } else {
+        return "";
+      }
+    }
+
+    function getDisableableAttrs(elemId: string): string {
+      // even when an element should not actually be disabled, we should still mark what would otherwise have been a
+      // potentially-disabled element with scope.disableableAttr - where this is set - and where it is set, also set its
+      // title to be the same as its id so that users can learn of its id by hovering over it.  this will
+      // help anyone trying to figure out what is the right element id to use for a DOM security rule
+      return getXableAttrs(elemId, fng.formsAngular.disableableAttr);
+    }
+
+    function getDisableableAncestorAttrs(elemId: string): string {
+      // even when an element should not actually be disabled, we should still mark what would otherwise have been a
+      // potentially-disabled element with scope.disableableAttr - where this is set - and where it is set, also set its
+      // title to be the same as its id so that users can learn of its id by hovering over it.  this will
+      // help anyone trying to figure out what is the right element id to use for a DOM security rule
+      return getXableAttrs(elemId, fng.formsAngular.disableableAncestorAttr);
+    }
+
+    function getHideableAttrs(elemId: string): string {
+      // even when canDoSecurityNow() returns false, we should still mark what would otherwise have been a
+      // potentially-hidden element with scope.hideableAttr, where this is set, and where it is set, also set its
+      // title to be the same as its id so that users can learn of its id by hovering over it.  this will
+      // help anyone trying to figure out what is the right element id to use for a DOM security rule
+      return getXableAttrs(elemId, fng.formsAngular.hideableAttr);
+    }
+
     return {
       canDoSecurity,
 
@@ -61,6 +97,10 @@ module fng.services {
       isSecurelyHidden,
 
       isSecurelyDisabled,
+
+      getDisableableAttrs,
+
+      getDisableableAncestorAttrs,
 
       // whilst initialising new pages and popups, pass their scope here for decoration with functions that can be used to check
       // the disabled / hidden state of DOM elements on that page according to the prevailing security rules.
@@ -103,6 +143,7 @@ module fng.services {
       },
 
       considerVisibility: function (id: string, scope: fng.IFormScope): fng.ISecurityVisibility {
+        const hideableAttrs = getHideableAttrs(id);
         if (canDoSecurityNow(scope, "hidden")) {
           if (formsAngular.elemSecurityFuncBinding === "instant") {
             if (scope.isSecurelyHidden(id)) {
@@ -111,10 +152,11 @@ module fng.services {
               return { omit: true };
             }
           } else {
-            return { visibilityAttr: `data-ng-if="${getBindingStr()}!isSecurelyHidden('${id}')"` };
+            return { visibilityAttr: `data-ng-if="${getBindingStr()}!isSecurelyHidden('${id}')"${hideableAttrs}` };
           }
+        } else {
+          return { visibilityAttr: hideableAttrs };
         }
-        return {};
       },
 
       // Generate an attribute that could be added to the element with the given id to enable or disable it
@@ -127,42 +169,47 @@ module fng.services {
       //    (e.g., disabled="true") rather than returning simply "disabled"
       //  - attr can be used in the case where a directive expects an attribute other than "disabled".
       //    (for example, uib-tab expects "disable").
+      // Even if the element is not be disabled on this occasion, we will always return the value of
+      // fng.formsAngular.disableableAttr - where set - as a way of marking it as potentially disableable.
       // Because they can also have a readonly attribute which needs to be taken into consideration, this
       // function is NOT suitable for fields, which are instead handled by fieldformMarkupHelper.handleReadOnlyDisabled().
       generateDisabledAttr: function (id: string, scope: fng.IFormScope, params?: IGenerateDisableAttrParams): string {
-        let result = "";
-        if (canDoSecurityNow(scope, "disabled")) {
-          if (!params) {
-            params = {};
-          }
-          if (params.attrRequiresValue && params.forceNg) {
-            throw new Error(
-              "Invalid combination of parameters provided to generateDisabledAttr() [attrRequiresValue and forceNg]"
-            );
-          }
-          let attr = params.attr || "disabled";
-          if (formsAngular.elemSecurityFuncBinding === "instant") {
-            if (scope.isSecurelyDisabled(id)) {
-              if (params.attrRequiresValue) {
-                return ` ${attr}="true"`;
-              } else if (params.forceNg) {
-                result = "true";
+        function getActuallyDisabledAttrs(): string {
+          let result = "";
+          if (canDoSecurityNow(scope, "disabled")) {
+            if (!params) {
+              params = {};
+            }
+            if (params.attrRequiresValue && params.forceNg) {
+              throw new Error(
+                "Invalid combination of parameters provided to generateDisabledAttr() [attrRequiresValue and forceNg]"
+              );
+            }
+            let attr = params.attr || "disabled";
+            if (formsAngular.elemSecurityFuncBinding === "instant") {
+              if (scope.isSecurelyDisabled(id)) {
+                if (params.attrRequiresValue) {
+                  return ` ${attr}="true"`;
+                } else if (params.forceNg) {
+                  result = "true";
+                } else {
+                  return ` ${attr}`;
+                }
+              }
+            } else {
+              result = `${getBindingStr()}isSecurelyDisabled('${id}')`;
+            }
+            if (result) {
+              if (attr === "disabled") {
+                return ` data-ng-disabled="${result}"`;
               } else {
-                return ` ${attr}`;
+                return ` data-ng-attr-${attr}="${result}"`;
               }
             }
-          } else {
-            result = `${getBindingStr()}isSecurelyDisabled('${id}')`;
           }
-          if (result) {
-            if (attr === "disabled") {
-              return ` data-ng-disabled="${result}"`;
-            } else {
-              return ` data-ng-attr-${attr}="${result}"`;
-            }
-          }
+          return result;
         }
-        return result;
+        return getActuallyDisabledAttrs() + getDisableableAttrs(id);
       },
     };
   }

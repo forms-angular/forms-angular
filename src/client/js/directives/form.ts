@@ -119,7 +119,7 @@ module fng.directives {
               if (fieldInfo.select2) {
                 value = '<input placeholder="fng-select2 has been removed" readonly>';
               } else {
-                common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope);
+                common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope).join(" ");
                 common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 common += ` aria-label="${fieldInfo.label && fieldInfo.label !== "" ? fieldInfo.label : fieldInfo.name}" `;
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
@@ -170,7 +170,7 @@ module fng.directives {
             case 'radio' :
               value = '';
               common += requiredStr;
-              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope);
+              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope).join(" ");;
               common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
               var separateLines = options.formstyle === 'vertical' || (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
@@ -201,7 +201,7 @@ module fng.directives {
               break;
             case 'checkbox' :
               common += requiredStr;
-              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope);
+              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope).join(" ");;
               common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
               value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
               if (cssFrameworkService.framework() === 'bs3') {
@@ -210,7 +210,7 @@ module fng.directives {
               break;
             default:
               common += formMarkupHelper.addTextInputMarkup(allInputsVars, fieldInfo, requiredStr);
-              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope);
+              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope).join(" ");;
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
                   if (fieldInfo.rows === 'auto') {
@@ -446,7 +446,10 @@ module fng.directives {
                   if (info.formStyle === "inline" && info.inlineHeaders) {
                     template += generateInlineHeaders(info.schema, options, model, info.inlineHeaders === "always");
                   }
-                  const disableCond = formMarkupHelper.handleReadOnlyDisabled(info, scope);
+                  // handleReadOnlyDisabled() returns two strings - the 'disabled' attribute(s), and the 'disableable'
+                  // attributes.  for the purpose of deciding if / how to disable sorting if the list itself is
+                  // disabled, we're only interested in the former...
+                  const disableCond: string = formMarkupHelper.handleReadOnlyDisabled(info, scope)[0];
                   // if we already know that the field is disabled (only possible when formsAngular.elemSecurityFuncBinding === "instant")
                   // then we don't need to add the sortable attribute at all
                   // otherwise, we need to include the ng-disabled on the <ol> so this can be referenced by the ui-sortable directive
@@ -455,8 +458,12 @@ module fng.directives {
                     ? `${disableCond} ui-sortable="sortableOptions" ng-model="${model}"`
                     : "";
                   template += `<ol class="sub-doc" ${sortableStr}>`;
+                  // if a "disabled + children" DOM effect is applied to the list, this should serve to disable all of the
+                  // fields in the list sub-schema, along with the remove and add buttons for this list.  the following
+                  // string will be added to the list items and the add and remove buttons to identify this fact.
+                  const disableableAncestorStr = formMarkupHelper.genDisableableAncestorStr(info.id);
                   template +=
-                    `<li ng-form id="${info.id}List_{{$index}}" name="form_${niceName}{{$index}}" ` + 
+                    `<li ng-form id="${info.id}List_{{$index}}" name="form_${niceName}{{$index}}" ${disableableAncestorStr}` + 
                     `  class="${convertFormStyleToClass(info.formStyle)}` +
                     `  ${cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : ''}`  +
                     `  ${info.inlineHeaders ? 'width-controlled' : ''}` +
@@ -468,12 +475,14 @@ module fng.directives {
                     template += '<div class="row-fluid sub-doc">';
                   }
                   if (info.noRemove !== true || info.customSubDoc) {
-                    template += '   <div class="sub-doc-btns">';
+                    // we need to put disableableAncestorStr on the div rather than on the remove button because the
+                    // way that is styled means that any coloured outlines that might be added when "Identify page elements" is on
+                    // will be masked
+                    template += `   <div class="sub-doc-btns" ${info.noRemove !== true ? disableableAncestorStr : ""}>`;
                     if (typeof info.customSubDoc == 'string') {
                       template += info.customSubDoc;
                     }
-                    if (info.noRemove !== true) {
-                      
+                    if (info.noRemove !== true) {                      
                       template += `<button ${disableCond} ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove('${info.name}', $index, $event)"`;
                       if (info.remove) {
                         template += ' class="remove-btn btn btn-mini btn-default btn-xs form-btn"><i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove';
@@ -528,9 +537,10 @@ module fng.directives {
                     } else {                    
                       hideCond = info.noAdd ? `ng-hide="${info.noAdd}"` : '';
                       indicatorShowCond = info.noAdd ? `ng-show="${info.noAdd} && ${indicatorShowCond}"` : '';
-                      const disableCond = formMarkupHelper.handleReadOnlyDisabled(info, scope);
+                      // we need the button to have disableCond (to actually disable it, if the list is disabled)
+                      // adding disableableAncestorStr seems more correct than for it to have the disableable attribute
                       footer +=
-                        `<button ${hideCond} ${disableCond} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">` + 
+                        `<button ${hideCond} ${disableCond} ${disableableAncestorStr} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">` + 
                         ` <i class="${formMarkupHelper.glyphClass()}-plus"></i> Add ` + 
                         `</button>`;
                     }

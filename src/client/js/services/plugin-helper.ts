@@ -7,7 +7,7 @@ module fng.services {
 
   /*@ngInject*/
   export function pluginHelper(formMarkupHelper): IPluginHelper {
-    function internalGenDisabledStr(scope: fng.IFormScope, id: string, processedAttrs: fng.IProcessedAttrs, idSuffix: string, params?: fng.IGenDisableStrParams): string {
+    function internalGenDisabledAttrs(scope: fng.IFormScope, id: string, processedAttrs: fng.IProcessedAttrs, idSuffix: string, params?: fng.IGenDisableStrParams): string[] {
       // Though id will already have the value of idSuffix appended, processedAttrs.info.name will not.
       // For handleReadOnlyDisabled() to disable "sub-elements" included in a directive template with an idsuffix when their
       // 'parent' field is disabled, we need the name to include that suffix as if it were an additional level
@@ -31,7 +31,7 @@ module fng.services {
           name += `.${idSuffix}`;
         }
       }      
-      const result = formMarkupHelper.handleReadOnlyDisabled(
+      const attrs: string[] = formMarkupHelper.handleReadOnlyDisabled(
         {
           id,
           name,
@@ -39,14 +39,21 @@ module fng.services {
           readonly: processedAttrs.info.readonly
         },
         scope
-      ).trim();
+      );
       // some types of control (such as ui-select) don't deal correctly with a DISABLED attribute and
       // need ng-disabled, even when the expression is simply "true"
-      if (params?.forceNg && result.toLowerCase() === "disabled") {
-        return 'ng-disabled="true"';
-      } else {
-        return result;
+      if (params?.forceNg) {
+        for (let i = 0; i < attrs.length; i++) {
+          if (attrs[i].toLowerCase().trim() === "disabled") {
+            attrs[i] = 'ng-disabled="true"';
+          }
+        }
       }
+      return attrs;
+    }
+
+    function internalGenDisabledStr(scope: fng.IFormScope, id: string, processedAttrs: fng.IProcessedAttrs, idSuffix: string, params?: fng.IGenDisableStrParams): string {
+      return internalGenDisabledAttrs(scope, id, processedAttrs, idSuffix, params).join(" ");
     }
 
     // text surrounded by @@ @@ is assumed to be something that can have a pseudonym.  We'll rely
@@ -86,7 +93,10 @@ module fng.services {
     }
 
     function internalGenDateTimePickerDisabledStr(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idSuffix: string, idString: string) {
-      let rawDisabledStr = internalGenDisabledStr(scope, idString, processedAttrs, idSuffix, { forceNg: true });
+      const rawDisabledAttrs = internalGenDisabledAttrs(scope, idString, processedAttrs, idSuffix, { forceNg: true });
+      // first, we need to convert the 'disabled' attribute(s) (those which might actually cause the element to be
+      // disabled - found in rawDisabledAttrs[0]) into something that the datetime picker understands.
+      let rawDisabledStr = rawDisabledAttrs[0];
       let disabledStr = "";
       // disabledStr might now include an ng-disabled attribute.  To disable both the date and time inputs, we need to
       // take the value of that attribute and wrap it up as two new attributes: "disabledDate" and "readonlyTime"
@@ -117,7 +127,9 @@ module fng.services {
           // give up
         }
       }
-      return disabledStr;
+      // finally, we should add the 'disableable' attribute(s), which might be present in rawDisabledAttrs[1] (regardless
+      // of whether or not the datetime picker is actually disabled) to indicate that it potentially could be
+      return disabledStr + " " + rawDisabledAttrs[1];
     }
 
     function extractFromAttr(attr, directiveName: string): fng.IProcessedAttrs {
@@ -245,9 +257,10 @@ module fng.services {
           options,
           modelString,
           idString,
-          nameString
+          nameString,
         );
         buildingBlocks.modelString = modelString;
+        buildingBlocks.disableableAncestorStr = formMarkupHelper.genDisableableAncestorStr(info.id);
         // defer to the calling directive to generate the markup for the input(s)
         const inputHtml = generateInputControl(buildingBlocks as fng.IBuildingBlocks);
         // wrap this in a div that puts it into the correct bootstrap 'column' and adds validation messages and help text
@@ -290,7 +303,11 @@ module fng.services {
         return genIdAndDisabledStr(scope, processedAttrs, idSuffix, { forceNg: true });
       },
 
-      handlePseudos
+      handlePseudos,
+
+      genDisableableAncestorStr: function genDisableableAncestorStr(processedAttrs: fng.IProcessedAttrs): string {
+        return formMarkupHelper.genDisableableAncestorStr(processedAttrs.info.id);
+      }
     };
   }
 }

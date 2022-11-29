@@ -30,6 +30,11 @@ declare module fng {
     // option is chosen will depend upon when the function identified by elemSecurityFuncName will be ready to
     // make the necessary determination.
     elemSecurityFuncBinding?: "instant" | "one-time" | "normal";
+    hideableAttr?: string; // an attribute to mark all elements that can be hidden using security
+    disableableAttr?: string; // an attribute to mark all elements that can be disabled using security
+    disableableAncestorAttr?: string; // an attribute to mark all elements whose children can all be disabled using "disabled + children" security
+    // if an element's id is a partial match on any of this array's contents, it will never be marked with hideableAttr/disableableAttr
+    ignoreIdsForHideableOrDisableableAttrs?: string[]; 
   }
   var formsAngular: IFng;
 
@@ -467,6 +472,7 @@ declare module fng {
       options: string[],
       baseScope: any
     ) => void;
+    // added by ISecurityService
     isSecurelyHidden: (elemId: string) => boolean;
     isSecurelyDisabled: (elemId: string) => boolean;
     requiresDisabledChildren: (elemId: string) => boolean;
@@ -592,6 +598,7 @@ declare module fng {
     compactClass: string;
     formControl: string;
     modelString: string;
+    disableableAncestorStr: string;
   }
 
   interface IProcessedAttrs {
@@ -648,6 +655,7 @@ declare module fng {
       idSuffix: string
     ) => string;
     handlePseudos: (str: string) => string;
+    genDisableableAncestorStr: (processedAttrs: IProcessedAttrs) => string;
   }
 
   interface ISecurityVisibility {
@@ -671,6 +679,8 @@ declare module fng {
     decorateFormScope: (formScope: IFormScope, pseudoUrl?: string) => void;
     doSecurityWhenReady: (cb: () => void) => void;
     considerVisibility: (id: string, scope: fng.IFormScope) => ISecurityVisibility;
+    getDisableableAttrs: (id: string) => string;
+    getDisableableAncestorAttrs: (id: string) => string;
     generateDisabledAttr: (id: string, scope: fng.IFormScope, params?: IGenerateDisableAttrParams) => string;
   }
 }
