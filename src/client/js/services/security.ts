@@ -98,6 +98,8 @@ module fng.services {
 
       isSecurelyDisabled,
 
+      getHideableAttrs,
+
       getDisableableAttrs,
 
       getDisableableAncestorAttrs,

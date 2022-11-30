@@ -13,7 +13,7 @@ module fng.directives {
     const oneTimeBinding = formsAngular.elemSecurityFuncBinding !== "normal";
     const bindingStr = oneTimeBinding ? "::" : "";
     if (securityService.canDoSecurity("hidden")) {
-      menuVisibilityStr = `ng-if="contextMenuId && !contextMenuHidden"`;
+      menuVisibilityStr = `ng-if="contextMenuId && !contextMenuHidden" ${securityService.getHideableAttrs('{{ ::contextMenuId }}')}`;
       if (oneTimeBinding) {
         // because the isHidden(...) logic is highly likely to be model dependent, that cannot be one-time bound.  to
         // be able to combine one-time and regular binding, we'll use ng-if for the one-time bound stuff and ng-hide for the rest
@@ -21,18 +21,19 @@ module fng.directives {
       } else if (formsAngular.elemSecurityFuncBinding === "normal") {
         itemVisibilityStr = `ng-hide="${itemVisibilityStr} || (!choice.divider && isSecurelyHidden(choice.id))"`;
       }      
+      itemVisibilityStr += ` ${securityService.getHideableAttrs('{{ ::choice.id }}')}`;
     } else {
       menuVisibilityStr = "";
       itemVisibilityStr = `ng-hide="${itemVisibilityStr}"`;
     }
     if (securityService.canDoSecurity("disabled")) {
-      menuDisabledStr = `disableable-link ng-disabled="contextMenuDisabled"`;
+      menuDisabledStr = `disableable-link ng-disabled="contextMenuDisabled" ${securityService.getDisableableAttrs('{{ ::contextMenuId }}')}`;
       // as ng-class is already being used, we'll add the .disabled class if the menu item is securely disabled using
       // class="{{ }}".  note that we "prevent" a disabled menu item from being clicked by checking for the DISABLED
       // attribute in the doClick(...) function, and aborting if this is found.
       // note that the 'normal' class introduced here might not actually do anything, but for one-time binding to work
       // properly, we need a truthy value
-      itemDisabledStr += ` class="{{ ${bindingStr}(!choice.divider && isSecurelyDisabled(choice.id)) ? 'disabled' : 'normal' }}"`;
+      itemDisabledStr += ` class="{{ ${bindingStr}(!choice.divider && isSecurelyDisabled(choice.id)) ? 'disabled' : 'normal' }}" ${securityService.getDisableableAttrs('{{ ::choice.id }}')}`;
     } else {
       menuDisabledStr = "";
     }

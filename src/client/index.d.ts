@@ -680,6 +680,7 @@ declare module fng {
     doSecurityWhenReady: (cb: () => void) => void;
     considerVisibility: (id: string, scope: fng.IFormScope) => ISecurityVisibility;
     getDisableableAttrs: (id: string) => string;
+    getHideableAttrs: (id: string) => string;
     getDisableableAncestorAttrs: (id: string) => string;
     generateDisabledAttr: (id: string, scope: fng.IFormScope, params?: IGenerateDisableAttrParams) => string;
   }
