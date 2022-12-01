@@ -562,7 +562,7 @@ module fng.services {
 
         sharedData.baseScope = $scope;
 
-        securityService.decorateFormScope($scope, pseudoUrl);
+        securityService.decorateSecurableScope($scope, { pseudoUrl });
 
         $scope.generateEditUrl = function (obj) {
           return formGeneratorInstance.generateEditUrl(obj, $scope);

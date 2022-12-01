@@ -392,10 +392,17 @@ declare module fng {
   //   "+" = this and all child elements disabled
   export type DisabledOutcome = boolean | "+";
 
+  export interface ISecurableScope extends angular.IScope {
+    // added by ISecurityService
+    isSecurelyHidden: (elemId: string) => boolean;
+    isSecurelyDisabled: (elemId: string) => boolean;
+    requiresDisabledChildren: (elemId: string) => boolean;
+  }
+
   /*
     The scope which contains form data
    */
-  export interface IFormScope extends angular.IScope {
+  export interface IFormScope extends ISecurableScope {
     sharedData: any;
     modelNameDisplay: string;
     modelName: string;
@@ -472,10 +479,6 @@ declare module fng {
       options: string[],
       baseScope: any
     ) => void;
-    // added by ISecurityService
-    isSecurelyHidden: (elemId: string) => boolean;
-    isSecurelyDisabled: (elemId: string) => boolean;
-    requiresDisabledChildren: (elemId: string) => boolean;
   }
 
   export interface IContextMenuDivider {
@@ -673,16 +676,16 @@ declare module fng {
   
   interface ISecurityService {
     canDoSecurity: (type: SecurityType) => boolean;
-    canDoSecurityNow: (scope: fng.IFormScope, type: SecurityType) => boolean;
+    canDoSecurityNow: (scope: fng.ISecurableScope, type: SecurityType) => boolean;
     isSecurelyHidden: (elemId: string, pseudoUrl?: string) => boolean;
     isSecurelyDisabled: (elemId: string, pseudoUrl?: string) => boolean;
-    decorateFormScope: (formScope: IFormScope, pseudoUrl?: string) => void;
+    decorateSecurableScope: (securableScope: ISecurableScope, params?: { pseudoUrl?: string, overrideSkipping?: boolean }) => void;
     doSecurityWhenReady: (cb: () => void) => void;
-    considerVisibility: (id: string, scope: fng.IFormScope) => ISecurityVisibility;
+    considerVisibility: (id: string, scope: fng.ISecurableScope) => ISecurityVisibility;
     getDisableableAttrs: (id: string) => string;
     getHideableAttrs: (id: string) => string;
     getDisableableAncestorAttrs: (id: string) => string;
-    generateDisabledAttr: (id: string, scope: fng.IFormScope, params?: IGenerateDisableAttrParams) => string;
+    generateDisabledAttr: (id: string, scope: fng.ISecurableScope, params?: IGenerateDisableAttrParams) => string;
   }
 }
 

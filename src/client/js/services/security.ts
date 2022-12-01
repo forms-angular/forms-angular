@@ -13,7 +13,7 @@ module fng.services {
       );
     }
 
-    function canDoSecurityNow(scope: fng.IFormScope, type: SecurityType): boolean {
+    function canDoSecurityNow(scope: fng.ISecurableScope, type: SecurityType): boolean {
       return (
         canDoSecurity(type) && // we have security configured
         (
@@ -21,7 +21,7 @@ module fng.services {
           // currently no security rules to apply); and 
           // it has provided the callbacks that are specified in the security configuration; and
           // the provided scope (if any) has been decorated (by us).  pages and popups which aren't form controllers will need to use
-          // (either directly, or through formMarkupHelper), the decorateFormScope() function below
+          // (either directly, or through formMarkupHelper), the decorateSecurableScope() function below
           (
             type === "hidden" &&
             $rootScope[formsAngular.hiddenSecurityFuncName] && 
@@ -110,19 +110,19 @@ module fng.services {
       // functions.  the presence of these functions will be checked later by canDoSecurityNow(), which will always be called
       // before any security logic is applied.  this allows security to be bypassed entirely at the request of the host app,
       // providing an opportunity for optimisation.
-      decorateFormScope: function (formScope: fng.IFormScope, pseudoUrl?: string): void {
-        if (canDoSecurity("hidden") && (!formsAngular.skipHiddenSecurityFuncName || !$rootScope[formsAngular.skipHiddenSecurityFuncName](pseudoUrl))) {
-          formScope.isSecurelyHidden = function (elemId: string): boolean {
-            return isSecurelyHidden(elemId, pseudoUrl);
+      decorateSecurableScope: function (securableScope: fng.ISecurableScope, params?: { pseudoUrl?: string, overrideSkipping: boolean }): void {
+        if (canDoSecurity("hidden") && (!formsAngular.skipHiddenSecurityFuncName || params?.overrideSkipping || !$rootScope[formsAngular.skipHiddenSecurityFuncName](params?.pseudoUrl))) {
+          securableScope.isSecurelyHidden = function (elemId: string): boolean {
+            return isSecurelyHidden(elemId, params?.pseudoUrl);
           };
         }
-        if (canDoSecurity("disabled") && (!formsAngular.skipDisabledSecurityFuncName || !$rootScope[formsAngular.skipDisabledSecurityFuncName](pseudoUrl))) {
-          formScope.isSecurelyDisabled = function (elemId: string): boolean {
-            return isSecurelyDisabled(elemId, pseudoUrl);
+        if (canDoSecurity("disabled") && (!formsAngular.skipDisabledSecurityFuncName || params?.overrideSkipping || !$rootScope[formsAngular.skipDisabledSecurityFuncName](params?.pseudoUrl))) {
+          securableScope.isSecurelyDisabled = function (elemId: string): boolean {
+            return isSecurelyDisabled(elemId, params?.pseudoUrl);
           };
-          if (!formsAngular.skipDisabledAncestorSecurityFuncName || !$rootScope[formsAngular.skipDisabledAncestorSecurityFuncName](pseudoUrl)) {
-            formScope.requiresDisabledChildren = function (elemId: string): boolean {
-              return getSecureDisabledState(elemId, pseudoUrl) === "+";
+          if (!formsAngular.skipDisabledAncestorSecurityFuncName || params?.overrideSkipping || !$rootScope[formsAngular.skipDisabledAncestorSecurityFuncName](params?.pseudoUrl)) {
+            securableScope.requiresDisabledChildren = function (elemId: string): boolean {
+              return getSecureDisabledState(elemId, params?.pseudoUrl) === "+";
             };
           }
         }
@@ -144,7 +144,7 @@ module fng.services {
         }
       },
 
-      considerVisibility: function (id: string, scope: fng.IFormScope): fng.ISecurityVisibility {
+      considerVisibility: function (id: string, scope: fng.ISecurableScope): fng.ISecurityVisibility {
         const hideableAttrs = getHideableAttrs(id);
         if (canDoSecurityNow(scope, "hidden")) {
           if (formsAngular.elemSecurityFuncBinding === "instant") {
@@ -156,9 +156,8 @@ module fng.services {
           } else {
             return { visibilityAttr: `data-ng-if="${getBindingStr()}!isSecurelyHidden('${id}')"${hideableAttrs}` };
           }
-        } else {
-          return { visibilityAttr: hideableAttrs };
         }
+        return { visibilityAttr: hideableAttrs };
       },
 
       // Generate an attribute that could be added to the element with the given id to enable or disable it
@@ -175,7 +174,7 @@ module fng.services {
       // fng.formsAngular.disableableAttr - where set - as a way of marking it as potentially disableable.
       // Because they can also have a readonly attribute which needs to be taken into consideration, this
       // function is NOT suitable for fields, which are instead handled by fieldformMarkupHelper.handleReadOnlyDisabled().
-      generateDisabledAttr: function (id: string, scope: fng.IFormScope, params?: IGenerateDisableAttrParams): string {
+      generateDisabledAttr: function (id: string, scope: fng.ISecurableScope, params?: IGenerateDisableAttrParams): string {
         function getActuallyDisabledAttrs(): string {
           let result = "";
           if (canDoSecurityNow(scope, "disabled")) {
