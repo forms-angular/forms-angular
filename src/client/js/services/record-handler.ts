@@ -9,7 +9,7 @@ module fng.services {
    */
 
   /*@ngInject*/
-  export function recordHandler($location, $window, $filter, $timeout, routingService, cssFrameworkService, SubmissionsService, SchemasService): fng.IRecordHandler {
+  export function recordHandler($location, $window, $filter, $timeout: angular.ITimeoutService, $sce: angular.ISCEService, routingService, cssFrameworkService, SubmissionsService, SchemasService): fng.IRecordHandler {
 
     // TODO: Put this in a service
     const makeMongoId = (rnd = r16 => Math.floor(r16).toString(16)) => rnd(Date.now() / 1000) + " ".repeat(16).replace(/./g, () => rnd(Math.random() * 16));
@@ -990,7 +990,7 @@ module fng.services {
         $scope.showError = function(error: any, alertTitle?: string) {
           $scope.alertTitle = alertTitle ? alertTitle : "Error!";
           if (typeof error === "string") {
-            $scope.errorMessage = error;
+            $scope.errorMessage = $sce.trustAsHtml(error);
           } else if (!error) {
             $scope.errorMessage = `An error occurred - that's all we got.  Sorry.`;
           } else if (error.message && typeof error.message === "string") {
