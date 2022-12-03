@@ -160,6 +160,25 @@ module fng.services {
         return { visibilityAttr: hideableAttrs };
       },
 
+      // consider the visibility of a container whose visibility depends upon at least some of its content being visible.
+      // the container is assumed not to itself be securable (hence it doesn't have an id - or at least, not one we're
+      // concerned about - and it doesn't itself need a "hideable" attribute) 
+      considerContainerVisibility: function (contentIds: string[], scope: fng.ISecurableScope): fng.ISecurityVisibility {
+        if (canDoSecurityNow(scope, "hidden")) {
+          if (formsAngular.elemSecurityFuncBinding === "instant") {
+            if (contentIds.some((id) => !scope.isSecurelyHidden(id))) {
+              return {};
+            } else {
+              return { omit: true };
+            }
+          } else {
+            const attrs = contentIds.map((id) => `!isSecurelyHidden('${id}')`);
+            return { visibilityAttr: `data-ng-if="${getBindingStr()}(${attrs.join(" || ")})"` };
+          }
+        }
+        return {};
+      },
+
       // Generate an attribute that could be added to the element with the given id to enable or disable it
       // according to the prevailing security rules.  In most cases, the attribute will either be "disabled"
       // (in the case of 'instant' binding) or data-ng-disabled="xxxx" (in the case of one-time or normal

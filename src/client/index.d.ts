@@ -682,6 +682,7 @@ declare module fng {
     decorateSecurableScope: (securableScope: ISecurableScope, params?: { pseudoUrl?: string, overrideSkipping?: boolean }) => void;
     doSecurityWhenReady: (cb: () => void) => void;
     considerVisibility: (id: string, scope: fng.ISecurableScope) => ISecurityVisibility;
+    considerContainerVisibility: (contentIds: string[], scope: fng.ISecurableScope) => fng.ISecurityVisibility;
     getDisableableAttrs: (id: string) => string;
     getHideableAttrs: (id: string) => string;
     getDisableableAncestorAttrs: (id: string) => string;
