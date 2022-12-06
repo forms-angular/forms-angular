@@ -1187,7 +1187,7 @@ module fng.services {
         $scope.isCancelDisabled = function() {
           if ($scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine) {
             return true;
-          } else if (typeof $scope.disableFunctions.isCancelDisabled === "function") {
+          } else if (typeof $scope.disableFunctions?.isCancelDisabled === "function") {
             return $scope.disableFunctions.isCancelDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
           } else {
             return false;
@@ -1268,7 +1268,7 @@ module fng.services {
 
           if (pristine || !!$scope.whyDisabled) {
             return true;
-          } else if (typeof $scope.disableFunctions.isSaveDisabled !== "function") {
+          } else if (typeof $scope.disableFunctions?.isSaveDisabled !== "function") {
             return false;
           } else {
             let retVal = $scope.disableFunctions.isSaveDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
@@ -1284,7 +1284,7 @@ module fng.services {
         $scope.isDeleteDisabled = function() {
           if (!$scope.id) {
             return true;
-          } else if (typeof $scope.disableFunctions.isDeleteDisabled === "function") {
+          } else if (typeof $scope.disableFunctions?.isDeleteDisabled === "function") {
             return $scope.disableFunctions.isDeleteDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
           } else {
             return false;
@@ -1292,7 +1292,7 @@ module fng.services {
         };
 
         $scope.isNewDisabled = function() {
-          if (typeof $scope.disableFunctions.isNewDisabled === "function") {
+          if (typeof $scope.disableFunctions?.isNewDisabled === "function") {
             return $scope.disableFunctions.isNewDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
           } else {
             return false;
