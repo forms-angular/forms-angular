@@ -47,9 +47,11 @@ module fng.services {
      {
      aggregate - whether or not to aggregate results (http://docs.mongodb.org/manual/aggregation/)
      find - find parameter
+     projection - the fields to return
      limit - limit results to this number of records
      skip - skip this number of records before returning results
      order - sort order
+     concatenate - whether to concatenate all of the list fields into a single text field (and return { id, text }[]), or not (in which case the documents - albeit only list fields and _id - are returned without transformation)
      }
      */
     var generateListQuery = function (options) {
@@ -71,9 +73,11 @@ module fng.services {
 
       addParameter('l', options.limit);
       addParameter('f', options.find);
+      addParameter('p', options.projection);
       addParameter('a', options.aggregate);
       addParameter('o', options.order);
       addParameter('s', options.skip);
+      addParameter('c', options.concatenate);
 
       return queryString;
     };
@@ -101,51 +105,87 @@ module fng.services {
 //           changed: changed
 //         };
 //       },
-      getListAttributes: function (ref: string, id) {
+
+      // return only the list attributes for the given record.  where returnRaw is true, the record's
+      // list attributes will be returned without transformation.  otherwise, the list attributes will be concatenated
+      // (with spaces) and returned in the form { list: string }
+      getListAttributes: function (ref: string, id, returnRaw: boolean) {
         const actualId = typeof id === "string" ? id : id.id || id._id || id.x || id;
-        if (typeof actualId !== "string") {
-          throw new Error(`getListAttributes requires a string id but was provided with ${JSON.stringify(id)}`);
+        if (typeof actualId === "object") {
+          throw new Error(`getListAttributes doesn't expect an object but was provided with ${JSON.stringify(id)}`);
         }
-        return $http.get('/api/' + ref + '/' + actualId + '/list', {cache: expCache});
+        const queryString = returnRaw ? "?returnRaw=1" : "";
+        return $http.get(`/api/${ref}/${actualId}/list${queryString}`, { cache: expCache });
       },
+
+      // return only the list attributes for ALL records in the given collection, returning ILookupItem[]
+      getAllListAttributes: function (ref: string) {
+        return $http.get(`/api/${ref}/listAll`, { cache: expCache });
+      },
+
+      // return only the list attributes for records in the given collection that satisfy the given query conditions (filter, limit etc.)
+      // return ILookupItem[] if options.concatenate is true, else the raw documents
+      getPagedAndFilteredList: function (ref: string, options) {
+        if (options.projection) {
+          throw new Error("Cannot use projection option for getPagedAndFilteredList, because it only returns list fields");
+        }
+        if (options.concatenate === undefined) {
+          options.concatenate = false;
+        }
+        return $http.get(`/api/${ref}/listAll${generateListQuery(options)}`);
+      },
+
+      // return ALL attributes for records in the given collection that satisfy the given query conditions (filter, limit etc.)
+      getPagedAndFilteredListFull: function (ref: string, options) {
+        return $http.get(`/api/${ref}${generateListQuery(options)}`);
+      },
+
       readRecord: function (modelName, id): Promise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
 //         let retVal;
 //         if (tabChangeData && tabChangeData.model === modelName && tabChangeData.id === id) {
 //           retVal = Promise.resolve({data:tabChangeData.record, changed: tabChangeData.changed, master: tabChangeData.master});
 //         } else {
-           return $http.get('/api/' + modelName + '/' + id);
+          const actualId = typeof id === "string" ? id : id.id || id._id || id.x || id;
+          if (typeof actualId === "object") {
+            throw new Error(`readRecord doesn't expect an object but was provided with ${JSON.stringify(id)}`);
+          }
+           return $http.get(`/api/${modelName}/${actualId}`);
 //           retVal = $http.get('/api/' + modelName + '/' + id);
 //         }
 //         tabChangeData = null;
 //         return retVal;
       },
+
       getAll: function (modelName, _options) {
         var options = angular.extend({
           cache: useCacheForGetAll ? expCache : false
         }, _options);
-        return $http.get('/api/' + modelName, options);
+        return $http.get(`/api/${modelName}`, options);
       },
-      getPagedAndFilteredList: function (modelName, options) {
-        return $http.get('/api/' + modelName + generateListQuery(options));
-      },
+
       deleteRecord: function (model, id) {
-        return $http.delete('/api/' + model + '/' + id);
+        return $http.delete(`/api/${model}/${id}`);
       },
+
       updateRecord: function (modelName, id, dataToSave) {
-        expCache.remove('/api/' + modelName);
-        return $http.post('/api/' + modelName + '/' + id, dataToSave);
+        expCache.remove(`/api/${modelName}`);
+        return $http.post(`/api/${modelName}/${id}`, dataToSave);
       },
+
       createRecord: function (modelName, dataToSave) {
-        expCache.remove('/api/' + modelName);
-        return $http.post('/api/' + modelName, dataToSave);
+        expCache.remove(`/api/${modelName}`);
+        return $http.post(`/api/${modelName}`, dataToSave);
       },
+
       useCache: function(val: boolean) {
         useCacheForGetAll = val;
       },
+
       getCache: function(): boolean {
         return !!expCache;
       },
+      
       clearCache: function() {
         expCache.removeAll();
       }

@@ -48,7 +48,7 @@ describe('BaseCtrl', function () {
         ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
         $httpBackend.flush();
         expect(scope.alertTitle).toBe('Error!');
-        expect(scope.errorMessage).toBe('404 "Some error"');
+        expect(scope.errorMessage.toString()).toBe('404 "Some error"');
 
       });
     });
@@ -93,7 +93,7 @@ describe('BaseCtrl', function () {
 
   });
 
-  describe('creates list schema from moodel schema', function () {
+  describe('creates list schema from model schema', function () {
 
     var scope, ctrl;
 
@@ -141,6 +141,14 @@ describe('BaseCtrl', function () {
           {'description': 'Continuing Health Care', 'module': 'anything', '_id': '2'},
           {'description': 'GP', 'module': 'anything', '_id': '3'},
           {'description': 'Website', 'module': 'anything', '_id': '4'}
+        ]
+      );
+      $httpBackend.whenGET('/api/referral_format/listAll').respond(
+        [
+          {'id': '1', 'text': 'Social services' },
+          {'id': '2', 'text': 'Continuing Health Care' },
+          {'id': '3', 'text': 'GP', },
+          {'id': '4', 'text': 'Website', }
         ]
       );
       $location.$$path = '/collection/3/edit';
@@ -383,6 +391,10 @@ describe('BaseCtrl', function () {
         {'name': 'John Smith', _id: 123456789},
         {'name': 'Alan Jones', _id: 123389}
       ]);
+      $httpBackend.whenGET('/api/Person/listAll').respond([
+        {id: 123456789, 'text': 'John Smith' },
+        {id: 123389, 'text': 'Alan Jones'}
+      ]);
       $httpBackend.whenGET('/api/collection/3').respond({
         'textField': 'This is some text',
         'lookupField': 123456789,
@@ -398,6 +410,14 @@ describe('BaseCtrl', function () {
           {'description': 'Continuing Health Care', 'module': 'anything', '_id': '2'},
           {'description': 'GP', 'module': 'anything', '_id': '3'},
           {'description': 'Website', 'module': 'anything', '_id': '4'}
+        ]
+      );
+      $httpBackend.whenGET('/api/referral_format/listAll').respond(
+        [
+          { 'id': '1', 'text': 'Social services' },
+          { 'id': '2', 'text': 'Continuing Health Care' },
+          { 'id': '3', 'text': 'GP' },
+          { 'id': '4', 'text': 'Website' }
         ]
       );
       $location.$$path = '/collection/3/edit';
@@ -570,9 +590,17 @@ describe('BaseCtrl', function () {
         {'_id': 'Smithy', 'forename': 'John', 'surname': 'Smith' },
         { 'surname': 'Jenkins', 'forename': 'Nicky', '_id': 'Jenks'}
       ]);
+      $httpBackend.whenGET('/api/teachers/listAll').respond([
+        { 'id': 'Smithy', 'text': 'Smith John' },
+        { 'id': 'Jenks', 'text': 'Jenkins Nicky' }
+      ]);
       $httpBackend.whenGET('/api/assistants').respond([
         {'_id': 'ASmithy', 'forename': 'John', 'surname': 'AsstSmith' },
         { 'surname': 'AsstJenkins', 'forename': 'Nicky', '_id': 'AJenks'}
+      ]);
+      $httpBackend.whenGET('/api/assistants/listAll').respond([
+        { 'id': 'ASmithy', 'text': 'AsstSmith John' },
+        { 'id': 'AJenks', 'text': 'AsstJenkins Nicky' }
       ]);
       scope = $rootScope.$new();
       $location.$$path = '/collection/3/edit';
@@ -715,7 +743,16 @@ describe('BaseCtrl', function () {
           _id: '6',
           name: 'Sainsbury'
         }
-
+      ]);
+      $httpBackend.whenGET('/api/organisation/listAll').respond([
+        {
+          id: '5',
+          text: 'Tesco'
+        },
+        {
+          id: '6',
+          text: 'Sainsbury'
+        }
       ]);
       $location.$$path = '/person/new';
       scope = $rootScope.$new();
@@ -751,7 +788,7 @@ describe('BaseCtrl', function () {
         scope.save();
         $httpBackend.flush();
         expect(scope.alertTitle).toEqual('Error!');
-        expect(scope.errorMessage).toEqual('There is some kind of error');
+        expect(scope.errorMessage.toString()).toEqual('There is some kind of error');
       });
     });
 

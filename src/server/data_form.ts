@@ -74,12 +74,16 @@ export class FormsAngular {
         this.app.get.apply(this.app, processArgs(this.options, [resourceName, this.collectionGet()]));
         this.app.post.apply(this.app, processArgs(this.options, [resourceName, this.collectionPost()]));
 
+        // return the List attributes for all records - used by record-handler's setUpLookupOptions() method, for cases
+        // where there's a lookup that doesn't use the fngajax option 
+        this.app.get.apply(this.app, processArgs(this.options, [resourceName + '/listAll', this.entityListAll()]));
+
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + id, this.entityGet()]));
         this.app.post.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()]));  // You can POST or PUT to update data
         this.app.put.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()]));
         this.app.delete.apply(this.app, processArgs(this.options, [resourceName + id, this.entityDelete()]));
 
-        // return the List attributes for a record - used by select2
+        // return the List attributes for a record - used by fng-ui-select
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + id + '/list', this.entityList()]));
 
         this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
@@ -91,22 +95,20 @@ export class FormsAngular {
         }
     }
 
-    getListFields(resource: Resource, doc: Document, cb) {
-
-        function getFirstMatchingField(keyList, type?) {
-            for (let i = 0; i < keyList.length; i++) {
-                let fieldDetails = resource.model.schema['tree'][keyList[i]];
-                if (fieldDetails.type && (!type || fieldDetails.type.name === type) && keyList[i] !== '_id') {
-                    resource.options.listFields = [{field: keyList[i]}];
-                    return doc[keyList[i]];
-                }
+    getFirstMatchingField(resource: Resource, doc: Document, keyList: string[], type?: string) {
+        for (let i = 0; i < keyList.length; i++) {
+            let fieldDetails = resource.model.schema['tree'][keyList[i]];
+            if (fieldDetails.type && (!type || fieldDetails.type.name === type) && keyList[i] !== '_id') {
+                resource.options.listFields = [{field: keyList[i]}];
+                return doc ? doc[keyList[i]] : keyList[i];
             }
         }
+    }
 
+    getListFields(resource: Resource, doc: Document, cb) {
         const that = this;
         let display = '';
         let listFields = resource.options.listFields;
-
         if (listFields) {
             async.map(listFields, function (aField, cbm) {
                 if (typeof doc[aField.field] !== 'undefined') {
@@ -153,11 +155,43 @@ export class FormsAngular {
         } else {
             const keyList = Object.keys(resource.model.schema['tree']);
             // No list field specified - use the first String field,
-            display = getFirstMatchingField(keyList, 'String') ||
+            display = this.getFirstMatchingField(resource, doc, keyList, 'String') ||
                 // and if there aren't any then just take the first field
-                getFirstMatchingField(keyList);
+                this.getFirstMatchingField(resource, doc, keyList);
             cb(null, display.trim());
         }
+    };
+
+    // generate a Mongo projection that can be used to restrict a query to return only those fields from the given
+    // resource that are identified as "list" fields (i.e., ones that should appear whenever records of that type are
+    // displayed in a list)
+    generateListFieldProjection(resource: Resource) {
+        const projection = {};
+        const listFields = resource.options?.listFields;
+        // resource.options.listFields will identify all of the fields from resource that have a value for .list.
+        // generally, that value will be "true", identifying the corresponding field as one which should be
+        // included whenever records of that type appear in a list.
+        // occasionally, it will instead be "{ ref: true }"", which means something entirely different -
+        // this means that the field requires a lookup translation before it can be displayed on a form.
+        // for our purposes, we're interested in only the first of these two cases, so we'll ignore anything where
+        // field.params.ref has a truthy value
+        if (listFields) {
+            for (const field of listFields) {
+                if (!field.params?.ref) {
+                    projection[field.field] = 1;
+                }
+            }
+        } else {
+            const keyList = Object.keys(resource.model.schema['tree']);
+            const firstField = (
+                // No list field specified - use the first String field,
+                this.getFirstMatchingField(resource, undefined, keyList, 'String') ||
+                // and if there aren't any then just take the first field
+                this.getFirstMatchingField(resource, undefined, keyList)
+            );
+            projection[firstField] = 1;
+        }
+        return projection;
     };
 
     newResource(model, options: ResourceOptions) {
@@ -217,6 +251,77 @@ export class FormsAngular {
             return resource.model.collection.collectionName === name;
         });
     };
+    
+    // Using the given (already-populated) AmbiguousRecordStore, generate text suitable for
+    // disambiguation of each ambiguous record, and pass that to the given disambiguateItemCallback
+    // so our caller can decorate the ambiguous record in whatever way it deems appropriate.
+    //
+    // The ambiguousRecordStore provided to this function (generated either by a call to
+    // buildSingleResourceAmbiguousRecordStore() or buildMultiResourceAmbiguousRecordStore()) will
+    // already be grouping records by the resource that should be used to disambiguate them, with
+    // the name of that resource being the primary index property of the store.
+    //
+    // The disambiguation text will be the concatenation (space-seperated) of the list fields for
+    // the doc from that resource whose _id matches the value of record[disambiguationField].
+    //
+    // allRecords should include all of the ambiguous records (also held by AmbiguousRecordStore)
+    // as well as those found not to be ambiguous.  The final act of this function will be to delete
+    // the disambiguation field from those records - it is only going to be there for the purpose
+    // of disambiguation, and should not be returned by our caller once disambiguation is complete.
+    //
+    // The scary-looking templating used here ensures that the objects in allRecords (and also
+    // ambiguousRecordStore) include an (optional) string property with the name identified by
+    // disambiguationField.  For the avoidance of doubt, "prop" here could be anything - "foo in f"
+    // would achieve the same result.
+    disambiguate<t extends { [prop in f]?: string }, f extends string>(
+        allRecords: t[],
+        ambiguousRecordStore: fngServer.AmbiguousRecordStore<t>,
+        disambiguationField: f,
+        disambiguateItemCallback: (item: t, disambiguationText: string) => void,
+        completionCallback: (err) => void
+    ): void {
+        const that = this;
+        async.map(
+            Object.keys(ambiguousRecordStore),
+            function (resourceName: string, cbm: (err) => void) {
+                const resource = that.getResource(resourceName);
+                const projection = that.generateListFieldProjection(resource);
+                resource.model
+                    .find({_id: { $in: ambiguousRecordStore[resourceName].map((sr) => sr[disambiguationField]) }})
+                    .select(projection)
+                    .lean()
+                    .then((disambiguationRecs: any[]) => {
+                        for (const ambiguousResult of ambiguousRecordStore[resourceName]) {
+                            const disambiguator = disambiguationRecs.find((d) => d._id.toString() === ambiguousResult[disambiguationField].toString());
+                            if (disambiguator) {
+                                let suffix = "";
+                                for (const listField in projection) {
+                                    if (disambiguator[listField]) {
+                                        if (suffix) {
+                                            suffix += " ";
+                                        }
+                                        suffix += disambiguator[listField];
+                                    }                                                
+                                }
+                                if (suffix) {
+                                    disambiguateItemCallback(ambiguousResult, suffix);
+                                }                                            
+                            }
+                        }
+                        cbm(null);
+                    })
+                    .catch((err) => {
+                        cbm(err);
+                    })
+            },
+            (err) => {
+                for (const record of allRecords) {
+                    delete record[disambiguationField];
+                }
+                completionCallback(err);
+            }            
+        );
+    }
 
     internalSearch(req, resourcesToSearch, includeResourceInResults, limit, callback) {
         if (typeof req.query === 'undefined') {
@@ -316,7 +421,7 @@ export class FormsAngular {
             }
         }
         const that = this;
-        let results = [];
+        let results: IInternalSearchResult[] = [];
         let moreCount = 0;
         let searchCriteria;
         let searchStrings;
@@ -401,12 +506,19 @@ export class FormsAngular {
                     cbdoc(null);
                 } else {
                     // Otherwise add them new...
-                    let addHits;
-                    if (multiMatchPossible)
+                    let addHits: number;
+                    if (multiMatchPossible) {
                         // If they match the whole search phrase in one index they get smaller addHits (so they sort higher)
                         if (aDoc[item.field].toLowerCase().indexOf(searchFor) === 0) {
                             addHits = 7;
                         }
+                    }
+                    let disambiguationId: any;
+                    const opts = item.resource.options as fngServer.ResourceOptions;
+                    const disambiguationResource = opts.disambiguation?.resource;
+                    if (disambiguationResource) {
+                        disambiguationId = aDoc[opts.disambiguation.field]?.toString();
+                    }
 
                     // Use special listings format if defined
                     let specialListingFormat: ISearchResultFormatter = item.resource.options.searchResultFormat;
@@ -415,6 +527,8 @@ export class FormsAngular {
                             .then((resultObj) => {
                                 resultObject = resultObj;
                                 resultObject.addHits = addHits;
+                                resultObject.disambiguationResource = disambiguationResource;
+                                resultObject.disambiguationId = disambiguationId;
                                 handleResultsInList();
                             });
                     } else {
@@ -426,6 +540,8 @@ export class FormsAngular {
                                     id: aDoc._id,
                                     weighting: 9999,
                                     addHits,
+                                    disambiguationResource,
+                                    disambiguationId,
                                     text: description
                                 };
                                 if (resourceCount > 1 || includeResourceInResults) {
@@ -503,8 +619,27 @@ export class FormsAngular {
                         moreCount += results.length - limit;
                         results.splice(limit);
                     }
-                    timestamps.completedAt = new Date().valueOf();
-                    callback(null, {results, moreCount, timestamps});
+                    that.disambiguate(
+                        results,
+                        that.buildMultiResourceAmbiguousRecordStore(results, ["text"], "disambiguationResource"),
+                        "disambiguationId",
+                        (item: IInternalSearchResult, disambiguationText: string) => {
+                            item.text += ` (${disambiguationText})`;
+                        },
+                        (err) => {
+                            if (err) {
+                                callback(err);
+                            } else {
+                                // the disambiguate() call will have deleted the disambiguationIds but we're responsible for
+                                // the disambiguationResources, which we shouldn't be returning to the client
+                                for (const result of results) {
+                                    delete result.disambiguationResource;
+                                }
+                                timestamps.completedAt = new Date().valueOf();
+                                callback(null, {results, moreCount, timestamps});
+                            }
+                        }
+                    );
                 }
             }
         );
@@ -1584,13 +1719,191 @@ export class FormsAngular {
                 if (!req.resource) {
                     return next();
                 }
-                that.getListFields(req.resource, req.doc, function (err, display) {
-                    if (err) {
-                        return res.status(500).send(err);
-                    } else {
-                        return res.send({list: display});
+                const returnRawParam = req.query.returnRaw ? !!JSON.parse(req.query.returnRaw) : false;
+                if (returnRawParam) {
+                    const result = { _id: req.doc._id };
+                    for (const field of req.resource.options.listFields) {
+                        result[field.field] = req.doc[field.field];
                     }
-                })
+                    return res.send(result);                    
+                } else {
+                    that.getListFields(req.resource, req.doc, function (err, display) {
+                        if (err) {
+                            return res.status(500).send(err);
+                        } else {
+                            return res.send({list: display});
+                        }
+                    })
+                }
+            });
+        }, this);
+    };
+
+    // To disambiguate the contents of items - assumed to be the results of a single resource lookup or search - 
+    // pass the result of this function as the second argument to the disambiguate() function.
+    // equalityProps should identify the property(s) of the items that must ALL be equal for two items to
+    // be considered ambiguous.
+    // disambiguationResourceName should identify the resource whose list field(s) should be used to generate
+    // the disambiguation text for ambiguous results later.
+    buildSingleResourceAmbiguousRecordStore<t>(items: t[], equalityProps: string[], disambiguationResourceName: string): fngServer.AmbiguousRecordStore<t> {
+        const ambiguousResults: t[] = [];
+        for (let i = 0; i < items.length - 1; i++) {
+            for (let j = i + 1; j < items.length; j++) {
+                if (!equalityProps.some((p) => items[i][p] !== items[j][p])) {
+                    if (!ambiguousResults.includes(items[i])) {
+                        ambiguousResults.push(items[i]);
+                    }
+                    if (!ambiguousResults.includes(items[j])) {
+                        ambiguousResults.push(items[j]);
+                    }
+                }
+            }
+        }
+        return { [disambiguationResourceName]: ambiguousResults };
+    }
+
+    // An alternative to buildSingleResourceAmbiguousRecordStore() for use when disambiguating the results of a
+    // multi-resource lookup or search.  In this case, all items need to include the name of the resource that
+    // will be used (when necessary) to yield their disambiguation text later.  The property of items that holds
+    // that resource name should be identified by the disambiguationResourceNameProp parameter.
+    // The scary-looking templating used here ensures that the items really do all have an (optional) string
+    // property with the name identified by disambiguationResourceNameProp.  For the avoidance of doubt, "prop"
+    // here could be anything - "foo in f" would achieve the same result.
+    buildMultiResourceAmbiguousRecordStore<t extends { [prop in f]?: string }, f extends string>(
+        items: t[],
+        equalityProps: string[],
+        disambiguationResourceNameProp: f
+    ): fngServer.AmbiguousRecordStore<t> {
+        const store: fngServer.AmbiguousRecordStore<t> = {};
+        for (let i = 0; i < items.length - 1; i++) {
+            for (let j = i + 1; j < items.length; j++) {
+                if (
+                    items[i][disambiguationResourceNameProp] &&
+                    items[i][disambiguationResourceNameProp] === items[j][disambiguationResourceNameProp] &&
+                    !equalityProps.some((p) => items[i][p] !== items[j][p])
+                ) {
+                    if (!store[items[i][disambiguationResourceNameProp]]) {
+                        store[items[i][disambiguationResourceNameProp]] = [];
+                    }
+                    if (!store[items[i][disambiguationResourceNameProp]].includes(items[i])) {
+                        store[items[i][disambiguationResourceNameProp]].push(items[i]);
+                    }
+                    if (!store[items[i][disambiguationResourceNameProp]].includes(items[j])) {
+                        store[items[i][disambiguationResourceNameProp]].push(items[j]);
+                    }
+                }
+            }
+        }
+        return store;       
+    }
+
+    // return just the id and list fields for all of the records from req.resource.
+    // list fields are those whose schema entry has a value for the "list" attribute (except where this is { ref: true })
+    // if the resource has no explicit list fields identified, the first string field will be returned.  if the resource
+    // doesn't have any string fields either, the first (non-id) field will be returned.
+    // usually, we will respond with an array of ILookupItem objects, where the .text property of those objects is the concatenation
+    // of all of the document's list fields (space-seperated).
+    // to request the documents without this transformation applied, include "c=true" in the query string.
+    // the query string can also be used to filter and order the response, by providing values for "f" (find), "l" (limit),
+    // "s" (skip) and/or "o" (order).
+    // results will be disambiguated if req.resource includes disambiguation parameters in its resource options.
+    // where c=true, the disambiguation will be added as a suffix to the .text property of the returned ILookupItem objects.
+    // otherwise, if the resource has just one list field, the disambiguation will be appended to the values of that field, and if
+    // it has multiple list fields, it will be returned as an additional property of the returned (untransformed) objects
+    internalEntityListAll(req, callback: (err, resultsObject?) => void) {
+        const projection = this.generateListFieldProjection(req.resource);
+        const listFields = Object.keys(projection);
+        const aggregationParam = req.query.a ? JSON.parse(req.query.a) : null;
+        const findParam = req.query.f ? JSON.parse(req.query.f) : {};
+        const limitParam = req.query.l ? JSON.parse(req.query.l) : 0;
+        const skipParam = req.query.s ? JSON.parse(req.query.s) : 0;
+        const orderParam = req.query.o ? JSON.parse(req.query.o) : req.resource.options.listOrder;
+        const concatenateParam = req.query.c ? JSON.parse(req.query.c) : true;
+        const resOpts = req.resource.options as fngServer.ResourceOptions;
+        let disambiguationField: string;
+        let disambiguationResourceName: string;
+        if (resOpts?.disambiguation) {
+            disambiguationField = resOpts.disambiguation.field;
+            if (disambiguationField) {
+                projection[disambiguationField] = 1;
+                disambiguationResourceName = resOpts.disambiguation.resource;
+            }
+        }
+        const that = this;
+        this.filteredFind(req.resource, req, aggregationParam, findParam, projection, orderParam, limitParam, skipParam, function (err, docs) {
+            if (err) {
+                return callback(err);
+            } else {
+                docs = docs.map((d) => d.toObject());
+                if (concatenateParam) {
+                    const transformed: fngServer.DisambiguatableLookupItem[] = docs.map((doc: any) => {
+                        let text = "";
+                        for (const field of listFields) {
+                            if (doc[field]) {
+                                if (text !== "") {
+                                    text += " ";
+                                }
+                                text += doc[field];
+                            }                            
+                        }
+                        const disambiguationId = disambiguationField ? doc[disambiguationField] : undefined;
+                        return { id: doc._id, text, disambiguationId };
+                    });
+                    if (disambiguationResourceName) {
+                        that.disambiguate(
+                            transformed,
+                            that.buildSingleResourceAmbiguousRecordStore(transformed, ["text"], disambiguationResourceName),
+                            "disambiguationId",
+                            (item: fngServer.DisambiguatableLookupItem, disambiguationText: string) => {
+                                item.text += ` (${disambiguationText})`;
+                            },
+                            (err) => {
+                                callback(err, transformed); 
+                            }
+                        );
+                    } else {
+                        return callback(null, transformed);
+                    }                    
+                } else {
+                    if (disambiguationResourceName) {
+                        that.disambiguate(
+                            docs,
+                            that.buildSingleResourceAmbiguousRecordStore(docs, listFields, disambiguationResourceName),
+                            disambiguationField,
+                            (item, disambiguationText: string) => {
+                                if (listFields.length === 1) {
+                                    item[listFields[0]] += ` (${disambiguationText})`;
+                                } else {
+                                    // store the text against hard-coded property name "disambiguation", rather than (say) using 
+                                    // item[disambiguationResourceName], because if disambiguationResourceName === disambiguationField,
+                                    // that value would end up being deleted again when the this.disambiguate() call (which we have
+                                    // been called from) does its final tidy-up and deletes [disambiguationField] from all of the items in docs
+                                    item.disambiguation = disambiguationText;
+                                }
+                            },
+                            (err) => {
+                                callback(err, docs); 
+                            }
+                        );
+                    } else {
+                        return callback(null, docs);
+                    }                    
+                }                    
+            }
+        });
+    };
+
+    entityListAll() {
+        return _.bind(function (req, res, next) {
+            if (!(req.resource = this.getResource(req.params.resourceName))) {
+                return next();
+            }
+            this.internalEntityListAll(req, function (err, resultsObject) {
+                if (err) {
+                    res.status(400, err)
+                } else {
+                    res.send(resultsObject);
+                }
             });
         }, this);
     };

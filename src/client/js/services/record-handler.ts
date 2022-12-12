@@ -9,7 +9,7 @@ module fng.services {
    */
 
   /*@ngInject*/
-  export function recordHandler($location, $window, $filter, $timeout, routingService, cssFrameworkService, SubmissionsService, SchemasService): fng.IRecordHandler {
+  export function recordHandler($location, $window, $filter, $timeout: angular.ITimeoutService, $sce: angular.ISCEService, routingService, cssFrameworkService, SubmissionsService, SchemasService): fng.IRecordHandler {
 
     // TODO: Put this in a service
     const makeMongoId = (rnd = r16 => Math.floor(r16).toString(16)) => rnd(Date.now() / 1000) + " ".repeat(16).replace(/./g, () => rnd(Math.random() * 16));
@@ -628,7 +628,7 @@ module fng.services {
 
     function handleError($scope: fng.IFormScope) {
       return function(response: any): void {
-        if ([200, 400].indexOf(response.status) !== -1) {
+        if ([200, 400, 403].indexOf(response.status) !== -1) {
           var errorMessage = "";
           if (response.data && response.data.errors) {
             for (var errorField in response.data.errors) {
@@ -651,6 +651,9 @@ module fng.services {
           } else {
             errorMessage = response.data.message || response.data._message || response.data.err || "Error!  Sorry - No further details available.";
           }
+          // anyone using a watch on $scope.phase, and waiting for it to become "ready" before proceeding, will probably
+          // want to know that an error has occurred.  This value is NOT used anywhere in forms-angular.
+          $scope.phase = "error";
           $scope.showError(errorMessage);
         } else {
           $scope.showError(response.status + " " + JSON.stringify(response.data));
@@ -720,12 +723,22 @@ module fng.services {
           find: $location.$$search.f,
           limit: $scope.pageSize,
           skip: pagesLoaded * $scope.pageSize,
-          order: $location.$$search.o
+          order: $location.$$search.o,
+          concatenate: false
         })
           .then(function(response) {
             let data: any = response.data;
             if (angular.isArray(data)) {
-              //  I have seen an intermittent problem where a page is requested twice
+              // if the options for the resource identified by $scope.modelName has disambiguation parameters,
+              // and that resource has more than one list field, the items returned by getPagedAndFilteredList
+              // might include a "disambiguation" property.  for this to appear on the list page, we need
+              // to add an item for it to the list schema
+              if (!$scope.listSchema.find((f) => f.name === "disambiguation") && data.some((d) => d.disambiguation)) {
+                $scope.listSchema.push({
+                  name: "disambiguation",
+                })
+              }
+              // I have seen an intermittent problem where a page is requested twice
               if (pagesLoaded === $scope.pagesLoaded) {
                 $scope.pagesLoaded++;
                 $scope.recordList = $scope.recordList.concat(data);
@@ -800,56 +813,53 @@ module fng.services {
           }, $scope.handleHttpError);
       },
 
-      getListData: getListData,
+      getListData,
 
-      suffixCleanId: suffixCleanId,
+      suffixCleanId,
 
-      setData: setData,
+      getData,
+
+      setData,
 
       setUpLookupOptions: function setUpLookupOptions(lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
-        var optionsList = $scope[schemaElement.options] = [];
-        var idList = $scope[schemaElement.ids] = [];
-
-        SchemasService.getSchema(lookupCollection)
-          .then(function(response) {
-            let data: any = response.data;
-            var listInstructions = [];
-            handleSchema("Lookup " + lookupCollection, data, null, listInstructions, "", false, $scope, ctrlState);
-
-            var dataRequest;
-            if (typeof schemaElement.filter !== "undefined" && schemaElement.filter) {
-              dataRequest = SubmissionsService.getPagedAndFilteredList(lookupCollection, schemaElement.filter);
-            } else {
-              dataRequest = SubmissionsService.getAll(lookupCollection);
-            }
-            dataRequest
-              .then(function(response) {
-                let data: any = angular.copy(response.data);
-                if (data) {
-                  for (var i = 0; i < data.length; i++) {
-                    var option = "";
-                    for (var j = 0; j < listInstructions.length; j++) {
-                      let thisVal: string = data[i][listInstructions[j].name];
-                      option += thisVal ? thisVal + " " : "";
-                    }
-                    option = option.trim();
-                    var pos = _.sortedIndex(optionsList, option);
-                    // handle dupes (ideally people will use unique indexes to stop them but...)
-                    if (optionsList[pos] === option) {
-                      option = option + "    (" + data[i]._id + ")";
-                      pos = _.sortedIndex(optionsList, option);
-                    }
-                    optionsList.splice(pos, 0, option);
-                    idList.splice(pos, 0, data[i]._id);
-                  }
-                  if ($scope.readingRecord) {
-                    $scope.readingRecord
-                        .then(() => {
-                          updateRecordWithLookupValues(schemaElement, $scope, ctrlState);
-                        })
+        const optionsList = $scope[schemaElement.options] = [];
+        const idList = $scope[schemaElement.ids] = [];
+        const dataRequest = !!schemaElement.filter
+          ? SubmissionsService.getPagedAndFilteredList(lookupCollection, Object.assign({ concatenate: true }, schemaElement.filter)) // { concatenate: true } causes it to concatenate the list fields into the .text property of ILookupItem objects
+          : SubmissionsService.getAllListAttributes(lookupCollection);
+        dataRequest
+          .then((response: angular.IHttpResponse<fng.ILookupItem[]>) => {
+            const items = response.data;
+            if (items) {
+              items.sort((a, b) => a.text.localeCompare(b.text));
+              optionsList.push(...items.map((i) => i.text));
+              idList.push(...items.map((i) => i.id));
+              const dupes = new Set<string>();
+              for (let i = 0; i < optionsList.length - 1; i++) {
+                for (let j = i + 1; j < optionsList.length; j++) {
+                  if (_.isEqual(optionsList[i], optionsList[j])) {
+                    dupes.add(optionsList[i]);
                   }
                 }
-              });
+              }
+              // append the id to any duplicates to make them unique
+              dupes.forEach((d) => {
+                for (let i = 0; i < optionsList.length; i++) {
+                  if (optionsList[i] === d) {
+                    optionsList[i] += "(" + idList[i] + ")";
+                  }
+                }
+              })
+              if ($scope.readingRecord) {
+                $scope.readingRecord
+                  .then(() => {
+                    updateRecordWithLookupValues(schemaElement, $scope, ctrlState);
+                  })
+              }
+            }
+          })
+          .catch ((e) => {
+            $scope.handleHttpError(e)
           });
       },
 
@@ -885,7 +895,7 @@ module fng.services {
         addArrayLookupToLookupList($scope, formInstructions, ref, $scope.internalLookups);
       },
 
-      preservePristine: preservePristine,
+      preservePristine,
 
       // Reverse the process of convertToAngularModel
       convertToMongoModel: function convertToMongoModel(schema, anObject, prefixLength, $scope, schemaName?: string) {
@@ -980,7 +990,7 @@ module fng.services {
         $scope.showError = function(error: any, alertTitle?: string) {
           $scope.alertTitle = alertTitle ? alertTitle : "Error!";
           if (typeof error === "string") {
-            $scope.errorMessage = error;
+            $scope.errorMessage = $sce.trustAsHtml(error);
           } else if (!error) {
             $scope.errorMessage = `An error occurred - that's all we got.  Sorry.`;
           } else if (error.message && typeof error.message === "string") {
@@ -1177,7 +1187,7 @@ module fng.services {
         $scope.isCancelDisabled = function() {
           if ($scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine) {
             return true;
-          } else if (typeof $scope.disableFunctions.isCancelDisabled === "function") {
+          } else if (typeof $scope.disableFunctions?.isCancelDisabled === "function") {
             return $scope.disableFunctions.isCancelDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
           } else {
             return false;
@@ -1258,7 +1268,7 @@ module fng.services {
 
           if (pristine || !!$scope.whyDisabled) {
             return true;
-          } else if (typeof $scope.disableFunctions.isSaveDisabled !== "function") {
+          } else if (typeof $scope.disableFunctions?.isSaveDisabled !== "function") {
             return false;
           } else {
             let retVal = $scope.disableFunctions.isSaveDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
@@ -1274,7 +1284,7 @@ module fng.services {
         $scope.isDeleteDisabled = function() {
           if (!$scope.id) {
             return true;
-          } else if (typeof $scope.disableFunctions.isDeleteDisabled === "function") {
+          } else if (typeof $scope.disableFunctions?.isDeleteDisabled === "function") {
             return $scope.disableFunctions.isDeleteDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
           } else {
             return false;
@@ -1282,7 +1292,7 @@ module fng.services {
         };
 
         $scope.isNewDisabled = function() {
-          if (typeof $scope.disableFunctions.isNewDisabled === "function") {
+          if (typeof $scope.disableFunctions?.isNewDisabled === "function") {
             return $scope.disableFunctions.isNewDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
           } else {
             return false;

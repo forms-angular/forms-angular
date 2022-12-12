@@ -3,7 +3,7 @@
 module fng.services {
 
   /*@ngInject*/
-  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, $filter, $rootScope) {
+  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, securityService: fng.ISecurityService, $filter) {
 
       function generateNgShow(showWhen, model) {
 
@@ -48,48 +48,96 @@ module fng.services {
         return (cssFrameworkService.framework() === 'bs2' ? 'icon' : 'glyphicon glyphicon');
       }
 
-      function handleReadOnlyDisabled(fieldInfo: fng.IFngSchemaTypeFormOpts): string {
-        if (fieldInfo.readonly && typeof fieldInfo.readonly === "boolean") {
-          // if we have a true-valued readonly property then this trumps whatever security rule might apply to this field
-          return " disabled ";
-        }
-        function wrapReadOnly(): string {
-          return fieldInfo.readonly ? ` ng-disabled="${fieldInfo.readonly}" ` : "";
-        }
-        if (!fieldInfo.id || !formsAngular.elemSecurityFuncBinding || !formsAngular.elemSecurityFuncName || !$rootScope[formsAngular.elemSecurityFuncName]) {
-          // no security, so we're just concerned about what value fieldInfo.readonly has
-          return wrapReadOnly();
-        }
-        if (formsAngular.elemSecurityFuncBinding === "instant") {
-          // "instant" security is evaluated now, and a positive result trumps whatever fieldInfo.readonly might be set to
-          if ($rootScope.isSecurelyDisabled(fieldInfo.id)) {
+      // Generate two strings:
+      //   1. firstly, attribute(s) that could be added to element(s) representing the field with the given
+      //      parameters to enable or disable it according to the prevailing security rules.
+      //   2. secondly, attribute(s) that could be added to a element - regardless of whether or not it will
+      //      actually be disabled on this occasion - to identify it as being potentially disableable
+      // This function is a more complicated version of securityService.generateDisabledAttr, also taking into
+      // account the fact that fieldInfo.readonly can influence the disabled state of a field.
+      // nonUniqueId should be required only in cases where a sub-sub schema has been defined in a directive
+      // as a means of getting around the single-level-of-nesting limitation.  in that case, where the
+      // directive's template then includes a <form-input> tag, it is likely that the ids of the sub-sub-schema
+      // elements will include $index from a parent scope (responsible for the sub-schema) in order to
+      // ensure its uniqueness, and in this case (as we are not explicitely managing the addition of the
+      // {{ $index }} expr), we need to be given a version of the id that does not include that expression.
+      // where nonUniqueId is provided, we will also use this for determining ancestors, because in the
+      // nested sub-schema scenario described above, the names of the fields in the sub-sub-schema will
+      // probably not identify the full ancestry.
+      function handleReadOnlyDisabled(partialFieldInfo: { name: string, id?: string, nonUniqueId?: string, readonly?: boolean | string }, scope: fng.IFormScope): string[] {
+        const id = partialFieldInfo.nonUniqueId || partialFieldInfo.id;
+        function getActuallyDisabledAttr(): string {
+          if (partialFieldInfo.readonly && typeof partialFieldInfo.readonly === "boolean") {
+            // if we have a true-valued readonly property then this trumps whatever security rule might apply to this field
             return " disabled ";
-          } else {
+          }
+          function wrapReadOnly(): string {
+            return partialFieldInfo.readonly ? ` ng-disabled="${partialFieldInfo.readonly}" ` : "";
+          }
+          if (!id || !securityService.canDoSecurityNow(scope, "disabled")) {
+            // no security, so we're just concerned about what value fieldInfo.readonly has
             return wrapReadOnly();
           }
-        }
-        const securityFuncStr = `${formsAngular.elemSecurityFuncName}('${fieldInfo.id}', 'disabled')`;
-        const oneTimeBinding = formsAngular.elemSecurityFuncBinding === "one-time";
-        if (fieldInfo.readonly) {
-          // we have both security and a read-only attribute to deal with
-          if (oneTimeBinding) {
-            // if our field has a string-typed readonly attribute *and* one-time binding is required by our securityFunc, we
-            // cannot simply combine these into a single ng-disabled expression, because the readonly property is highly
-            // likely to be model-dependent and therefore cannot use one-time-binding.  the best we can do in this case is
-            // to use ng-disabled for the field's readonly property, and a one-time-bound ng-readonly for the securityFunc.
-            // this is not perfect, because in the case of selects, ng-readonly doesn't actually prevent the user from
-            // making a selection.  however, the select will be styled as if it is disabled (including the not-allowed
-            // cursor), which should deter the user in most cases.  
-            return wrapReadOnly() + `ng-readonly="::${securityFuncStr}" `;    
-          } else {
-            // if we have both things and we are *NOT* required to use one-time binding for the securityFunc, then they can
-            // simply be combined into a single ng-disabled expression
-            return ` ng-disabled="${securityFuncStr} || ${fieldInfo.readonly}" `;    
+          // if scope has been decorated with a requiresDisabledChildren function, we will be using that to check whether any
+          // of the ancestors of this field's element require their children to be disabled.  if they do, that means us!
+          let ancestorIds: string[] = [];
+          if (!!scope.requiresDisabledChildren) {          
+            let ancestors: string[];
+            // if we have been provided with a nonUniqueId, we should use that to determine ancestors, because in this case,
+            // the name will not be reliable
+            if (partialFieldInfo.nonUniqueId) {
+              let ancestorStr = partialFieldInfo.nonUniqueId.startsWith("f_") ? partialFieldInfo.nonUniqueId.substring(2) : partialFieldInfo.nonUniqueId;
+              ancestors = ancestorStr.split("_");
+            } else {
+              ancestors = partialFieldInfo.name.split(".");
+            }
+            ancestors.pop();
+            while (ancestors.length > 0) {
+              ancestorIds.push(`f_${ancestors.join("_")}`);
+              ancestors.pop();
+            }
           }
-        } else {
-          // we have security only
-          return ` ng-disabled="${oneTimeBinding ? "::" : ""}${securityFuncStr}" `;
+          if (formsAngular.elemSecurityFuncBinding === "instant") {
+            // "instant" security is evaluated now, and a positive result trumps whatever fieldInfo.readonly might be set to
+            if (scope.isSecurelyDisabled(id)) {
+              return " disabled ";
+            } else {
+              for (const ancestorId of ancestorIds) {
+                if (scope.requiresDisabledChildren(ancestorId)) {
+                  return " disabled ";
+                }
+              }
+              return wrapReadOnly();
+            }
+          }
+          let securityFuncStr = `isSecurelyDisabled('${id}')`;
+          if (ancestorIds.length > 0) {
+            const ancestorStr = ancestorIds.map((aid) => `requiresDisabledChildren('${aid}')`);
+            securityFuncStr = `(${securityFuncStr} || ${ancestorStr.join(" || ")})`;
+          }
+          const oneTimeBinding = formsAngular.elemSecurityFuncBinding === "one-time";
+          if (partialFieldInfo.readonly) {
+            // we have both security and a read-only attribute to deal with
+            if (oneTimeBinding) {
+              // if our field has a string-typed readonly attribute *and* one-time binding is required by our securityFunc, we
+              // cannot simply combine these into a single ng-disabled expression, because the readonly property is highly
+              // likely to be model-dependent and therefore cannot use one-time-binding.  the best we can do in this case is
+              // to use ng-disabled for the field's readonly property, and a one-time-bound ng-readonly for the securityFunc.
+              // this is not perfect, because in the case of selects, ng-readonly doesn't actually prevent the user from
+              // making a selection.  however, the select will be styled as if it is disabled (including the not-allowed
+              // cursor), which should deter the user in most cases.  
+              return wrapReadOnly() + `ng-readonly="::${securityFuncStr}" `;    
+            } else {
+              // if we have both things and we are *NOT* required to use one-time binding for the securityFunc, then they can
+              // be combined into a single ng-disabled expression
+              return ` ng-disabled="${securityFuncStr} || ${partialFieldInfo.readonly}" `;    
+            }
+          } else {
+            // we have security only
+            return ` ng-disabled="${oneTimeBinding ? "::" : ""}${securityFuncStr}" `;
+          }
         }
+        return [getActuallyDisabledAttr(), securityService.getDisableableAttrs(id)]
       }
 
       function generateArrayElementIdString(idString: string, info: fng.IFormInstruction, options: fng.IFormOptions): string {
@@ -110,6 +158,10 @@ module fng.services {
         }        
       }
 
+      function genDisableableAncestorStr(id: string): string {
+        return securityService.getDisableableAncestorAttrs(id);
+      }
+
       function isArrayElement(scope: angular.IScope, info: fng.IFormInstruction, options: fng.IFormOptions): boolean {
         return scope["$index"] !== undefined || !!options.subschema;
       }
@@ -119,23 +171,41 @@ module fng.services {
 
         isArrayElement,
 
-        fieldChrome: function fieldChrome(scope: angular.IScope, info: fng.IFormInstruction, options: fng.IFormOptions): { omit?: boolean, template?: string, closeTag?: string } {
+        fieldChrome: function fieldChrome(scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions): { omit?: boolean, template?: string, closeTag?: string } {
           var insert = '';
 
           if (info.id && typeof info.id.replace === "function") {
-            const idStr = `cg_${info.id.replace(/\./g, '-')}`;
-            insert += `id="${isArrayElement(scope, info, options) ? generateArrayElementIdString(idStr, info, options) : idStr}"`;
-            if (formsAngular.elemSecurityFuncBinding && formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName]) {
-              if (formsAngular.elemSecurityFuncBinding === "instant") {
-                if ($rootScope.isSecurelyHidden(idStr)) {
-                  // if our securityFunc supports instant binding and evaluates to true, then nothing needs to be 
-                  // added to the dom for this field, which we indicate to our caller as follows...
-                  return { omit: true };
-                };
-              } else {
-                const bindingStr = formsAngular.elemSecurityFuncBinding === "one-time" ? "::" : "";
-                insert += ` data-ng-if="${bindingStr}!${formsAngular.elemSecurityFuncName}('${idStr}', 'hidden')"`;
+            let uniqueIdStr = info.nonUniqueId || info.nonuniqueid || info.id;
+            let idStr: string;
+            // replace any . that appear in info.id with "-", but not those that appear between {{ and }}
+            if (info.id.includes(".") && info.id.includes("{{")) {
+              idStr = "cg_";
+              let inExpr = false;
+              for (let i = 0; i < info.id.length; i++) {
+                if (info.id[i] === "{" && info.id[i-1] === "{") {
+                  inExpr = true;
+                } else if (info.id[i] === "}" && info.id[i-1] === "}") {
+                  inExpr = false;
+                }
+                if (inExpr || info.id[i] !== ".") {
+                  idStr += info.id[i];
+                } else {
+                  idStr += "-";
+                }
               }
+            } else {
+                idStr = "cg_".concat(info.id.replace(/\./g, '-'));
+            }
+            uniqueIdStr = `cg_${uniqueIdStr.replace(/\./g, '-')}`;
+            const visibility = securityService.considerVisibility(uniqueIdStr, scope);
+            if (visibility.omit) {
+              // we already know this field should be invisible, so we needn't add anything for it
+              return { omit: true };
+            }
+            insert += `id="${isArrayElement(scope, info, options) ? generateArrayElementIdString(idStr, info, options) : idStr}"`;
+            if (visibility.visibilityAttr) {
+              // an angular expression to determine the visibility of this field later...
+              insert += ` ${visibility.visibilityAttr}`;
             }
           }
           
@@ -189,7 +259,7 @@ module fng.services {
           return {template: template, closeTag: closeTag};
         },
 
-        label: function label(scope: angular.IScope, fieldInfo: fng.IFormInstruction, addButtonMarkup: boolean, options: fng.IFormOptions) {
+        label: function label(scope: fng.IFormScope, fieldInfo: fng.IFormInstruction, addButtonMarkup: boolean, options: fng.IFormOptions) {
           var labelHTML = '';
           if ((cssFrameworkService.framework() === 'bs3' || (!['inline','stacked'].includes(options.formstyle) && fieldInfo.label !== '')) || addButtonMarkup) {
             labelHTML = '<label';
@@ -210,8 +280,8 @@ module fng.services {
             }
             labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
             if (addButtonMarkup) {
-              const disableCond = handleReadOnlyDisabled(fieldInfo);
-              labelHTML += ` <i ${disableCond} id="add_${fieldInfo.id}" ng-click="add('${fieldInfo.name}', $event)" class="${glyphClass()}-plus-sign"></i>`;
+              const disabledAttrs = handleReadOnlyDisabled(fieldInfo, scope);
+              labelHTML += ` <i ${disabledAttrs.join(" ")} id="add_${fieldInfo.id}" ng-click="add('${fieldInfo.name}', $event)" class="${glyphClass()}-plus-sign"></i>`;
             }
             labelHTML += '</label>';
             if (fieldInfo.linklabel) {
@@ -336,14 +406,14 @@ module fng.services {
           return inputMarkup;
         },
 
-        handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup: string, controlDivClasses: string[], info: fng.IFormInstruction, options: fng.IFormOptions): string {
+        handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup: string, controlDivClasses: string[], scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions): string {
           let indentStr = cssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols($index)" ' : "";
           const arrayStr = (options.model || 'record') + '.' + info.name;
           let result = "";
           result += '<div id="' + info.id + 'List" class="' + controlDivClasses.join(' ') + '" ' + indentStr + ' ng-repeat="arrayItem in ' + arrayStr + ' track by $index">';
-          const disableCond = handleReadOnlyDisabled(info);
+          const disabledAttrs = handleReadOnlyDisabled(info, scope);
           const removeBtn = info.type !== 'link'
-            ? `<i ${disableCond} ng-click="remove('${info.name}', $index, $event)" id="remove_${info.id}_{{$index}}" class="${glyphClass()}-minus-sign"></i>`
+            ? `<i ${disabledAttrs.join(" ")} ng-click="remove('${info.name}', $index, $event)" id="remove_${info.id}_{{$index}}" class="${glyphClass()}-minus-sign"></i>`
             : "";
           result += inputMarkup.replace("<dms/>", removeBtn);
           result += '</div>';
@@ -369,7 +439,9 @@ module fng.services {
 
         handleReadOnlyDisabled,
 
-        generateArrayElementIdString
+        generateArrayElementIdString,
+
+        genDisableableAncestorStr
       }
     }
 }

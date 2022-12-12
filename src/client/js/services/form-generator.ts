@@ -12,7 +12,7 @@ module fng.services {
   /*@ngInject*/
   import IFormInstruction = fng.IFormInstruction;
 
-  export function formGenerator($location, $timeout, $filter, routingService, recordHandler) : IFormGenerator {
+  export function formGenerator($filter, routingService, recordHandler, securityService: fng.ISecurityService) : IFormGenerator {
 
     function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
 
@@ -543,7 +543,7 @@ module fng.services {
         return result;
       },
 
-      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedData) {
+      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedData, pseudoUrl?: string) {
         $scope.record = sharedData.record;
         $scope.phase = 'init';
         $scope.disableFunctions = sharedData.disableFunctions;
@@ -562,6 +562,8 @@ module fng.services {
 
         sharedData.baseScope = $scope;
 
+        securityService.decorateSecurableScope($scope, { pseudoUrl });
+
         $scope.generateEditUrl = function (obj) {
           return formGeneratorInstance.generateEditUrl(obj, $scope);
         };
@@ -575,7 +577,18 @@ module fng.services {
         };
 
         $scope.scrollTheList = function () {
-          return recordHandlerInstance.scrollTheList($scope);
+          // wait until we have the list schema.  until we get a non-empty listSchema (which might never
+          // happen if we don't have permission to GET it), then there's no point requesting the data
+          if ($scope.listSchema?.length > 0) {
+            return recordHandlerInstance.scrollTheList($scope);
+          } else {
+            const unwatch = $scope.$watchCollection("listSchema", (newValue: fng.IFormInstruction[]) => {
+              if (newValue?.length > 0) {
+                unwatch();
+                return recordHandlerInstance.scrollTheList($scope);
+              }
+            })
+          }
         };
 
         $scope.getListData = function (record, fieldName) {
@@ -633,6 +646,6 @@ module fng.services {
     };
   }
 
-  formGenerator.$inject = ["$location", "$timeout", "$filter", "routingService", "recordHandler"];
+  formGenerator.$inject = ["$filter", "routingService", "recordHandler", "securityService"];
 
   }

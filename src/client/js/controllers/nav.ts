@@ -3,7 +3,7 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function NavCtrl($rootScope, $window, $scope, $location, $filter, routingService, cssFrameworkService) {
+  export function NavCtrl($rootScope, $window, $scope, $filter, routingService, cssFrameworkService, securityService: fng.ISecurityService) {
 
     function clearContextMenu() {
       $scope.items = [];
@@ -14,12 +14,6 @@ module fng.controllers {
     }
 
     $rootScope.navScope = $scope;  // Lets plugins access menus
-    $rootScope.isSecurelyHidden = function (elemId) {
-      return formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName](elemId, "hidden");
-    }
-    $rootScope.isSecurelyDisabled = function (elemId) {
-      return formsAngular.elemSecurityFuncName && $rootScope[formsAngular.elemSecurityFuncName](elemId, "disabled");
-    }
     clearContextMenu();
 
     $scope.toggleCollapsed = function() {
@@ -98,16 +92,19 @@ module fng.controllers {
       return result;
     };
 
-    $scope.secureContextMenu = function(): void {
-      $scope.contextMenuHidden = $rootScope.isSecurelyHidden($scope.contextMenuId);
-      $scope.contextMenuDisabled = $rootScope.isSecurelyDisabled($scope.contextMenuId);
-    }
-
     function initialiseContextMenu(menuCaption: string): void {
       $scope.contextMenu = menuCaption;
       const menuId = `${_.camelCase(menuCaption)}ContextMenu`;
-      $scope.contextMenuId = menuId;
-      $scope.secureContextMenu();
+      // the context menu itself (see dropdown.ts) has an ng-if that checks for a value of
+      // contextMenuId.  let's delete this until we know we're ready to evaluate the security
+      // of the menu items...
+      $scope.contextMenuId = undefined;
+      securityService.doSecurityWhenReady(() => {
+        //... which we now are
+        $scope.contextMenuId = menuId;
+        $scope.contextMenuHidden = securityService.isSecurelyHidden($scope.contextMenuId);
+        $scope.contextMenuDisabled = securityService.isSecurelyDisabled($scope.contextMenuId);
+      });
     }
 
     $scope.$on('fngControllersLoaded', function(evt, sharedData, modelName) {
