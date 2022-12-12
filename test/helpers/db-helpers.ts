@@ -10,7 +10,7 @@ module.exports = {
     const app = express();
     const fng = new FormsAngular(mongoose, app, { urlPrefix: "/api/" });
     mongoose.connect("mongodb://localhost:27017/forms-ng_test", {
-      keepAlive: 1,
+      keepAlive: true,
       connectTimeoutMS: 30000,
     });
 
