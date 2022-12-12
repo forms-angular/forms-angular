@@ -1719,7 +1719,7 @@ export class FormsAngular {
                 if (!req.resource) {
                     return next();
                 }
-                const returnRawParam = req.query.returnRaw ? !!JSON.parse(req.query.returnRaw) : false;
+                const returnRawParam = req.query?.returnRaw ? !!JSON.parse(req.query.returnRaw) : false;
                 if (returnRawParam) {
                     const result = { _id: req.doc._id };
                     for (const field of req.resource.options.listFields) {
