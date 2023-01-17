@@ -783,8 +783,12 @@ module fng.services {
               }
             } else {
               $scope.showError(data);
+              $scope.phase = "ready";
             }
-          }, $scope.handleHttpError);
+          }, function(err) {
+            $scope.handleHttpError(err);
+            $scope.phase = "ready";
+          });
       },
 
       createNew: function createNew(dataToSave, options, $scope: fng.IFormScope, ctrlState: IFngCtrlState) {
