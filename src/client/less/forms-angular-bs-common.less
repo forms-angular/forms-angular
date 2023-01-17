@@ -231,6 +231,7 @@ input[type="checkbox"].ng-invalid::after {
   padding-left: 1em;
 }
 
+/* Delayed Absolute Center Spinner */
 /* Absolute Center Spinner */
 .loading {
   position: fixed;
@@ -243,6 +244,8 @@ input[type="checkbox"].ng-invalid::after {
   left: 0;
   bottom: 0;
   right: 0;
+  -webkit-animation: lds-ring-fadein 3.4s;
+  animation: lds-ring-fadein 3.4s;
 }
 
 /* Transparent Overlay */
@@ -285,6 +288,7 @@ input[type="checkbox"].ng-invalid::after {
 }
 
 /* Animation */
+
 @-webkit-keyframes spinner {
   0% {
     -webkit-transform: rotate(0deg);
@@ -348,4 +352,10 @@ input[type="checkbox"].ng-invalid::after {
     -o-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+
+@keyframes lds-ring-fadein{
+  0% { opacity:0; }
+  50% { opacity:0.1; }
+  100% { opacity:1; }
 }
