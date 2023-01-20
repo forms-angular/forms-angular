@@ -752,6 +752,7 @@ module fng.services {
       },
 
       deleteRecord: function deleteRecord(id, $scope, ctrlState) {
+        $scope.phase = "deleting";
         SubmissionsService.deleteRecord($scope.modelName, id)
           .then(function() {
             if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
@@ -789,8 +790,12 @@ module fng.services {
               }
             } else {
               $scope.showError(data);
+              $scope.phase = "ready";
             }
-          }, $scope.handleHttpError);
+          }, function(err) {
+            $scope.handleHttpError(err);
+            $scope.phase = "ready";
+          });
       },
 
       createNew: function createNew(dataToSave, options, $scope: fng.IFormScope, ctrlState: IFngCtrlState) {
@@ -1185,7 +1190,7 @@ module fng.services {
         };
 
         $scope.isCancelDisabled = function() {
-          if ($scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine) {
+          if (($scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$pristine) ||$scope.phase !== "ready") {
             return true;
           } else if (typeof $scope.disableFunctions?.isCancelDisabled === "function") {
             return $scope.disableFunctions.isCancelDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
@@ -1266,7 +1271,7 @@ module fng.services {
             $scope.whyDisabled = "Top level form name invalid";
           }
 
-          if (pristine || !!$scope.whyDisabled) {
+          if (pristine || !!$scope.whyDisabled || $scope.phase !== "ready") {
             return true;
           } else if (typeof $scope.disableFunctions?.isSaveDisabled !== "function") {
             return false;
@@ -1282,7 +1287,7 @@ module fng.services {
         };
 
         $scope.isDeleteDisabled = function() {
-          if (!$scope.id) {
+          if (!$scope.id || $scope.phase !== "ready") {
             return true;
           } else if (typeof $scope.disableFunctions?.isDeleteDisabled === "function") {
             return $scope.disableFunctions.isDeleteDisabled($scope.record, ctrlState.master, $scope[$scope.topLevelFormName]);
