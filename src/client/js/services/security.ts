@@ -111,16 +111,16 @@ module fng.services {
       // before any security logic is applied.  this allows security to be bypassed entirely at the request of the host app,
       // providing an opportunity for optimisation.
       decorateSecurableScope: function (securableScope: fng.ISecurableScope, params?: { pseudoUrl?: string, overrideSkipping: boolean }): void {
-        if (canDoSecurity("hidden") && (!formsAngular.skipHiddenSecurityFuncName || params?.overrideSkipping || !$rootScope[formsAngular.skipHiddenSecurityFuncName](params?.pseudoUrl))) {
+        if (canDoSecurity("hidden") && (!formsAngular.skipHiddenSecurityFuncName || params?.overrideSkipping || typeof $rootScope[formsAngular.skipHiddenSecurityFuncName] !== "function" || !$rootScope[formsAngular.skipHiddenSecurityFuncName](params?.pseudoUrl))) {
           securableScope.isSecurelyHidden = function (elemId: string): boolean {
             return isSecurelyHidden(elemId, params?.pseudoUrl);
           };
         }
-        if (canDoSecurity("disabled") && (!formsAngular.skipDisabledSecurityFuncName || params?.overrideSkipping || !$rootScope[formsAngular.skipDisabledSecurityFuncName](params?.pseudoUrl))) {
+        if (canDoSecurity("disabled") && (!formsAngular.skipDisabledSecurityFuncName || params?.overrideSkipping || typeof $rootScope[formsAngular.skipDisabledSecurityFuncName] !== "function" || !$rootScope[formsAngular.skipDisabledSecurityFuncName](params?.pseudoUrl))) {
           securableScope.isSecurelyDisabled = function (elemId: string): boolean {
             return isSecurelyDisabled(elemId, params?.pseudoUrl);
           };
-          if (!formsAngular.skipDisabledAncestorSecurityFuncName || params?.overrideSkipping || !$rootScope[formsAngular.skipDisabledAncestorSecurityFuncName](params?.pseudoUrl)) {
+          if (!formsAngular.skipDisabledAncestorSecurityFuncName || params?.overrideSkipping || typeof $rootScope[formsAngular.skipDisabledAncestorSecurityFuncName] || !$rootScope[formsAngular.skipDisabledAncestorSecurityFuncName](params?.pseudoUrl)) {
             securableScope.requiresDisabledChildren = function (elemId: string): boolean {
               return getSecureDisabledState(elemId, params?.pseudoUrl) === "+";
             };
