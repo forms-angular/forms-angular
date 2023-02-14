@@ -790,11 +790,9 @@ module fng.services {
               }
             } else {
               $scope.showError(data);
-              $scope.phase = "ready";
             }
           }, function(err) {
             $scope.handleHttpError(err);
-            $scope.phase = "ready";
           });
       },
 
@@ -994,6 +992,9 @@ module fng.services {
 
         $scope.showError = function(error: any, alertTitle?: string) {
           $scope.alertTitle = alertTitle ? alertTitle : "Error!";
+          $timeout(() => {
+            $scope.phase = 'ready';
+          }, 25);
           if (typeof error === "string") {
             $scope.errorMessage = $sce.trustAsHtml(error);
           } else if (!error) {

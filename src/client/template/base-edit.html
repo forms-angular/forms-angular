@@ -1,6 +1,6 @@
 <div ng-controller="BaseCtrl">
     <error-display></error-display>
-    <div ng-hide="phase == 'ready'" class="loading">Loading&#8230;</div>
+    <div ng-hide="phase == 'ready' && !showLoading" class="loading">Loading&#8230;</div>
     <div ng-class="css('rowFluid')" class="page-header edit-header">
         <div class="header-lhs col-sm-8 span8">
             <h1 id="header-text">{{modelNameDisplay}} :

@@ -1,5 +1,6 @@
 <div ng-controller="AnalysisCtrl">
   <error-display></error-display>
+  <div ng-hide="!showLoading" class="loading">Loading&#8230;</div>
   <div class="container-fluid page-header report-header">
     <div ng-class="css('rowFluid')">
       <div class="header-lhs col-xs-7 span7">
