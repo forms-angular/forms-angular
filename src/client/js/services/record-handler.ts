@@ -288,6 +288,7 @@ module fng.services {
             void (schemaEntry.select2);
           } else if (fieldValue && (thisConversion = getConversionObject($scope, fieldName, schemaName)) &&
             thisConversion.fngajax &&
+            typeof thisConversion.fngajax === "function" && // if the field is securely hidden, the directive won't have been invoked at all and therefore the conversion will not have been initialised.  but if it's hidden, we don't need to do the conversion anyway
             !thisConversion.noconvert
           ) {
             thisConversion.fngajax(fieldValue, schemaEntry, function(updateEntry, value) {
