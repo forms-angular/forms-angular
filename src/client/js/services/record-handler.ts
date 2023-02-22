@@ -567,7 +567,7 @@ module fng.services {
                 }
               }
               title = title.trimEnd() + (formsAngular.title.suffix || '');
-              $window.document.title = title;
+              $window.document.title = title.replace(/<\/?[^>]+(>|$)/g, "");;
             }
           }
         }, true);
