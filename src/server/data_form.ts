@@ -60,13 +60,13 @@ export class FormsAngular {
         this.resources = [];
         this.searchFunc = async.forEach;
 
-        const search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id';
+        const search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id', formName = '/:formName';
         this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
 
         this.app.get.apply(this.app, processArgs(this.options, [search + resourceName, this.search()]));
 
         this.app.get.apply(this.app, processArgs(this.options, [schema + resourceName, this.schema()]));
-        this.app.get.apply(this.app, processArgs(this.options, [schema + resourceName + '/:formName', this.schema()]));
+        this.app.get.apply(this.app, processArgs(this.options, [schema + resourceName + formName, this.schema()]));
 
         this.app.get.apply(this.app, processArgs(this.options, [report + resourceName, this.report()]));
         this.app.get.apply(this.app, processArgs(this.options, [report + resourceName + '/:reportName', this.report()]));
@@ -78,13 +78,14 @@ export class FormsAngular {
         // where there's a lookup that doesn't use the fngajax option 
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + '/listAll', this.entityListAll()]));
 
+        // return the List attributes for a record - used by fng-ui-select
+        this.app.get.apply(this.app, processArgs(this.options, [resourceName + id + '/list', this.entityList()]));
+
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + id, this.entityGet()]));
+        this.app.get.apply(this.app, processArgs(this.options, [resourceName + formName + id, this.entityGet()])); // We don't use the form name, but it can optionally be included so it can be referenced by the permissions check
         this.app.post.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()]));  // You can POST or PUT to update data
         this.app.put.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()]));
         this.app.delete.apply(this.app, processArgs(this.options, [resourceName + id, this.entityDelete()]));
-
-        // return the List attributes for a record - used by fng-ui-select
-        this.app.get.apply(this.app, processArgs(this.options, [resourceName + id + '/list', this.entityList()]));
 
         this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
         for (let pluginName in this.options.plugins) {

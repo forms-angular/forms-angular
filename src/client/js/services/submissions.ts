@@ -140,7 +140,7 @@ module fng.services {
         return $http.get(`/api/${ref}${generateListQuery(options)}`);
       },
 
-      readRecord: function (modelName, id): Promise<any> {
+      readRecord: function (modelName, id, formName): Promise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
 //         let retVal;
 //         if (tabChangeData && tabChangeData.model === modelName && tabChangeData.id === id) {
@@ -150,7 +150,12 @@ module fng.services {
           if (typeof actualId === "object") {
             throw new Error(`readRecord doesn't expect an object but was provided with ${JSON.stringify(id)}`);
           }
-           return $http.get(`/api/${modelName}/${actualId}`);
+          let url = `/api/${modelName}/`;
+          if (formName) {
+            url += `${formName}/`;
+          }
+          url += actualId
+           return $http.get(url);
 //           retVal = $http.get('/api/' + modelName + '/' + id);
 //         }
 //         tabChangeData = null;

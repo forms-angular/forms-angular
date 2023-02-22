@@ -703,7 +703,7 @@ module fng.services {
 
     return {
       readRecord: function readRecord($scope, ctrlState: IFngCtrlState) {
-        $scope.readingRecord = SubmissionsService.readRecord($scope.modelName, $scope.id);
+        $scope.readingRecord = SubmissionsService.readRecord($scope.modelName, $scope.id, $scope.formName);
         $scope.readingRecord
           .then(function(response) {
             let data: any = angular.copy(response.data);
@@ -764,6 +764,8 @@ module fng.services {
             if (err.status === 404) {
               // Someone already deleted it
               routingService.redirectTo()("onDelete", $scope, $location);
+            } else if (err.status === 403) {
+              $scope.showError(err.data?.message || err.message || err.data || err, 'Permission denied');
             } else {
               $scope.showError(`${err.statusText} (${err.status}) while deleting record<br />${err.data}`, 'Error deleting record');
             }
