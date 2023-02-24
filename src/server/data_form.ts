@@ -60,7 +60,7 @@ export class FormsAngular {
         this.resources = [];
         this.searchFunc = async.forEach;
 
-        const search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id', formName = '/:formName';
+        const search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id', formName = '/:formName', newClarifier = '/new';;
         this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
 
         this.app.get.apply(this.app, processArgs(this.options, [search + resourceName, this.search()]));
@@ -72,7 +72,6 @@ export class FormsAngular {
         this.app.get.apply(this.app, processArgs(this.options, [report + resourceName + '/:reportName', this.report()]));
 
         this.app.get.apply(this.app, processArgs(this.options, [resourceName, this.collectionGet()]));
-        this.app.post.apply(this.app, processArgs(this.options, [resourceName, this.collectionPost()]));
 
         // return the List attributes for all records - used by record-handler's setUpLookupOptions() method, for cases
         // where there's a lookup that doesn't use the fngajax option 
@@ -81,11 +80,24 @@ export class FormsAngular {
         // return the List attributes for a record - used by fng-ui-select
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + id + '/list', this.entityList()]));
 
+        // 2x get, with and without formName
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + id, this.entityGet()]));
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + formName + id, this.entityGet()])); // We don't use the form name, but it can optionally be included so it can be referenced by the permissions check
-        this.app.post.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()]));  // You can POST or PUT to update data
+
+        // 2x post (for creating a new record), with and without formName
+        this.app.post.apply(this.app, processArgs(this.options, [resourceName + newClarifier, this.collectionPost()]));
+        this.app.post.apply(this.app, processArgs(this.options, [resourceName + formName + newClarifier, this.collectionPost()]));
+
+        // 2x post and 2x put (for saving modifications to existing record), with and without formName
+        // (You can POST or PUT to update data)
+        this.app.post.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()])); 
+        this.app.post.apply(this.app, processArgs(this.options, [resourceName + formName + id, this.entityPut()]));
         this.app.put.apply(this.app, processArgs(this.options, [resourceName + id, this.entityPut()]));
+        this.app.put.apply(this.app, processArgs(this.options, [resourceName + formName + id, this.entityPut()]));
+
+        // 2x delete, with and without formName
         this.app.delete.apply(this.app, processArgs(this.options, [resourceName + id, this.entityDelete()]));
+        this.app.delete.apply(this.app, processArgs(this.options, [resourceName + formName + id, this.entityDelete()]));
 
         this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
         for (let pluginName in this.options.plugins) {

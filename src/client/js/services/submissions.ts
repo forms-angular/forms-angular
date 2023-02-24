@@ -82,6 +82,17 @@ module fng.services {
       return queryString;
     };
 
+    function generateUrl(modelName: string, formName: string, id?: string): string {
+      let url = `/api/${modelName}`;
+      if (formName) {
+        url += `/${formName}`;
+      }
+      if (id) {
+        url += `/${id}`;
+      }
+      return url;
+    }
+
 // TODO Figure out tab history updates (check for other tab-history-todos)
 //
 //     interface ITabChange {
@@ -140,7 +151,7 @@ module fng.services {
         return $http.get(`/api/${ref}${generateListQuery(options)}`);
       },
 
-      readRecord: function (modelName, id, formName): Promise<any> {
+      readRecord: function (modelName: string, id: any, formName: string): Promise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
 //         let retVal;
 //         if (tabChangeData && tabChangeData.model === modelName && tabChangeData.id === id) {
@@ -150,12 +161,8 @@ module fng.services {
           if (typeof actualId === "object") {
             throw new Error(`readRecord doesn't expect an object but was provided with ${JSON.stringify(id)}`);
           }
-          let url = `/api/${modelName}/`;
-          if (formName) {
-            url += `${formName}/`;
-          }
-          url += actualId
-           return $http.get(url);
+          const url = generateUrl(modelName, formName, actualId);
+          return $http.get(url);
 //           retVal = $http.get('/api/' + modelName + '/' + id);
 //         }
 //         tabChangeData = null;
@@ -169,18 +176,21 @@ module fng.services {
         return $http.get(`/api/${modelName}`, options);
       },
 
-      deleteRecord: function (model, id) {
-        return $http.delete(`/api/${model}/${id}`);
+      deleteRecord: function (modelName: string, id: string, formName: string) {
+        const url = generateUrl(modelName, formName, id);
+        return $http.delete(url);
       },
 
-      updateRecord: function (modelName, id, dataToSave) {
+      updateRecord: function (modelName: string, id: string, dataToSave: any, formName: string) {
         expCache.remove(`/api/${modelName}`);
-        return $http.post(`/api/${modelName}/${id}`, dataToSave);
+        const url = generateUrl(modelName, formName, id);
+        return $http.post(url, dataToSave);
       },
 
-      createRecord: function (modelName, dataToSave) {
+      createRecord: function (modelName: string, dataToSave: any, formName: string) {
         expCache.remove(`/api/${modelName}`);
-        return $http.post(`/api/${modelName}`, dataToSave);
+        const url = generateUrl(modelName, formName) + "/new";
+        return $http.post(url, dataToSave);
       },
 
       useCache: function(val: boolean) {

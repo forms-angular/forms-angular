@@ -754,7 +754,7 @@ module fng.services {
 
       deleteRecord: function deleteRecord(id, $scope, ctrlState) {
         $scope.phase = "deleting";
-        SubmissionsService.deleteRecord($scope.modelName, id)
+        SubmissionsService.deleteRecord($scope.modelName, id, $scope.formName)
           .then(function() {
             if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
               $scope.dataEventFunctions.onAfterDelete(ctrlState.master);
@@ -775,7 +775,7 @@ module fng.services {
       updateDocument: function updateDocument(dataToSave, options, $scope: fng.IFormScope, ctrlState: IFngCtrlState) {
         $scope.phase = "updating";
 
-        SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave)
+        SubmissionsService.updateRecord($scope.modelName, $scope.id, dataToSave, $scope.formName)
           .then(function(response) {
             let data: any = response.data;
             if (data.success !== false) {
@@ -800,7 +800,7 @@ module fng.services {
       },
 
       createNew: function createNew(dataToSave, options, $scope: fng.IFormScope, ctrlState: IFngCtrlState) {
-        SubmissionsService.createRecord($scope.modelName, dataToSave)
+        SubmissionsService.createRecord($scope.modelName, dataToSave, $scope.formName)
           .then(function(response) {
             let data: any = response.data;
             if (data.success !== false) {

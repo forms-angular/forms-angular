@@ -31,7 +31,7 @@ describe('Data Events', function () {
           };
 
           scope.record = {name: 'John'};
-          $httpBackend.when('POST', '/api/collection', {'name': 'Alan'}).respond(200, 'SUCCESS');  // check for changed name
+          $httpBackend.when('POST', '/api/collection/new', {'name': 'Alan'}).respond(200, 'SUCCESS');  // check for changed name
           scope.save();
           $httpBackend.flush();
         });
@@ -225,7 +225,7 @@ describe('Data Events', function () {
         inject(function (_$httpBackend_, $rootScope, $controller, $location) {
           $httpBackend = _$httpBackend_;
           $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}, '_index': null}});
-          $httpBackend.when('POST', '/api/collection', {'name': 'John'}).respond(200, {name: 'Philip'});
+          $httpBackend.when('POST', '/api/collection/new', {'name': 'John'}).respond(200, {name: 'Philip'});
           $location.$$path = '/collection/new';
           var scope = $rootScope.$new();
           $controller('BaseCtrl', {$scope: scope});

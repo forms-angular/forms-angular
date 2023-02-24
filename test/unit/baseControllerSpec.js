@@ -768,7 +768,7 @@ describe('BaseCtrl', function () {
       scope.record = {'familyName': 'Chapman', 'givenName': 'Mark', 'appData': {'accessToOrgs': [
         {'x': 'Tesco'}
       ]}};
-      $httpBackend.when('POST', '/api/person', {'familyName': 'Chapman', 'givenName': 'Mark', 'appData': {'accessToOrgs': ['5']}}).respond(200, 'SUCCESS');
+      $httpBackend.when('POST', '/api/person/new', {'familyName': 'Chapman', 'givenName': 'Mark', 'appData': {'accessToOrgs': ['5']}}).respond(200, 'SUCCESS');
       scope.save();
       $httpBackend.flush();
     });
@@ -784,7 +784,7 @@ describe('BaseCtrl', function () {
         scope = $rootScope.$new();
         ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
         scope.record = {'familyName': 'Chapman', 'givenName': 'Mark'};
-        $httpBackend.when('POST', '/api/collection', {'familyName': 'Chapman', 'givenName': 'Mark'}).respond(400, {message: 'There is some kind of error', status: 'err'});
+        $httpBackend.when('POST', '/api/collection/new', {'familyName': 'Chapman', 'givenName': 'Mark'}).respond(400, {message: 'There is some kind of error', status: 'err'});
         scope.save();
         $httpBackend.flush();
         expect(scope.alertTitle).toEqual('Error!');
