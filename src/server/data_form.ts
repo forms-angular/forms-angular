@@ -84,7 +84,8 @@ export class FormsAngular {
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + id, this.entityGet()]));
         this.app.get.apply(this.app, processArgs(this.options, [resourceName + formName + id, this.entityGet()])); // We don't use the form name, but it can optionally be included so it can be referenced by the permissions check
 
-        // 2x post (for creating a new record), with and without formName
+        // 3x post (for creating a new record), with and without formName, and in the case of without, with or without /new (which isn't needed if there's no formName)
+        this.app.post.apply(this.app, processArgs(this.options, [resourceName, this.collectionPost()]));
         this.app.post.apply(this.app, processArgs(this.options, [resourceName + newClarifier, this.collectionPost()]));
         this.app.post.apply(this.app, processArgs(this.options, [resourceName + formName + newClarifier, this.collectionPost()]));
 
