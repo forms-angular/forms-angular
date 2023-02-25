@@ -26,7 +26,7 @@ describe('API tests', function() {
   describe('original API', function() {
 
     it('returns models', function() {
-      const mockReq = null;
+      const mockReq = {};
       const mockRes = {
         send: function(models) {
           assert.equal(models.length, 11);
@@ -1057,7 +1057,7 @@ describe('API tests', function() {
   describe('mongoose collection name API', function () {
 
     it('returns models', function () {
-      const mockReq = null;
+      const mockReq = {};
       const mockRes = {
         send: function (models) {
           assert.equal(models.length, 11);
