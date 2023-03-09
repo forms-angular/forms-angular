@@ -1073,6 +1073,9 @@ module fng.services {
 
         $scope.save = function(options) {
           options = options || {};
+          // stash these against the scope as well, so the onBeforeUpdate or onBeforeCreate handlers that may be called from
+          // prepareForSave() have knowledge of any redirection that should occur after the save has been successfully made
+          $scope.redirectOptions = options;
           $scope.prepareForSave((err, dataToSave) => {
             if (err) {
               if (err !== "_update_handled_") {

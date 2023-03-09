@@ -442,6 +442,7 @@ declare module fng {
     conversions: any;
     pageSize: any;
     pagesLoaded: any;
+    redirectOptions?: { redirect?: string; allowChange?: boolean };
     cancel: () => any;
     showError: (error: any, alertTitle?: string) => void;
     prepareForSave: (cb: (error: string, dataToSave?: any) => void) => void;
