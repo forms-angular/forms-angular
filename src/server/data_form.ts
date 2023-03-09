@@ -60,6 +60,14 @@ export class FormsAngular {
         this.resources = [];
         this.searchFunc = async.forEach;
 
+        // Do the plugin routes first
+        for (let pluginName in this.options.plugins) {
+            if (this.options.plugins.hasOwnProperty(pluginName)) {
+                let pluginObj: IFngPlugin = this.options.plugins[pluginName];
+                this.options.plugins[pluginName] = Object.assign(this.options.plugins[pluginName], pluginObj.plugin(this, processArgs, pluginObj.options));
+            }
+        }
+
         const search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id', formName = '/:formName', newClarifier = '/new';;
         this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
 
@@ -101,12 +109,6 @@ export class FormsAngular {
         this.app.delete.apply(this.app, processArgs(this.options, [resourceName + formName + id, this.entityDelete()]));
 
         this.app.get.apply(this.app, processArgs(this.options, ['search', this.searchAll()]));
-        for (let pluginName in this.options.plugins) {
-            if (this.options.plugins.hasOwnProperty(pluginName)) {
-                let pluginObj: IFngPlugin = this.options.plugins[pluginName];
-                this.options.plugins[pluginName] = Object.assign(this.options.plugins[pluginName], pluginObj.plugin(this, processArgs, pluginObj.options));
-            }
-        }
     }
 
     getFirstMatchingField(resource: Resource, doc: Document, keyList: string[], type?: string) {
