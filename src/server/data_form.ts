@@ -20,6 +20,8 @@ const async = require('async');
 
 let debug = false;
 
+type IHiddenFields = { [fieldName: string]: boolean };
+
 function logTheAPICalls(req, res, next) {
     void (res);
     console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
@@ -68,7 +70,7 @@ export class FormsAngular {
             }
         }
 
-        const search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id', formName = '/:formName', newClarifier = '/new';;
+        const search = 'search/', schema = 'schema/', report = 'report/', resourceName = ':resourceName', id = '/:id', formName = '/:formName', newClarifier = '/new';
         this.app.get.apply(this.app, processArgs(this.options, ['models', this.models()]));
 
         this.app.get.apply(this.app, processArgs(this.options, [search + resourceName, this.search()]));
@@ -1195,7 +1197,7 @@ export class FormsAngular {
         });
     };
 
-    saveAndRespond(req, res, hiddenFields) {
+    saveAndRespond(req, res, hiddenFields? : IHiddenFields) {
 
         function internalSave(doc) {
             doc.save(function (err, doc2) {
@@ -1441,7 +1443,7 @@ export class FormsAngular {
     /**
      * Generate an object of fields to not expose
      **/
-    generateHiddenFields(resource: Resource, state: boolean): { [fieldName: string]: boolean } {
+    generateHiddenFields(resource: Resource, state: boolean): IHiddenFields {
         let hiddenFields = {};
 
         if (resource.options['hide'] !== undefined) {
@@ -1624,11 +1626,11 @@ export class FormsAngular {
                     resource.options.dependents = that.resources.reduce(function (acc, r) {
 
                         function searchPaths(schema, prefix) {
-                            var fldList = [];
-                            for (var fld in schema.paths) {
+                            let fldList = [];
+                            for (let fld in schema.paths) {
                                 if (schema.paths.hasOwnProperty(fld)) {
-                                    var parts = fld.split('.');
-                                    var schemaType = schema.tree;
+                                    const parts = fld.split('.');
+                                    let schemaType = schema.tree;
                                     while (parts.length > 0) {
                                         schemaType = schemaType[parts.shift()];
                                     }
