@@ -227,11 +227,14 @@ export class FormsAngular {
     addResource(resourceName: string, model, options: ResourceOptions) {
         let resource: Resource = {
             resourceName: resourceName,
+            resourceNameLower: resourceName.toLowerCase(),
             options: options || {}
         };
         if (!resource.options.suppressDeprecatedMessage) {
             console.log('addResource is deprecated - see https://github.com/forms-angular/forms-angular/issues/39');
         }
+        // Check all the synonyms are lower case
+        resource.options.synonyms?.forEach(s => { s.name = s.name.toLowerCase()});
 
         if (typeof model === 'function') {
             resource.model = model;
@@ -404,7 +407,7 @@ export class FormsAngular {
         }
         for (let i = 0; i < resourceCount; i++) {
             let resource = resourcesToSearch[i];
-            if (resourceCount === 1 || (resource.options.searchImportance !== false && (!collectionName || collectionName === resource.resourceName || resource.options?.synonyms?.find(s => s.name?.toLowerCase() === collectionNameLower)))) {
+            if (resourceCount === 1 || (resource.options.searchImportance !== false && (!collectionName || collectionNameLower === resource.resourceNameLower || resource.options?.synonyms?.find(s => s.name === collectionNameLower)))) {
                 let schema = resource.model.schema;
                 let indexedFields = [];
                 for (let j = 0; j < schema._indexes.length; j++) {
