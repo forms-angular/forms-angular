@@ -709,10 +709,14 @@ module fng.services {
             let data: any = angular.copy(response.data);
             handleIncomingData(data, $scope, ctrlState);
           }, function(error) {
-            if (error.status === 404) {
-              $location.path("/404");
+            if ($scope.dataEventFunctions.onReadError) {
+              $scope.dataEventFunctions.onReadError($scope.id, error);
             } else {
-              $scope.handleHttpError(error);
+              if (error.status === 404) {
+                $location.path("/404");
+              } else {
+                $scope.handleHttpError(error);
+              }
             }
           });
       },
