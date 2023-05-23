@@ -229,7 +229,7 @@ describe('validation', function () {
             },
             '_id': {
               'path': '_id',
-              'instance': 'ObjectID',
+              'instance': 'ObjectId',
               'validators': [],
               'setters': [null],
               'getters': [],

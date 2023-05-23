@@ -121,10 +121,10 @@ describe('BaseCtrl', function () {
       $httpBackend = _$httpBackend_;
       $httpBackend.whenGET('/api/schema/collection').respond({
         'textField': {'path': 'textField', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}},
-        'lookupField': {'path': 'lookupField', 'instance': 'ObjectID', 'options': {'ref': 'Person', 'form': {'hidden': true}}},
+        'lookupField': {'path': 'lookupField', 'instance': 'ObjectId', 'options': {'ref': 'Person', 'form': {'hidden': true}}},
         'arrayOfString': {'caster': {'instance': 'String'}, 'path': 'arrayOfString', 'options': {'type': [null]}},
         'arrayOfLookup': {
-          'caster': {'path': null, 'instance': 'ObjectID', 'options': {}},
+          'caster': {'path': null, 'instance': 'ObjectId', 'options': {}},
           'path': 'arrayOfLookup',
           'options': {'type': [null], 'ref': 'referral_format', 'form': {'label': 'Referral Format'}}
         }
@@ -132,7 +132,7 @@ describe('BaseCtrl', function () {
       $httpBackend.whenGET('/api/schema/referral_format').respond(
         {'description': {'path': 'description', 'instance': 'String', 'options': {'list': true}},
           'module': {'path': 'module', 'instance': 'String', 'options': {'form': {'hidden': true}}},
-          '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}}
+          '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}}}
       );
       $httpBackend.whenGET('/api/collection/3').respond({'textField': 'This is some text', 'lookupField': '123456789', 'arrayOfString': ['string', 'rope', 'cord'], 'arrayOfLookup': ['1', '2', '4']});
       $httpBackend.whenGET('/api/referral_format').respond(
@@ -230,7 +230,7 @@ describe('BaseCtrl', function () {
       $httpBackend = _$httpBackend_;
       $httpBackend.whenGET('/api/schema/collection').respond({
         'password': {'path': 'password', 'instance': 'String', 'options': {}, '$conditionalHandlers': {}},
-        '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}, '$conditionalHandlers': {}}
+        '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}, '$conditionalHandlers': {}}
       });
       scope = $rootScope.$new();
       $location.$$path = '/collection/new';
@@ -283,7 +283,7 @@ describe('BaseCtrl', function () {
       $httpBackend = _$httpBackend_;
       $httpBackend.whenGET('/api/schema/collection').respond({
         'password': {'path': 'password', 'instance': 'String', 'options': {'form': {'type': 'text'}}, '$conditionalHandlers': {}},
-        '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}, '$conditionalHandlers': {}}
+        '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}, '$conditionalHandlers': {}}
       });
       scope = $rootScope.$new();
       $location.$$path = '/collection/new';
@@ -330,7 +330,7 @@ describe('BaseCtrl', function () {
       $httpBackend = _$httpBackend_;
       $httpBackend.whenGET('/api/schema/collection').respond({
         'secret': {'path': 'password', 'instance': 'String', 'options': {'form': {'type': 'password'}}, '$conditionalHandlers': {}},
-        '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}, '$conditionalHandlers': {}}
+        '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}, '$conditionalHandlers': {}}
       });
       scope = $rootScope.$new();
       scope['unitTesting'] = true;
@@ -355,11 +355,11 @@ describe('BaseCtrl', function () {
       $httpBackend.whenGET('/api/schema/collection').respond(
         {
           'textField': {'path': 'textField', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}},
-          'hiddenField': {'path': 'lookupField', 'instance': 'ObjectID', 'options': {'ref': 'NotCalled', 'form': {'hidden': true}}},
-          'lookupField': {'path': 'lookupField', 'instance': 'ObjectID', 'options': {'ref': 'Person'}},
+          'hiddenField': {'path': 'lookupField', 'instance': 'ObjectId', 'options': {'ref': 'NotCalled', 'form': {'hidden': true}}},
+          'lookupField': {'path': 'lookupField', 'instance': 'ObjectId', 'options': {'ref': 'Person'}},
           'arrayOfString': {'caster': {'instance': 'String'}, 'path': 'arrayOfString', 'options': {'type': [null]}},
           'arrayOfLookup': {
-            'caster': {'path': null, 'instance': 'ObjectID', 'options': {}},
+            'caster': {'path': null, 'instance': 'ObjectId', 'options': {}},
             'path': 'arrayOfLookup',
             'options': {'type': [null], 'ref': 'referral_format', 'form': {'label': 'Referral Format'}
             }
@@ -376,16 +376,16 @@ describe('BaseCtrl', function () {
             'options': {'type': [null], 'enum': ['Ash', 'Birch', 'Chestnut']},
             '$conditionalHandlers': {}
           },
-          '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}, '$conditionalHandlers': {}}
+          '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}, '$conditionalHandlers': {}}
         });
       $httpBackend.whenGET('/api/schema/referral_format').respond(
         {'description': {'path': 'description', 'instance': 'String', 'options': {'list': true}},
           'module': {'path': 'module', 'instance': 'String', 'options': {'form': {'hidden': true}}},
-          '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}}
+          '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}}}
       );
       $httpBackend.whenGET('/api/schema/Person').respond(
         {'name': {'path': 'name', 'instance': 'String', 'options': {'list': true}},
-          '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}}
+          '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}}}
       );
       $httpBackend.whenGET('/api/Person').respond([
         {'name': 'John Smith', _id: 123456789},
@@ -518,11 +518,11 @@ describe('BaseCtrl', function () {
           'subject': {'path': 'subject', 'instance': 'String', 'options': {}},
           'grade': {'path': 'grade', 'instance': 'String', 'options': {}},
           'teachers': {'schema': {
-            'teacher': {'path': 'teacher', 'instance': 'ObjectID', 'options': {'ref': 'teachers'}},
+            'teacher': {'path': 'teacher', 'instance': 'ObjectId', 'options': {'ref': 'teachers'}},
             'room': {'path': 'room', 'instance': 'Number', 'options': {}},
-            '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}
+            '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}}
           }},
-          '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}
+          '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}}
         }},
         'studies.exams': {
           'schema': {
@@ -532,14 +532,14 @@ describe('BaseCtrl', function () {
             'result': {'enumValues': ['distinction', 'merit', 'pass', 'fail'], 'path': 'result', 'instance': 'String', 'validators': [
               [null, 'enum']
             ], 'options': {'enum': ['distinction', 'merit', 'pass', 'fail']}},
-            'grader': {'path': 'grader', 'instance': 'ObjectID', 'options': {'ref': 'teachers'}},
-            '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}
+            'grader': {'path': 'grader', 'instance': 'ObjectId', 'options': {'ref': 'teachers'}},
+            '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}}
           }
         },
-        'assistants': {'caster': {'path': null, 'instance': 'ObjectID', 'options': {'ref': 'assistants'}}, 'path': 'assistants', 'options': {'type': [
+        'assistants': {'caster': {'path': null, 'instance': 'ObjectId', 'options': {'ref': 'assistants'}}, 'path': 'assistants', 'options': {'type': [
           {'ref': 'assistants'}
         ]}},
-        '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}
+        '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}}
       });
       $httpBackend.whenGET('/api/schema/teachers').respond({
         'surname': {'path': 'surname', 'instance': 'String', 'validators': [[null, 'required']], 'options': {'required': true, 'list': {}}},
@@ -554,7 +554,7 @@ describe('BaseCtrl', function () {
         'accepted': {'path': 'accepted', 'instance': 'boolean', 'options': {'form': {'helpInline': 'Did we take them?'}}},
         'interviewScore': {'path': 'interviewScore', 'instance': 'Number', 'options': {'form': {'hidden': true}}},
         'freeText': {'path': 'freeText', 'instance': 'String', 'options': {'form': {'type': 'textarea', 'rows': 5}}},
-        '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}
+        '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}}
       });
       $httpBackend.whenGET('/api/schema/assistants').respond({
         'surname': {'path': 'surname', 'instance': 'String', 'validators': [[null, 'required']], 'options': {'required': true, 'list': {}}, 'isRequired': true},
@@ -569,7 +569,7 @@ describe('BaseCtrl', function () {
         'accepted': {'path': 'accepted', 'instance': 'boolean', 'options': {'form': {'helpInline': 'Did we take them?'}}},
         'interviewScore': {'path': 'interviewScore', 'instance': 'Number', 'options': {'form': {'hidden': true}}},
         'freeText': {'path': 'freeText', 'instance': 'String', 'options': {'form': {'type': 'textarea', 'rows': 5}}},
-        '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}}
+        '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}}
       });
       $httpBackend.whenGET('/api/collection/3').respond({'surname': 'Thompson', 'forename': 'Chris', 'address': {'street': '4 High Street', 'town': 'Bolton'},
         'studies': {
@@ -666,7 +666,7 @@ describe('BaseCtrl', function () {
         'appData.accessToOrgs': {
           'caster': {
             'path': null,
-            'instance': 'ObjectID',
+            'instance': 'ObjectId',
             'validators': [],
             'setters': [],
             'getters': [],
@@ -690,7 +690,7 @@ describe('BaseCtrl', function () {
         },
         _id: {
           path: '_id',
-          instance: 'ObjectID',
+          instance: 'ObjectId',
           validators: [ ],
           setters: [
             null
@@ -721,7 +721,7 @@ describe('BaseCtrl', function () {
         },
         accountContact: {
           path: 'accountContact',
-          instance: 'ObjectID',
+          instance: 'ObjectId',
           validators: [ ],
           setters: [ ],
           getters: [ ],

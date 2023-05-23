@@ -149,7 +149,7 @@ module fng.services {
           angular.extend(formInstructions, mongooseType.options.form);
         }
       }
-      if (mongooseType.instance === 'String' || (mongooseType.instance === 'ObjectID' && formInstructions.asText)) {
+      if (mongooseType.instance === 'String' || (mongooseType.instance === 'ObjectId' && formInstructions.asText)) {
         if (mongooseOptions.enum) {
           formInstructions.type = formInstructions.type || 'select';
           if (formInstructions.select2) {
@@ -166,7 +166,7 @@ module fng.services {
             formInstructions.add = 'pattern="' + mongooseOptions.match + '" ' + (formInstructions.add || '');
           }
         }
-      } else if (mongooseType.instance === 'ObjectID') {
+      } else if (mongooseType.instance === 'ObjectId') {
         formInstructions.ref = mongooseOptions.ref;
         if (formInstructions.link) {
           if (formInstructions.link.linkOnly) {

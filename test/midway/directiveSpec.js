@@ -9,12 +9,12 @@ describe('directive with form', function () {
         [null, 'Path `{PATH}` is required.', 'required']
       ], 'options': {'required': true, 'list': {}}, '_index': null, 'isRequired': true, '$conditionalHandlers': {}},
       'forename': {'path': 'forename', 'instance': 'String', 'options': {'list': true}, '_index': null, '$conditionalHandlers': {}},
-      'friendList': {'schema': {'friend': {'path': 'friend', 'instance': 'ObjectID', 'options': {'ref': 'a_unadorned_mongoose', 'form': {
+      'friendList': {'schema': {'friend': {'path': 'friend', 'instance': 'ObjectId', 'options': {'ref': 'a_unadorned_mongoose', 'form': {
         'select2': {'fngAjax': true}
       }}, '_index': null, '$conditionalHandlers': {}}, 'type': {'enumValues': ['best friend', 'partner', 'colleague', 'acquaintance', 'other'], 'path': 'type', 'instance': 'String', 'validators': [
         [null, '`{VALUE}` is not a valid enum value for path `{PATH}`.', 'enum']
       ], 'options': {'enum': ['best friend', 'partner', 'colleague', 'acquaintance', 'other']}, '_index': null, '$conditionalHandlers': {}}}, 'options': {'form': {'directive': 'friends'}}},
-      '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}, '_index': null, '$conditionalHandlers': {}}
+      '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}, '_index': null, '$conditionalHandlers': {}}
     },
     oneFriend = {'_id': '123', 'surname': 'Fitzgerald', 'forename': 'Patrick', 'friendList': [
       {'friend': '666a6075b320153869b17599', 'type': 'colleague'}
