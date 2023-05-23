@@ -1213,25 +1213,14 @@ export class FormsAngular {
     saveAndRespond(req, res, hiddenFields? : IHiddenFields) {
 
         function internalSave(doc) {
-            doc.save(function (err, doc2) {
-                if (err) {
-                    let err2: any = {status: 'err'};
-                    if (!err.errors) {
-                        err2.message = err.message;
-                    } else {
-                        extend(err2, err);
-                    }
-                    if (debug) {
-                        console.log('Error saving record: ' + JSON.stringify(err2));
-                    }
-                    res.status(400).send(err2);
-                } else {
-                    doc2 = doc2.toObject();
+            doc.save()
+                .then((saved) => {
+                    saved = saved.toObject();
                     for (const hiddenField in hiddenFields) {
                         if (hiddenFields.hasOwnProperty(hiddenField) && hiddenFields[hiddenField]) {
                             let parts = hiddenField.split('.');
                             let lastPart = parts.length - 1;
-                            let target = doc2;
+                            let target = saved;
                             for (let i = 0; i < lastPart; i++) {
                                 if (target.hasOwnProperty(parts[i])) {
                                     target = target[parts[i]];
@@ -1242,14 +1231,23 @@ export class FormsAngular {
                             }
                         }
                     }
-                    res.send(doc2);
-                }
-            });
+                    res.send(saved);
+                })
+                .catch((err) => {
+                    let err2: any = {status: 'err'};
+                    if (!err.errors) {
+                        err2.message = err.message;
+                    } else {
+                        extend(err2, err);
+                    }
+                    if (debug) {
+                        console.log('Error saving record: ' + JSON.stringify(err2));
+                    }
+                    res.status(400).send(err2);
+                });
         }
-
         let doc = req.doc;
         if (typeof req.resource.options.onSave === 'function') {
-
             req.resource.options.onSave(doc, req, function (err) {
                 if (err) {
                     throw err;
