@@ -54,7 +54,7 @@
   },
   "peerDependencies": {
     "express": "^4",
-    "mongoose": "^6.1.8"
+    "mongoose": "^7.1.11"
   },
   "devDependencies": {
     "@types/angular": "1.8.4",
@@ -87,7 +87,7 @@
     "karma-ng-html2js-preprocessor": "1.0.0",
     "matchdep": "2.0.0",
     "mocha": "^10.2.0",
-    "mongoose": "^6.2.10",
+    "mongoose": "^7.1.1",
     "prettier": "2.8.1",
     "pump": "3.0.0",
     "typescript": "4.6.3"
