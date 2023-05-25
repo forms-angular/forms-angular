@@ -149,14 +149,20 @@ module fng.services {
           angular.extend(formInstructions, mongooseType.options.form);
         }
       }
-      if (mongooseType.instance === 'String' || (mongooseType.instance === 'ObjectID' && formInstructions.asText)) {
+      if (mongooseType.instance === 'String' || (mongooseType.instance === 'ObjectId' && formInstructions.asText)) {
         if (mongooseOptions.enum) {
           formInstructions.type = formInstructions.type || 'select';
           if (formInstructions.select2) {
             console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
           } else {
             formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
-            $scope[formInstructions.options] = mongooseOptions.enum;
+            if (mongooseOptions.form?.enumLabels) {
+              formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
+              $scope[formInstructions.ids] = mongooseOptions.enum;
+              $scope[formInstructions.options] = mongooseOptions.form.enumLabels;
+            } else {
+              $scope[formInstructions.options] = mongooseOptions.enum;
+            }
           }
         } else {
           if (!formInstructions.type) {
@@ -166,7 +172,7 @@ module fng.services {
             formInstructions.add = 'pattern="' + mongooseOptions.match + '" ' + (formInstructions.add || '');
           }
         }
-      } else if (mongooseType.instance === 'ObjectID') {
+      } else if (mongooseType.instance === 'ObjectId') {
         formInstructions.ref = mongooseOptions.ref;
         if (formInstructions.link) {
           if (formInstructions.link.linkOnly) {

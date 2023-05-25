@@ -56,10 +56,10 @@ module fng.directives {
 
           function generateEnumInstructions() : IEnumInstruction{
             var enumInstruction:IEnumInstruction;
-            if (angular.isArray(scope[fieldInfo.options])) {
+            if (Array.isArray(scope[fieldInfo.options])) {
               enumInstruction = {repeat: fieldInfo.options, value: 'option'};
-            } else if (scope[fieldInfo.options] && angular.isArray(scope[fieldInfo.options].values)) {
-              if (angular.isArray(scope[fieldInfo.options].labels)) {
+            } else if (scope[fieldInfo.options] && Array.isArray(scope[fieldInfo.options].values)) {
+              if (Array.isArray(scope[fieldInfo.options].labels)) {
                 enumInstruction = {
                   repeat: fieldInfo.options + '.values',
                   value: fieldInfo.options + '.values[$index]',
@@ -76,6 +76,7 @@ module fng.directives {
             }
             return enumInstruction;
           }
+
           let idString = fieldInfo.id;
           if (fieldInfo.array || options.subschema) {
             idString = formMarkupHelper.generateArrayElementIdString(idString, fieldInfo, options);

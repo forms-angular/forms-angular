@@ -15,10 +15,8 @@ before(function(done) {
   });
 });
 
-after(function(done) {
-  dbHelpers.dropDb(mongoose, function() {
-    done();
-  });
+after(async function() {
+  await dbHelpers.dropDb(mongoose);
 });
 
 describe('API tests', function() {
@@ -561,22 +559,18 @@ describe('API tests', function() {
           }
         };
         const mockRes = {
-          send: function(data) {
+          send: async function(data) {
             assert.equal(data.weight, 124);
             assert.equal(data.passwordHash, undefined);
             assert.equal(data.interview.score, 97);
             assert.equal(data.interview.interviewHash, undefined);
             const resource = fngInstance.getResource('c_subdoc_example');
-            resource.model.findById('519aaaaab320153869b175e0', function(err, dataOnDisk) {
-              if (err) {
-                throw err;
-              }
-              assert.equal(dataOnDisk.weight, 124);
-              assert.equal(dataOnDisk.passwordHash, 'top secret');
-              assert.equal(dataOnDisk.interview.score, 97);
-              assert.equal(dataOnDisk.interview.interviewHash, 'you think I would tell you?');
-              done();
-            });
+            const dataOnDisk = await resource.model.findById('519aaaaab320153869b175e0');
+            assert.equal(dataOnDisk.weight, 124);
+            assert.equal(dataOnDisk.passwordHash, 'top secret');
+            assert.equal(dataOnDisk.interview.score, 97);
+            assert.equal(dataOnDisk.interview.interviewHash, 'you think I would tell you?');
+            done();
           }
         };
         fngInstance.entityPut()(mockReq, mockRes);

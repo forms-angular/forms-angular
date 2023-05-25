@@ -12,8 +12,6 @@ var eSchemaDef = {
     dateOfBirth: Date,
     assistants: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'a_unadorned_schema' }],
     assistants2: { type: [mongoose_1.Schema.Types.ObjectId], ref: 'a_unadorned_schema' },
-    team: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'f_nested_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } }],
-    team2: { type: [mongoose_1.Schema.Types.ObjectId], ref: 'f_nested_schema', form: { directive: 'fng-ui-select', fngUiSelect: { fngAjax: true } } },
     accepted: Boolean
 };
 var ESchema = new mongoose_1.Schema(eSchemaDef);

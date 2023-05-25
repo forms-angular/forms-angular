@@ -19,7 +19,7 @@ describe('Select.', function () {
       $httpBackend = _$httpBackend_;
       $httpBackend.whenGET('/api/schema/collection').respond({
         'textField': {'path': 'textField', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}},
-        'lookupField': {'path': 'lookupField', 'instance': 'ObjectID', 'options': {'ref': 'person'}},
+        'lookupField': {'path': 'lookupField', 'instance': 'ObjectId', 'options': {'ref': 'person'}},
         'eyeColour': {'enumValues': ['Blue', 'Brown', 'Green', 'Hazel'], 'path': 'eyeColour', 'instance': 'String', 'validators': [
           [null, 'Path `{PATH}` is required.', 'required'],
           [null, '`{VALUE}` is not a valid enum value for path `{PATH}`.', 'enum']
@@ -27,7 +27,7 @@ describe('Select.', function () {
       });
       $httpBackend.whenGET('/api/collection/3').respond({'textField': 'This is some text', 'lookupField': '3', 'eyeColour': 'Brown'});
       $httpBackend.whenGET('/api/schema/person').respond({
-        '_id': {'path': '_id', 'instance': 'ObjectID', 'setters': [null], 'options': {'auto': true}},
+        '_id': {'path': '_id', 'instance': 'ObjectId', 'setters': [null], 'options': {'auto': true}},
         'givenName': {'path': 'givenName', 'instance': 'String', 'options': {'list': true, 'index': true, 'form': {'label': 'Forename', 'pane': 'Personal'}}, '_index': true},
         'familyName': {'path': 'familyName', 'instance': 'String', 'validators': [
           [null, 'Path `{PATH}` is required.', 'required']
@@ -120,12 +120,12 @@ describe('Select.', function () {
     beforeEach(inject(function (_$httpBackend_, $rootScope, $location, $controller, $compile) {
       $httpBackend = _$httpBackend_;
       $httpBackend.whenGET('/api/schema/Component').respond({name: {path: 'name', instance: 'String'}, weight: {path: 'weight', instance: 'Number'},
-        _id: {path: '_id', instance: 'ObjectID', options: {auto: true}, _index: null}});
+        _id: {path: '_id', instance: 'ObjectId', options: {auto: true}, _index: null}});
       $httpBackend.whenGET('/api/schema/Car').respond({'name': {'path': 'name', 'instance': 'String'}, 'ComponentDescriptions': {'schema': {
         'quantity': {'path': 'quantity', 'instance': 'Number', 'options': {}, '_index': null, '$conditionalHandlers': {}},
-        'component': {'path': 'component', 'instance': 'ObjectID', 'options': {'ref': 'Component'}, '_index': null, '$conditionalHandlers': {}},
-        '_id': {'path': '_id', 'instance': 'ObjectID', 'validators': [], 'setters': [null], 'getters': [], 'options': {'auto': true}, '_index': null, '$conditionalHandlers': {}}
-      }, 'options': {'form': {'formStyle': 'inline'}}}, '_id': {'path': '_id', 'instance': 'ObjectID', 'options': {'auto': true}, '_index': null, '$conditionalHandlers': {}}});
+        'component': {'path': 'component', 'instance': 'ObjectId', 'options': {'ref': 'Component'}, '_index': null, '$conditionalHandlers': {}},
+        '_id': {'path': '_id', 'instance': 'ObjectId', 'validators': [], 'setters': [null], 'getters': [], 'options': {'auto': true}, '_index': null, '$conditionalHandlers': {}}
+      }, 'options': {'form': {'formStyle': 'inline'}}}, '_id': {'path': '_id', 'instance': 'ObjectId', 'options': {'auto': true}, '_index': null, '$conditionalHandlers': {}}});
       $httpBackend.whenGET('/api/Car/3').respond({name: '2O + W', _id: '3', ComponentDescriptions: [{component: '12', quantity: 2}, {quantity: 1, component: '45'}]});
       $httpBackend.whenGET('/api/Component').respond([
         { name: 'Widget', weight: 2, _id: '45' },

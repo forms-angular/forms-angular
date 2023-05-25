@@ -473,6 +473,7 @@ declare module fng {
     onSchemaFetch?: (description: string, source: IFieldViewInfo[]) => void;
     onSchemaProcessed?: (description: string, formSchema: IFormInstruction[]) => void;
     updateQueryForTab?: (tab: string) => void;
+    showLoading? : boolean;
     tabDeselect?: ($event: any, $selectedIndex: number) => void;
     setUpCustomLookupOptions?: (
       schemaElement: IFormInstruction,

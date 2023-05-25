@@ -1,4 +1,4 @@
-import {Document, Mongoose} from "mongoose";
+import {Document, Mongoose, Types} from "mongoose";
 import {Express} from "express";
 import {fngServer} from "./index";
 import Resource = fngServer.Resource;
@@ -9,6 +9,7 @@ import IFngPlugin = fngServer.IFngPlugin;
 import IInternalSearchResult = fngServer.IInternalSearchResult;
 import ISearchResultFormatter = fngServer.ISearchResultFormatter;
 import Path = fngServer.Path;
+import ForeignKeyList = fngServer.ForeignKeyList;
 
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
@@ -138,13 +139,16 @@ export class FormsAngular {
                                 if (lookupResource) {
                                     let hiddenFields = that.generateHiddenFields(lookupResource, false);
                                     hiddenFields.__v = false;
-                                    lookupResource.model.findOne({_id: doc[aField.field]}).select(hiddenFields).exec(function (err, doc2) {
-                                        if (err) {
-                                            cbm(err);
-                                        } else {
+                                    lookupResource.model
+                                        .findOne({_id: doc[aField.field]})
+                                        .select(hiddenFields)
+                                        .exec()
+                                        .then((doc2) => {
                                             that.getListFields(lookupResource, doc2, cbm);
-                                        }
-                                    });
+                                        })
+                                        .catch((err) => {
+                                            cbm(err);
+                                        });
                                 }
                             } else {
                                 throw new Error('No support for ref type ' + aField.params.ref.type)
@@ -918,7 +922,7 @@ export class FormsAngular {
                     } else {
                         const objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
                         if (objectIdTest) {
-                            obj[prop] = new this.mongoose.Types.ObjectId(objectIdTest[1]);
+                            obj[prop] = new Types.ObjectId(objectIdTest[1]);
                         }
                     }
                 } else if (_.isObject(obj[prop])) {
@@ -1062,7 +1066,13 @@ export class FormsAngular {
                 let toDo: any = {
                     runAggregation: function (cb) {
                         runPipelineObj = self.sanitisePipeline(runPipelineObj, hiddenFields, queryObj);
-                        resource.model.aggregate(runPipelineObj, cb);
+                        resource.model.aggregate(runPipelineObj)
+                            .then((results) => {
+                                cb(null, results);
+                            })
+                            .catch((err) => {
+                                cb(err);
+                            })
                     }
                 };
 
@@ -1120,11 +1130,10 @@ export class FormsAngular {
                                             return function (cb) {
                                                 let translateObject = {ref: lookup.resourceName, translations: []};
                                                 translations.push(translateObject);
-                                                lookup.model.find({}, {}, {lean: true}, function (err, findResults) {
-                                                    if (err) {
-                                                        cb(err);
-                                                    } else {
-                                                        // TODO - this ref func can probably be done away with now that list fields can have ref
+                                                lookup.model.find({}, {})
+                                                    .lean()
+                                                    .exec()
+                                                    .then((findResults) => {
                                                         let j = 0;
                                                         async.whilst(
                                                             function (cbtest) {
@@ -1147,8 +1156,10 @@ export class FormsAngular {
                                                             },
                                                             cb
                                                         );
-                                                    }
-                                                });
+                                                    })
+                                                    .catch((err) => {
+                                                        cb(err);
+                                                    });
                                             };
                                         };
                                         toDo[thisColumnTranslation.ref] = getFunc(lookup);
@@ -1203,25 +1214,14 @@ export class FormsAngular {
     saveAndRespond(req, res, hiddenFields? : IHiddenFields) {
 
         function internalSave(doc) {
-            doc.save(function (err, doc2) {
-                if (err) {
-                    let err2: any = {status: 'err'};
-                    if (!err.errors) {
-                        err2.message = err.message;
-                    } else {
-                        extend(err2, err);
-                    }
-                    if (debug) {
-                        console.log('Error saving record: ' + JSON.stringify(err2));
-                    }
-                    res.status(400).send(err2);
-                } else {
-                    doc2 = doc2.toObject();
+            doc.save()
+                .then((saved) => {
+                    saved = saved.toObject();
                     for (const hiddenField in hiddenFields) {
                         if (hiddenFields.hasOwnProperty(hiddenField) && hiddenFields[hiddenField]) {
                             let parts = hiddenField.split('.');
                             let lastPart = parts.length - 1;
-                            let target = doc2;
+                            let target = saved;
                             for (let i = 0; i < lastPart; i++) {
                                 if (target.hasOwnProperty(parts[i])) {
                                     target = target[parts[i]];
@@ -1232,14 +1232,23 @@ export class FormsAngular {
                             }
                         }
                     }
-                    res.send(doc2);
-                }
-            });
+                    res.send(saved);
+                })
+                .catch((err) => {
+                    let err2: any = {status: 'err'};
+                    if (!err.errors) {
+                        err2.message = err.message;
+                    } else {
+                        extend(err2, err);
+                    }
+                    if (debug) {
+                        console.log('Error saving record: ' + JSON.stringify(err2));
+                    }
+                    res.status(400).send(err2);
+                });
         }
-
         let doc = req.doc;
         if (typeof req.resource.options.onSave === 'function') {
-
             req.resource.options.onSave(doc, req, function (err) {
                 if (err) {
                     throw err;
@@ -1365,16 +1374,15 @@ export class FormsAngular {
         function doAggregation(queryObj, cb) {
             if (aggregationParam) {
                 aggregationParam = that.sanitisePipeline(aggregationParam, hiddenFields, queryObj);
-                void resource.model.aggregate(aggregationParam, function (err, aggregationResults) {
-                    if (err) {
-                        throw err;
-                    } else {
+                resource.model.aggregate(aggregationParam)
+                    .then((aggregationResults) => {
                         stashAggregationResults = aggregationResults;
                         cb(_.map(aggregationResults, function (obj) {
                             return obj._id;
                         }));
-                    }
-                });
+                    }).catch((err) => {
+                        throw err;
+                    });
             } else {
                 cb([]);
             }
@@ -1405,20 +1413,22 @@ export class FormsAngular {
                         if (sortOrder) {
                             query = query.sort(sortOrder);
                         }
-                        query.exec(function (err, docs) {
-                            if (!err && stashAggregationResults) {
-                                docs.forEach(obj => {
-                                    // Add any fields from the aggregation results whose field name starts __ to the mongoose Document
-                                    let aggObj = stashAggregationResults.find(a => a._id.toString() === obj._id.toString());
-                                    Object.keys(aggObj).forEach(k => {
-                                        if (k.slice(0, 2) === '__') {
+                        query.exec()
+                            .then((docs) => {
+                                if (stashAggregationResults) {
+                                    for (const obj of docs) {
+                                        // Add any fields from the aggregation results whose field name starts __ to the mongoose Document
+                                        let aggObj = stashAggregationResults.find(a => a._id.toString() === obj._id.toString());
+                                        for (const k of Object.keys(aggObj).filter((k) => k.startsWith('__'))) {
                                             obj[k] = aggObj[k];
                                         }
-                                    });
-                                })
-                            }
-                            callback(err, docs)
-                        });
+                                    }
+                                }
+                                callback(null, docs);
+                            })
+                            .catch((err) => {
+                                callback(err);
+                            });
                     }
                 });
             }
@@ -1517,8 +1527,7 @@ export class FormsAngular {
      */
     processEntity(req, res, next) {
         if (!(req.resource = this.getResource(req.params.resourceName))) {
-            next();
-            return;
+            return next();
         }
         this.generateQueryForEntity(req, req.resource, req.params.id, function (err, query) {
             if (err) {
@@ -1527,21 +1536,24 @@ export class FormsAngular {
                     err: util.inspect(err)
                 });
             } else {
-                query.exec(function (err, doc) {
-                    if (err) {
+                query.exec()
+                    .then((doc) => {
+                        if (doc) {
+                            req.doc = doc;
+                            return next();
+                        } else {
+                            return res.status(404).send({
+                                success: false,
+                                err: 'Record not found'
+                            });
+                        }                        
+                    })
+                    .catch((err) => {
                         return res.status(400).send({
                             success: false,
                             err: util.inspect(err)
                         });
-                    } else if (doc == null) {
-                        return res.status(404).send({
-                            success: false,
-                            err: 'Record not found'
-                        });
-                    }
-                    req.doc = doc;
-                    next();
-                });
+                    });
             }
         });
     };
@@ -1609,10 +1621,16 @@ export class FormsAngular {
                 if (req.resource.options.hide !== undefined) {
                     let hiddenFields = that.generateHiddenFields(req.resource, true);
                     hiddenFields._id = false;
-                    req.resource.model.findById(req.doc._id, hiddenFields, {lean: true}, function (err, data) {
-                        that.replaceHiddenFields(req.doc, data);
-                        that.saveAndRespond(req, res, hiddenFields);
-                    });
+                    req.resource.model.findById(req.doc._id, hiddenFields)
+                        .lean()
+                        .exec()
+                        .then((data) => {
+                            that.replaceHiddenFields(req.doc, data);
+                            that.saveAndRespond(req, res, hiddenFields);
+                        })
+                        .catch((err) => {
+                            throw err; // not sure if this is the right thing to do - didn't have any error-handing here in earlier version
+                        });
                 } else {
                     that.saveAndRespond(req, res);
                 }
@@ -1620,13 +1638,10 @@ export class FormsAngular {
         }, this);
     };
 
-    entityDelete() {
-        let that = this;
-        return _.bind(async function (req, res, next) {
-
-            function generateDependencyList(resource: Resource) {
-                if (resource.options.dependents === undefined) {
-                    resource.options.dependents = that.resources.reduce(function (acc, r) {
+    generateDependencyList(resource: Resource){
+        if (resource.options.dependents === undefined) {
+            let that = this;
+            resource.options.dependents = that.resources.reduce(function (acc, r) {
 
                         function searchPaths(schema, prefix) {
                             let fldList = [];
@@ -1664,36 +1679,51 @@ export class FormsAngular {
                 }
             }
 
+    async getDependencies(resource: Resource, id: Types.ObjectId) : Promise<ForeignKeyList> {
+        this.generateDependencyList(resource);
+        let promises = [];
+        let foreignKeyList: ForeignKeyList = [];
+        resource.options.dependents.forEach(collection => {
+            collection.keys.forEach(key => {
+                promises.push({
+                    p: collection.resource.model.find({[key]: id}).limit(1).exec(),
+                    collection,
+                    key
+                });
+            })
+        })
+        return Promise.all(promises.map(p => p.p))
+          .then((results) => {
+              results.forEach((r, i) => {
+                  if (r.length > 0) {
+                      foreignKeyList.push({ resourceName: promises[i].collection.resource.resourceName, key: promises[i].key, id: r[0]._id});
+                  }
+              })
+              return foreignKeyList;
+          })
+    }
+
+    entityDelete() {
+        let that = this;
+        return _.bind(async function (req, res, next) {
+
+
             async function removeDoc(doc: Document, resource: Resource): Promise<any> {
                 switch (resource.options.handleRemove) {
                     case 'allow':
                         // old behaviour - no attempt to maintain data integrity
-                        return doc.remove();
+                        return doc.deleteOne();
                     case 'cascade':
-                        generateDependencyList(resource);
                         res.status(400).send('"cascade" option not yet supported')
                         break;
                     default:
-                        generateDependencyList(resource);
-                        let promises = [];
-                        resource.options.dependents.forEach(collection => {
-                            collection.keys.forEach(key => {
-                                promises.push({
-                                    p: collection.resource.model.find({[key]: doc._id}).limit(1).exec(),
-                                    collection,
-                                    key
-                                });
-                            })
-                        })
-                        return Promise.all(promises.map(p => p.p))
-                            .then((results) => {
-                                results.forEach((r, i) => {
-                                    if (r.length > 0) {
-                                        throw new ForeignKeyError(resource.resourceName, promises[i].collection.resource.resourceName, promises[i].key, r[0]._id);
-                                    }
-                                })
-                                return doc.remove();
-                            })
+                        return that.getDependencies(resource, doc._id)
+                          .then((dependencies) => {
+                              if (dependencies.length > 0) {
+                                  throw new ForeignKeyError(resource.resourceName, dependencies);
+                              }
+                              return doc.deleteOne();
+                          });
                 }
             }
 
@@ -1937,8 +1967,8 @@ export class FormsAngular {
 }
 
 class ForeignKeyError extends global.Error {
-    constructor(resourceName, foreignKeyOnResource, foreignItem, id) {
-        super(`Cannot delete this ${resourceName}, as it is the ${foreignItem} on ${foreignKeyOnResource} ${id}`);
+    constructor(resourceName: string, foreignKeys: ForeignKeyList) {
+        super(`Cannot delete this ${resourceName}, as it is: ${foreignKeys.map(d => ` the ${d.key} on ${d.resourceName} ${d.id}`).join("; ")}`);
         this.name = "ForeignKeyError";
         this.stack = (<any>new global.Error('')).stack;
     }

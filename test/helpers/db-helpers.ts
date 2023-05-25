@@ -10,7 +10,6 @@ module.exports = {
     const app = express();
     const fng = new FormsAngular(mongoose, app, { urlPrefix: "/api/" });
     mongoose.connect("mongodb://localhost:27017/forms-ng_test", {
-      keepAlive: true,
       connectTimeoutMS: 30000,
     });
 
@@ -65,11 +64,8 @@ module.exports = {
     });
   },
 
-  dropDb : function(mongoose, callback) {
-    mongoose.connection.db.dropDatabase(function () {
-      mongoose.disconnect(function() {
-        callback();
-      });
-    });
+  dropDb : async function(mongoose) {
+    await mongoose.connection.db.dropDatabase;
+    await mongoose.disconnect();
   }
 };

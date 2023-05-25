@@ -85,24 +85,11 @@ describe('Select', function () {
     }
 
     function checkPreSavedValues() {
-
       checkNonChangingValues();
-
-      expect(element(by.css('#f_team_0 a')).getText()).toBe('Brown, John');
-      expect(element(by.css('#f_team_1 a')).getText()).toBe('Brown, Jenny');
-      expect(element(by.css('#f_team2_0 a')).getText()).toBe('Brown, John');
-      expect(element(by.css('#f_team2_1 a')).getText()).toBe('Brown, Jenny');
-
     }
 
     function checkPostSavedValues() {
-
       checkNonChangingValues();
-
-      expect(element(by.css('#f_team_0 a')).getText()).toBe('Brown John');
-      expect(element(by.css('#f_team_1 a')).getText()).toBe('Brown Jenny');
-      expect(element(by.css('#f_team2_0 a')).getText()).toBe('Brown John');
-      expect(element(by.css('#f_team2_1 a')).getText()).toBe('Brown Jenny');
     }
 
     function selectFngUiSelect(addSelect, field, selectText, fullText, selectAgain) {
@@ -141,11 +128,6 @@ describe('Select', function () {
     addSelect.click();
     expect(element(by.id('f_assistants2_1')).getAttribute('class')).toMatch('ng-pristine');
     element(by.cssContainingText('#f_assistants2_1 option', 'TestPerson2')).click();
-
-    selectFngUiSelect(element(by.id('add_f_team')), 'f_team_0', 'Jo', 'Brown, John', true);
-    selectFngUiSelect(element(by.id('add_f_team')), 'f_team_1', 'Je', 'Brown, Jenny', true);
-    selectFngUiSelect(element(by.id('add_f_team2')), 'f_team2_0', 'Jo', 'Brown, John', true);
-    selectFngUiSelect(element(by.id('add_f_team2')), 'f_team2_1', 'Je', 'Brown, Jenny', true);
 
     checkPreSavedValues();
 

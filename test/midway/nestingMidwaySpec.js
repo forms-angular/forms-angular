@@ -56,7 +56,7 @@ describe('nesting', function () {
               'schema': {
                 'teacher': {
                   'path': 'teacher',
-                  'instance': 'ObjectID',
+                  'instance': 'ObjectId',
                   'options': {
                     'ref': 'b_using_options'
                   }
@@ -67,7 +67,7 @@ describe('nesting', function () {
                 },
                 '_id': {
                   'path': '_id',
-                  'instance': 'ObjectID',
+                  'instance': 'ObjectId',
                   'setters': [
                     null
                   ],
@@ -79,7 +79,7 @@ describe('nesting', function () {
             },
             '_id': {
               'path': '_id',
-              'instance': 'ObjectID',
+              'instance': 'ObjectId',
               'setters': [
                 null
               ],
@@ -135,14 +135,14 @@ describe('nesting', function () {
             },
             'grader': {
               'path': 'grader',
-              'instance': 'ObjectID',
+              'instance': 'ObjectId',
               'options': {
                 'ref': 'b_using_options'
               }
             },
             '_id': {
               'path': '_id',
-              'instance': 'ObjectID',
+              'instance': 'ObjectId',
               'setters': [
                 null
               ],
@@ -160,7 +160,7 @@ describe('nesting', function () {
         'assistants': {
           'caster': {
             'path': 'assistants',
-            'instance': 'ObjectID',
+            'instance': 'ObjectId',
             'options': {
               'ref': 'b_using_options'
             },
@@ -177,7 +177,7 @@ describe('nesting', function () {
         },
         '_id': {
           'path': '_id',
-          'instance': 'ObjectID',
+          'instance': 'ObjectId',
           'setters': [
             null
           ],
@@ -427,7 +427,7 @@ describe('nesting', function () {
         },
         '_id': {
           'path': '_id',
-          'instance': 'ObjectID',
+          'instance': 'ObjectId',
           'setters': [
             null
           ],

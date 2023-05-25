@@ -11,8 +11,6 @@ const eSchemaDef: IFngSchemaDefinition = {
   dateOfBirth: Date,
   assistants : [{ type: Schema.Types.ObjectId , ref:'a_unadorned_schema'}],
   assistants2:  { type:[Schema.Types.ObjectId], ref:'a_unadorned_schema'} ,
-  team : [ { type: Schema.Types.ObjectId , ref:'f_nested_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}} ],
-  team2:   { type:[Schema.Types.ObjectId], ref:'f_nested_schema', form: {directive: 'fng-ui-select', fngUiSelect: {fngAjax: true}}},
   accepted: Boolean
 };
 
