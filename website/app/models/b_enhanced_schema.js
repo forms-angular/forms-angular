@@ -41,7 +41,7 @@ var bSchemaDef = {
     // Set timezone to UTC for date of birth and other 'floating' date times
     dateOfBirth: { type: Date, form: { helpInline: 'When is their birthday?', add: ' ng-model-options="{timezone:\'UTC\'}"' } },
     applicationReceived: { type: Date, form: { helpInline: 'This uses fng-bootstrap-date plugin', directive: "fng-ui-bootstrap-date-picker", fngUiBootstrapDatePicker: { format: 'dd MMM yyyy', "ng-model-options": "{timezone:\'UTC\'}" } } },
-    education: { type: String, enum: { values: ['sec', 'univ', 'mas', 'dr'], labels: ['Secondary', 'University', 'Masters', 'Doctorate'] }, form: { type: 'radio' } },
+    education: { type: String, enum: ['sec', 'univ', 'mas', 'dr'], form: { type: 'radio', enumLabels: ['Secondary', 'University', 'Masters', 'Doctorate'] } },
     CV: { type: [new mongoose_1.Schema(jqUploads.FileSchema)], form: { help: 'Attach the CV - maximumm size 0.5MB', directive: 'fng-jq-upload-form', fngJqUploadForm: { single: true, autoUpload: true, sizeLimit: 524288 } } },
     accepted: { type: Boolean, required: true, form: {
             help: 'This control has had an event handler added to it (which looks horrid - sorry!).' +
@@ -89,7 +89,7 @@ var bSchemaDef = {
 var BSchema = new mongoose_1.Schema(bSchemaDef);
 BSchema.pre('save', function (next) {
     // Check for rude words (well, the word "rude", actually) to show an error
-    if (this['freeText'] && this['freeText'].indexOf('rude') !== -1) {
+    if (this['freeText'] && this.get('freeText').indexOf('rude') !== -1) {
         return next(new Error('Wash your mouth!  You must not use rude words.'));
     }
     return next();

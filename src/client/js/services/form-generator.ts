@@ -156,7 +156,13 @@ module fng.services {
             console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
           } else {
             formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
-            $scope[formInstructions.options] = mongooseOptions.enum;
+            if (mongooseOptions.form?.enumLabels) {
+              formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
+              $scope[formInstructions.ids] = mongooseOptions.enum;
+              $scope[formInstructions.options] = mongooseOptions.form.enumLabels;
+            } else {
+              $scope[formInstructions.options] = mongooseOptions.enum;
+            }
           }
         } else {
           if (!formInstructions.type) {
