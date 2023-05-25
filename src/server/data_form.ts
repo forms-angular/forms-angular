@@ -1712,7 +1712,7 @@ export class FormsAngular {
                 switch (resource.options.handleRemove) {
                     case 'allow':
                         // old behaviour - no attempt to maintain data integrity
-                        return doc.remove();
+                        return doc.deleteOne();
                     case 'cascade':
                         res.status(400).send('"cascade" option not yet supported')
                         break;
@@ -1722,7 +1722,7 @@ export class FormsAngular {
                               if (dependencies.length > 0) {
                                   throw new ForeignKeyError(resource.resourceName, dependencies);
                               }
-                              return doc.remove();
+                              return doc.deleteOne();
                           });
                 }
             }
