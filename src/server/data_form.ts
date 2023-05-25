@@ -1,4 +1,4 @@
-import {Document, Mongoose} from "mongoose";
+import {Document, Mongoose, Types} from "mongoose";
 import {Express} from "express";
 import {fngServer} from "./index";
 import Resource = fngServer.Resource;
@@ -9,6 +9,7 @@ import IFngPlugin = fngServer.IFngPlugin;
 import IInternalSearchResult = fngServer.IInternalSearchResult;
 import ISearchResultFormatter = fngServer.ISearchResultFormatter;
 import Path = fngServer.Path;
+import ForeignKeyList = fngServer.ForeignKeyList;
 
 // This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
@@ -921,7 +922,7 @@ export class FormsAngular {
                     } else {
                         const objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
                         if (objectIdTest) {
-                            obj[prop] = new this.mongoose.Types.ObjectId(objectIdTest[1]);
+                            obj[prop] = new Types.ObjectId(objectIdTest[1]);
                         }
                     }
                 } else if (_.isObject(obj[prop])) {
@@ -1637,13 +1638,10 @@ export class FormsAngular {
         }, this);
     };
 
-    entityDelete() {
-        let that = this;
-        return _.bind(async function (req, res, next) {
-
-            function generateDependencyList(resource: Resource) {
-                if (resource.options.dependents === undefined) {
-                    resource.options.dependents = that.resources.reduce(function (acc, r) {
+    generateDependencyList(resource: Resource){
+        if (resource.options.dependents === undefined) {
+            let that = this;
+            resource.options.dependents = that.resources.reduce(function (acc, r) {
 
                         function searchPaths(schema, prefix) {
                             let fldList = [];
@@ -1681,36 +1679,51 @@ export class FormsAngular {
                 }
             }
 
+    async getDependencies(resource: Resource, id: Types.ObjectId) : Promise<ForeignKeyList> {
+        this.generateDependencyList(resource);
+        let promises = [];
+        let foreignKeyList: ForeignKeyList = [];
+        resource.options.dependents.forEach(collection => {
+            collection.keys.forEach(key => {
+                promises.push({
+                    p: collection.resource.model.find({[key]: id}).limit(1).exec(),
+                    collection,
+                    key
+                });
+            })
+        })
+        return Promise.all(promises.map(p => p.p))
+          .then((results) => {
+              results.forEach((r, i) => {
+                  if (r.length > 0) {
+                      foreignKeyList.push({ resourceName: promises[i].collection.resource.resourceName, key: promises[i].key, id: r[0]._id});
+                  }
+              })
+              return foreignKeyList;
+          })
+    }
+
+    entityDelete() {
+        let that = this;
+        return _.bind(async function (req, res, next) {
+
+
             async function removeDoc(doc: Document, resource: Resource): Promise<any> {
                 switch (resource.options.handleRemove) {
                     case 'allow':
                         // old behaviour - no attempt to maintain data integrity
                         return doc.remove();
                     case 'cascade':
-                        generateDependencyList(resource);
                         res.status(400).send('"cascade" option not yet supported')
                         break;
                     default:
-                        generateDependencyList(resource);
-                        let promises = [];
-                        resource.options.dependents.forEach(collection => {
-                            collection.keys.forEach(key => {
-                                promises.push({
-                                    p: collection.resource.model.find({[key]: doc._id}).limit(1).exec(),
-                                    collection,
-                                    key
-                                });
-                            })
-                        })
-                        return Promise.all(promises.map(p => p.p))
-                            .then((results) => {
-                                results.forEach((r, i) => {
-                                    if (r.length > 0) {
-                                        throw new ForeignKeyError(resource.resourceName, promises[i].collection.resource.resourceName, promises[i].key, r[0]._id);
-                                    }
-                                })
-                                return doc.remove();
-                            })
+                        return that.getDependencies(resource, doc._id)
+                          .then((dependencies) => {
+                              if (dependencies.length > 0) {
+                                  throw new ForeignKeyError(resource.resourceName, dependencies);
+                              }
+                              return doc.remove();
+                          });
                 }
             }
 
@@ -1954,8 +1967,8 @@ export class FormsAngular {
 }
 
 class ForeignKeyError extends global.Error {
-    constructor(resourceName, foreignKeyOnResource, foreignItem, id) {
-        super(`Cannot delete this ${resourceName}, as it is the ${foreignItem} on ${foreignKeyOnResource} ${id}`);
+    constructor(resourceName: string, foreignKeys: ForeignKeyList) {
+        super(`Cannot delete this ${resourceName}, as it is: ${foreignKeys.map(d => ` the ${d.key} on ${d.resourceName} ${d.id}`).join("; ")}`);
         this.name = "ForeignKeyError";
         this.stack = (<any>new global.Error('')).stack;
     }

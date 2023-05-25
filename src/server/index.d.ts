@@ -1,4 +1,4 @@
-import {Error, Model} from "mongoose";
+import { Error, Model, Types } from "mongoose";
 import {Express} from "express";
 
 declare module fngServer {
@@ -42,6 +42,9 @@ declare module fngServer {
     }
 
     export type DependencyList = Dependency[];
+
+    export type ForeignKeys = { resourceName: string, key: string, id: Types.ObjectId};
+    export type ForeignKeyList = ForeignKeys[];
 
     export interface ResourceOptions {
         suppressDeprecatedMessage?: boolean;
