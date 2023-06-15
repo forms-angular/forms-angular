@@ -126,32 +126,11 @@ module fng.controllers {
       if (item.divider || option.parent().hasClass('disabled')) {
         event.preventDefault();
       } else if (item.broadcast) {
-        $scope.$broadcast(item.broadcast);
-      } else {
-        // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
-        const args = item.args || [];
-        const fn = item.fn;
-        if (typeof fn === "function") {
-          switch (args.length) {
-            case  0:
-              fn();
-              break;
-            case  1:
-              fn(args[0]);
-              break;
-            case  2:
-              fn(args[0], args[1]);
-              break;
-            case  3:
-              fn(args[0], args[1], args[2]);
-              break;
-            case  4:
-              fn(args[0], args[1], args[2], args[3]);
-              break;
-          }
-        } else if (fn) {
-          throw new Error("Incorrect menu setup")
-        }
+        $rootScope.$broadcast(item.broadcast, ...(item.args || []));
+      } else if (typeof item.fn === "function") {
+        item.fn(...(item.args || []));
+      } else if (item.fn) {
+        throw new Error("Incorrect menu setup")
       }
     };
 
