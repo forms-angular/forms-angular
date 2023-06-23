@@ -61,6 +61,7 @@ declare module fngServer {
         onAccess?: (req, cb) => void,
         searchFunc?: SearchFunc;
         synonyms? : {name: string, filter?: any}[],     // name must be lower case
+        resourceName?: string,     // allows a resource to have diference modelName specified
         // when performing a search, two results from this resource with the same value for .text will be disambiguated by
         // appending the description of the record from disambiguation.resource whose id matches result[disambiguation.field]
         disambiguation?: {

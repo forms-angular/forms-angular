@@ -267,7 +267,7 @@ export class FormsAngular {
 
     getResource(name: string): Resource {
         return _.find(this.resources, function (resource) {
-            return resource.resourceName === name;
+            return resource.resourceName === name || resource.options.resourceName === name;
         });
     };
 
