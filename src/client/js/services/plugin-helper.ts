@@ -6,7 +6,7 @@ module fng.services {
    */
 
   /*@ngInject*/
-  export function pluginHelper(formMarkupHelper): IPluginHelper {
+  export function PluginHelperService(FormMarkupHelperService: fng.IFormMarkupHelperService): IPluginHelperService {
     function internalGenDisabledAttrs(scope: fng.IFormScope, id: string, processedAttrs: fng.IProcessedAttrs, idSuffix: string, params?: fng.IGenDisableStrParams): string[] {
       // Though id will already have the value of idSuffix appended, processedAttrs.info.name will not.
       // For handleReadOnlyDisabled() to disable "sub-elements" included in a directive template with an idsuffix when their
@@ -31,7 +31,7 @@ module fng.services {
           name += `.${idSuffix}`;
         }
       }      
-      const attrs: string[] = formMarkupHelper.handleReadOnlyDisabled(
+      const attrs: string[] = FormMarkupHelperService.handleReadOnlyDisabled(
         {
           id,
           name,
@@ -71,8 +71,8 @@ module fng.services {
     }
 
     function makeIdStringUniqueForArrayElements(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idString: string): string {
-      if (formMarkupHelper.isArrayElement(scope, processedAttrs.info, processedAttrs.options)) {
-        return formMarkupHelper.generateArrayElementIdString(idString, processedAttrs.info, processedAttrs.options);
+      if (FormMarkupHelperService.isArrayElement(scope, processedAttrs.info, processedAttrs.options)) {
+        return FormMarkupHelperService.generateArrayElementIdString(idString, processedAttrs.info, processedAttrs.options);
       } else {
         return idString;
       }
@@ -223,15 +223,15 @@ module fng.services {
           Object.assign(info, params.fieldInfoOverrides);
         }
         const options = Object.assign({}, processedAttrs.options, params.optionOverrides);
-        const fieldChrome = formMarkupHelper.fieldChrome(scope, info, options);
+        const fieldChrome = FormMarkupHelperService.fieldChrome(scope, info as IFormInstruction, options);
         if (fieldChrome.omit) {
           return "";
         }
-        const controlDivClasses = formMarkupHelper.controlDivClasses(options);
-        let elementHtml = fieldChrome.template + formMarkupHelper.label(scope, info, params.addButtons, options);
+        const controlDivClasses = FormMarkupHelperService.controlDivClasses(options);
+        let elementHtml = fieldChrome.template + FormMarkupHelperService.label(scope, info as IFormInstruction, params.addButtons, options);
         let idString = info.id;
         if (info.array || options.subschema) {
-          idString = formMarkupHelper.generateArrayElementIdString(idString, info, options);
+          idString = FormMarkupHelperService.generateArrayElementIdString(idString, info as IFormInstruction, options);
         }
         let modelString = params.addButtons
           ? "arrayItem" + (params.needsX ? ".x" : "")
@@ -251,25 +251,25 @@ module fng.services {
             nameString = info.name.replace(/\./g, "-");
           }
         }
-        const buildingBlocks: Partial<fng.IBuildingBlocks> = formMarkupHelper.allInputsVars(
+        const buildingBlocks: Partial<fng.IBuildingBlocks> = FormMarkupHelperService.allInputsVars(
           scope,
-          info,
+          info as IFormInstruction,
           options,
           modelString,
           idString,
           nameString,
         );
         buildingBlocks.modelString = modelString;
-        buildingBlocks.disableableAncestorStr = formMarkupHelper.genDisableableAncestorStr(info.id);
+        buildingBlocks.disableableAncestorStr = FormMarkupHelperService.genDisableableAncestorStr(info.id);
         // defer to the calling directive to generate the markup for the input(s)
         const inputHtml = generateInputControl(buildingBlocks as fng.IBuildingBlocks);
         // wrap this in a div that puts it into the correct bootstrap 'column' and adds validation messages and help text
-        const wrappedInputHtml = formMarkupHelper.inputChrome(inputHtml, info, options, buildingBlocks);
+        const wrappedInputHtml = FormMarkupHelperService.inputChrome(inputHtml, info as IFormInstruction, options, buildingBlocks);
         // further wrap this to add the control div classes, and in the case of an array, the button that allows array elements to be removed
         if (params.addButtons) {
-          elementHtml += formMarkupHelper.handleArrayInputAndControlDiv(wrappedInputHtml, controlDivClasses, scope, info, options);
+          elementHtml += FormMarkupHelperService.handleArrayInputAndControlDiv(wrappedInputHtml, controlDivClasses, scope, info as IFormInstruction, options);
         } else {
-          elementHtml += formMarkupHelper.handleInputAndControlDiv(wrappedInputHtml, controlDivClasses);
+          elementHtml += FormMarkupHelperService.handleInputAndControlDiv(wrappedInputHtml, controlDivClasses);
         }
         elementHtml += fieldChrome.closeTag;
         return elementHtml;
@@ -306,7 +306,7 @@ module fng.services {
       handlePseudos,
 
       genDisableableAncestorStr: function genDisableableAncestorStr(processedAttrs: fng.IProcessedAttrs): string {
-        return formMarkupHelper.genDisableableAncestorStr(processedAttrs.info.id);
+        return FormMarkupHelperService.genDisableableAncestorStr(processedAttrs.info.id);
       }
     };
   }

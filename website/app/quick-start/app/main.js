@@ -12,8 +12,8 @@ angular.module('quickStartApp', [
 });
 
 // Now configure forms-angular
-formsAngular.config(['routingServiceProvider', function (routingService) {
-  routingService.start(
+formsAngular.config(['RoutingServiceProvider', function (RoutingService) {
+  RoutingService.start(
     {
       routing: 'ngroute',      // specify the routing we are using
       // In this simple example we define just one fixed route (the dynamic routes for CRUD will be created by forms-angular)

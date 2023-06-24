@@ -5,7 +5,16 @@ module fng.directives {
   enum tabsSetupState {Y, N, Forced}
 
   /*@ngInject*/
-  export function formInput($compile, $rootScope, $filter, $timeout, cssFrameworkService, formGenerator, formMarkupHelper, securityService: fng.ISecurityService): angular.IDirective {
+  export function formInput(
+    $compile: angular.ICompileService,
+    $rootScope: angular.IRootScopeService,
+    $filter,
+    $timeout: angular.ITimeoutService,
+    CssFrameworkService: fng.ICssFrameworkService,
+    FormGeneratorService: fng.IFormGeneratorService,
+    FormMarkupHelperService: fng.IFormMarkupHelperService,
+    SecurityService: fng.ISecurityService
+  ): angular.IDirective {
     return {
       restrict: 'EA',
       link: function (scope:fng.IFormScope, element, attrs:fng.IFormAttrs) {
@@ -79,7 +88,7 @@ module fng.directives {
 
           let idString = fieldInfo.id;
           if (fieldInfo.array || options.subschema) {
-            idString = formMarkupHelper.generateArrayElementIdString(idString, fieldInfo, options);
+            idString = FormMarkupHelperService.generateArrayElementIdString(idString, fieldInfo, options);
           }
           let nameString: string;
           if (!modelString) {
@@ -108,7 +117,7 @@ module fng.directives {
             }
           }
 
-          var allInputsVars = formMarkupHelper.allInputsVars(scope, fieldInfo, options, modelString, idString, nameString);
+          var allInputsVars = FormMarkupHelperService.allInputsVars(scope, fieldInfo, options, modelString, idString, nameString);
           var common = allInputsVars.common;
           var value;
           isRequired = isRequired || fieldInfo.required;
@@ -120,7 +129,7 @@ module fng.directives {
               if (fieldInfo.select2) {
                 value = '<input placeholder="fng-select2 has been removed" readonly>';
               } else {
-                common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope).join(" ");
+                common += FormMarkupHelperService.handleReadOnlyDisabled(fieldInfo, scope).join(" ");
                 common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
                 common += ` aria-label="${fieldInfo.label && fieldInfo.label !== "" ? fieldInfo.label : fieldInfo.name}" `;
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
@@ -171,7 +180,7 @@ module fng.directives {
             case 'radio' :
               value = '';
               common += requiredStr;
-              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope).join(" ");;
+              common += FormMarkupHelperService.handleReadOnlyDisabled(fieldInfo, scope).join(" ");;
               common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
               var separateLines = options.formstyle === 'vertical' || (options.formstyle !== 'inline' && !fieldInfo.inlineRadio);
 
@@ -202,16 +211,16 @@ module fng.directives {
               break;
             case 'checkbox' :
               common += requiredStr;
-              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope).join(" ");;
+              common += FormMarkupHelperService.handleReadOnlyDisabled(fieldInfo, scope).join(" ");;
               common += fieldInfo.add ? (' ' + fieldInfo.add + ' ') : '';
-              value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
-              if (cssFrameworkService.framework() === 'bs3') {
+              value = FormMarkupHelperService.generateSimpleInput(common, fieldInfo, options);
+              if (CssFrameworkService.framework() === 'bs3') {
                 value = '<div class="checkbox">' + value + '</div>';
               }
               break;
             default:
-              common += formMarkupHelper.addTextInputMarkup(allInputsVars, fieldInfo, requiredStr);
-              common += formMarkupHelper.handleReadOnlyDisabled(fieldInfo, scope).join(" ");;
+              common += FormMarkupHelperService.addTextInputMarkup(allInputsVars, fieldInfo, requiredStr);
+              common += FormMarkupHelperService.handleReadOnlyDisabled(fieldInfo, scope).join(" ");;
               if (fieldInfo.type === 'textarea') {
                 if (fieldInfo.rows) {
                   if (fieldInfo.rows === 'auto') {
@@ -223,16 +232,16 @@ module fng.directives {
                 if (fieldInfo.editor === 'ckEditor') {
                   console.log('Deprecation Warning: "editor" property deprecated - use "add"');
                   common += 'ckeditor = "" ';
-                  if (cssFrameworkService.framework() === 'bs3') {
+                  if (CssFrameworkService.framework() === 'bs3') {
                     allInputsVars.sizeClassBS3 = 'col-xs-12';
                   }
                 }
                 value = '<textarea ' + common + '></textarea>';
               } else {
-                value = formMarkupHelper.generateSimpleInput(common, fieldInfo, options);
+                value = FormMarkupHelperService.generateSimpleInput(common, fieldInfo, options);
               }
           }
-          return formMarkupHelper.inputChrome(value, fieldInfo, options, allInputsVars);
+          return FormMarkupHelperService.inputChrome(value, fieldInfo, options, allInputsVars);
         };
 
         var convertFormStyleToClass = function (aFormStyle) {
@@ -279,7 +288,7 @@ module fng.directives {
                   // TODO Figure out tab history updates (check for other tab-history-todos)
                   // result.before = '<uib-tab deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
                   const idStr = `${_.camelCase(info.title)}Tab`;
-                  const visibility = securityService.considerVisibility(idStr, scope);
+                  const visibility = SecurityService.considerVisibility(idStr, scope);
                   if (visibility.omit) {
                     // we already know this field should be invisible, so we needn't add anything for it
                     result.omit = true;
@@ -289,7 +298,7 @@ module fng.directives {
                       // an angular expression to determine the visibility of this field later...
                       attrs += ` ${visibility.visibilityAttr}`;
                     }
-                    attrs += securityService.generateDisabledAttr(idStr, scope, { attr: "disable", attrRequiresValue: true }); // uib-tab expects 'disable="true"` rather than 'disabled="true"' or just disabled
+                    attrs += SecurityService.generateDisabledAttr(idStr, scope, { attr: "disable", attrRequiresValue: true }); // uib-tab expects 'disable="true"` rather than 'disabled="true"' or just disabled
                     result.before = `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${info.title}')" heading="${info.title}"`;
                     if (tabNo > 0) {
                       result.before += 'active="tabs[' + tabNo + '].active"';
@@ -374,7 +383,7 @@ module fng.directives {
                       res += 'ng-show="' + info.showWhen + '"';
                   }
                   else {
-                      res += 'ng-show="' + formMarkupHelper.generateNgShow(info.showWhen, model) + '"';
+                      res += 'ng-show="' + FormMarkupHelperService.generateNgShow(info.showWhen, model) + '"';
                   }
               }
               if (info.id && typeof info.id.replace === "function") {
@@ -387,7 +396,7 @@ module fng.directives {
         };        
 
         var handleField = function (info, options: fng.IFormOptions) {
-          var fieldChrome = formMarkupHelper.fieldChrome(scope, info, options);
+          var fieldChrome = FormMarkupHelperService.fieldChrome(scope, info, options);
           if (fieldChrome.omit) {
             return "";
           }
@@ -433,10 +442,10 @@ module fng.directives {
                     let topButton: string = '';
                     if (info.unshift) {
                       topButton = '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
-                        '<i class="' + formMarkupHelper.glyphClass() + '-plus"></i> Add</button>';
+                        '<i class="' + FormMarkupHelperService.glyphClass() + '-plus"></i> Add</button>';
                     }
 
-                    if (cssFrameworkService.framework() === 'bs3') {
+                    if (CssFrameworkService.framework() === 'bs3') {
                       template += '<div class="row schema-head"><div class="col-sm-offset-3">' + info.label + topButton + '</div></div>';
                     } else {
                       template += '<div class="schema-head">' + info.label + topButton + '</div>';
@@ -450,7 +459,7 @@ module fng.directives {
                   // handleReadOnlyDisabled() returns two strings - the 'disabled' attribute(s), and the 'disableable'
                   // attributes.  for the purpose of deciding if / how to disable sorting if the list itself is
                   // disabled, we're only interested in the former...
-                  const disableCond: string = formMarkupHelper.handleReadOnlyDisabled(info, scope)[0];
+                  const disableCond: string = FormMarkupHelperService.handleReadOnlyDisabled(info, scope)[0];
                   // if we already know that the field is disabled (only possible when formsAngular.elemSecurityFuncBinding === "instant")
                   // then we don't need to add the sortable attribute at all
                   // otherwise, we need to include the ng-disabled on the <ol> so this can be referenced by the ui-sortable directive
@@ -462,17 +471,17 @@ module fng.directives {
                   // if a "disabled + children" DOM effect is applied to the list, this should serve to disable all of the
                   // fields in the list sub-schema, along with the remove and add buttons for this list.  the following
                   // string will be added to the list items and the add and remove buttons to identify this fact.
-                  const disableableAncestorStr = formMarkupHelper.genDisableableAncestorStr(info.id);
+                  const disableableAncestorStr = FormMarkupHelperService.genDisableableAncestorStr(info.id);
                   template +=
                     `<li ng-form id="${info.id}List_{{$index}}" name="form_${niceName}{{$index}}" ${disableableAncestorStr}` + 
                     `  class="${convertFormStyleToClass(info.formStyle)}` +
-                    `  ${cssFrameworkService.framework() === 'bs2' ? 'row-fluid' : ''}`  +
+                    `  ${CssFrameworkService.framework() === 'bs2' ? 'row-fluid' : ''}`  +
                     `  ${info.inlineHeaders ? 'width-controlled' : ''}` +
                     `  ${info.ngClass ? "ng-class:" + info.ngClass : ''}"` +
                     `  ng-repeat="subDoc in ${model} track by $index"` + 
                     `  ${info.filterable ? 'data-ng-hide="subDoc._hidden"' : ''}` + 
                     `>`;
-                  if (cssFrameworkService.framework() === 'bs2') {
+                  if (CssFrameworkService.framework() === 'bs2') {
                     template += '<div class="row-fluid sub-doc">';
                   }
                   if (info.noRemove !== true || info.customSubDoc) {
@@ -486,10 +495,10 @@ module fng.directives {
                     if (info.noRemove !== true) {                      
                       template += `<button ${disableCond} ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove('${info.name}', $index, $event)"`;
                       if (info.remove) {
-                        template += ' class="remove-btn btn btn-mini btn-default btn-xs form-btn"><i class="' + formMarkupHelper.glyphClass() + '-minus"></i> Remove';
+                        template += ' class="remove-btn btn btn-mini btn-default btn-xs form-btn"><i class="' + FormMarkupHelperService.glyphClass() + '-minus"></i> Remove';
                       } else {
                         template += ' style="position: relative; z-index: 20;" type="button" class="close pull-right">';
-                        if (cssFrameworkService.framework() === 'bs3') {
+                        if (CssFrameworkService.framework() === 'bs3') {
                           template += '<span aria-hidden="true">×</span><span class="sr-only">Close</span>';
                         } else {
                           template += '<span>×</span>';
@@ -518,7 +527,7 @@ module fng.directives {
                   if (parts?.after) {
                     template += parts.after;
                   }
-                  if (cssFrameworkService.framework() === 'bs2') {
+                  if (CssFrameworkService.framework() === 'bs2') {
                     template += '   </div>';
                   }
                   template += '</li>';
@@ -542,7 +551,7 @@ module fng.directives {
                       // adding disableableAncestorStr seems more correct than for it to have the disableable attribute
                       footer +=
                         `<button ${hideCond} ${disableCond} ${disableableAncestorStr} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">` + 
-                        ` <i class="${formMarkupHelper.glyphClass()}-plus"></i> Add ` + 
+                        ` <i class="${FormMarkupHelperService.glyphClass()}-plus"></i> Add ` + 
                         `</button>`;
                     }
                     if (info.noneIndicator) {
@@ -556,7 +565,7 @@ module fng.directives {
                       }
                     }                    
                     if (footer !== '') {
-                      if (cssFrameworkService.framework() === 'bs3') {
+                      if (CssFrameworkService.framework() === 'bs3') {
                         template += `<div ${hideCond} class="row schema-foot"><div class="col-sm-offset-3">${footer}</div></div>`;
                       } else {
                         template += `<div ${hideCond} class = "schema-foot ">${footer}</div>`;
@@ -569,22 +578,22 @@ module fng.directives {
           }
           else {
             // Handle arrays here
-            var controlDivClasses = formMarkupHelper.controlDivClasses(options);
+            var controlDivClasses = FormMarkupHelperService.controlDivClasses(options);
             if (info.array) {
               controlDivClasses.push('fng-array');
               if (options.formstyle === 'inline' || options.formstyle === 'stacked') {
                 throw new Error('Cannot use arrays in an inline or stacked form');
               }
-              template += formMarkupHelper.label(scope, info, info.type !== 'link', options);
+              template += FormMarkupHelperService.label(scope, info, info.type !== 'link', options);
               const stashedHelp = info.help;
               delete info.help;
               const inputHtml = generateInput(info, info.type === 'link' ? null : 'arrayItem.x', true, options);
               info.help = stashedHelp;
-              template += formMarkupHelper.handleArrayInputAndControlDiv(inputHtml, controlDivClasses, scope, info, options);
+              template += FormMarkupHelperService.handleArrayInputAndControlDiv(inputHtml, controlDivClasses, scope, info, options);
             } else {
               // Single fields here
-              template += formMarkupHelper.label(scope, info, null, options);
-              template += formMarkupHelper.handleInputAndControlDiv(generateInput(info, null, (<any>options).required, options), controlDivClasses);
+              template += FormMarkupHelperService.label(scope, info, null, options);
+              template += FormMarkupHelperService.handleInputAndControlDiv(generateInput(info, null, (<any>options).required, options), controlDivClasses);
             }
           }
           template += fieldChrome.closeTag;
@@ -904,9 +913,9 @@ module fng.directives {
 
               $rootScope.$broadcast('formInputDone', attrs.name);
 
-              if (formGenerator.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
+              if (FormGeneratorService.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
                 // If this is not a test force the data dependent updates to the DOM
-                formGenerator.updateDataDependentDisplay(theRecord, null, true, scope);
+                FormGeneratorService.updateDataDependentDisplay(theRecord, null, true, scope);
               }
             }
           }

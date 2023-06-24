@@ -37,7 +37,7 @@ module fng.controllers {
 module fng.directives {
 
   /*@ngInject*/
-  export function fngLink(routingService, SubmissionsService): angular.IDirective {
+  export function fngLink(RoutingService: fng.IRoutingService, SubmissionsService: fng.ISubmissionsService): angular.IDirective {
     return {
       restrict: 'E',
       scope: {dataSrc: '&model'},
@@ -102,7 +102,7 @@ module fng.directives {
                 newVal = undefined;
               }
               if (newVal) {
-                scope['link'] = routingService.buildUrl(ref + '/' + form + (newVal.id || newVal) + '/edit' + linktab);
+                scope['link'] = RoutingService.buildUrl(ref + '/' + form + (newVal.id || newVal) + '/edit' + linktab);
               }
               else {
                 scope['link'] = undefined;
@@ -117,12 +117,12 @@ module fng.directives {
             scope['text'] = attrs['text'];
           }
           var index = scope['$parent']['$index'];
-          scope.$watch('dataSrc()', function(newVal) {
+          scope.$watch('dataSrc()', function(newVal: string) {
             if (newVal) {
               if (typeof index !== 'undefined' && angular.isArray(newVal)) {
                 newVal = newVal[index];
               }
-              scope['link'] = routingService.buildUrl(ref + '/' + form + newVal + '/edit' + linktab);
+              scope['link'] = RoutingService.buildUrl(ref + '/' + form + newVal + '/edit' + linktab);
               if (!scope['text']) {
                 SubmissionsService.getListAttributes(ref, newVal).then(function(response) {
                   let data: any = response.data;

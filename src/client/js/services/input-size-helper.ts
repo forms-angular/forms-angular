@@ -3,7 +3,7 @@
 module fng.services {
 
   /*@ngInject*/
-  export function inputSizeHelper() {
+  export function InputSizeHelperService() {
 
     var sizeMapping = [1, 2, 4, 6, 8, 10, 12];
     var sizeDescriptions: FieldSizeString[] = ['mini', 'small', 'medium', 'large', 'xlarge', 'xxlarge', 'block-level'];

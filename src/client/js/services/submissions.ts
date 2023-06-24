@@ -38,7 +38,7 @@ class ExpirationCache {
 module fng.services {
 
   /*@ngInject*/
-  export function SubmissionsService($http) {
+  export function SubmissionsService($http: angular.IHttpService): fng.ISubmissionsService {
     let useCacheForGetAll = true;
     const expCache = new ExpirationCache();
     /*
@@ -120,7 +120,7 @@ module fng.services {
       // return only the list attributes for the given record.  where returnRaw is true, the record's
       // list attributes will be returned without transformation.  otherwise, the list attributes will be concatenated
       // (with spaces) and returned in the form { list: string }
-      getListAttributes: function (ref: string, id, returnRaw: boolean) {
+      getListAttributes: function (ref: string, id: any, returnRaw: boolean) {
         const actualId = typeof id === "string" ? id : id.id || id._id || id.x || id;
         if (typeof actualId === "object") {
           throw new Error(`getListAttributes doesn't expect an object but was provided with ${JSON.stringify(id)}`);
@@ -130,7 +130,7 @@ module fng.services {
       },
 
       // return only the list attributes for ALL records in the given collection, returning ILookupItem[]
-      getAllListAttributes: function (ref: string) {
+      getAllListAttributes: function (ref: string): angular.IHttpPromise<ILookupItem[]> {
         return $http.get(`/api/${ref}/listAll`, { cache: expCache });
       },
 
@@ -151,7 +151,7 @@ module fng.services {
         return $http.get(`/api/${ref}${generateListQuery(options)}`);
       },
 
-      readRecord: function (modelName: string, id: any, formName: string): Promise<any> {
+      readRecord: function (modelName: string, id: any, formName: string): angular.IHttpPromise<any> {
 // TODO Figure out tab history updates (check for other tab-history-todos)
 //         let retVal;
 //         if (tabChangeData && tabChangeData.model === modelName && tabChangeData.id === id) {

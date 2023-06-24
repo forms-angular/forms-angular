@@ -3,7 +3,7 @@
 module fng.services {
 
   /*@ngInject*/
-  export function cssFrameworkService() {
+  export function CssFrameworkService() {
     // Bootstrap 3 is now the only supported framework
     // Bootstrap 2 can be made to work - an example can be made available if you request on gitter.
     var config = {

@@ -2,7 +2,7 @@
 
 module fng.services {
   /*@ngInject*/
-  export function securityService($rootScope: angular.IRootScopeService): fng.ISecurityService {
+  export function SecurityService($rootScope: angular.IRootScopeService): fng.ISecurityService {
     function canDoSecurity(type: SecurityType): boolean {
       return (
         !!formsAngular.elemSecurityFuncBinding &&
@@ -21,7 +21,7 @@ module fng.services {
           // currently no security rules to apply); and 
           // it has provided the callbacks that are specified in the security configuration; and
           // the provided scope (if any) has been decorated (by us).  pages and popups which aren't form controllers will need to use
-          // (either directly, or through formMarkupHelper), the decorateSecurableScope() function below
+          // (either directly, or through FormMarkupHelperService), the decorateSecurableScope() function below
           (
             type === "hidden" &&
             $rootScope[formsAngular.hiddenSecurityFuncName] && 

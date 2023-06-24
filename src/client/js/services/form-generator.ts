@@ -12,7 +12,7 @@ module fng.services {
   /*@ngInject*/
   import IFormInstruction = fng.IFormInstruction;
 
-  export function formGenerator($filter, routingService, recordHandler, securityService: fng.ISecurityService) : IFormGenerator {
+  export function FormGeneratorService($filter, RoutingService: fng.IRoutingService, RecordHandlerService: fng.IRecordHandlerService, SecurityService: fng.ISecurityService) : IFormGeneratorService {
 
     function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
 
@@ -122,16 +122,16 @@ module fng.services {
     function handleFieldType(formInstructions: IFormInstruction, mongooseType, mongooseOptions, $scope, ctrlState) {
 
       function performLookupSelect(){
-        formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
-        formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
+        formInstructions.options = RecordHandlerService.suffixCleanId(formInstructions, 'Options');
+        formInstructions.ids = RecordHandlerService.suffixCleanId(formInstructions, '_ids');
         if (!formInstructions.hidden) {
           if (mongooseOptions.ref) {
-            recordHandler.setUpLookupOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
+            RecordHandlerService.setUpLookupOptions(mongooseOptions.ref, formInstructions, $scope, ctrlState, handleSchema);
           } else if (mongooseOptions.lookupListRef) {
-            recordHandler.setUpLookupListOptions(mongooseOptions.lookupListRef, formInstructions, $scope, ctrlState);
+            RecordHandlerService.setUpLookupListOptions(mongooseOptions.lookupListRef, formInstructions, $scope, ctrlState);
             formInstructions.lookupListRef = mongooseOptions.lookupListRef;
           } else if (mongooseOptions.internalRef) {
-            recordHandler.handleInternalLookup($scope, formInstructions, mongooseOptions.internalRef);
+            RecordHandlerService.handleInternalLookup($scope, formInstructions, mongooseOptions.internalRef);
             formInstructions.internalRef = mongooseOptions.internalRef;
           } else if (mongooseOptions.customLookupOptions) {
               // nothing to do - call setUpCustomLookupOptions() when ready to provide id and option arrays
@@ -155,9 +155,9 @@ module fng.services {
           if (formInstructions.select2) {
             console.log('support for fng-select2 has been removed in 0.8.3 - please convert to fng-ui-select');
           } else {
-            formInstructions.options = recordHandler.suffixCleanId(formInstructions, 'Options');
+            formInstructions.options = RecordHandlerService.suffixCleanId(formInstructions, 'Options');
             if (mongooseOptions.form?.enumLabels) {
-              formInstructions.ids = recordHandler.suffixCleanId(formInstructions, '_ids');
+              formInstructions.ids = RecordHandlerService.suffixCleanId(formInstructions, '_ids');
               $scope[formInstructions.ids] = mongooseOptions.enum;
               $scope[formInstructions.options] = mongooseOptions.form.enumLabels;
             } else {
@@ -316,11 +316,11 @@ module fng.services {
           var sideParts = side.split('.');
           switch (sideParts.length) {
             case 1:
-              result = recordHandler.getListData(data, side.slice(1));
+              result = RecordHandlerService.getListData(data, side.slice(1));
               break;
             case 2 :
               // this is a sub schema element, and the appropriate array element has been passed
-              result = recordHandler.getListData(data, sideParts[1]);
+              result = RecordHandlerService.getListData(data, sideParts[1]);
               break;
             default:
               throw new Error('Unsupported showIf format');
@@ -378,13 +378,13 @@ module fng.services {
     return {
       // utility for apps that use forms-angular
       generateEditUrl: function generateEditUrl(obj, $scope:fng.IFormScope):string {
-        return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
+        return RoutingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/edit');
       },
       generateViewUrl: function generateViewUrl(obj, $scope:fng.IFormScope):string {
-        return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/view');
+        return RoutingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + obj._id + '/view');
       },
       generateNewUrl: function generateNewUrl($scope):string {
-        return routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + 'new');
+        return RoutingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + 'new');
       },
       handleFieldType: handleFieldType,
       handleSchema: handleSchema,
@@ -549,7 +549,7 @@ module fng.services {
         return result;
       },
 
-      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandler, sharedData, pseudoUrl?: string) {
+      decorateScope: function decorateScope($scope: fng.IFormScope, formGeneratorInstance: fng.IFormGeneratorService, recordHandlerInstance: fng.IRecordHandlerService, sharedData, pseudoUrl?: string) {
         $scope.record = sharedData.record;
         $scope.phase = 'init';
         $scope.disableFunctions = sharedData.disableFunctions;
@@ -568,7 +568,7 @@ module fng.services {
 
         sharedData.baseScope = $scope;
 
-        securityService.decorateSecurableScope($scope, { pseudoUrl });
+        SecurityService.decorateSecurableScope($scope, { pseudoUrl });
 
         $scope.generateEditUrl = function (obj) {
           return formGeneratorInstance.generateEditUrl(obj, $scope);
@@ -652,6 +652,6 @@ module fng.services {
     };
   }
 
-  formGenerator.$inject = ["$filter", "routingService", "recordHandler", "securityService"];
+  FormGeneratorService.$inject = ["$filter", "RoutingService", "RecordHandlerService", "SecurityService"];
 
   }

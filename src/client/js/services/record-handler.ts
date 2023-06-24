@@ -9,7 +9,17 @@ module fng.services {
    */
 
   /*@ngInject*/
-  export function recordHandler($location, $window, $filter, $timeout: angular.ITimeoutService, $sce: angular.ISCEService, routingService, cssFrameworkService, SubmissionsService, SchemasService): fng.IRecordHandler {
+  export function RecordHandlerService(
+    $location: angular.ILocationService,
+    $window: angular.IWindowService,
+    $filter,
+    $timeout: angular.ITimeoutService,
+    $sce: angular.ISCEService,
+    RoutingService: fng.IRoutingService,
+    CssFrameworkService: fng.ICssFrameworkService,
+    SubmissionsService: fng.ISubmissionsService,
+    SchemasService
+  ): fng.IRecordHandlerService {
 
     // TODO: Put this in a service
     const makeMongoId = (rnd = r16 => Math.floor(r16).toString(16)) => rnd(Date.now() / 1000) + " ".repeat(16).replace(/./g, () => rnd(Math.random() * 16));
@@ -590,7 +600,7 @@ module fng.services {
           // New record
           ctrlState.allowLocationChange = false;
           ctrlState.master = $scope.setDefaults($scope.formSchema);
-          let passedRecord = $scope.initialiseNewRecord || $location.$$search.r;
+          let passedRecord = $scope.initialiseNewRecord || ($location as any).$$search.r;
           if (passedRecord) {
             try {
               Object.assign(ctrlState.master, JSON.parse(passedRecord));
@@ -724,11 +734,11 @@ module fng.services {
       scrollTheList: function scrollTheList($scope) {
         var pagesLoaded = $scope.pagesLoaded;
         SubmissionsService.getPagedAndFilteredList($scope.modelName, {
-          aggregate: $location.$$search.a,
-          find: $location.$$search.f,
+          aggregate: ($location as any).$$search.a,
+          find: ($location as any).$$search.f,
           limit: $scope.pageSize,
           skip: pagesLoaded * $scope.pageSize,
-          order: $location.$$search.o,
+          order: ($location as any).$$search.o,
           concatenate: false
         })
           .then(function(response) {
@@ -763,11 +773,11 @@ module fng.services {
             if (typeof $scope.dataEventFunctions.onAfterDelete === "function") {
               $scope.dataEventFunctions.onAfterDelete(ctrlState.master);
             }
-            routingService.redirectTo()("onDelete", $scope, $location);
+            RoutingService.redirectTo()("onDelete", $scope, $location);
           }, (err) => {
             if (err.status === 404) {
               // Someone already deleted it
-              routingService.redirectTo()("onDelete", $scope, $location);
+              RoutingService.redirectTo()("onDelete", $scope, $location);
             } else if (err.status === 403) {
               $scope.showError(err.data?.message || err.message || err.data || err, 'Permission denied');
             } else {
@@ -815,7 +825,7 @@ module fng.services {
               if (options.redirect) {
                 $window.location = options.redirect;
               } else {
-                routingService.redirectTo()("edit", $scope, $location, data._id);
+                RoutingService.redirectTo()("edit", $scope, $location, data._id);
               }
             } else {
               $scope.showError(data);
@@ -974,7 +984,7 @@ module fng.services {
 
       handleError: handleError,
 
-      decorateScope: function decorateScope($scope: fng.IFormScope, $uibModal, recordHandlerInstance: fng.IRecordHandler, ctrlState: IFngCtrlState) {
+      decorateScope: function decorateScope($scope: fng.IFormScope, $uibModal, recordHandlerInstance: fng.IRecordHandlerService, ctrlState: IFngCtrlState) {
 
         $scope.handleHttpError = handleError($scope);
 
@@ -1096,7 +1106,7 @@ module fng.services {
         };
 
         $scope.newClick = function() {
-          routingService.redirectTo()("new", $scope, $location);
+          RoutingService.redirectTo()("new", $scope, $location);
         };
 
         $scope.$on("$locationChangeStart", function(event, next) {
@@ -1226,7 +1236,7 @@ module fng.services {
                     $scope.whyDisabled += subFormName + ' ';
                   }
                   if (
-                    cssFrameworkService.framework() === "bs2" &&
+                    CssFrameworkService.framework() === "bs2" &&
                     c.$$element &&
                     c.$$element.parent() &&
                     c.$$element.parent().parent() &&
@@ -1235,7 +1245,7 @@ module fng.services {
                   ) {
                     $scope.whyDisabled += c.$$element.parent().parent().find("label").text();
                   } else if (
-                    cssFrameworkService.framework() === "bs3" &&
+                    CssFrameworkService.framework() === "bs3" &&
                     c.$$element &&
                     c.$$element.parent() &&
                     c.$$element.parent().parent() &&

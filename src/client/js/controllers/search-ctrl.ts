@@ -3,7 +3,7 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function SearchCtrl($scope, $http, $location, routingService) {
+  export function SearchCtrl($scope, $http: angular.IHttpService, $location: angular.ILocaleService, RoutingService: fng.IRoutingService) {
 
     var lastSearchSent;
     var _isNotMobile;
@@ -78,8 +78,8 @@ module fng.controllers {
     };
 
     function makeUrlNoHtml5Hash(result: any) : string {
-      return result.url ? routingService.html5hash() + result.url.replace('|id|', result.id) :
-      routingService.buildOperationUrl('edit', result.resource, undefined, result.id, result.resourceTab);
+      return result.url ? RoutingService.html5hash() + result.url.replace('|id|', result.id) :
+      RoutingService.buildOperationUrl('edit', result.resource, undefined, result.id, result.resourceTab);
     }
 
     $scope.$watch('searchTarget', function (newValue) {
@@ -93,7 +93,7 @@ module fng.controllers {
             if ($scope.searchTarget.length > 0) {
               $scope.results = data.results;
               $scope.results.forEach(result => {
-                  result.href = routingService.html5hash() + makeUrlNoHtml5Hash(result);
+                  result.href = RoutingService.html5hash() + makeUrlNoHtml5Hash(result);
               })
               $scope.moreCount = data.moreCount;
               if (data.results.length > 0) {

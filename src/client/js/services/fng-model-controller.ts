@@ -3,10 +3,10 @@
 module fng.services {
 
   /*@ngInject*/
-  export function fngModelCtrlService($controller) {
+  export function FngModelCtrlService($controller: angular.IControllerService) {
 
     return {
-      loadControllerAndMenu: function (sharedData, controllerName, level, needDivider, localScope) {
+      loadControllerAndMenu: function (sharedData: any, controllerName: string, level: number, needDivider: boolean, localScope: any) {
 
         let locals: any = {}, addThis;
 
@@ -68,6 +68,6 @@ module fng.services {
 
   }
 
-  fngModelCtrlService.$inject = ["$controller"];
+  FngModelCtrlService.$inject = ["$controller"];
 }
 

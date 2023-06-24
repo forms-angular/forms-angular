@@ -3,8 +3,15 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function NavCtrl($rootScope, $window, $scope, $filter, routingService, cssFrameworkService, securityService: fng.ISecurityService) {
-
+  export function NavCtrl(
+    $rootScope: angular.IRootScopeService & { navScope?: any },
+    $window: angular.IWindowService,
+    $scope,
+    $filter,
+    RoutingService: fng.IRoutingService,
+    CssFrameworkService: fng.ICssFrameworkService,
+    SecurityService: fng.ISecurityService
+  ) {
     function clearContextMenu() {
       $scope.items = [];
       $scope.contextMenu = undefined;
@@ -84,8 +91,8 @@ module fng.controllers {
 
     $scope.css = function (fn, arg) {
       var result;
-      if (typeof cssFrameworkService[fn] === 'function') {
-        result = cssFrameworkService[fn](arg);
+      if (typeof CssFrameworkService[fn] === 'function') {
+        result = CssFrameworkService[fn](arg);
       } else {
         result = 'error text-error';
       }
@@ -99,11 +106,11 @@ module fng.controllers {
       // contextMenuId.  let's delete this until we know we're ready to evaluate the security
       // of the menu items...
       $scope.contextMenuId = undefined;
-      securityService.doSecurityWhenReady(() => {
+      SecurityService.doSecurityWhenReady(() => {
         //... which we now are
         $scope.contextMenuId = menuId;
-        $scope.contextMenuHidden = securityService.isSecurelyHidden($scope.contextMenuId);
-        $scope.contextMenuDisabled = securityService.isSecurelyDisabled($scope.contextMenuId);
+        $scope.contextMenuHidden = SecurityService.isSecurelyHidden($scope.contextMenuId);
+        $scope.contextMenuDisabled = SecurityService.isSecurelyDisabled($scope.contextMenuId);
       });
     }
 
@@ -168,7 +175,7 @@ module fng.controllers {
     };
 
     $scope.buildUrl = function (path) {
-      return routingService.buildUrl(path);
+      return RoutingService.buildUrl(path);
     };
 
     $scope.dropdownClass = function (index) {
