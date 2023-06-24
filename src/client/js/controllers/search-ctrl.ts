@@ -3,7 +3,7 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function SearchCtrl($scope, $http: angular.IHttpService, $location: angular.ILocaleService, RoutingService: fng.IRoutingService) {
+  export function SearchCtrl($scope, $http: angular.IHttpService, $location: angular.ILocationService, RoutingService: fng.IRoutingService) {
 
     var lastSearchSent;
     var _isNotMobile;
