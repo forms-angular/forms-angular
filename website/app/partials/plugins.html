@@ -214,15 +214,15 @@
       <section id="rollyourown" name="Roll Your Own" affix-scroll>
         <h3>Roll Your Own plugin</h3>
         <p>Use the existing plugins as a jumping off point to write your own.</p>
-        <p>If you want to write an input directive you can get a big start by using the pluginHelper service. If you had
+        <p>If you want to write an input directive you can get a big start by using the PluginHelperService. If you had
           a schema element</p>
         <pre>aField: {type: String, required: true, form: {directive: 'fng-my-input-directive', size: 'xlarge'}}</pre>
         <p>Then you could generate a simple input (with standard label etc) with the following directive:</p>
-              <pre>app.directive('fngMyInputDirective', function ($compile, pluginHelper) {
+              <pre>app.directive('fngMyInputDirective', function ($compile, PluginHelperService) {
     return {
       restrict: 'E',
       link: function (scope, element, attr) {
-        var elementHtml = pluginHelper.buildInputMarkup(
+        var elementHtml = PluginHelperService.buildInputMarkup(
           scope,
           attr,
           {},
@@ -232,24 +232,24 @@
       }
     }
   });</pre>
-        <p>The model and id are part of the buildingBlocks.common property. Have a look at the formMarkupHelper service
-          to see what else is available. To access more capability you could call directly on formMarkupHelper like
+        <p>The model and id are part of the buildingBlocks.common property. Have a look at the FormMarkupHelperService
+          to see what else is available. To access more capability you could call directly on FormMarkupHelperService like
           this:</p>
-              <pre>  app.directive('fngMyInputDirective', function ($compile, pluginHelper, formMarkupHelper) {
+              <pre>  app.directive('fngMyInputDirective', function ($compile, PluginHelperService, FormMarkupHelperService) {
     return {
       restrict: 'E',
       link: function (scope, element, attr) {
-        var processedAttr = pluginHelper.extractFromAttr(attr);
+        var processedAttr = PluginHelperService.extractFromAttr(attr);
         var requiredStr = processedAttr.info.required ? ' required' : '';
-        var elementHtml = pluginHelper.buildInputMarkup(
+        var elementHtml = PluginHelperService.buildInputMarkup(
           scope,
           attr,
           {
             processedAttr,
           },
           function(buildingBlocks) {
-            return formMarkupHelper.generateSimpleInput(
-              buildingBlocks.common + formMarkupHelper.addTextInputMarkup(
+            return FormMarkupHelperService.generateSimpleInput(
+              buildingBlocks.common + FormMarkupHelperService.addTextInputMarkup(
                 buildingBlocks,
                 processedAttr.info,
                 requiredStr

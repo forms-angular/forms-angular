@@ -3,10 +3,10 @@
 module fng.directives {
 
   /*@ngInject*/
-  export function formButtons(cssFrameworkService):angular.IDirective {
+  export function formButtons(CssFrameworkService: fng.ICssFrameworkService):angular.IDirective {
     return {
       restrict: 'A',
-      templateUrl: 'form-button-' + cssFrameworkService.framework() + '.html'
+      templateUrl: 'form-button-' + CssFrameworkService.framework() + '.html'
     };
   }
 }

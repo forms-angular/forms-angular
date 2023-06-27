@@ -3,8 +3,17 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function BaseCtrl($scope: fng.IFormScope, $rootScope, $location, $filter, $uibModal, fngModelCtrlService, routingService, formGenerator, recordHandler) {
-
+  export function BaseCtrl(
+    $scope: fng.IFormScope,
+    $rootScope: angular.IRootScopeService,
+    $location: angular.ILocaleService,
+    $filter,
+    $uibModal/*: angular.ui.bootstrap.IModalService  <this is the correct type, but not available*/,
+    FngModelCtrlService: fng.IModelCtrlService,
+    RoutingService: fng.IRoutingService,
+    FormGeneratorService: fng.IFormGeneratorService,
+    RecordHandlerService: fng.IRecordHandlerService
+  ) {
     $scope.sharedData = {
       record: {},
       disableFunctions: {},
@@ -19,15 +28,15 @@ module fng.controllers {
     };
 
     $scope.errorVisible = false;
-    angular.extend($scope, routingService.parsePathFunc()($location.$$path));
+    angular.extend($scope, RoutingService.parsePathFunc()(($location as any).$$path));
 
     // Load context menu.  For /person/client/:id/edit we need
     // to load PersonCtrl and PersonClientCtrl
     let titleCaseModelName = $filter('titleCase')($scope.modelName, true);
     let needDivider = false;
-    fngModelCtrlService.loadControllerAndMenu($scope.sharedData, titleCaseModelName, 0, needDivider, $scope.$new());
+    FngModelCtrlService.loadControllerAndMenu($scope.sharedData, titleCaseModelName, 0, needDivider, $scope.$new());
     if ($scope.formName) {
-      fngModelCtrlService.loadControllerAndMenu($scope.sharedData, titleCaseModelName + $filter('titleCase')($scope.formName, true), 1, needDivider, $scope.$new());
+      FngModelCtrlService.loadControllerAndMenu($scope.sharedData, titleCaseModelName + $filter('titleCase')($scope.formName, true), 1, needDivider, $scope.$new());
     }
 
     $rootScope.$broadcast('fngControllersLoaded', $scope.sharedData, $scope.modelName);
@@ -36,11 +45,11 @@ module fng.controllers {
 
     $rootScope.$broadcast('fngFormLoadStart', $scope);
 
-    formGenerator.decorateScope($scope, formGenerator, recordHandler, $scope.sharedData);
-    recordHandler.decorateScope($scope, $uibModal, recordHandler, ctrlState);
+    FormGeneratorService.decorateScope($scope, FormGeneratorService, RecordHandlerService, $scope.sharedData);
+    RecordHandlerService.decorateScope($scope, $uibModal, RecordHandlerService, ctrlState);
 
     function processTheForm() {
-      recordHandler.fillFormWithBackendSchema($scope, formGenerator, recordHandler, ctrlState);
+      RecordHandlerService.fillFormWithBackendSchema($scope, FormGeneratorService, RecordHandlerService, ctrlState);
 
       // Tell the 'model controllers' that they can start fiddling with baseScope
       for (let i = 0; i < $scope.sharedData.modelControllers.length; i++) {

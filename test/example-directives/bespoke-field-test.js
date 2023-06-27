@@ -1,5 +1,5 @@
 'use strict';
-formsAngular.directive('emailField', ['$compile', '$filter', 'cssFrameworkService', function ($compile, $filter, cssFrameworkService) {
+formsAngular.directive('emailField', ['$compile', '$filter', 'CssFrameworkService', function ($compile, $filter, CssFrameworkService) {
   return {
     restrict: 'E',
     replace: true,
@@ -9,7 +9,7 @@ formsAngular.directive('emailField', ['$compile', '$filter', 'cssFrameworkServic
         scope.$watch(attrs.formInput, function () {
           var info = scope[attrs.schema],
             template;
-          if (cssFrameworkService.framework() === 'bs2') {
+          if (CssFrameworkService.framework() === 'bs2') {
             template = '<div class="control-group" id="cg_' + info.id + '">';
             if (!info.label) {
               info.label = $filter('titleCase')(info.name);

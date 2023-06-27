@@ -5,7 +5,7 @@ describe('BaseCtrl', function () {
   var $httpBackend;
   var scope;
   var ctrl;
-  var routingService = {
+  var RoutingService = {
     parsePathFunc: function () {
       return function  () {
         return {modelName: 'collection', newRecord: true};
@@ -32,7 +32,7 @@ describe('BaseCtrl', function () {
           'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}
         });
         scope = $rootScope.$new();
-        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+        ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
         $httpBackend.flush();
       });
       expect(scope.formSchema.length).toBe(1);
@@ -45,7 +45,7 @@ describe('BaseCtrl', function () {
           return [404, 'Some error', {}];
         });
         scope = $rootScope.$new();
-        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+        ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
         $httpBackend.flush();
         expect(scope.alertTitle).toBe('Error!');
         expect(scope.errorMessage.toString()).toBe('404 "Some error"');
@@ -59,7 +59,7 @@ describe('BaseCtrl', function () {
         $httpBackend.when('GET', '/api/schema/someModel/someForm').respond({
           'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}
         });
-        var routingService = {
+        var RoutingService = {
           parsePathFunc: function () {
             return function  () {
               return {modelName: 'someModel', newRecord: true, formName: 'someForm'};
@@ -67,7 +67,7 @@ describe('BaseCtrl', function () {
           }
         };
         scope = $rootScope.$new();
-        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+        ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
         $httpBackend.flush();
       });
     });
@@ -83,7 +83,7 @@ describe('BaseCtrl', function () {
         {'name': {'instance': 'String'}, 'hide_me': {'instance': 'String', 'options': {'form': {'hidden': true}}}}
       );
       scope = $rootScope.$new();
-      ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+      ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
       $httpBackend.flush();
     }));
 
@@ -103,7 +103,7 @@ describe('BaseCtrl', function () {
         {'name': {'instance': 'String', options:{list:true}}, 'hide_me': {'instance': 'String', 'options': {list:true, 'form': {'hidden': true}}}}
       );
       scope = $rootScope.$new();
-      ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+      ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
       $httpBackend.flush();
     }));
 
@@ -782,7 +782,7 @@ describe('BaseCtrl', function () {
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}});
         scope = $rootScope.$new();
-        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+        ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
         scope.record = {'familyName': 'Chapman', 'givenName': 'Mark'};
         $httpBackend.when('POST', '/api/collection/new', {'familyName': 'Chapman', 'givenName': 'Mark'}).respond(400, {message: 'There is some kind of error', status: 'err'});
         scope.save();
@@ -801,7 +801,7 @@ describe('BaseCtrl', function () {
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({'email': {'path': 'email', 'instance': 'String', 'options': {'form': {'directive': 'email-field'}}, '$conditionalHandlers': {}}});
         scope = $rootScope.$new();
-        ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+        ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
         $httpBackend.flush();
       });
 
@@ -815,7 +815,7 @@ describe('BaseCtrl', function () {
     var $modal;
     var provider;
     var deferred;
-    var routingService = {
+    var RoutingService = {
       parsePathFunc: function () {
         return function  () {
           return {modelName: 'collection', newRecord: false, id: 125};
@@ -842,7 +842,7 @@ describe('BaseCtrl', function () {
         ctrl = $controller('BaseCtrl', {
           $scope: $scope,
           $modal: $modal,
-          routingService: routingService
+          RoutingService
         });
 
         deferred = $q.defer();

@@ -22,10 +22,10 @@ declare module fng {
     // disabled ancestor checks.
     skipDisabledAncestorSecurityFuncName?: string;
     // how the function identified by elemSecurityFuncName should be bound.  "instant" means that it will be called
-    // as the markup is being constructed, with 'hidden' elements not included in the markup at all, and disable elements
+    // as the markup is being constructed, with 'hidden' elements not included in the markup at all, and disabled elements
     // given a simple DISABLED attribute.  this is the most efficient approach.  "one-time" will add ng-hide and
     // ng-disabled directives to the relevant elements, with one-time binding to the security function.  this is
-    // also reasonably efficient (but not as efficient as "instant" due to the need for watches).  "normal" will not use
+    // also reasonably efficient (but not as efficient as "instant", due to the need for watches).  "normal" will not use
     // one-time binding, which has the potential to be highly resource-intensive on large forms.  which
     // option is chosen will depend upon when the function identified by elemSecurityFuncName will be ready to
     // make the necessary determination.
@@ -306,7 +306,7 @@ declare module fng {
     master: any;
     allowLocationChange: boolean; // Do we allow location change or prompt for permission
   }
-  export interface IRecordHandler {
+  export interface IRecordHandlerService {
     convertToMongoModel(schema: IControlledFormSchema, anObject: any, prefixLength: number, scope: IFormScope): any;
     createNew(dataToSave: any, options: any, scope: IFormScope, ctrlState: IFngCtrlState): void;
     deleteRecord(id: string, scope: IFormScope, ctrlState: IFngCtrlState): void;
@@ -327,7 +327,7 @@ declare module fng {
     handleInternalLookup($scope: IFormScope, formInstructions, ref): void;
     preservePristine(element, fn): void;
     convertIdToListValue(id, idsArray, valuesArray, fname);
-    decorateScope($scope: IFormScope, $uibModal, recordHandlerInstance: IRecordHandler, ctrlState);
+    decorateScope($scope: IFormScope, $uibModal, recordHandlerInstance: IRecordHandlerService, ctrlState);
     fillFormFromBackendCustomSchema(
       schema,
       $scope: IFormScope,
@@ -339,7 +339,7 @@ declare module fng {
     handleError($scope: IFormScope);
   }
 
-  export interface IFormGenerator {
+  export interface IFormGeneratorService {
     generateEditUrl(obj, $scope: IFormScope): string;
     generateViewUrl(obj, $scope: IFormScope): string;
     generateNewUrl($scope: IFormScope): string;
@@ -359,7 +359,7 @@ declare module fng {
     unshift(fieldName: string, $event, $scope: IFormScope, modelOverride?: any);
     remove(fieldName: string, value, $event, $scope: IFormScope, modelOverride?: any);
     hasError(formName, name, index, $scope: IFormScope);
-    decorateScope($scope: IFormScope, formGeneratorInstance, recordHandlerInstance: IRecordHandler, sharedStuff, pseudoUrl?: string);
+    decorateScope($scope: IFormScope, formGeneratorInstance: IFormGeneratorService, recordHandlerInstance: IRecordHandlerService, sharedStuff, pseudoUrl?: string);
   }
 
   export interface IFngSingleLookupHandler {
@@ -469,7 +469,7 @@ declare module fng {
     clearTimeout: () => void;
     handleHttpError: (response: any) => void;
     dropConversionWatcher: () => void;
-    readingRecord?: Promise<any>;
+    readingRecord?: angular.IPromise<any>;
     onSchemaFetch?: (description: string, source: IFieldViewInfo[]) => void;
     onSchemaProcessed?: (description: string, formSchema: IFormInstruction[]) => void;
     updateQueryForTab?: (tab: string) => void;
@@ -504,6 +504,10 @@ declare module fng {
     listing: boolean;
     creating: boolean;
     editing: boolean;
+  }
+
+  export interface IModelCtrlService {
+    loadControllerAndMenu: (sharedData: any, titleCaseModelName: string, level: number, needDivider: boolean, scope: angular.IScope) => void;
   }
 
   export interface IModelController extends IFormScope {
@@ -561,13 +565,18 @@ declare module fng {
 
   export interface IBuiltInRoute {
     route: string;
-    state: string;
-    templateUrl: string;
-    options?: any;
+    state?: string;
+    templateUrl?: string;
+    options?: {
+      authenticate?: boolean;
+      templateUrl?: string | (() => void);
+      template?: string;
+      controller?: string;      
+    }
   }
 
   export interface IRoutingConfig {
-    hashPrefix: string;
+    hashPrefix?: string;
     html5Mode: boolean;
     routing: string; // What sort of routing do we want?  ngroute or uirouter.
     // TODO Should be enum
@@ -618,7 +627,7 @@ declare module fng {
   }
   
 
-  interface IPluginHelper {
+  interface IPluginHelperService {
     extractFromAttr: (
       attr: any,
       directiveName: string
@@ -689,6 +698,108 @@ declare module fng {
     getHideableAttrs: (id: string) => string;
     getDisableableAncestorAttrs: (id: string) => string;
     generateDisabledAttr: (id: string, scope: fng.ISecurableScope, params?: IGenerateDisableAttrParams) => string;
+  }
+
+  interface IListQueryOptions {
+    limit?: number;
+    find?: any; // e.g., { "careWorker.isCareWorker": true }
+    aggregate?: any;
+    projection?: any;
+    order?: any; // e.g., { familyName: -1, givenName: -1 }
+    skip?: number;
+    concatenate?: boolean; // whether the list fields should be concatenated into a single .text property
+  }
+
+  interface ISubmissionsService {
+    // return all of the list attributes of the record from db.<modelName>.<id>
+    // where returnRaw is true, the document (albeit with only its list attributes present) will be returned without transformation
+    // otherwise, the list fields will be concatenated (space-seperated) and returned as the list property of a record { list: string }
+    // e.g., "John Doe", in the case of a person
+    getListAttributes: (
+      modelName: string,
+      id: string,
+      returnRaw?: boolean
+    ) => angular.IHttpPromise<{ list: string } | any>;
+    readRecord: (modelName: string, id: string, formName?: string) => angular.IHttpPromise<any>;
+    getAll: (modelName: string, _options: any) => angular.IHttpPromise<any[]>;
+    getAllListAttributes: (ref: string) => angular.IHttpPromise<ILookupItem[]>;
+    getPagedAndFilteredList: (
+      modelName: string,
+      options: IListQueryOptions
+    ) => angular.IHttpPromise<any[]>;
+    getPagedAndFilteredListFull: (
+      modelName: string,
+      options: IListQueryOptions
+    ) => angular.IHttpPromise<any[]>;
+    deleteRecord: (model: string, id: string, formName: string) => angular.IHttpPromise<void>;
+    updateRecord: (modelName: string, id: string, dataToSave: any, formName?: string) => angular.IHttpPromise<any>;
+    createRecord: (modelName: string, dataToSave: any, formName?: string) => angular.IHttpPromise<any>;
+    useCache: (val: boolean) => void;
+    clearCache: () => void;
+    getCache: () => boolean;
+  }
+
+  interface IRoutingServiceProvider {
+    start: (options: IRoutingConfig) => void;
+    addRoutes: (fixedRoutes: Array<IBuiltInRoute>, fngRoutes:Array<IBuiltInRoute>) => void;
+    registerAction: (action: string) => void;
+    $get: () => IRoutingService;
+  }
+
+  interface IRoutingService {
+    router: () => string;
+    prefix: () => string;
+    parsePathFunc: () => (location: string) => void;
+    html5hash: () => string;
+    buildUrl: (path: string) => string;
+    buildOperationUrl: (
+      prefix: string,
+      operation: string,
+      modelName: string,
+      formName: string,
+      id: string,
+      tabName?: string
+    ) => string;
+    redirectTo: () => (operation: string, scope: IFormScope, LocationService: angular.ILocationService, id?: string, tab?: string) => void;
+  }
+
+  interface ICssFrameworkServiceProvider {
+    setOptions: (options: { framework: string }) => void;
+    $get: () => ICssFrameworkService;
+  }
+
+  interface ICssFrameworkService {
+    framework: () => string;
+    span: (cols: number) => string;
+    offset: (cols: number) => string;
+    rowFluid: () => string;
+  }
+
+  interface IFngUiSelectHelperService {
+    windowChanged: (width: number, height: number) => boolean;
+    addClientLookup: (lkpName: string, lkpData: any) => void;
+    clearCache: () => void;
+    lookupFunc: (value: string, formSchema: IFormInstruction, cb: (formSchema: IFormInstruction, value: ILookupItem ) => void) => void;
+    doOwnConversion: (scope: IFormScope, processedAttrs: any, ref: string) => void;
+  }
+
+  interface IFormMarkupHelperService {
+    isHorizontalStyle: (formStyle: string, includeStacked: boolean) => boolean;
+    isArrayElement: (scope: angular.IScope, info: fng.IFormInstruction, options: fng.IFormOptions) => boolean;
+    fieldChrome: (scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions) => { omit?: boolean, template?: string, closeTag?: string };
+    label: (scope: fng.IFormScope, fieldInfo: fng.IFormInstruction, addButtonMarkup: boolean, options: fng.IFormOptions) => string;
+    glyphClass: () => string;
+    allInputsVars: (scope: angular.IScope, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, modelString: string, idString: string, nameString: string) => Partial<fng.IBuildingBlocks>;
+    inputChrome: (value: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, markupVars) => string;
+    generateSimpleInput: (common: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions) => string;
+    controlDivClasses: (options: fng.IFormOptions) => string[];
+    handleInputAndControlDiv: (inputMarkup: string, controlDivClasses: string[]) => string;
+    handleArrayInputAndControlDiv: (inputMarkup: string, controlDivClasses: string[], scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions) => string;
+    addTextInputMarkup: (allInputsVars: Partial<fng.IBuildingBlocks>, fieldInfo: fng.IFormInstruction, requiredStr: string) => string;
+    handleReadOnlyDisabled: (partialFieldInfo: { name: string, id?: string, nonUniqueId?: string, readonly?: boolean | string }, scope: fng.IFormScope) => string[];
+    generateArrayElementIdString: (idString: string, info: fng.IFormInstruction, options: fng.IFormOptions) => string;
+    genDisableableAncestorStr: (id: string) => string;
+    generateNgShow(showWhen: IFngShowWhen, model: string): string;
   }
 }
 

@@ -3,7 +3,7 @@
 module fng.directives {
 
   /*@ngInject*/
-  export function modelControllerDropdown(securityService: fng.ISecurityService): angular.IDirective {
+  export function modelControllerDropdown(SecurityService: fng.ISecurityService): angular.IDirective {
     let menuVisibilityStr: string;
     let menuDisabledStr: string;
     let itemVisibilityStr = "isHidden($index)";
@@ -12,8 +12,8 @@ module fng.directives {
     // the next-best alternative, which is one-time binding
     const oneTimeBinding = formsAngular.elemSecurityFuncBinding !== "normal";
     const bindingStr = oneTimeBinding ? "::" : "";
-    if (securityService.canDoSecurity("hidden")) {
-      menuVisibilityStr = `ng-if="contextMenuId && !contextMenuHidden" ${securityService.getHideableAttrs('{{ ::contextMenuId }}')}`;
+    if (SecurityService.canDoSecurity("hidden")) {
+      menuVisibilityStr = `ng-if="contextMenuId && !contextMenuHidden" ${SecurityService.getHideableAttrs('{{ ::contextMenuId }}')}`;
       if (oneTimeBinding) {
         // because the isHidden(...) logic is highly likely to be model dependent, that cannot be one-time bound.  to
         // be able to combine one-time and regular binding, we'll use ng-if for the one-time bound stuff and ng-hide for the rest
@@ -21,19 +21,19 @@ module fng.directives {
       } else if (formsAngular.elemSecurityFuncBinding === "normal") {
         itemVisibilityStr = `ng-hide="${itemVisibilityStr} || (!choice.divider && isSecurelyHidden(choice.id))"`;
       }      
-      itemVisibilityStr += ` ${securityService.getHideableAttrs('{{ ::choice.id }}')}`;
+      itemVisibilityStr += ` ${SecurityService.getHideableAttrs('{{ ::choice.id }}')}`;
     } else {
       menuVisibilityStr = "";
       itemVisibilityStr = `ng-hide="${itemVisibilityStr}"`;
     }
-    if (securityService.canDoSecurity("disabled")) {
-      menuDisabledStr = `disableable-link ng-disabled="contextMenuDisabled" ${securityService.getDisableableAttrs('{{ ::contextMenuId }}')}`;
+    if (SecurityService.canDoSecurity("disabled")) {
+      menuDisabledStr = `disableable-link ng-disabled="contextMenuDisabled" ${SecurityService.getDisableableAttrs('{{ ::contextMenuId }}')}`;
       // as ng-class is already being used, we'll add the .disabled class if the menu item is securely disabled using
       // class="{{ }}".  note that we "prevent" a disabled menu item from being clicked by checking for the DISABLED
       // attribute in the doClick(...) function, and aborting if this is found.
       // note that the 'normal' class introduced here might not actually do anything, but for one-time binding to work
       // properly, we need a truthy value
-      itemDisabledStr += ` class="{{ ${bindingStr}(!choice.divider && isSecurelyDisabled(choice.id)) ? 'disabled' : 'normal' }}" ${securityService.getDisableableAttrs('{{ ::choice.id }}')}`;
+      itemDisabledStr += ` class="{{ ${bindingStr}(!choice.divider && isSecurelyDisabled(choice.id)) ? 'disabled' : 'normal' }}" ${SecurityService.getDisableableAttrs('{{ ::choice.id }}')}`;
     } else {
       menuDisabledStr = "";
     }

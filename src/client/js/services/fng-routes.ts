@@ -3,7 +3,7 @@
 module fng.services {
 
   /*@ngInject*/
-  export function routingService($injector, $locationProvider) {
+  export function RoutingService($injector, $locationProvider: angular.ILocationProvider) {
 
     var config:fng.IRoutingConfig = {
 //  fixedRoutes: [] an array in the same format as builtInRoutes that is matched before the generic routes.  Can be omitted
@@ -41,8 +41,8 @@ module fng.services {
     ];
 
     var _routeProvider, _stateProvider;
-    var lastRoute = null;
-    var lastObject:fng.IFngRoute = {};
+    let lastRoute: string = null;
+    let lastObject: fng.IFngRoute = {};
 
     function handleFolder(templateURL: string) : string {
       var retVal : string = templateURL;
@@ -84,7 +84,7 @@ module fng.services {
       });
     }
 
-    function _buildOperationUrl(prefix, operation, modelName, formName, id, tabName) {
+    function _buildOperationUrl(prefix: string, operation: string, modelName: string, formName: string, id: string, tabName: string) {
       var formString = formName ? ('/' + formName) : '';
       var modelString = prefix + '/' + modelName;
       var tabString = tabName ? ('/' + tabName) : '';
@@ -145,7 +145,7 @@ module fng.services {
       registerAction: function(action: string) {
         postActions.push(action);
       },
-      $get: function () {
+      $get: function (): fng.IRoutingService {
         return {
           router: function () {
             return config.routing;
@@ -154,7 +154,7 @@ module fng.services {
             return config.prefix;
           },
           parsePathFunc: function () {
-            return function (location) {
+            return function (location: string) {
               if (location !== lastRoute) {
                 lastRoute = location;
 
@@ -186,7 +186,7 @@ module fng.services {
                   let lastParts = [locationSplit[locationParts - 1], locationSplit[locationParts - 2]];
                   let newPos = lastParts.indexOf('new');
                   let viewonlyPos = lastParts.indexOf('viewonly');
-                  let actionPos;
+                  let actionPos: number;
                   if (newPos === -1 && viewonlyPos === -1) {
                     actionPos = postActions.reduce((previousValue, currentValue) => {
                       let pos = lastParts.indexOf(currentValue);
@@ -211,13 +211,12 @@ module fng.services {
                 }
               }
               return lastObject;
-
             };
           },
           html5hash: function (): string {
             return config.html5Mode ? '' : '#';
           },
-          buildUrl: function (path) {
+          buildUrl: function (path: string) {
             var url = config.html5Mode ? '' : '#';
             url += config.hashPrefix;
             url += config.prefix;
@@ -227,12 +226,12 @@ module fng.services {
             url += (path[0] === '/' ? path.slice(1) : path);
             return url;
           },
-          buildOperationUrl: function (operation, modelName, formName, id, tab) {
+          buildOperationUrl: function (operation: string, modelName: string, formName: string, id: string, tab: string) {
             return _buildOperationUrl(config.prefix, operation, modelName, formName, id, tab);
           },
           redirectTo: function () {
-            return function (operation, scope, location, id, tab) {
-              location.search({}); // Lose any search parameters
+            return function (operation: string, scope: IFormScope, LocationService: angular.ILocationService, id: string, tab: string) {
+              LocationService.search({}); // Lose any search parameters
 
               let urlStr: string;
               if (operation === 'onDelete') {
@@ -248,7 +247,7 @@ module fng.services {
               } else {
                 urlStr = _buildOperationUrl(config.prefix, operation, scope.modelName, scope.formName, id, tab);
               }
-              location.path(urlStr);
+              LocationService.path(urlStr);
             };
           }
         };

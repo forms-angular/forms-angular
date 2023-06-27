@@ -1,11 +1,11 @@
 'use strict';
 
 websiteApp
-  .directive('affix', ['$compile', 'cssFrameworkService', function ($compile, cssFrameworkService) {
+  .directive('affix', ['$compile', 'CssFrameworkService', function ($compile, CssFrameworkService) {
     return {
       restrict: 'E',
       replace: true,
-      templateUrl: '/scripts/template/affix-' + cssFrameworkService.framework() + '.html',
+      templateUrl: '/scripts/template/affix-' + CssFrameworkService.framework() + '.html',
       compile: function () {
         var body = $('body');
         var affixes = [];

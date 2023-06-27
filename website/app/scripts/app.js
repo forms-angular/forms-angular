@@ -48,9 +48,9 @@ websiteApp
 websiteApp.frameworks = ['bs2', 'bs3'];   // Just for testing forms-angular
 websiteApp.defaultFramework = 'bs2';
 
-formsAngular.config(['$locationProvider', 'cssFrameworkServiceProvider', 'routingServiceProvider',
-  function ($locationProvider, cssFrameworkService, routingService) {
-  routingService.start(
+formsAngular.config(['$locationProvider', 'CssFrameworkServiceProvider', 'RoutingServiceProvider',
+  function ($locationProvider, CssFrameworkService, RoutingServiceProvider) {
+  RoutingServiceProvider.start(
     {
       // Define the fixed routes (the dynamic routes for CRUD will be created by forms-angular)
       fixedRoutes: [
@@ -76,7 +76,7 @@ formsAngular.config(['$locationProvider', 'cssFrameworkServiceProvider', 'routin
       onDelete: '/'
     }
   );
-  cssFrameworkService.setOptions({framework: websiteApp.defaultFramework});
+  CssFrameworkService.setOptions({framework: websiteApp.defaultFramework});
   formsAngular.beforeProcess = function(scope, cb) {
     // We aren't doing anything here, but we could be waiting for something async that a form might depend on
     cb(null);
@@ -97,14 +97,14 @@ websiteApp.css = {
 websiteApp.cssLoaded = false;
 
 websiteApp
-  .run(['$location', '$css', 'cssFrameworkService', function($location, $css, cssFrameworkService) {
+  .run(['$location', '$css', 'CssFrameworkService', function($location, $css, CssFrameworkService) {
     // Potentially switch CSS files if running in dev or test config
     if ($location.$$port === 9000) {
       var framework = $location.path().slice(1);
       var newPath;
 
       if (websiteApp.frameworks.indexOf(framework) !== -1) {
-        cssFrameworkService.setFrameworkForDemoWebsite(framework);
+        CssFrameworkService.setFrameworkForDemoWebsite(framework);
         newPath = $location.path().slice(1 + framework.length);
         if (!newPath[0]) {
           newPath = '/';
@@ -118,16 +118,16 @@ websiteApp
       }
     }
     }])
-  .controller('CSSSwitchCtrl', ['$location', '$scope', 'cssFrameworkService', '$css', function($location, $scope, cssFrameworkService, $css) {
+  .controller('CSSSwitchCtrl', ['$location', '$scope', 'CssFrameworkService', '$css', function($location, $scope, CssFrameworkService, $css) {
     // Don't mess around with switching CSS files if were aren't running in dev or test config
     if ($location.$$port === 9000) {
       // Switch the CSS when asked
       $scope.$on('fngFormLoadStart', function (event, formScope) {
-        if (formScope.variant && formScope.variant !== cssFrameworkService.framework()) {
-          $css.remove(websiteApp.css[cssFrameworkService.framework()]);
-          cssFrameworkService.setFrameworkForDemoWebsite(formScope.variant);
-          $css.add(websiteApp.css[cssFrameworkService.framework()]);
-          console.log('Switched to ' + cssFrameworkService.framework());
+        if (formScope.variant && formScope.variant !== CssFrameworkService.framework()) {
+          $css.remove(websiteApp.css[CssFrameworkService.framework()]);
+          CssFrameworkService.setFrameworkForDemoWebsite(formScope.variant);
+          $css.add(websiteApp.css[CssFrameworkService.framework()]);
+          console.log('Switched to ' + CssFrameworkService.framework());
         }
       });
     }

@@ -3,7 +3,7 @@
 module fng.controllers {
 
   /*@ngInject*/
-  export function ModelCtrl($scope, $http, $location, routingService) {
+  export function ModelCtrl($scope, $http: angular.IHttpService, $location: angular.ILocationService, RoutingService: fng.IRoutingService) {
 
     $scope.models = [];
     $http.get('/api/models').then(function (response) {
@@ -13,11 +13,11 @@ module fng.controllers {
     });
 
     $scope.newUrl = function (model) {
-      return routingService.buildUrl(model + '/new');
+      return RoutingService.buildUrl(model + '/new');
     };
 
     $scope.listUrl = function (model) {
-      return routingService.buildUrl(model);
+      return RoutingService.buildUrl(model);
     };
 
   }

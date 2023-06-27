@@ -3,10 +3,10 @@
 module fng.directives {
 
   /*@ngInject*/
-  export function errorDisplay(cssFrameworkService) : angular.IDirective {
+  export function errorDisplay(CssFrameworkService: fng.ICssFrameworkService) : angular.IDirective {
       return {
         restrict: 'E',
-        templateUrl: 'error-display-' + cssFrameworkService.framework() + '.html'
+        templateUrl: 'error-display-' + CssFrameworkService.framework() + '.html'
       };
     }
 }

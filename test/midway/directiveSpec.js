@@ -34,14 +34,14 @@ describe('directive with form', function () {
 
   describe('basic friends form', function () {
 
-    beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location, $compile, routingService) {
+    beforeEach(inject(function (_$httpBackend_, $rootScope, $controller, $location, $compile, RoutingService) {
       $httpBackend = _$httpBackend_;
       $httpBackend.whenGET('/api/schema/collection').respond(schema);
       $httpBackend.whenGET('/api/collection/123').respond(oneFriend);
       elm = angular.element('<div><div form-buttons></div><form-input schema="formSchema"></form-input></div>');
       scope = $rootScope.$new();
       $location.$$path = '/collection/123/edit';
-      ctrl = $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+      ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
       $httpBackend.flush();
       $compile(elm)(scope);
       scope.$digest();

@@ -3,11 +3,16 @@
 module fng.services {
 
   /*@ngInject*/
-  export function formMarkupHelper(cssFrameworkService, inputSizeHelper, addAllService, securityService: fng.ISecurityService, $filter) {
+  export function FormMarkupHelperService(
+    CssFrameworkService: fng.ICssFrameworkService,
+    InputSizeHelperService,
+    AddAllService,
+    SecurityService: fng.ISecurityService,
+    $filter
+  ) {
+      function generateNgShow(showWhen: IFngShowWhen, model: string): string {
 
-      function generateNgShow(showWhen, model) {
-
-        function evaluateSide(side) {
+        function evaluateSide(side: string): string {
           var result = side;
           if (typeof side === 'string') {
             if (side.slice(0, 1) === '$') {
@@ -36,7 +41,7 @@ module fng.services {
         return evaluateSide(showWhen.lhs) + conditionSymbols[conditionPos] + evaluateSide(showWhen.rhs);
       }
 
-      var isHorizontalStyle = function isHorizontalStyle(formStyle, includeStacked: boolean) {
+      function isHorizontalStyle(formStyle: string, includeStacked: boolean): boolean {
         let exclude = ['vertical', 'inline'];
         if (!includeStacked) {
           exclude.push('stacked');
@@ -45,7 +50,7 @@ module fng.services {
       };
 
       function glyphClass() {
-        return (cssFrameworkService.framework() === 'bs2' ? 'icon' : 'glyphicon glyphicon');
+        return (CssFrameworkService.framework() === 'bs2' ? 'icon' : 'glyphicon glyphicon');
       }
 
       // Generate two strings:
@@ -53,7 +58,7 @@ module fng.services {
       //      parameters to enable or disable it according to the prevailing security rules.
       //   2. secondly, attribute(s) that could be added to a element - regardless of whether or not it will
       //      actually be disabled on this occasion - to identify it as being potentially disableable
-      // This function is a more complicated version of securityService.generateDisabledAttr, also taking into
+      // This function is a more complicated version of SecurityService.generateDisabledAttr, also taking into
       // account the fact that fieldInfo.readonly can influence the disabled state of a field.
       // nonUniqueId should be required only in cases where a sub-sub schema has been defined in a directive
       // as a means of getting around the single-level-of-nesting limitation.  in that case, where the
@@ -74,7 +79,7 @@ module fng.services {
           function wrapReadOnly(): string {
             return partialFieldInfo.readonly ? ` ng-disabled="${partialFieldInfo.readonly}" ` : "";
           }
-          if (!id || !securityService.canDoSecurityNow(scope, "disabled")) {
+          if (!id || !SecurityService.canDoSecurityNow(scope, "disabled")) {
             // no security, so we're just concerned about what value fieldInfo.readonly has
             return wrapReadOnly();
           }
@@ -137,7 +142,7 @@ module fng.services {
             return ` ng-disabled="${oneTimeBinding ? "::" : ""}${securityFuncStr}" `;
           }
         }
-        return [getActuallyDisabledAttr(), securityService.getDisableableAttrs(id)]
+        return [getActuallyDisabledAttr(), SecurityService.getDisableableAttrs(id)]
       }
 
       function generateArrayElementIdString(idString: string, info: fng.IFormInstruction, options: fng.IFormOptions): string {
@@ -159,7 +164,7 @@ module fng.services {
       }
 
       function genDisableableAncestorStr(id: string): string {
-        return securityService.getDisableableAncestorAttrs(id);
+        return SecurityService.getDisableableAncestorAttrs(id);
       }
 
       function isArrayElement(scope: angular.IScope, info: fng.IFormInstruction, options: fng.IFormOptions): boolean {
@@ -167,7 +172,7 @@ module fng.services {
       }
 
       return {
-        isHorizontalStyle: isHorizontalStyle,
+        isHorizontalStyle,
 
         isArrayElement,
 
@@ -197,7 +202,7 @@ module fng.services {
                 idStr = "cg_".concat(info.id.replace(/\./g, '-'));
             }
             uniqueIdStr = `cg_${uniqueIdStr.replace(/\./g, '-')}`;
-            const visibility = securityService.considerVisibility(uniqueIdStr, scope);
+            const visibility = SecurityService.considerVisibility(uniqueIdStr, scope);
             if (visibility.omit) {
               // we already know this field should be invisible, so we needn't add anything for it
               return { omit: true };
@@ -223,11 +228,11 @@ module fng.services {
             }
           }
 
-          if (cssFrameworkService.framework() === 'bs3') {
+          if (CssFrameworkService.framework() === 'bs3') {
             classes += ' form-group';
             if (options.formstyle === 'vertical' && info.size !== 'block-level') {
               template += '<div class="row">';
-              classes += ' col-sm-' + inputSizeHelper.sizeAsNumber(info.size);
+              classes += ' col-sm-' + InputSizeHelperService.sizeAsNumber(info.size);
               closeTag += '</div>';
             }
 
@@ -244,11 +249,11 @@ module fng.services {
               modelControllerName = 'f_' + info.name.replace(/\./g, '_');
             }
 
-            template += '<div' + addAllService.addAll(scope, 'Group', classes, options) + ' ng-class="{\'has-error\': hasError(\'' + formName + '\',\'' + modelControllerName + '\', $index)}"';
+            template += '<div' + AddAllService.addAll(scope, 'Group', classes, options) + ' ng-class="{\'has-error\': hasError(\'' + formName + '\',\'' + modelControllerName + '\', $index)}"';
             closeTag += '</div>';
           } else {
             if (isHorizontalStyle(options.formstyle, true)) {
-              template += '<div' + addAllService.addAll(scope, 'Group', 'control-group', options);
+              template += '<div' + AddAllService.addAll(scope, 'Group', 'control-group', options);
               closeTag = '</div>';
             } else {
               template += '<span ';
@@ -261,7 +266,7 @@ module fng.services {
 
         label: function label(scope: fng.IFormScope, fieldInfo: fng.IFormInstruction, addButtonMarkup: boolean, options: fng.IFormOptions) {
           var labelHTML = '';
-          if ((cssFrameworkService.framework() === 'bs3' || (!['inline','stacked'].includes(options.formstyle) && fieldInfo.label !== '')) || addButtonMarkup) {
+          if ((CssFrameworkService.framework() === 'bs3' || (!['inline','stacked'].includes(options.formstyle) && fieldInfo.label !== '')) || addButtonMarkup) {
             labelHTML = '<label';
             var classes = 'control-label';
             if (isHorizontalStyle(options.formstyle, false)) {
@@ -271,14 +276,14 @@ module fng.services {
               if (typeof fieldInfo.labelDefaultClass !== 'undefined') {
                 // Override default label class (can be empty)
                 classes += ' ' + fieldInfo.labelDefaultClass;
-              } else if (cssFrameworkService.framework() === 'bs3') {
+              } else if (CssFrameworkService.framework() === 'bs3') {
                 classes += ' col-sm-3';
               }
             } else if (['inline','stacked'].includes(options.formstyle)) {
               labelHTML += ' for="' + fieldInfo.id + '"';
               classes += ' sr-only';
             }
-            labelHTML += addAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
+            labelHTML += AddAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
             if (addButtonMarkup) {
               const disabledAttrs = handleReadOnlyDisabled(fieldInfo, scope);
               labelHTML += ` <i ${disabledAttrs.join(" ")} id="add_${fieldInfo.id}" ng-click="add('${fieldInfo.name}', $event)" class="${glyphClass()}-plus-sign"></i>`;
@@ -311,9 +316,9 @@ module fng.services {
           var sizeClassBS2 = '';
           var formControl = '';
 
-          if (cssFrameworkService.framework() === 'bs3') {
+          if (CssFrameworkService.framework() === 'bs3') {
             compactClass = (['horizontal', 'vertical', 'inline'].indexOf(options.formstyle) === -1) ? ' input-sm' : '';
-            sizeClassBS3 = 'col-sm-' + inputSizeHelper.sizeAsNumber(fieldInfo.size);
+            sizeClassBS3 = 'col-sm-' + InputSizeHelperService.sizeAsNumber(fieldInfo.size);
             formControl = ' form-control';
           } else {
             sizeClassBS2 = (fieldInfo.size ? ' input-' + fieldInfo.size : '');
@@ -340,7 +345,7 @@ module fng.services {
           if (fieldInfo.ariaLabel) {
             common += ` aria-label="${fieldInfo.ariaLabel}"`;
           }
-          common += addAllService.addAll(scope, 'Field', null, options);
+          common += AddAllService.addAll(scope, 'Field', null, options);
           return {
             common: common,
             sizeClassBS3: sizeClassBS3,
@@ -350,14 +355,14 @@ module fng.services {
           };
         },
 
-        inputChrome: function inputChrome(value, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, markupVars) {
-          if (cssFrameworkService.framework() === 'bs3' && isHorizontalStyle(options.formstyle, true) && fieldInfo.type !== 'checkbox') {
+        inputChrome: function inputChrome(value: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, markupVars): string {
+          if (CssFrameworkService.framework() === 'bs3' && isHorizontalStyle(options.formstyle, true) && fieldInfo.type !== 'checkbox') {
             value = '<div class="bs3-input ' + markupVars.sizeClassBS3 + '">' + value + '</div>';
           }
           // Hack to cope with inline help in directives
           var inlineHelp = (fieldInfo.helpInline || '') + (fieldInfo.helpinline || '');
           if (inlineHelp.length > 0) {
-            let helpMarkup = cssFrameworkService.framework() === 'bs2' ? { el: 'span', cl: 'help-inline'} : {el: 'div', cl: 'help-block'};
+            let helpMarkup = CssFrameworkService.framework() === 'bs2' ? { el: 'span', cl: 'help-inline'} : {el: 'div', cl: 'help-block'};
             value += `<${helpMarkup.el} class="${helpMarkup.cl}">${inlineHelp}</${helpMarkup.el}>`;
           }
           // this is a dummy tag identifying where the input ends and the messages block (that is only visible when the form field is $dirty)
@@ -377,24 +382,24 @@ module fng.services {
           return value;
         },
 
-        generateSimpleInput: function generateSimpleInput(common: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions) {
+        generateSimpleInput: function generateSimpleInput(common: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions): string {
           var result = '<input ' + common + 'type="' + fieldInfo.type + '" ';
           if (!fieldInfo.label && !fieldInfo.ariaLabel) {
             result += `aria-label="${fieldInfo.name.replace(/\./g,' ')}" `
           } else if (options.subschema) {
             result += `aria-label="${fieldInfo.label ? ($filter('titleCase')(options.subschemaroot) + ' ' + fieldInfo.label) : (fieldInfo.popup || fieldInfo.name.replace(/\./g,' '))}" `
           }
-          if (options.formstyle === 'inline' && cssFrameworkService.framework() === 'bs2' && !fieldInfo.size) {
+          if (options.formstyle === 'inline' && CssFrameworkService.framework() === 'bs2' && !fieldInfo.size) {
             result += 'class="input-small"';
           }
           result += ' />';
           return result;
         },
 
-        controlDivClasses: function controlDivClasses(options: fng.IFormOptions) {
-          var result = [];
+        controlDivClasses: function controlDivClasses(options: fng.IFormOptions): string[] {
+          const result: string[] = [];
           if (isHorizontalStyle(options.formstyle, false)) {
-            result.push(cssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-9');
+            result.push(CssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-9');
           }
           return result;
         },
@@ -407,7 +412,7 @@ module fng.services {
         },
 
         handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup: string, controlDivClasses: string[], scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions): string {
-          let indentStr = cssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols($index)" ' : "";
+          let indentStr = CssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols($index)" ' : "";
           const arrayStr = (options.model || 'record') + '.' + info.name;
           let result = "";
           result += '<div id="' + info.id + 'List" class="' + controlDivClasses.join(' ') + '" ' + indentStr + ' ng-repeat="arrayItem in ' + arrayStr + ' track by $index">';
@@ -417,14 +422,14 @@ module fng.services {
             : "";
           result += inputMarkup.replace("<dms/>", removeBtn);
           result += '</div>';
-          indentStr = cssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols(' + arrayStr + '.length)" ' : "";
+          indentStr = CssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols(' + arrayStr + '.length)" ' : "";
           if (info.help) {
               result += '<div class="array-help-block ' + controlDivClasses.join(' ') + '" ' + indentStr + ' id="empty' + info.id + 'ListHelpBlock">' + info.help + '</div>';
           }
           return result;
         },
 
-        addTextInputMarkup: function addTextInputMarkup(allInputsVars, fieldInfo, requiredStr) {
+        addTextInputMarkup: function addTextInputMarkup(allInputsVars: fng.IBuildingBlocks, fieldInfo: fng.IFormInstruction, requiredStr: string): string {
           var result = '';
           var setClass = allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + (fieldInfo.class ? ' ' + fieldInfo.class : '');
           if (setClass.length !== 0) {
@@ -441,7 +446,9 @@ module fng.services {
 
         generateArrayElementIdString,
 
-        genDisableableAncestorStr
+        genDisableableAncestorStr,
+
+        generateNgShow
       }
     }
 }

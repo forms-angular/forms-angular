@@ -39,7 +39,7 @@ var mongoose = require('mongoose');
 var app = express();
 var fng = new (formsAngular)(mongoose, app, {});
 ```
-* If your application calls recordHandler.handleError (typically from a controller) then you will need
+* If your application calls RecordHandlerService.handleError (typically from a controller) then you will need
 to pass a response object rather than (data:any, status: number)
 
 ## 0.6.0 to 0.7.0
@@ -48,7 +48,7 @@ to pass a response object rather than (data:any, status: number)
 * Added internal templates for lists, edit forms and report forms (previously they were in the Yeoman generator).
 * Internal templates can be over-ridden by specifying a templateFolder property in the routing config.
 ### BREAKING CHANGES
-* To use the edit / list / report templates from a pre 0.7.0 application you must specify a templateFolder property of 'partials' when starting the routingService when configuring forms-angular
+* To use the edit / list / report templates from a pre 0.7.0 application you must specify a templateFolder property of 'partials' when starting the RoutingService when configuring forms-angular
 * Removed support for Bootstrap 2 (though your BS2 apps should still work - www.forms-angular.org is still BS2)   
 * Some changes required by updating angular-ui-bootstrap dependency.  In particular drop down menus now need uib-dropdown-menu to be an attribute not a class      
 
@@ -68,7 +68,7 @@ to pass a response object rather than (data:any, status: number)
 * Required and readonly now work consistently across input types
 * Added error-display directive for form level errors
 * Some styling improvements for required fields and mobile
-* Added support for ui-select plugin, and in so doing added new services (formMarkupHelper, pluginHelper) that make it
+* Added support for ui-select plugin, and in so doing added new services (FormMarkupHelperService, PluginHelperService) that make it
 much easier to add new plugins.
 
 ### BREAKING CHANGES
@@ -84,8 +84,8 @@ some testing software).
 * ngRoute is no longer a dependency - either ngRoute or ui.router can be used, and a new provider allows the choice to be
 set up as follows:
 ```
-  formsAngular.config(['routingServiceProvider', function (routingService) {
-      routingService.setOptions({html5Mode: true, routing: 'ngroute'});
+  formsAngular.config(['RoutingServiceProvider', function (RoutingService) {
+      RoutingService.setOptions({html5Mode: true, routing: 'ngroute'});
       }]);
 ```      
 This service incorporates some of the functionality of the old form routes provider and supersedes urlService and 
@@ -102,8 +102,8 @@ plaitApp.config(['formRoutesProvider', function (formRoutes) {
 ```    
 you would have something like
 ```
-formsAngular.config(['routingServiceProvider', function (routingService) {
-  routingService.start({
+formsAngular.config(['RoutingServiceProvider', function (RoutingService) {
+  RoutingService.start({
     routing: 'ngroute',
     fixedRoutes: [
       {route: '/index', options: {templateUrl: 'partials/menu.html'}},
@@ -176,9 +176,9 @@ where the first parameter is an array of objects containing a route and a set of
 are now Bootstrap 2 and Bootstrap 3 versions.
 * You should initialise formsAngular with something similar to:
 ```
-formsAngular.config(['urlServiceProvider', 'cssFrameworkServiceProvider', function (urlService, cssFrameworkService) {
+formsAngular.config(['urlServiceProvider', 'CssFrameworkServiceProvider', function (urlService, CssFrameworkService) {
     urlService.setOptions({html5Mode: false, hashPrefix: '!'});
-    cssFrameworkService.setOptions({framework: 'bs2'});  // bs2 and bs3 are supported
+    CssFrameworkService.setOptions({framework: 'bs2'});  // bs2 and bs3 are supported
   }]);
 ```
 * Report drilldowns now start from the model

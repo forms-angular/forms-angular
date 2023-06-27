@@ -87,8 +87,8 @@ describe('validation', function () {
 
     describe('simple input', function () {
 
-      beforeEach(inject(function (_$httpBackend_, $rootScope, $compile, $location, $controller, cssFrameworkService) {
-        cssFrameworkService.setFrameworkForDemoWebsite('bs3');
+      beforeEach(inject(function (_$httpBackend_, $rootScope, $compile, $location, $controller, CssFrameworkService) {
+        CssFrameworkService.setFrameworkForDemoWebsite('bs3');
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({
           'surname': {
@@ -155,8 +155,8 @@ describe('validation', function () {
       var date;
       var postcode;
 
-      beforeEach(inject(function (_$httpBackend_, $rootScope, $compile, $location, $controller, cssFrameworkService) {
-        cssFrameworkService.setFrameworkForDemoWebsite('bs3');
+      beforeEach(inject(function (_$httpBackend_, $rootScope, $compile, $location, $controller, CssFrameworkService) {
+        CssFrameworkService.setFrameworkForDemoWebsite('bs3');
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({
             'surname': {
@@ -281,8 +281,8 @@ describe('validation', function () {
       var date;
       var postcode;
 
-      beforeEach(inject(function (_$httpBackend_, $rootScope, $compile, $location, $controller, cssFrameworkService) {
-        cssFrameworkService.setFrameworkForDemoWebsite('bs3');
+      beforeEach(inject(function (_$httpBackend_, $rootScope, $compile, $location, $controller, CssFrameworkService) {
+        CssFrameworkService.setFrameworkForDemoWebsite('bs3');
         $httpBackend = _$httpBackend_;
         $httpBackend.whenGET('/api/schema/collection').respond({
           'surname': {

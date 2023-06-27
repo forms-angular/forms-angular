@@ -9,7 +9,7 @@ describe('Controller: BaseCtrl', function () {
 
   var scope;
   var $httpBackend;
-  var routingService = {
+  var RoutingService = {
     parsePathFunc: function () {
       return function  () {
         return {modelName: 'collection', newRecord: true};
@@ -33,7 +33,7 @@ describe('Controller: BaseCtrl', function () {
           'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}}
         });
         scope = $rootScope.$new();
-        $controller('BaseCtrl', {$scope: scope, routingService: routingService});
+        $controller('BaseCtrl', {$scope: scope, RoutingService});
         $httpBackend.flush();
       });
       expect(scope.formSchema.length).toBe(1);
