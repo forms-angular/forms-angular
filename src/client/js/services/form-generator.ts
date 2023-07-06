@@ -230,7 +230,7 @@ module fng.services {
           formInstructions.add = 'step="' + formInstructions.step + '" ' + (formInstructions.add || '');
         }
       } else {
-        throw new Error('Field ' + formInstructions.name + ' is of unsupported type ' + mongooseType.instance);
+        throw new Error('Field ' + formInstructions.name + ' is of unsupported type "' + mongooseType.instance + '" (typeof ' + typeof mongooseType.instance + ')');
       }
       if (mongooseOptions.required) {
         formInstructions.required = true;
