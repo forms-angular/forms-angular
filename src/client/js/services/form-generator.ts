@@ -627,6 +627,66 @@ module fng.services {
           return formGeneratorInstance.add(fieldName, $event, $scope, modelOverride);
         };
 
+        // to enable programatic selection of tabs, we need to use the tabset controller's select() method, but the tabset
+        // has its own scope that will be a child of $scope.  using $$childHead and $$nextSibling to locate it is not
+        // recommended, but I could find no other way to achieve programatic tab selection.  I think it might have
+        // been much easier if we were using uib-tabset, but we're not...
+        function getTabSet(): any {
+          let childScope = ($scope as any).$$childHead;
+          while (childScope) {
+            if (childScope.tabset) {
+              return childScope.tabset;
+            }
+            childScope = childScope.$$nextSibling;
+          }
+        }
+
+        $scope.hideTab = function (event, tabTitle: string, hiddenTabArrayProp: string) {
+          const array = recordHandlerInstance.getData($scope, hiddenTabArrayProp) as string[];
+          if (array && Array.isArray(array) && !array.includes(tabTitle)) {
+            const thisTabIsSelected = $scope.tabs[$scope.activeTabNo].title === tabTitle;
+            array.push(tabTitle);
+            array.sort();
+            // we can't use setFormDirty here, because the controller of event.target will not yield the form we need.
+            // let's assume it's called baseForm.  if it isn't, the fact we don't call $setDirty() is no big deal.
+            const form = ($scope as any).baseForm;
+            if (form) {
+              form.$setDirty();
+            }            
+            // if the tab that has just been hidden was the active one, find the first tab that isn't
+            // hidden to switch to.  (it can sometimes find another tab itself that can be safely switched to,
+            // but that sometimes fails, with weird results.)
+            if (thisTabIsSelected) {
+              const tabset = getTabSet();
+              if (tabset) {
+                tabset.select($scope.tabs.findIndex((t) => !array.includes(t.title)));
+              }
+            }            
+          }
+        };
+
+        $scope.addTab = function (event, tabTitle: string, hiddenTabArrayProp: string) {
+          const array = recordHandlerInstance.getData($scope, hiddenTabArrayProp) as string[];
+          if (array && Array.isArray(array)) {
+            let idx = array.findIndex((t) => t === tabTitle);
+            if (idx === -1) {
+              return; // shouldn't happen
+            }
+            array.splice(idx, 1);
+            // we can't use setFormDirty here, because the controller of event.target will not yield the form we need.
+            // let's assume it's called baseForm.  if it isn't, the fact we don't call $setDirty() is no big deal.
+            const form = ($scope as any).baseForm;
+            if (form) {
+              form.$setDirty();
+            }
+            // now select the tab that we've just added
+            const tabset = getTabSet();
+            if (tabset) {
+              tabset.select($scope.tabs.findIndex((t) => t.title === tabTitle));
+            }
+          }
+        };
+        
         $scope.hasError = function (form, name, index) {
           return formGeneratorInstance.hasError(form, name, index, $scope);
         };
