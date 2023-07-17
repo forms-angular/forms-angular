@@ -299,18 +299,66 @@ module fng.directives {
                       attrs += ` ${visibility.visibilityAttr}`;
                     }
                     attrs += SecurityService.generateDisabledAttr(idStr, scope, { attr: "disable", attrRequiresValue: true }); // uib-tab expects 'disable="true"` rather than 'disabled="true"' or just disabled
-                    result.before = `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${info.title}')" heading="${info.title}"`;
-                    if (tabNo > 0) {
-                      result.before += 'active="tabs[' + tabNo + '].active"';
+                    result.before = "";
+                    if (info.hideable) {
+                      const templateId = `customTemplate_${idStr}.html`;
+                      // $parent.hideTab is needed in the template below because the uib-tab directive has an isolated scope,
+                      // so even though our form is on its parent scope, it cannot be seen
+                      result.before +=
+                        `<script type="text/ng-template" id="${templateId}">` + 
+                        `   <li ng-class="[{active: active, disabled: disabled}, classes]" class="uib-tab nav-item">` +
+                        `     <div class="hideable-tab">` +
+                        `       <span class="class="nav-link" data-ng-click="select($event)">${info.title}</span>&nbsp;` + 
+                        `       <button name="hide_${idStr}_btn" data-ng-click="$parent.hideTab($event, '${info.title}', '${info.hiddenTabArrayProp}')"` +
+                        `         style="position: relative; z-index: 20;" type="button" class="close pull-right">` +
+                        `         <span aria-hidden="true">×</span><span class="sr-only">Close</span>` +
+                        `       </button>` +
+                        `     </div>` +
+                        `   </li>` +
+                        `</script>`;
+                      attrs += ` template-url="${templateId}"`;
+                      attrs += ` data-ng-show="!${info.hiddenTabArrayProp} || !${info.hiddenTabArrayProp}.includes('${info.title}')"`
+                    } else {
+                      attrs += ` heading="${info.title}"`;
                     }
+                    if (tabNo > 0) {
+                      attrs += ` active="tabs[${tabNo}].active"`;
+                    }
+                    result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${info.title}')"`;
                     result.before += '>';
                     result.after = '</uib-tab>';
                   }
                 } else {
-                  result.before = '<p>Error!  Tab ' + info.title + ' not found in tab list</p>';
+                  result.before = `<p>Error! Tab ${info.title} not found in tab list</p>`;
                   result.after = '';
                 }
                 break;
+              case '+tab' :
+                const idStr = `addTabsTab`;
+                const popoverTemplateId = `customTemplate_${idStr}_popover.html`;
+                result.before =
+                  `<script type="text/ng-template" id="${popoverTemplateId}">` + 
+                  `  <div id="addableTabsList">` + 
+                  `    <div class="item" data-ng-repeat="tab in $parent.${info.hiddenTabArrayProp}">` + 
+                  `      <button type="button" class="addTabButton btn" data-ng-click="$parent.addTab($event, tab, '${info.hiddenTabArrayProp}')">{{ tab }}` + 
+                  `    </div>` + 
+                  `  </div>` +
+                  `</script>`;                
+                const tabTemplateId = `customTemplate_${idStr}.html`;
+                result.before +=
+                  `<script type="text/ng-template" id="${tabTemplateId}">` + 
+                  `  <li class="uib-tab nav-item" data-ng-if="$parent.${info.hiddenTabArrayProp} && $parent.${info.hiddenTabArrayProp}.length > 0">` +
+                  `    <div id="${idStr}">` +
+                  `      <button name="addTabsBtn" popover-trigger="'outsideClick'" popover-placement="bottom" popover-append-to-body="true" title="Reintroduce Optional Sections..." uib-popover-template="'${popoverTemplateId}'"` +
+                  `        style="position: relative; z-index: 20;" type="button" class="close pull-right">` +
+                  `        <span aria-hidden="true">+</span><span class="sr-only">Add</span>` +
+                  `      </button>` +
+                  `    </div>` +
+                  `  </li>` +
+                  `</script>`;
+                result.before += `<uib-tab template-url="${tabTemplateId}">`;
+                result.after = '</uib-tab>';
+                break;                
               case 'tabset' :
                 result.before = '<uib-tabset>';
                 result.after = '</uib-tabset>';
@@ -783,8 +831,42 @@ module fng.directives {
               unwatch();
               unwatch = null;
               var elementHtml = '';
-              var recordAttribute = attrs.model || 'record';      // By default data comes from scope.record
+              var recordAttribute = attrs.model || 'record'; // By default data comes from scope.record
               var theRecord = scope[recordAttribute];
+              const hideableTabs = newArrayValue.filter((s) => s && s.containerType === "tab" && s.hideable);
+              let hiddenTabArrayProp: string;
+              let hiddenTabReintroductionMethod: HiddenTabReintroductionMethod;
+              for (const tab of hideableTabs) {
+                if (tab.hiddenTabArrayProp) {
+                  if (hiddenTabArrayProp && tab.hiddenTabArrayProp !== hiddenTabArrayProp) {
+                    throw new Error("Currently, tab sets with more than one value for hiddenTabArrayProp are not supported");
+                  }
+                  hiddenTabArrayProp = tab.hiddenTabArrayProp;
+                }
+                if (tab.hiddenTabReintroductionMethod) {
+                  if (hiddenTabReintroductionMethod && tab.hiddenTabReintroductionMethod !== hiddenTabReintroductionMethod) {
+                    throw new Error("Currently, tab sets with more than one value for hiddenTabReintroductionMethod are not supported");
+                  }
+                  hiddenTabReintroductionMethod = tab.hiddenTabReintroductionMethod;
+                }
+              }
+              // now we have established that we don't have more than one value for hiddenTabArrayProp, apply a default if no
+              // value has been provided at all...
+              if (!hiddenTabArrayProp) {
+                hiddenTabArrayProp = "record.hiddenTabs";
+              }
+              // ...and then replace all blanks with this value so the processInstructions() call made below can deal with
+              // each tab independently of the others
+              for (const tab of hideableTabs) {
+                tab.hiddenTabArrayProp = hiddenTabArrayProp;
+              }
+              if (hiddenTabReintroductionMethod === "tab") {
+                (newArrayValue as fng.IContainer[]).push({
+                  containerType: "+tab",
+                  hiddenTabArrayProp,
+                  content: []
+                })        
+              }
               theRecord = theRecord || {};
               if ((attrs.subschema || attrs.model) && !attrs.forceform) {
                 elementHtml = '';
