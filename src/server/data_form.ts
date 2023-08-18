@@ -954,10 +954,13 @@ export class FormsAngular {
                 case '$out':
                     throw new Error('Cannot use potentially destructive pipeline stages')
                 case '$unionWith':
-                    /*
-                        Sanitise the pipeline we are doing a union with, removing hidden fields from that collection
-                     */
-                    const unionCollectionName = stage.$unionWith.coll;
+                  /*
+                    Sanitise the pipeline we are doing a union with, removing hidden fields from that collection
+                 */
+                  if (!stage.$unionWith.coll) {
+                    stage.$unionWith = {coll: stage.$unionWith, pipeline: []};
+                  }
+                  const unionCollectionName = stage.$unionWith.coll;
                     const unionResource = that.getResourceFromCollection(unionCollectionName);
                     let unionHiddenLookupFields = {};
                     if (unionResource) {
