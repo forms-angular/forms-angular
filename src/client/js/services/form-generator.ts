@@ -230,7 +230,12 @@ module fng.services {
           formInstructions.add = 'step="' + formInstructions.step + '" ' + (formInstructions.add || '');
         }
       } else {
-        throw new Error('Field ' + formInstructions.name + ' is of unsupported type "' + mongooseType.instance + '" (typeof ' + typeof mongooseType.instance + ')');
+        // slightly more verbose here than would seem necessary, to help track down a problem
+        let msg = 'Field ' + formInstructions.name + ' has unsupported type "' + mongooseType.instance + '"';
+        console.log(msg);
+        let addit = ' (typeof = ' + typeof mongooseType.instance + ')';
+        console.log(addit);
+        throw new Error(msg + addit);
       }
       if (mongooseOptions.required) {
         formInstructions.required = true;
