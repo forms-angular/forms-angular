@@ -56,16 +56,31 @@ module fng.services {
       return internalGenDisabledAttrs(scope, id, processedAttrs, idSuffix, params).join(" ");
     }
 
-    // text surrounded by @@ @@ is assumed to be something that can have a pseudonym.  We'll rely
+    // Text surrounded by @@ @@ is assumed to be something that can have a pseudonym.  We'll rely
     // upon the relevant controller assigning a pseudo() function to baseScope.
+    // If the first character of the pseudonym token is upper case, then its replacement will use
+    // titlecase, otherwise its replacement will be in lowercase.
+    // If the last character of the pseudonym token is "s", then its replacement will be pluralised.
     function handlePseudos(str: string): string {
       if (!str) {
         return str;
       }
       let result = str;
       while (result.includes("@@")) {
-        result = result.replace("@@", "{{ baseScope.pseudo('");
-        result = result.replace("@@", "', true) }}");
+        const firstCharPos = result.indexOf("@@") + 2;
+        const lastCharPos = result.indexOf("@@", firstCharPos) - 1;
+        let token = result.substring(firstCharPos, lastCharPos + 1);
+        const plural = token.endsWith("s");
+        if (plural) {
+          token = token.slice(0, -1);
+        }
+        const upperStr = token[0].toUpperCase() === token[0] ? "true" : "false";
+        token = token.toLocaleLowerCase();
+        result =
+          result.substring(0, firstCharPos - 2) +
+          `{{ baseScope.pseudo('${token}', ${upperStr}) }}` +
+          (plural ? "s" : "") + 
+          result.substring(lastCharPos + 3);
       }
       return result;
     }
