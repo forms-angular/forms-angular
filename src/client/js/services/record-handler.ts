@@ -667,7 +667,14 @@ module fng.services {
           $scope.phase = "error";
           $scope.showError(errorMessage);
         } else {
-          $scope.showError(response.status + " " + JSON.stringify(response.data));
+          let msg = response.data;
+          if (typeof msg !== "string") {
+            msg = JSON.stringify(msg);
+          }
+          if (response.status !== 500) {
+            msg = response.status + " " + msg;
+          } 
+          $scope.showError(msg);
         }
       };
     }
