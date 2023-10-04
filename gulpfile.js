@@ -161,7 +161,7 @@ gulp.task('less', function () {
   var path = require('path');
 
   return gulp.src('src/client/less/forms-angular-with-*.less')
-    .pipe(less({}))
+    .pipe(less({math: 'always'}))
     .pipe(minifyCSS())
     .pipe(gulp.dest(distDirectory + '/client'));
 });
