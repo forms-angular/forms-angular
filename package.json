@@ -54,8 +54,13 @@
   },
   "peerDependencies": {
     "express": "^4",
-    "mongoose": "^7.1.11"
+    "mongoose": "=7.3.2"
   },
+  "devDependenciesComments": [
+    "mongoose pinned to 7.3.2 to avoid problem testing fng-ui-select:",
+    "  Converting circular structure to JSON --> starting at object with constructor DocumentArrayPath    property $embeddedSchemaType -> object with constructor DocumentArrayElement  --- property $parentSchemaType closes the circle",
+    "  Must be a way we can work around it in time, but trying to get releases out atm"
+  ],
   "devDependencies": {
     "@types/angular": "1.8.4",
     "@types/lodash": "4.14.191",
@@ -87,7 +92,7 @@
     "karma-ng-html2js-preprocessor": "1.0.0",
     "matchdep": "2.0.0",
     "mocha": "^10.2.0",
-    "mongoose": "^7.3.1",
+    "mongoose": "=7.3.2",
     "prettier": "2.8.1",
     "pump": "3.0.0",
     "typescript": "4.6.3"
