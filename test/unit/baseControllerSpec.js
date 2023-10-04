@@ -48,7 +48,7 @@ describe('BaseCtrl', function () {
         ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
         $httpBackend.flush();
         expect(scope.alertTitle).toBe('Error!');
-        expect(scope.errorMessage.toString()).toBe('404 "Some error"');
+        expect(scope.errorMessage.toString()).toBe('404 Some error');
 
       });
     });
