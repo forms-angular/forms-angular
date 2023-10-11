@@ -1014,26 +1014,37 @@ module fng.services {
           }
         });
 
-        $scope.showError = function(error: any, alertTitle?: string) {
-          $scope.alertTitle = alertTitle ? alertTitle : "Error!";
-          $timeout(() => {
-            $scope.phase = 'ready';
-          }, 25);
-          if (typeof error === "string") {
-            $scope.errorMessage = $sce.trustAsHtml(error);
-          } else if (!error) {
-            $scope.errorMessage = `An error occurred - that's all we got.  Sorry.`;
-          } else if (error.message && typeof error.message === "string") {
-            $scope.errorMessage = error.message;
-          } else if (error.data && error.data.message) {
-            $scope.errorMessage = error.data.message;
-          } else {
-            try {
-              $scope.errorMessage = JSON.stringify(error);
-            } catch (e) {
-              $scope.errorMessage = error;
+        $scope.showError = function (error: any, alertTitle?: string) {
+          function generateErrorText() : string{
+            $timeout(()=> {
+              $scope.phase = "ready";
+            }, 25);
+            if (typeof error === "string") {
+              return $sce.trustAsHtml(error);
+            } else if (!error) {
+              return "An error occurred - that's all we got.  Sorry.";
+            } else if (error.message && typeof error.message === "string") {
+              return error.message;
+            } else if (error.data && error.data.message) {
+              return error.data.message;
+            } else {
+              try {
+                return JSON.stringify(error);
+              } catch (e) {
+                return error;
+              }
             }
           }
+
+          if ($scope.errorHideTimer) {
+            // we already have an error showing, so clear timeout and don't overwrite it
+            $scope.clearTimeout();
+            $scope.errorMessage += '<br /><br />' +generateErrorText();
+          } else {
+            $scope.alertTitle = alertTitle ? alertTitle : "Error!";
+            $scope.errorMessage = generateErrorText();
+          }
+
           $scope.errorHideTimer = window.setTimeout(function() {
             $scope.dismissError();
             $scope.$digest();
