@@ -2,13 +2,11 @@
   <error-display></error-display>
   <div ng-hide="!showLoading" class="loading">Loading&#8230;</div>
   <div class="container-fluid page-header report-header">
-    <div ng-class="css('rowFluid')">
-      <div class="header-lhs col-xs-7 span7">
-        <h1>{{ titleWithSubstitutions }}</h1>
-      </div>
-      <div class="header-rhs col-xs-5 span5">
-        <form-input schema="paramSchema" name="paramForm" ng-show="paramSchema" formstyle="horizontalCompact"></form-input>
-      </div>
+    <div class="header-lhs">
+      <h1>{{ titleWithSubstitutions }}</h1>
+    </div>
+    <div class="header-rhs">
+      <form-input schema="paramSchema" name="paramForm" ng-show="paramSchema" formstyle="horizontalCompact"></form-input>
     </div>
   </div>
   <div class="container-fluid page-body report-body">
