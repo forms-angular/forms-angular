@@ -23,12 +23,26 @@
   z-index: 102;
 }
 
+.report-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  .header-lhs {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  .header-rhs {
+    flex-grow: 1;
+  }
+}
+
 .header-rhs {
   min-width: 226px;
   min-height: 40px;
   padding-right: 20px;
   padding-bottom: 5px;
-  display: block;}
+  display: block;
+}
 
 .list-header .header-rhs {
   margin: 15px 0;
