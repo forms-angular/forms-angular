@@ -6971,6 +6971,18 @@ button.close {
   padding-left: 20px;
   z-index: 102;
 }
+.report-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.report-header .header-lhs {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.report-header .header-rhs {
+  flex-grow: 1;
+}
 .header-rhs {
   min-width: 226px;
   min-height: 40px;
