@@ -923,7 +923,7 @@ export class FormsAngular {
                     const dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(obj[prop]);
                     if (dateTest) {
                         obj[prop] = new Date(dateTest[1] + 'Z');
-                    } else {
+                    } else if (prop !== "$regex") {
                         const objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
                         if (objectIdTest) {
                             obj[prop] = new Types.ObjectId(objectIdTest[1]);
