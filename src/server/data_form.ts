@@ -1034,13 +1034,13 @@ export class FormsAngular {
             } else {
                 runPipelineStr = JSON.stringify(schema.pipeline);
                 for (let param in req.query) {
-                    if (req.query.hasOwnProperty(param)) {
+                    if (param !== 'noinput' && req.query.hasOwnProperty(param)) {
                         if (req.query[param]) {
                             if (param !== 'r') {             // we don't want to copy the whole report schema (again!)
                                 if (schema.params[param] !== undefined) {
                                     schema.params[param].value = req.query[param];
                                 } else {
-                                    callback(`No such parameter as ${param} - try one of ${Object.keys(schema.params).join()}`)
+                                    return callback(`No such parameter as ${param} - try one of ${Object.keys(schema.params).join()}`)
                                 }
                             }
                         }
@@ -1062,7 +1062,7 @@ export class FormsAngular {
                                 return '"' + sparam.value + '"';
                             }
                         } else {
-                            callback(`No such parameter as ${match.slice(2, -2)} - try one of ${Object.keys(schema.params).join()}`)
+                            return callback(`No such parameter as ${match.slice(2, -2)} - try one of ${Object.keys(schema.params).join()}`)
                         }
                     });
                 }
