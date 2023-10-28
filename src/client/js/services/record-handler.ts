@@ -1039,11 +1039,14 @@ module fng.services {
           if ($scope.errorHideTimer) {
             // we already have an error showing, so clear timeout and don't overwrite it
             $scope.clearTimeout();
-            $scope.errorMessage += '<br /><br />' +generateErrorText();
-          } else {
-            $scope.alertTitle = alertTitle ? alertTitle : "Error!";
-            $scope.errorMessage = generateErrorText();
           }
+          if ($scope.errorMessage) {
+            $scope.errorMessage += '<br /><br />';
+          } else {
+            $scope.errorMessage = '';
+          }
+          $scope.errorMessage += generateErrorText();
+          $scope.alertTitle = alertTitle ? alertTitle : "Error!";
 
           $scope.errorHideTimer = window.setTimeout(function() {
             $scope.dismissError();
