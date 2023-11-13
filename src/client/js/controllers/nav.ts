@@ -39,6 +39,10 @@ module fng.controllers {
       {key:'Ctrl+Shift+X', act:'Delete the current record'}
     ];
 
+    formsAngular.keyboardShortCuts?.forEach(sc => {
+      $scope.shortcuts.push({key: 'Ctrl+Shift+' + sc.letter, act: sc.desc});
+    })
+
     $scope.markupShortcut = function(keys) {
       return '<span class="key">' + keys.split('+').join('</span> + <span class="key">') + '</span>';
     };
@@ -64,6 +68,7 @@ module fng.controllers {
 
       //console.log(event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.metaKey);
 
+      const ctrlShift = event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey;
       if (event.keyCode === 191 && (filter(event) || (event.ctrlKey && !event.altKey && !event.metaKey))) {
         if (event.ctrlKey || !event.shiftKey) {
           var searchInput = document.getElementById('searchinput');
@@ -74,18 +79,26 @@ module fng.controllers {
         } else {
           $scope.showShortcuts = true;
         }
-      } else if (event.keyCode === 83 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
-        deferredBtnClick('saveButton');                           // Ctrl+Shift+S saves changes
-      } else if (event.keyCode === 27 && ((event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) || $scope.showShortcuts)) {
-        if (event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+      } else if (event.keyCode === 27 && ((ctrlShift) || $scope.showShortcuts)) {
+        if (ctrlShift) {
           deferredBtnClick('cancelButton');                         // Ctrl+Shift+Esc cancels updates
         } else {
           $scope.showShortcuts = false;
         }
-      } else if (event.keyCode === 45 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
-        deferredBtnClick('newButton');                           // Ctrl+Shift+Ins creates New record
-      } else if (event.keyCode === 88 && event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
-        deferredBtnClick('deleteButton');                        // Ctrl+Shift+X deletes record
+      } else if (ctrlShift) {
+        if (event.keyCode === 83) {
+          deferredBtnClick('saveButton');                           // Ctrl+Shift+S saves changes
+        } else if (event.keyCode === 45) {
+          deferredBtnClick('newButton');                           // Ctrl+Shift+Ins creates New record
+        } else if (event.keyCode === 88) {
+          deferredBtnClick('deleteButton');                        // Ctrl+Shift+X deletes record
+        } else if (formsAngular.keyboardShortCuts) {
+          formsAngular.keyboardShortCuts.forEach((sc) => {
+            if (event.keyCode === sc.keycode) {
+              deferredBtnClick(sc.id);
+            }
+          })
+        }
       }
     };
 

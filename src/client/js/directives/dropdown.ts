@@ -42,7 +42,7 @@ module fng.directives {
       replace: true,
       template:
         `<li id="{{ contextMenuId }}" ng-show="items.length > 0" class="mcdd" uib-dropdown ${menuVisibilityStr} ${menuDisabledStr}>` +
-        ' <a href="#" uib-dropdown-toggle>' +
+        ' <a href="#" id="context-menu-sel" uib-dropdown-toggle>' +
         '  {{contextMenu}} <b class="caret"></b>' +
         " </a>" +
         ' <ul class="uib-dropdown-menu dropdown-menu">' +

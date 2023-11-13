@@ -34,7 +34,13 @@ declare module fng {
     disableableAttr?: string; // an attribute to mark all elements that can be disabled using security
     disableableAncestorAttr?: string; // an attribute to mark all elements whose children can all be disabled using "disabled + children" security
     // if an element's id is a partial match on any of this array's contents, it will never be marked with hideableAttr/disableableAttr
-    ignoreIdsForHideableOrDisableableAttrs?: string[]; 
+    ignoreIdsForHideableOrDisableableAttrs?: string[];
+    keyboardShortCuts? : {
+      letter: string;
+      keycode: number;
+      id: string;
+      desc: string;
+    } [];
   }
   var formsAngular: IFng;
 
