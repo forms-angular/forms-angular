@@ -1409,6 +1409,9 @@ module fng.services {
           if (!data) {
             return;
           }
+          if (Array.isArray(data)) {
+            data = data.filter((i) => i !== undefined && i !== null);
+          }
           data = convertForeignKeys(schemaElement, data, options, ids);
           setData($scope.record, schemaElement.name, undefined, data);
         }        
