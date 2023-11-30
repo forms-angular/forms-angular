@@ -53,6 +53,16 @@ gulp.task('compileServerSide', function() {
     .pipe(gulp.dest(distDirectory + '/server'));
 });
 
+gulp.task('compileTests', function() {
+  return gulp
+    .src('test/*.ts')
+    .pipe(typeScriptCompiler({
+      target: 'ES2020',
+      moduleResolution: "node",
+      module: "commonjs",
+    }))
+});
+
 gulp.task('clean', function() {
   return del(distDirectory, function(err,paths) {console.log('Cleared ' + paths.join(' '));});
 });
@@ -130,7 +140,7 @@ gulp.task('copyTypes', function () {
   var files = [
       './src/client/index.d.ts',
       './src/server/index.d.ts'
-  ]
+  ];
   return gulp.src(files, {base: './src/'})
     .pipe(gulp.dest(distDirectory));
 });
@@ -172,6 +182,7 @@ gulp.task('less', function () {
 gulp.task('compile', gulp.series(
   'compileServerSide',
   'compileClientSide',
+  'compileTests',
   function(done) {done();})
 );
 
@@ -225,6 +236,7 @@ gulp.task('default', gulp.series(
 gulp.task('allServer', gulp.series(
   'clean',
   'compileServerSide',
+  'compileTests',
   'apiTest',
   function(done) {done();})
 );
