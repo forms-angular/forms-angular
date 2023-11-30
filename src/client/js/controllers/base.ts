@@ -64,7 +64,7 @@ module fng.controllers {
       });
     }
 
-//Check that we are ready
+    //Check that we are ready
     if (typeof formsAngular.beforeProcess === "function") {
       formsAngular.beforeProcess($scope, function (err) {
         if (err) {

@@ -1,6 +1,7 @@
 declare module fng {
   export interface IFng extends angular.IModule {
     beforeProcess?: (scope: IFormScope, cb: (err?: Error) => void) => void;
+    beforeHandleIncomingDataPromises?: () => Promise<void>[];
     title?: { prefix?: string; suffix?: string };
     // when provided, the named function (assumed to be present on $rootscope) will be used to determine the visibility
     // of menu items and control groups
@@ -329,7 +330,8 @@ declare module fng {
     createNew(dataToSave: any, options: any, scope: IFormScope, ctrlState: IFngCtrlState): void;
     deleteRecord(id: string, scope: IFormScope, ctrlState: IFngCtrlState): void;
     updateDocument(dataToSave: any, options: any, scope: IFormScope, ctrlState: IFngCtrlState): void;
-    readRecord($scope: IFormScope, ctrlState);
+    beginReadingRecord($scope: IFormScope): void;
+    finishReadingThenProcessRecord($scope: IFormScope, ctrlState): void;
     scrollTheList($scope: IFormScope);
     getListData(record, fieldName, listSchema?, $scope?: IFormScope);
     suffixCleanId(inst, suffix);
