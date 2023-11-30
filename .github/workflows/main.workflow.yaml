@@ -1,0 +1,30 @@
+name: Run npm test
+
+on:
+  push:
+    branches-ignore:
+      - 'next'
+      - 'www'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          version: 'latest'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: gulp all
