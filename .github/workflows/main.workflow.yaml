@@ -1,4 +1,4 @@
-name: Run npm test
+name: Run build and test
 
 on:
   push:
