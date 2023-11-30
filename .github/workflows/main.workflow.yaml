@@ -26,5 +26,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Big Build
+        run: npm run build
+
       - name: Run tests
         run: gulp all
