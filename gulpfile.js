@@ -55,12 +55,13 @@ gulp.task('compileServerSide', function() {
 
 gulp.task('compileTests', function() {
   return gulp
-    .src('test/*.ts')
+    .src('test/api/*.ts')
     .pipe(typeScriptCompiler({
       target: 'ES2020',
       moduleResolution: "node",
       module: "commonjs",
     }))
+    .pipe(gulp.dest('test/api'));
 });
 
 gulp.task('clean', function() {
