@@ -17,10 +17,6 @@ var browserSources = [
   'src/client/js/services/*.ts',
   'src/client/js/*.ts'
 ];
-var testFiles = [
-  'test/api/*.ts',
-  'test/helpers/*.ts'
-];
 var rootDir = process.cwd();
 var distDirectory = 'dist';
 
