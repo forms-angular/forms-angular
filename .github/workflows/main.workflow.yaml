@@ -23,6 +23,11 @@ jobs:
         with:
           version: 'latest'
 
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: 6.0
+
       - name: Install dependencies
         run: npm install
 
