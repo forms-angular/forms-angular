@@ -17,7 +17,6 @@ var browserSources = [
   'src/client/js/services/*.ts',
   'src/client/js/*.ts'
 ];
-var testFiles = []; // Declared in the karma.conf.js
 var rootDir = process.cwd();
 var distDirectory = 'dist';
 
@@ -47,6 +46,7 @@ gulp.task('compileServerSide', function() {
     .src('src/server/*.ts')
     .pipe(typeScriptCompiler({
       target: 'ES2020',
+      rootDir: '.',
       moduleResolution: "node",
       module: "commonjs",
     }))
@@ -130,7 +130,7 @@ gulp.task('copyTypes', function () {
   var files = [
       './src/client/index.d.ts',
       './src/server/index.d.ts'
-  ]
+  ];
   return gulp.src(files, {base: './src/'})
     .pipe(gulp.dest(distDirectory));
 });
