@@ -17,7 +17,10 @@ var browserSources = [
   'src/client/js/services/*.ts',
   'src/client/js/*.ts'
 ];
-var testFiles = []; // Declared in the karma.conf.js
+var testFiles = [
+  'test/api/*.ts',
+  'test/helpers/*.ts'
+];
 var rootDir = process.cwd();
 var distDirectory = 'dist';
 
@@ -47,21 +50,11 @@ gulp.task('compileServerSide', function() {
     .src('src/server/*.ts')
     .pipe(typeScriptCompiler({
       target: 'ES2020',
+      rootDir: '.',
       moduleResolution: "node",
       module: "commonjs",
     }))
     .pipe(gulp.dest(distDirectory + '/server'));
-});
-
-gulp.task('compileTests', function() {
-  return gulp
-    .src('test/api/*.ts')
-    .pipe(typeScriptCompiler({
-      target: 'ES2020',
-      moduleResolution: "node",
-      module: "commonjs",
-    }))
-    .pipe(gulp.dest('test/api'));
 });
 
 gulp.task('clean', function() {
@@ -183,7 +176,6 @@ gulp.task('less', function () {
 gulp.task('compile', gulp.series(
   'compileServerSide',
   'compileClientSide',
-  'compileTests',
   function(done) {done();})
 );
 
@@ -237,7 +229,6 @@ gulp.task('default', gulp.series(
 gulp.task('allServer', gulp.series(
   'clean',
   'compileServerSide',
-  'compileTests',
   'apiTest',
   function(done) {done();})
 );
