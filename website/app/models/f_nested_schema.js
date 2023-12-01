@@ -65,7 +65,6 @@ FSchema.statics.form = function (layout) {
             };
             break;
         case 'ResultsOnly':
-            // English and Maths exams from the array
             formSchema = {
                 surname: {},
                 forename: {},
