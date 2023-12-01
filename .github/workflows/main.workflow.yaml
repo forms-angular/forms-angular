@@ -28,6 +28,12 @@ jobs:
         with:
           mongodb-version: 6.0
 
+      - name: Setup mongodb-tools
+        run: |
+          wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.6.1.deb
+          sudo apt install ./mongodb-database-tools-*-100.6.1.deb
+          mongorestore --version          
+
       - name: Install dependencies
         run: npm install
 
