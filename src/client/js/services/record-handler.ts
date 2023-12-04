@@ -418,8 +418,14 @@ module fng.services {
       }
     }
 
-    function fillFormFromBackendCustomSchema(schema, $scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState: IFngCtrlState) {
+    function fillFormFromBackendCustomSchema(schema, $scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandlerService, ctrlState: IFngCtrlState) {
       var listOnly = (!$scope.id && !$scope.newRecord);
+      if ($scope.id && typeof $scope.dataEventFunctions.onBeforeRead !== "function") {
+        // Get started with reading the record now.  We'll wait for the promise to resolve later, in finishReadingThenProcessRecord().
+        // We DON'T do this when an onBeforeRead hook is provided - in that case, we'll call beginReadingRecord() immediately before
+        // calling finishReadingThenProcessRecord(), later...
+        recordHandlerInstance.beginReadingRecord($scope);
+      }
       // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
       // but should be removed when/if formschemas are cached
       formGeneratorInstance.handleSchema("Main " + $scope.modelName, schema, listOnly ? null : $scope.formSchema, $scope.listSchema, "", true, $scope, ctrlState);
@@ -590,11 +596,12 @@ module fng.services {
               if (err) {
                 $scope.showError(err);
               } else {
-                recordHandlerInstance.readRecord($scope, ctrlState);
+                recordHandlerInstance.beginReadingRecord($scope);
+                recordHandlerInstance.finishReadingThenProcessRecord($scope, ctrlState);
               }
             });
           } else {
-            recordHandlerInstance.readRecord($scope, ctrlState);
+            recordHandlerInstance.finishReadingThenProcessRecord($scope, ctrlState);
           }
         } else {
           // New record
@@ -719,20 +726,28 @@ module fng.services {
     }
 
     return {
-      readRecord: function readRecord($scope, ctrlState: IFngCtrlState) {
+      beginReadingRecord: ($scope) => {
         $scope.readingRecord = SubmissionsService.readRecord($scope.modelName, $scope.id, $scope.formName);
-        $scope.readingRecord
-          .then(function(response) {
-            let data: any = angular.copy(response.data);
+      },
+
+      finishReadingThenProcessRecord: ($scope, ctrlState: IFngCtrlState) => {
+        const multi = typeof formsAngular.beforeHandleIncomingDataPromises === "function";
+        const promise = multi ?
+          Promise.all([$scope.readingRecord, ...formsAngular.beforeHandleIncomingDataPromises()]) :
+          $scope.readingRecord;
+        promise
+          .then((response) => {
+            let data: any = multi ? angular.copy(response[0].data) : response.data;
             handleIncomingData(data, $scope, ctrlState);
-          }, function(error) {
+          })
+          .catch((e) => {
             if ($scope.dataEventFunctions.onReadError) {
-              $scope.dataEventFunctions.onReadError($scope.id, error);
+              $scope.dataEventFunctions.onReadError($scope.id, e);
             } else {
-              if (error.status === 404) {
+              if (e.status === 404) {
                 $location.path("/404");
               } else {
-                $scope.handleHttpError(error);
+                $scope.handleHttpError(e);
               }
             }
           });
