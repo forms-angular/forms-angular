@@ -1,7 +1,7 @@
 declare module fng {
   export interface IFng extends angular.IModule {
     beforeProcess?: (scope: IFormScope, cb: (err?: Error) => void) => void;
-    beforeHandleIncomingDataPromises?: () => Promise<void>[];
+    beforeHandleIncomingDataPromises?: () => angular.IPromise<any>[];
     title?: { prefix?: string; suffix?: string };
     // when provided, the named function (assumed to be present on $rootscope) will be used to determine the visibility
     // of menu items and control groups
