@@ -420,8 +420,10 @@ module fng.services {
 
     function fillFormFromBackendCustomSchema(schema, $scope: fng.IFormScope, formGeneratorInstance, recordHandlerInstance: fng.IRecordHandlerService, ctrlState: IFngCtrlState) {
       var listOnly = (!$scope.id && !$scope.newRecord);
-      if (!listOnly && $scope.id) {
-        // get started with reading the record now.  we'll wait for the promise to resolve later when calling finishReadingThenProcessRecord
+      if ($scope.id && typeof $scope.dataEventFunctions.onBeforeRead !== "function") {
+        // Get started with reading the record now.  We'll wait for the promise to resolve later, in finishReadingThenProcessRecord().
+        // We DON'T do this when an onBeforeRead hook is provided - in that case, we'll call beginReadingRecord() immediately before
+        // calling finishReadingThenProcessRecord(), later...
         recordHandlerInstance.beginReadingRecord($scope);
       }
       // passing null for formSchema parameter prevents all the work being done when we are just after the list data,
@@ -594,6 +596,7 @@ module fng.services {
               if (err) {
                 $scope.showError(err);
               } else {
+                recordHandlerInstance.beginReadingRecord($scope);
                 recordHandlerInstance.finishReadingThenProcessRecord($scope, ctrlState);
               }
             });
@@ -728,13 +731,13 @@ module fng.services {
       },
 
       finishReadingThenProcessRecord: ($scope, ctrlState: IFngCtrlState) => {
-        const promises = [$scope.readingRecord];
-        if (typeof formsAngular.beforeHandleIncomingDataPromises === "function") {
-          promises.push(...formsAngular.beforeHandleIncomingDataPromises());
-        }
-        Promise.all(promises)
-          .then((results) => {
-            let data: any = angular.copy(results[0].data);
+        const multi = typeof formsAngular.beforeHandleIncomingDataPromises === "function";
+        const promise = multi ?
+          Promise.all([$scope.readingRecord, ...formsAngular.beforeHandleIncomingDataPromises()]) :
+          $scope.readingRecord;
+        promise
+          .then((response) => {
+            let data: any = multi ? angular.copy(response[0].data) : response.data;
             handleIncomingData(data, $scope, ctrlState);
           })
           .catch((e) => {
