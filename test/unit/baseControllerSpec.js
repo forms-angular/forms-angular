@@ -876,11 +876,15 @@ describe('BaseCtrl', function () {
       $httpBackend.flush();
     });
 
-    it('send a delete request when yes is clicked', function () {
+    it('send a delete request when yes is clicked', function (done) {
       $httpBackend.when('DELETE', '/api/collection/125').respond(200, 'SUCCESS');
       $httpBackend.expectDELETE('/api/collection/125');
-      $scope.deleteClick();
-      deferred.resolve(true);    // Same as clicking on Yes
+      // override the cancel function as a way of knowing when phase is 'ready'
+      $scope.cancel = function() {
+        $scope.deleteClick();
+        deferred.resolve(true);    // Same as clicking on Yes
+        done();
+      };
       $httpBackend.flush();
     });
 

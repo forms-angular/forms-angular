@@ -584,12 +584,13 @@ module fng.services {
         }, true);
 
         if ($scope.id) {
-          // Going to read a record
           if (typeof $scope.dataEventFunctions.onBeforeRead === "function") {
             $scope.dataEventFunctions.onBeforeRead($scope.id, function(err) {
               if (err) {
                 $scope.showError(err);
               } else {
+                // force the read even if we have the data - it may have changed
+                $scope.readingRecord = undefined;
                 recordHandlerInstance.readRecord($scope, ctrlState);
               }
             });
@@ -720,7 +721,9 @@ module fng.services {
 
     return {
       readRecord: function readRecord($scope, ctrlState: IFngCtrlState) {
-        $scope.readingRecord = SubmissionsService.readRecord($scope.modelName, $scope.id, $scope.formName);
+        if (!$scope.readingRecord) {
+          $scope.readingRecord = SubmissionsService.readRecord($scope.modelName, $scope.id, $scope.formName);
+        }
         $scope.readingRecord
           .then(function(response) {
             let data: any = angular.copy(response.data);

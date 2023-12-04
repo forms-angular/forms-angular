@@ -9,6 +9,7 @@ module fng.controllers {
     $location: angular.ILocaleService,
     $filter,
     $uibModal/*: angular.ui.bootstrap.IModalService  <this is the correct type, but not available*/,
+    SubmissionsService: fng.ISubmissionsService,
     FngModelCtrlService: fng.IModelCtrlService,
     RoutingService: fng.IRoutingService,
     FormGeneratorService: fng.IFormGeneratorService,
@@ -49,6 +50,9 @@ module fng.controllers {
     RecordHandlerService.decorateScope($scope, $uibModal, RecordHandlerService, ctrlState);
 
     function processTheForm() {
+      if ($scope.id) {
+        $scope.readingRecord = SubmissionsService.readRecord($scope.modelName, $scope.id, $scope.formName);
+      }
       RecordHandlerService.fillFormWithBackendSchema($scope, FormGeneratorService, RecordHandlerService, ctrlState);
 
       // Tell the 'model controllers' that they can start fiddling with baseScope

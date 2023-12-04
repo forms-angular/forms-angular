@@ -86,10 +86,10 @@ describe('Data Events', function () {
         inject(function (_$httpBackend_, $rootScope, $controller, $location) {
           $httpBackend = _$httpBackend_;
           $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String', 'options': {'form': {'label': 'Organisation Name'}, 'list': true}, '_index': null}});
+          $httpBackend.whenGET('/api/collection/125').respond({'name': 'Alan', '_id': '125'});
           $location.$$path = '/collection/125/edit';
           var scope = $rootScope.$new();
           $controller('BaseCtrl', {$scope: scope});
-
           scope.dataEventFunctions.onBeforeRead = function (id, cb) {
             if (id === '125') {
               cb(new Error('You have no access'));
@@ -97,7 +97,6 @@ describe('Data Events', function () {
               cb();
             }
           };
-
           $httpBackend.flush();
         });
       });
@@ -153,7 +152,7 @@ describe('Data Events', function () {
 
     describe('Delete', function () {
 
-      it('should make a call before deleting document', function () {
+      it('should make a call before deleting document', function (done) {
         inject(function (_$httpBackend_, $rootScope, $controller, $location, _$uibModal_, $q) {
           $httpBackend = _$httpBackend_;
           var $modal = _$uibModal_;
@@ -162,12 +161,6 @@ describe('Data Events', function () {
           $location.$$path = '/collection/125/edit';
           var scope = $rootScope.$new();
           $controller('BaseCtrl', {$scope: scope, $modal: $modal});
-
-          scope.dataEventFunctions.onBeforeDelete = function (data, cb) {
-            cb();
-          };
-
-          spyOn(scope.dataEventFunctions, 'onBeforeDelete').and.callThrough();
 
           var deferred = $q.defer();
           var fakeModal = {result: deferred.promise};
@@ -179,9 +172,16 @@ describe('Data Events', function () {
           $httpBackend.expectDELETE('/api/collection/125');
           scope.record._id = 125;
           scope.record.name = 'John';
-          scope.deleteClick();
+          scope.cancel = function() {
+            scope.deleteClick();
+            scope.dataEventFunctions.onBeforeDelete = function(data, cb) {
+              cb();
+            };
+            scope.dataEventFunctions.onAfterDelete = function() {
+              done();
+            };
+          };
           $httpBackend.flush();
-          expect(scope.dataEventFunctions.onBeforeDelete).toHaveBeenCalled();
         });
       });
 
@@ -289,7 +289,7 @@ describe('Data Events', function () {
 
     describe('Delete', function () {
 
-      it('should request make a call after deleting document', function () {
+      it('should request make a call after deleting document', function (done) {
         inject(function (_$httpBackend_, $rootScope, $controller, $location, _$uibModal_, $q) {
           $httpBackend = _$httpBackend_;
           var $modal = _$uibModal_;
@@ -298,12 +298,9 @@ describe('Data Events', function () {
           $location.$$path = '/collection/125/edit';
           var scope = $rootScope.$new();
           $controller('BaseCtrl', {$scope: scope, $modal: $modal});
-          scope.dataEventFunctions.onAfterDelete = function () {};
-          spyOn(scope.dataEventFunctions, 'onAfterDelete').and.callThrough();
 
           var deferred = $q.defer();
           var fakeModal = {result: deferred.promise};
-          deferred.resolve(true);    // Same as clicking on Yes
           spyOn($modal, 'open').and.returnValue(fakeModal);
 
           $httpBackend.when('DELETE', '/api/collection/125').respond(200, 'SUCCESS');
@@ -311,11 +308,15 @@ describe('Data Events', function () {
           $httpBackend.expectDELETE('/api/collection/125');
           scope.record._id = 125;
           scope.record.name = 'John';
-          scope.deleteClick();
+          // override the cancel function as a way of knowing when phase is 'ready'
+          scope.cancel = function() {
+            scope.deleteClick();
+            deferred.resolve(true);    // Same as clicking on Yes
+            scope.dataEventFunctions.onAfterDelete = function () {
+              done();
+            };
+          };
           $httpBackend.flush();
-
-          expect(scope.dataEventFunctions.onAfterDelete).toHaveBeenCalled();
-
         });
       });
 
