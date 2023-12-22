@@ -799,6 +799,8 @@ export class FormsAngular {
                         }
                     }
                     outPath[element] = extend(true, {}, paths[element]);
+                    delete outPath[element].$parentSchemaDocArray;  // This is a circular reference and can't be stringified
+
                     if (paths[element].options.secure) {
                         hiddenFields.push(element);
                     }
