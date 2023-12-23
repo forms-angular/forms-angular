@@ -251,7 +251,7 @@ export class FormsAngular {
             }
         }
 
-        extend(resource.options, this.preprocess(resource, resource.model.schema['paths'], null));
+        extend(resource.options, this.preprocess(resource, resource.model.schema['paths']));
 
         if (resource.options.searchImportance) {
             this.searchFunc = async.forEachSeries;
@@ -758,75 +758,103 @@ export class FormsAngular {
         return outPath;
     };
 
-    preprocess(resource: Resource, paths, formSchema?) {
+    preprocess(resource: Resource, paths, formName?: string, formSchema?: any) {
+
+        function processInternalObject(obj: any) {
+            return Object.keys(obj).reduce((acc, cur, ) => {
+                const curType= typeof obj[cur];
+                if (!['$','_'].includes(cur.charAt(0)) && curType !== 'function') {
+                    const val = obj[cur];
+                    if (val) {
+                        if (Array.isArray(val)) {
+                            if (val.length > 0) {
+                                acc[cur] = val;
+                            }
+                        } else if (curType === 'object') {
+                            acc[cur] = processInternalObject(obj[cur]);
+                        } else {
+                            acc[cur] = obj[cur];
+                        }
+                    }
+                }
+                return acc;
+            }, {});
+        }
+
         let outPath: Path = {},
             hiddenFields = [],
             listFields = [];
 
-        if (resource && resource.options && resource.options.idIsList) {
-            paths['_id'].options = paths['_id'].options || {};
-            paths['_id'].options.list = resource.options.idIsList;
-        }
-        for (let element in paths) {
-            if (paths.hasOwnProperty(element) && element !== '__v') {
-                // check for schemas
-                if (paths[element].schema) {
-                    let subSchemaInfo = this.preprocess(null, paths[element].schema.paths);
-                    outPath[element] = {schema: subSchemaInfo.paths};
-                    if (paths[element].options.form) {
-                        outPath[element].options = {form: extend(true, {}, paths[element].options.form)};
-                    }
-                    // this provides support for entire nested schemas that wish to remain hidden
-                    if (paths[element].options.secure) {
-                        hiddenFields.push(element);
-                    }
-                    // to support hiding individual properties of nested schema would require us
-                    // to do something with subSchemaInfo.hide here
-                } else {
-                    // check for arrays
-                    let realType = paths[element].caster ? paths[element].caster : paths[element];
-                    if (!realType.instance) {
+        if (resource && resource.preprocessed && resource.preprocessed[formName || "__default"]) {
+            return resource.preprocessed[formName || "__default"].paths;
+        } else {
+            if (resource && resource.options && resource.options.idIsList) {
+                paths['_id'].options = paths['_id'].options || {};
+                paths['_id'].options.list = resource.options.idIsList;
+            }
+            for (let element in paths) {
+                if (paths.hasOwnProperty(element) && element !== '__v') {
+                    // check for schemas
+                    if (paths[element].schema) {
+                        let subSchemaInfo = this.preprocess(null, paths[element].schema.paths);
+                        outPath[element] = { schema: subSchemaInfo.paths };
+                        if (paths[element].options.form) {
+                            outPath[element].options = { form: extend(true, {}, paths[element].options.form) };
+                        }
+                        // this provides support for entire nested schemas that wish to remain hidden
+                        if (paths[element].options.secure) {
+                            hiddenFields.push(element);
+                        }
+                        // to support hiding individual properties of nested schema would require us
+                        // to do something with subSchemaInfo.hide here
+                    } else {
+                        // check for arrays
+                        let realType = paths[element].caster ? paths[element].caster : paths[element];
+                        if (!realType.instance) {
 
-                        if (realType.options.type) {
-                            let type = realType.options.type(),
-                                typeType = typeof type;
+                            if (realType.options.type) {
+                                let type = realType.options.type(),
+                                  typeType = typeof type;
 
-                            if (typeType === 'string') {
-                                realType.instance = (!isNaN(Date.parse(type))) ? 'Date' : 'String';
-                            } else {
-                                realType.instance = typeType;
+                                if (typeType === 'string') {
+                                    realType.instance = (!isNaN(Date.parse(type))) ? 'Date' : 'String';
+                                } else {
+                                    realType.instance = typeType;
+                                }
                             }
                         }
-                    }
-                    outPath[element] = extend(true, {}, paths[element]);
-                    delete outPath[element].$parentSchemaDocArray;  // This is a circular reference and can't be stringified
-
-                    if (paths[element].options.secure) {
-                        hiddenFields.push(element);
-                    }
-                    if (paths[element].options.match) {
-                        outPath[element].options.match = paths[element].options.match.source || paths[element].options.match;
-                    }
-                    let schemaListInfo: any = paths[element].options.list;
-                    if (schemaListInfo) {
-                        let listFieldInfo: ListField = {field: element};
-                        if (typeof schemaListInfo === 'object' && Object.keys(schemaListInfo).length > 0) {
-                            listFieldInfo.params = schemaListInfo;
+                        outPath[element] = processInternalObject(paths[element]);
+                        if (paths[element].options.secure) {
+                            hiddenFields.push(element);
                         }
-                        listFields.push(listFieldInfo);
+                        if (paths[element].options.match) {
+                            outPath[element].options.match = paths[element].options.match.source || paths[element].options.match;
+                        }
+                        let schemaListInfo: any = paths[element].options.list;
+                        if (schemaListInfo) {
+                            let listFieldInfo: ListField = { field: element };
+                            if (typeof schemaListInfo === 'object' && Object.keys(schemaListInfo).length > 0) {
+                                listFieldInfo.params = schemaListInfo;
+                            }
+                            listFields.push(listFieldInfo);
+                        }
                     }
                 }
             }
+            outPath = this.applySchemaSubset(outPath, formSchema);
+            let returnObj: any = { paths: outPath };
+            if (hiddenFields.length > 0) {
+                returnObj.hide = hiddenFields;
+            }
+            if (listFields.length > 0) {
+                returnObj.listFields = listFields;
+            }
+            if (resource) {
+                resource.preprocessed = resource.preprocessed || {};
+                resource.preprocessed[formName || "__default"] = returnObj;
+            }
+            return returnObj;
         }
-        outPath = this.applySchemaSubset(outPath, formSchema);
-        let returnObj: any = {paths: outPath};
-        if (hiddenFields.length > 0) {
-            returnObj.hide = hiddenFields;
-        }
-        if (listFields.length > 0) {
-            returnObj.listFields = listFields;
-        }
-        return returnObj;
     };
 
     schema() {
@@ -835,15 +863,20 @@ export class FormsAngular {
                 return res.status(404).end();
             }
             let formSchema = null;
-            if (req.params.formName) {
-                try {
-                    formSchema = req.resource.model.schema.statics['form'](req.params.formName, req);
-                } catch (e) {
-                    return res.status(500).send(e.message);                    
-                }                
+            const formName = req.params.formName;
+            if (req.resource.preprocessed?.[formName || "__default"]) {
+                res.send(req.resource.preprocessed[formName || "__default"].paths);
+            } else {
+                if (formName) {
+                    try {
+                        formSchema = req.resource.model.schema.statics['form'](formName, req);
+                    } catch (e) {
+                        return res.status(500).send(e.message);
+                    }
+                }
+                let paths = this.preprocess(req.resource, req.resource.model.schema.paths, formName, formSchema).paths;
+                res.send(paths);
             }
-            let paths = this.preprocess(req.resource, req.resource.model.schema.paths, formSchema).paths;
-            res.send(paths);
         }, this);
     };
 

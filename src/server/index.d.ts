@@ -93,6 +93,7 @@ declare module fngServer {
     interface Resource extends ResourceExport {
         resourceName: string;
         resourceNameLower: string;
+        preprocessed?: {[formName: string] : any};
     }
 
     interface ListParams {
