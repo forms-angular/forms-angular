@@ -770,7 +770,7 @@ export class FormsAngular {
                             if (val.length > 0) {
                                 acc[cur] = val;
                             }
-                        } else if (curType === 'object') {
+                        } else if (curType === 'object' && !(val instanceof Date) && !(val instanceof RegExp)) {
                             acc[cur] = processInternalObject(obj[cur]);
                         } else {
                             acc[cur] = obj[cur];
