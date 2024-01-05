@@ -1,4 +1,4 @@
-import { Error, Model, Types } from "mongoose";
+import { Error, FilterQuery, Model, Types } from "mongoose";
 import {Express} from "express";
 
 declare module fngServer {
@@ -52,7 +52,7 @@ declare module fngServer {
         handleRemove?: 'allow' | 'cascade';  // default behaviour is to prevent deletion if record is used as a foreign key
         searchImportance?: boolean | number,
         onSave?: (doc, req, cb) => void,
-        findFunc?: (req, cb) => void,
+        findFunc?: (req: Express.Request, cb: (err:Error, criteria?: FilterQuery<any>) => void) => void,
         getOrgCriteria?: (userOrganisation: string) => Promise<any>
         idIsList?: IIdIsList,
         searchResultFormat?: ISearchResultFormatter,
