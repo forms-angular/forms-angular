@@ -1,4 +1,4 @@
-import {Document, Mongoose, Types} from "mongoose";
+import {Document, FilterQuery, Mongoose, Types} from "mongoose";
 import {Express} from "express";
 import {fngServer} from "./index";
 import Resource = fngServer.Resource;
@@ -11,7 +11,7 @@ import ISearchResultFormatter = fngServer.ISearchResultFormatter;
 import Path = fngServer.Path;
 import ForeignKeyList = fngServer.ForeignKeyList;
 
-// This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
+// This part of forms-angular borrows from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
 
 const _ = require('lodash');
@@ -23,7 +23,7 @@ let debug = false;
 
 type IHiddenFields = { [fieldName: string]: boolean };
 
-function logTheAPICalls(req, res, next) {
+function logTheAPICalls(req: Express.Request, res: Express.Response, next) {
     void (res);
     console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
     next();
@@ -681,7 +681,7 @@ export class FormsAngular {
     };
 
     search() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             if (!(req.resource = this.getResource(req.params.resourceName))) {
                 return next();
             }
@@ -881,7 +881,7 @@ export class FormsAngular {
     };
 
     report() {
-        return _.bind(async function (req, res, next) {
+        return _.bind(async function (req: Express.Request, res: Express.Response, next) {
             if (!(req.resource = this.getResource(req.params.resourceName))) {
                 return next();
             }
@@ -971,10 +971,10 @@ export class FormsAngular {
         }
     };
 
-    sanitisePipeline(
+    async sanitisePipeline(
         aggregationParam: any | any[],
         hiddenFields,
-        findFuncQry: any): any[] {
+        findFuncQry: any): Promise<any[]> {
         let that = this;
         let array = Array.isArray(aggregationParam) ? aggregationParam : [aggregationParam];
         let retVal = [];
@@ -1007,7 +1007,7 @@ export class FormsAngular {
                             unionHiddenLookupFields = this.generateHiddenFields(unionResource, false);
                         }
                     }
-                    stage.$unionWith.pipeline = that.sanitisePipeline(stage.$unionWith.pipeline, unionHiddenLookupFields, findFuncQry);
+                    stage.$unionWith.pipeline = await that.sanitisePipeline(stage.$unionWith.pipeline, unionHiddenLookupFields, findFuncQry);
                     break;
                 case '$match':
                     this.hackVariables(array[pipelineSection]['$match']);
@@ -1107,14 +1107,19 @@ export class FormsAngular {
 
                 let toDo: any = {
                     runAggregation: function (cb) {
-                        runPipelineObj = self.sanitisePipeline(runPipelineObj, hiddenFields, queryObj);
-                        resource.model.aggregate(runPipelineObj)
-                            .then((results) => {
-                                cb(null, results);
-                            })
-                            .catch((err) => {
-                                cb(err);
-                            })
+                        self.sanitisePipeline(runPipelineObj, hiddenFields, queryObj)
+                          .then((runPipelineObj) => {
+                              resource.model.aggregate(runPipelineObj)
+                                .then((results) => {
+                                    cb(null, results);
+                                })
+                                .catch((err) => {
+                                    cb(err);
+                                })
+                          })
+                          .catch((err) => {
+                              throw new Error('Error in sanitisePipeline ' + err)
+                          });
                     }
                 };
 
@@ -1313,7 +1318,7 @@ export class FormsAngular {
      * Renders a view with the list of docs, which may be modified by query parameters
      */
     collectionGet() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             this.processCollection(req);
             if (!req.resource) {
                 return next();
@@ -1413,9 +1418,9 @@ export class FormsAngular {
         let hiddenFields = this.generateHiddenFields(resource, false);
         let stashAggregationResults;
 
-        function doAggregation(queryObj, cb) {
+        async function doAggregation(queryObj, cb) {
             if (aggregationParam) {
-                aggregationParam = that.sanitisePipeline(aggregationParam, hiddenFields, queryObj);
+                aggregationParam = await that.sanitisePipeline(aggregationParam, hiddenFields, queryObj);
                 resource.model.aggregate(aggregationParam)
                     .then((aggregationResults) => {
                         stashAggregationResults = aggregationResults;
@@ -1478,7 +1483,7 @@ export class FormsAngular {
     };
 
     collectionPost() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             this.processCollection(req);
             if (!req.resource) {
                 next();
@@ -1567,7 +1572,7 @@ export class FormsAngular {
      * Entity request goes here first
      * It retrieves the resource
      */
-    processEntity(req, res, next) {
+    processEntity(req: Express.Request, res: Express.Response, next) {
         if (!(req.resource = this.getResource(req.params.resourceName))) {
             return next();
         }
@@ -1606,7 +1611,7 @@ export class FormsAngular {
      * @return {Function} The function to use as route
      */
     entityGet() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
 
             this.processEntity(req, res, function () {
                 if (!req.resource) {
@@ -1639,7 +1644,7 @@ export class FormsAngular {
     };
 
     entityPut() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             const that = this;
 
             this.processEntity(req, res, function () {
@@ -1747,7 +1752,7 @@ export class FormsAngular {
 
     entityDelete() {
         let that = this;
-        return _.bind(async function (req, res, next) {
+        return _.bind(async function (req: Express.Request, res: Express.Response, next) {
 
 
             async function removeDoc(doc: Document, resource: Resource): Promise<any> {
@@ -1806,7 +1811,7 @@ export class FormsAngular {
     };
 
     entityList() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             const that = this;
             this.processEntity(req, res, function () {
                 if (!req.resource) {
@@ -1987,7 +1992,7 @@ export class FormsAngular {
     };
 
     entityListAll() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             if (!(req.resource = this.getResource(req.params.resourceName))) {
                 return next();
             }
