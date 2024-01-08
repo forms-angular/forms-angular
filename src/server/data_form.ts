@@ -670,7 +670,7 @@ export class FormsAngular {
         );
     };
 
-    wrapInternalSearch(req, res, resourcesToSearch, includeResourceInResults, limit) {
+    wrapInternalSearch(req: Express.Request, res: Express.Response, resourcesToSearch, includeResourceInResults, limit) {
         this.internalSearch(req, resourcesToSearch, includeResourceInResults, limit, function (err, resultsObject) {
             if (err) {
                 res.status(400, err)
@@ -974,7 +974,8 @@ export class FormsAngular {
     async sanitisePipeline(
         aggregationParam: any | any[],
         hiddenFields,
-        findFuncQry: any): Promise<any[]> {
+        findFuncQry: any,
+        req? : Express.Request): Promise<any[]> {
         let that = this;
         let array = Array.isArray(aggregationParam) ? aggregationParam : [aggregationParam];
         let retVal = [];
@@ -989,9 +990,16 @@ export class FormsAngular {
                 throw new Error('Invalid pipeline instruction');
             }
             switch (keys[0]) {
-                case '$merge':
-                case '$out':
-                    throw new Error('Cannot use potentially destructive pipeline stages')
+                case '$project':
+                case '$addFields':
+                case '$count':
+                case "$group":
+                case "$limit":
+                case "$replaceRoot":
+                case "$sort":
+                case "$unwind":
+                    // We don't care about these - they are all (as far as we know) safe
+                break;
                 case '$unionWith':
                   /*
                     Sanitise the pipeline we are doing a union with, removing hidden fields from that collection
@@ -1007,7 +1015,7 @@ export class FormsAngular {
                             unionHiddenLookupFields = this.generateHiddenFields(unionResource, false);
                         }
                     }
-                    stage.$unionWith.pipeline = await that.sanitisePipeline(stage.$unionWith.pipeline, unionHiddenLookupFields, findFuncQry);
+                    stage.$unionWith.pipeline = await that.sanitisePipeline(stage.$unionWith.pipeline, unionHiddenLookupFields, findFuncQry, req);
                     break;
                 case '$match':
                     this.hackVariables(array[pipelineSection]['$match']);
@@ -1021,27 +1029,66 @@ export class FormsAngular {
                     stage = null;
                     break;
                 case '$lookup':
+                case '$graphLookup':
+                    if (keys[0] === '$lookup') {
+                        // For now at least, we only support simple $lookups with a single join field equality
+                        let lookupProps = Object.keys(stage.$lookup);
+                        if (lookupProps.length !== 4 || lookupProps.indexOf('from') === -1 || lookupProps.indexOf('localField') === -1 || lookupProps.indexOf('foreignField') === -1 || lookupProps.indexOf('as') === -1) {
+                            throw new Error("No support for $lookup that isn't Equality Match with a Single Join Condition");
+                        }
+                    }
                     // hide any hiddenfields in the lookup collection
-                    const collectionName = stage.$lookup.from;
-                    const lookupField = stage.$lookup.as;
+                    const collectionName = stage[keys[0]].from;
+                    const lookupField = stage[keys[0]].as;
                     if ((collectionName + lookupField).indexOf('$') !== -1) {
-                        throw new Error('No support for lookups where the "from" or "as" is anything other than a simple string')
+                        throw new Error('No support for lookups where the "from" or "as" is anything other than a simple string');
                     }
                     const resource = that.getResourceFromCollection(collectionName);
                     if (resource) {
+                        retVal.push(stage);
+                        stage = null;
                         if (resource.options?.hide?.length > 0) {
                             const hiddenLookupFields = this.generateHiddenFields(resource, false);
-                            let hiddenFieldsObj: any = {}
+                            let hiddenFieldsObj = {};
                             Object.keys(hiddenLookupFields).forEach(hf => {
                                 hiddenFieldsObj[`${lookupField}.${hf}`] = false;
-                            })
-                            retVal.push({$project: hiddenFieldsObj});
+                            });
+                            retVal.push({ $project: hiddenFieldsObj });
+                        }
+                        // Now we need to make sure that we restrict the lookup to documents we have access to
+                        if (resource.options.findFunc) {
+                            // If the next stage is an $unwind
+                            let nextStageIsUnwind = false;
+                            if (array.length >= pipelineSection) {
+                                const nextStage = array[pipelineSection + 1];
+                                let nextKeys = Object.keys(nextStage);
+                                if (nextKeys.length !== 1) {
+                                    throw new Error('Invalid pipeline instruction');
+                                }
+                                if (nextKeys[0] === '$unwind' && nextStage["$unwind"] === "$" + lookupField) {
+                                    nextStageIsUnwind = true;
+                                }
+                            }
+                            if (!nextStageIsUnwind) {
+                                throw new Error('No support for $lookup where the next stage is not an $unwind and the resources has a findFunc');
+                            }
+                            // Push the $unwind, add our own findFunc, and increment the pipelineStage counter
+                            retVal.push({ $unwind: "$" + lookupField });
+                            const lookedUpFindQry = await this.doFindFuncPromise(req, resource);
+                            // Now we need to put the lookup base into the criteria
+                            for (const prop in lookedUpFindQry) {
+                                if (lookedUpFindQry.hasOwnProperty(prop)) {
+                                    lookedUpFindQry[`${lookupField}.${prop}`] = lookedUpFindQry[prop];
+                                    delete lookedUpFindQry[prop];
+                                }
+                            }
+                            retVal.push({ $match: lookedUpFindQry });
                         }
                     }
                     break;
                 default:
-                    // nothing
-                    break;
+                    // anything else is either known to be dangerous, not yet needed or we don't know what it is
+                    throw new Error('Unsupported pipeline instruction ' + keys[0])
             }
             if (stage) {
                 retVal.push(stage);
@@ -1107,7 +1154,7 @@ export class FormsAngular {
 
                 let toDo: any = {
                     runAggregation: function (cb) {
-                        self.sanitisePipeline(runPipelineObj, hiddenFields, queryObj)
+                        self.sanitisePipeline(runPipelineObj, hiddenFields, queryObj, req)
                           .then((runPipelineObj) => {
                               resource.model.aggregate(runPipelineObj)
                                 .then((results) => {
@@ -1245,7 +1292,6 @@ export class FormsAngular {
                     if (err) {
                         callback(err);
                     } else {
-                        // TODO: Could loop through schema.params and just send back the values
                         callback(null, {
                             success: true,
                             schema: schema,
@@ -1258,7 +1304,7 @@ export class FormsAngular {
         });
     };
 
-    saveAndRespond(req, res, hiddenFields? : IHiddenFields) {
+    saveAndRespond(req: Express.Request, res: Express.Response, hiddenFields? : IHiddenFields) {
 
         function internalSave(doc) {
             doc.save()
@@ -1404,7 +1450,19 @@ export class FormsAngular {
         }
     };
 
-    filteredFind(
+    async doFindFuncPromise(req: Express.Request, resource: Resource): Promise<FilterQuery<any>> {
+        return new Promise((resolve, reject) => {
+            this.doFindFunc(req, resource, (err, queryObj) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(queryObj);
+                }
+            });
+        })
+    };
+
+    async filteredFind(
         resource: Resource,
         req: Express.Request,
         aggregationParam: any,
@@ -1420,7 +1478,7 @@ export class FormsAngular {
 
         async function doAggregation(queryObj, cb) {
             if (aggregationParam) {
-                aggregationParam = await that.sanitisePipeline(aggregationParam, hiddenFields, queryObj);
+                aggregationParam = await that.sanitisePipeline(aggregationParam, hiddenFields, queryObj, req);
                 resource.model.aggregate(aggregationParam)
                     .then((aggregationResults) => {
                         stashAggregationResults = aggregationResults;
