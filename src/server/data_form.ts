@@ -1065,8 +1065,13 @@ export class FormsAngular {
                                 if (nextKeys.length !== 1) {
                                     throw new Error('Invalid pipeline instruction');
                                 }
-                                if (nextKeys[0] === '$unwind' && nextStage["$unwind"] === "$" + lookupField) {
-                                    nextStageIsUnwind = true;
+                                if (nextKeys[0] === '$unwind') {
+                                    if (nextStage["$unwind"] === "$" + lookupField) {
+                                        nextStageIsUnwind = true;
+                                    }
+                                    if (nextStage["$unwind"] && nextStage["$unwind"].path === "$" + lookupField) {
+                                        nextStageIsUnwind = true;
+                                    }
                                 }
                             }
                             if (!nextStageIsUnwind) {
