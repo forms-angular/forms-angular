@@ -14,7 +14,7 @@ var GSchemaDef = {
     forename: { type: String, list: true, index: true },
     sex: { type: String, enum: ['F', 'M'] },
     accepted: { type: Boolean, form: { help: 'When someone is accepted additional fields appear' } },
-    startDate: { type: Date, form: { showIf: { lhs: '$accepted', comp: 'eq', rhs: true } } },
+    startDate: { type: Date, form: { showIf: { lhs: '$accepted', comp: 'eq', rhs: true } } }, // This syntax is is heading towards deprecation - use showWhen
     startingPosition: { type: String, form: { showWhen: { lhs: '$accepted', comp: 'eq', rhs: true } } },
     bribeAmount: { type: Number, form: { help: 'Try a number between 10 and 200 to see an angular expression used in a conditional' } },
     loggedInBribeBook: { type: Boolean, form: { showWhen: 'record.bribeAmount >= 10 && record.bribeAmount <= 200' } },

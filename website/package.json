@@ -45,7 +45,7 @@
     "fng-reports": "^0.12.0-beta.249",
     "fng-ui-date": "0.12.0-beta.249",
     "fng-ui-select": "0.12.0-beta.249",
-    "forms-angular": "file:../forms-angular-0.12.0-beta.249.tgz",
+    "forms-angular": "0.12.0-beta.249",
     "jquery": "^3.7.1",
     "jquery-ui": "^1.13.2",
     "jspdf": "^2.5.1",
