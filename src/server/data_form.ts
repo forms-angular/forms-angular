@@ -1057,6 +1057,7 @@ export class FormsAngular {
                         }
                         // Now we need to make sure that we restrict the lookup to documents we have access to
                         if (resource.options.findFunc) {
+                            let allowNulls = false;
                             // If the next stage is an $unwind
                             let nextStageIsUnwind = false;
                             if (array.length >= pipelineSection) {
@@ -1071,6 +1072,9 @@ export class FormsAngular {
                                     }
                                     if (nextStage["$unwind"] && nextStage["$unwind"].path === "$" + lookupField) {
                                         nextStageIsUnwind = true;
+                                        if (nextStage["$unwind"].preserveNullAndEmptyArrays) {
+                                            allowNulls = true;
+                                        }
                                     }
                                 }
                             }
@@ -1078,8 +1082,8 @@ export class FormsAngular {
                                 throw new Error('No support for $lookup where the next stage is not an $unwind and the resources has a findFunc');
                             }
                             // Push the $unwind, add our own findFunc, and increment the pipelineStage counter
-                            retVal.push({ $unwind: "$" + lookupField });
-                            const lookedUpFindQry = await this.doFindFuncPromise(req, resource);
+                            retVal.push(array[pipelineSection + 1]);
+                            let lookedUpFindQry: FilterQuery<any> = await this.doFindFuncPromise(req, resource);
                             // Now we need to put the lookup base into the criteria
                             for (const prop in lookedUpFindQry) {
                                 if (lookedUpFindQry.hasOwnProperty(prop)) {
@@ -1087,7 +1091,11 @@ export class FormsAngular {
                                     delete lookedUpFindQry[prop];
                                 }
                             }
+                            if (allowNulls) {
+                                lookedUpFindQry = {$or: [lookedUpFindQry, {[lookupField]: {$exists: false}}]};
+                            }
                             retVal.push({ $match: lookedUpFindQry });
+                            pipelineSection++;
                         }
                     }
                     break;
@@ -1105,7 +1113,6 @@ export class FormsAngular {
         }
         return retVal;
     }
-
 
     reportInternal(req, resource, schema, callback) {
         let runPipelineStr: string;
