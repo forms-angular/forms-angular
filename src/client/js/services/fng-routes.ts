@@ -56,9 +56,27 @@ module fng.services {
       return retVal;
     }
 
-    function _setUpNgRoutes(routes:Array<fng.IBuiltInRoute>, prefix:string = '', additional?:any):void {
+    function _setUpNgRoutes(routes:Array<fng.IBuiltInRoute>, checkModelAndForm = false, prefix:string = '', additional?:any):void {
       prefix = prefix || '';
       angular.forEach(routes, function (routeSpec) {
+        // Despite the name of this parameter, we only actually check the model here
+        if (checkModelAndForm) {
+          additional = additional || {};
+          additional.resolve = {
+            routeResolver: ["$q", "$route", "$location", "SchemasService", async function ($q, $route, $location, SchemasService) {
+              var defer = $q.defer();
+              const models = await SchemasService.getModels();
+              if (models.includes($route.current.params.model)) {
+                defer.resolve();
+              } else {
+                $location
+                    .search({})
+                    .path('/404');
+              }
+              return defer.promise;
+            }]
+          };
+        }
         _routeProvider.when(prefix + routeSpec.route, angular.extend(routeSpec.options || {templateUrl: handleFolder(routeSpec.templateUrl)}, additional));
       });
 
@@ -114,12 +132,12 @@ module fng.services {
         case 'ngroute' :
           _routeProvider = $injector.get('$routeProvider');
           if (fixedRoutes) {_setUpNgRoutes(fixedRoutes)}
-          _setUpNgRoutes(fngRoutes, config.prefix, config.add2fngRoutes);
+          _setUpNgRoutes(fngRoutes, true, config.prefix, config.add2fngRoutes);
           break;
         case 'uirouter' :
           _stateProvider = $injector.get('$stateProvider');
           if (fixedRoutes) {_setUpUIRoutes(config.fixedRoutes);}
-          _setUpUIRoutes(fngRoutes, config.prefix, config.add2fngRoutes);
+          _setUpUIRoutes(fngRoutes, config.prefix, config.add2fngRoutes);  // No point in checking routes for ui-router, as nobody using it any more
           break;
       }
     }
