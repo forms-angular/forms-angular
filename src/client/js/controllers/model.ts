@@ -9,7 +9,7 @@ module fng.controllers {
     $http.get('/api/models').then(function (response) {
       $scope.models = response.data;
     }, function () {
-      $location.search({}).path('/404');
+      $location.path('/404');
     });
 
     $scope.newUrl = function (model) {

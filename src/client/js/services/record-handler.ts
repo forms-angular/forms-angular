@@ -584,7 +584,7 @@ module fng.services {
                 }
               }
               title = title.trimEnd() + (formsAngular.title.suffix || '');
-              $window.document.title = title.replace(/<\/?[^>]+(>|$)/g, "");
+              $window.document.title = title.replace(/<\/?[^>]+(>|$)/g, "");;
             }
           }
         }, true);
@@ -673,10 +673,6 @@ module fng.services {
           // want to know that an error has occurred.  This value is NOT used anywhere in forms-angular.
           $scope.phase = "error";
           $scope.showError(errorMessage);
-        } else if (response.status === 404) {
-          $location
-              .search({})
-              .path('/404');
         } else {
           let msg = response.data;
           if (typeof msg !== "string") {
@@ -749,9 +745,7 @@ module fng.services {
               $scope.dataEventFunctions.onReadError($scope.id, e);
             } else {
               if (e.status === 404) {
-                $location
-                    .search({})
-                    .path('/404');
+                $location.path("/404");
               } else {
                 $scope.handleHttpError(e);
               }
@@ -869,7 +863,7 @@ module fng.services {
 
       setData,
 
-      setUpLookupOptions: function setUpLookupOptions(lookupCollection, schemaElement, $scope, ctrlState) {
+      setUpLookupOptions: function setUpLookupOptions(lookupCollection, schemaElement, $scope, ctrlState, handleSchema) {
         const optionsList = $scope[schemaElement.options] = [];
         const idList = $scope[schemaElement.ids] = [];
         const dataRequest = !!schemaElement.filter

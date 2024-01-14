@@ -871,7 +871,7 @@ export class FormsAngular {
                     try {
                         formSchema = req.resource.model.schema.statics['form'](formName, req);
                     } catch (e) {
-                        return res.status(404).send(e.message);
+                        return res.status(500).send(e.message);
                     }
                 }
                 let paths = this.preprocess(req.resource, req.resource.model.schema.paths, formName, formSchema).paths;
@@ -975,7 +975,7 @@ export class FormsAngular {
         aggregationParam: any | any[],
         hiddenFields,
         findFuncQry: any,
-        req? : any): Promise<any[]> {
+        req? : Express.Request): Promise<any[]> {
         let that = this;
         let array = Array.isArray(aggregationParam) ? aggregationParam : [aggregationParam];
         let retVal = [];
