@@ -29,6 +29,23 @@ function logTheAPICalls(req: Express.Request, res: Express.Response, next) {
     next();
 }
 
+var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+};
+
+function escapeHtml (string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap (s) {
+        return entityMap[s];
+    });
+}
+
 function processArgs(options: any, array: Array<any>): Array<any> {
     if (options.authentication) {
         let authArray = _.isArray(options.authentication) ? options.authentication : [options.authentication];
@@ -869,7 +886,7 @@ export class FormsAngular {
             } else {
                 if (formName) {
                     try {
-                        formSchema = req.resource.model.schema.statics['form'](encodeURIComponent(formName), req);
+                        formSchema = req.resource.model.schema.statics['form'](escapeHtml(formName), req);
                     } catch (e) {
                         return res.status(404).send(e.message);
                     }
