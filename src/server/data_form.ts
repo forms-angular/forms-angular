@@ -1101,17 +1101,19 @@ export class FormsAngular {
                             // Push the $unwind, add our own findFunc, and increment the pipelineStage counter
                             retVal.push(array[pipelineSection + 1]);
                             let lookedUpFindQry: FilterQuery<any> = await this.doFindFuncPromise(req, resource);
-                            // Now we need to put the lookup base into the criteria
-                            for (const prop in lookedUpFindQry) {
-                                if (lookedUpFindQry.hasOwnProperty(prop)) {
-                                    lookedUpFindQry[`${lookupField}.${prop}`] = lookedUpFindQry[prop];
-                                    delete lookedUpFindQry[prop];
+                            if (lookedUpFindQry) {
+                                // Now we need to put the lookup base into the criteria
+                                for (const prop in lookedUpFindQry) {
+                                    if (lookedUpFindQry.hasOwnProperty(prop)) {
+                                        lookedUpFindQry[`${lookupField}.${prop}`] = lookedUpFindQry[prop];
+                                        delete lookedUpFindQry[prop];
+                                    }
                                 }
+                                if (allowNulls) {
+                                    lookedUpFindQry = {$or: [lookedUpFindQry, {[lookupField]: {$exists: false}}]};
+                                }
+                                retVal.push({$match: lookedUpFindQry});
                             }
-                            if (allowNulls) {
-                                lookedUpFindQry = {$or: [lookedUpFindQry, {[lookupField]: {$exists: false}}]};
-                            }
-                            retVal.push({ $match: lookedUpFindQry });
                             pipelineSection++;
                         }
                     }
