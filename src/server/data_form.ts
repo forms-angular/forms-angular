@@ -1013,6 +1013,7 @@ export class FormsAngular {
                 case "$group":
                 case "$limit":
                 case "$replaceRoot":
+                case "$replaceWith":
                 case "$sort":
                 case "$unwind":
                     // We don't care about these - they are all (as far as we know) safe
