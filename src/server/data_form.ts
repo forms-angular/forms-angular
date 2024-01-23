@@ -1,4 +1,4 @@
-import {Document, Mongoose, Types} from "mongoose";
+import {Document, FilterQuery, Mongoose, Types} from "mongoose";
 import {Express} from "express";
 import {fngServer} from "./index";
 import Resource = fngServer.Resource;
@@ -11,7 +11,7 @@ import ISearchResultFormatter = fngServer.ISearchResultFormatter;
 import Path = fngServer.Path;
 import ForeignKeyList = fngServer.ForeignKeyList;
 
-// This part of forms-angular borrows _very_ heavily from https://github.com/Alexandre-Strzelewicz/angular-bridge
+// This part of forms-angular borrows from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
 
 const _ = require('lodash');
@@ -23,10 +23,27 @@ let debug = false;
 
 type IHiddenFields = { [fieldName: string]: boolean };
 
-function logTheAPICalls(req, res, next) {
+function logTheAPICalls(req: Express.Request, res: Express.Response, next) {
     void (res);
     console.log('API     : ' + req.method + ' ' + req.url + '  [ ' + JSON.stringify(req.body) + ' ]');
     next();
+}
+
+var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+};
+
+function escapeHtml (string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap (s) {
+        return entityMap[s];
+    });
 }
 
 function processArgs(options: any, array: Array<any>): Array<any> {
@@ -251,7 +268,7 @@ export class FormsAngular {
             }
         }
 
-        extend(resource.options, this.preprocess(resource, resource.model.schema['paths'], null));
+        extend(resource.options, this.preprocess(resource, resource.model.schema['paths']));
 
         if (resource.options.searchImportance) {
             this.searchFunc = async.forEachSeries;
@@ -670,7 +687,7 @@ export class FormsAngular {
         );
     };
 
-    wrapInternalSearch(req, res, resourcesToSearch, includeResourceInResults, limit) {
+    wrapInternalSearch(req: Express.Request, res: Express.Response, resourcesToSearch, includeResourceInResults, limit) {
         this.internalSearch(req, resourcesToSearch, includeResourceInResults, limit, function (err, resultsObject) {
             if (err) {
                 res.status(400, err)
@@ -681,7 +698,7 @@ export class FormsAngular {
     };
 
     search() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             if (!(req.resource = this.getResource(req.params.resourceName))) {
                 return next();
             }
@@ -758,73 +775,103 @@ export class FormsAngular {
         return outPath;
     };
 
-    preprocess(resource: Resource, paths, formSchema?) {
+    preprocess(resource: Resource, paths, formName?: string, formSchema?: any) {
+
+        function processInternalObject(obj: any) {
+            return Object.keys(obj).reduce((acc, cur, ) => {
+                const curType= typeof obj[cur];
+                if (!['$','_'].includes(cur.charAt(0)) && curType !== 'function') {
+                    const val = obj[cur];
+                    if (val) {
+                        if (Array.isArray(val)) {
+                            if (val.length > 0) {
+                                acc[cur] = val;
+                            }
+                        } else if (curType === 'object' && !(val instanceof Date) && !(val instanceof RegExp)) {
+                            acc[cur] = processInternalObject(obj[cur]);
+                        } else {
+                            acc[cur] = obj[cur];
+                        }
+                    }
+                }
+                return acc;
+            }, {});
+        }
+
         let outPath: Path = {},
             hiddenFields = [],
             listFields = [];
 
-        if (resource && resource.options && resource.options.idIsList) {
-            paths['_id'].options = paths['_id'].options || {};
-            paths['_id'].options.list = resource.options.idIsList;
-        }
-        for (let element in paths) {
-            if (paths.hasOwnProperty(element) && element !== '__v') {
-                // check for schemas
-                if (paths[element].schema) {
-                    let subSchemaInfo = this.preprocess(null, paths[element].schema.paths);
-                    outPath[element] = {schema: subSchemaInfo.paths};
-                    if (paths[element].options.form) {
-                        outPath[element].options = {form: extend(true, {}, paths[element].options.form)};
-                    }
-                    // this provides support for entire nested schemas that wish to remain hidden
-                    if (paths[element].options.secure) {
-                        hiddenFields.push(element);
-                    }
-                    // to support hiding individual properties of nested schema would require us
-                    // to do something with subSchemaInfo.hide here
-                } else {
-                    // check for arrays
-                    let realType = paths[element].caster ? paths[element].caster : paths[element];
-                    if (!realType.instance) {
+        if (resource && resource.preprocessed && resource.preprocessed[formName || "__default"]) {
+            return resource.preprocessed[formName || "__default"].paths;
+        } else {
+            if (resource && resource.options && resource.options.idIsList) {
+                paths['_id'].options = paths['_id'].options || {};
+                paths['_id'].options.list = resource.options.idIsList;
+            }
+            for (let element in paths) {
+                if (paths.hasOwnProperty(element) && element !== '__v') {
+                    // check for schemas
+                    if (paths[element].schema) {
+                        let subSchemaInfo = this.preprocess(null, paths[element].schema.paths);
+                        outPath[element] = { schema: subSchemaInfo.paths };
+                        if (paths[element].options.form) {
+                            outPath[element].options = { form: extend(true, {}, paths[element].options.form) };
+                        }
+                        // this provides support for entire nested schemas that wish to remain hidden
+                        if (paths[element].options.secure) {
+                            hiddenFields.push(element);
+                        }
+                        // to support hiding individual properties of nested schema would require us
+                        // to do something with subSchemaInfo.hide here
+                    } else {
+                        // check for arrays
+                        let realType = paths[element].caster ? paths[element].caster : paths[element];
+                        if (!realType.instance) {
 
-                        if (realType.options.type) {
-                            let type = realType.options.type(),
-                                typeType = typeof type;
+                            if (realType.options.type) {
+                                let type = realType.options.type(),
+                                  typeType = typeof type;
 
-                            if (typeType === 'string') {
-                                realType.instance = (!isNaN(Date.parse(type))) ? 'Date' : 'String';
-                            } else {
-                                realType.instance = typeType;
+                                if (typeType === 'string') {
+                                    realType.instance = (!isNaN(Date.parse(type))) ? 'Date' : 'String';
+                                } else {
+                                    realType.instance = typeType;
+                                }
                             }
                         }
-                    }
-                    outPath[element] = extend(true, {}, paths[element]);
-                    if (paths[element].options.secure) {
-                        hiddenFields.push(element);
-                    }
-                    if (paths[element].options.match) {
-                        outPath[element].options.match = paths[element].options.match.source || paths[element].options.match;
-                    }
-                    let schemaListInfo: any = paths[element].options.list;
-                    if (schemaListInfo) {
-                        let listFieldInfo: ListField = {field: element};
-                        if (typeof schemaListInfo === 'object' && Object.keys(schemaListInfo).length > 0) {
-                            listFieldInfo.params = schemaListInfo;
+                        outPath[element] = processInternalObject(paths[element]);
+                        if (paths[element].options.secure) {
+                            hiddenFields.push(element);
                         }
-                        listFields.push(listFieldInfo);
+                        if (paths[element].options.match) {
+                            outPath[element].options.match = paths[element].options.match.source || paths[element].options.match;
+                        }
+                        let schemaListInfo: any = paths[element].options.list;
+                        if (schemaListInfo) {
+                            let listFieldInfo: ListField = { field: element };
+                            if (typeof schemaListInfo === 'object' && Object.keys(schemaListInfo).length > 0) {
+                                listFieldInfo.params = schemaListInfo;
+                            }
+                            listFields.push(listFieldInfo);
+                        }
                     }
                 }
             }
+            outPath = this.applySchemaSubset(outPath, formSchema);
+            let returnObj: any = { paths: outPath };
+            if (hiddenFields.length > 0) {
+                returnObj.hide = hiddenFields;
+            }
+            if (listFields.length > 0) {
+                returnObj.listFields = listFields;
+            }
+            if (resource) {
+                resource.preprocessed = resource.preprocessed || {};
+                resource.preprocessed[formName || "__default"] = returnObj;
+            }
+            return returnObj;
         }
-        outPath = this.applySchemaSubset(outPath, formSchema);
-        let returnObj: any = {paths: outPath};
-        if (hiddenFields.length > 0) {
-            returnObj.hide = hiddenFields;
-        }
-        if (listFields.length > 0) {
-            returnObj.listFields = listFields;
-        }
-        return returnObj;
     };
 
     schema() {
@@ -833,20 +880,25 @@ export class FormsAngular {
                 return res.status(404).end();
             }
             let formSchema = null;
-            if (req.params.formName) {
-                try {
-                    formSchema = req.resource.model.schema.statics['form'](req.params.formName, req);
-                } catch (e) {
-                    return res.status(500).send(e.message);                    
-                }                
+            const formName = req.params.formName;
+            if (req.resource.preprocessed?.[formName || "__default"]) {
+                res.send(req.resource.preprocessed[formName || "__default"].paths);
+            } else {
+                if (formName) {
+                    try {
+                        formSchema = req.resource.model.schema.statics['form'](escapeHtml(formName), req);
+                    } catch (e) {
+                        return res.status(404).send(e.message);
+                    }
+                }
+                let paths = this.preprocess(req.resource, req.resource.model.schema.paths, formName, formSchema).paths;
+                res.send(paths);
             }
-            let paths = this.preprocess(req.resource, req.resource.model.schema.paths, formSchema).paths;
-            res.send(paths);
         }, this);
     };
 
     report() {
-        return _.bind(async function (req, res, next) {
+        return _.bind(async function (req: Express.Request, res: Express.Response, next) {
             if (!(req.resource = this.getResource(req.params.resourceName))) {
                 return next();
             }
@@ -936,10 +988,11 @@ export class FormsAngular {
         }
     };
 
-    sanitisePipeline(
+    async sanitisePipeline(
         aggregationParam: any | any[],
         hiddenFields,
-        findFuncQry: any): any[] {
+        findFuncQry: any,
+        req? : any): Promise<any[]> {
         let that = this;
         let array = Array.isArray(aggregationParam) ? aggregationParam : [aggregationParam];
         let retVal = [];
@@ -954,9 +1007,17 @@ export class FormsAngular {
                 throw new Error('Invalid pipeline instruction');
             }
             switch (keys[0]) {
-                case '$merge':
-                case '$out':
-                    throw new Error('Cannot use potentially destructive pipeline stages')
+                case '$project':
+                case '$addFields':
+                case '$count':
+                case "$group":
+                case "$limit":
+                case "$replaceRoot":
+                case "$replaceWith":
+                case "$sort":
+                case "$unwind":
+                    // We don't care about these - they are all (as far as we know) safe
+                break;
                 case '$unionWith':
                   /*
                     Sanitise the pipeline we are doing a union with, removing hidden fields from that collection
@@ -972,7 +1033,7 @@ export class FormsAngular {
                             unionHiddenLookupFields = this.generateHiddenFields(unionResource, false);
                         }
                     }
-                    stage.$unionWith.pipeline = that.sanitisePipeline(stage.$unionWith.pipeline, unionHiddenLookupFields, findFuncQry);
+                    stage.$unionWith.pipeline = await that.sanitisePipeline(stage.$unionWith.pipeline, unionHiddenLookupFields, findFuncQry, req);
                     break;
                 case '$match':
                     this.hackVariables(array[pipelineSection]['$match']);
@@ -986,27 +1047,81 @@ export class FormsAngular {
                     stage = null;
                     break;
                 case '$lookup':
+                case '$graphLookup':
+                    if (keys[0] === '$lookup') {
+                        // For now at least, we only support simple $lookups with a single join field equality
+                        let lookupProps = Object.keys(stage.$lookup);
+                        if (lookupProps.length !== 4 || lookupProps.indexOf('from') === -1 || lookupProps.indexOf('localField') === -1 || lookupProps.indexOf('foreignField') === -1 || lookupProps.indexOf('as') === -1) {
+                            throw new Error("No support for $lookup that isn't Equality Match with a Single Join Condition");
+                        }
+                    }
                     // hide any hiddenfields in the lookup collection
-                    const collectionName = stage.$lookup.from;
-                    const lookupField = stage.$lookup.as;
+                    const collectionName = stage[keys[0]].from;
+                    const lookupField = stage[keys[0]].as;
                     if ((collectionName + lookupField).indexOf('$') !== -1) {
-                        throw new Error('No support for lookups where the "from" or "as" is anything other than a simple string')
+                        throw new Error('No support for lookups where the "from" or "as" is anything other than a simple string');
                     }
                     const resource = that.getResourceFromCollection(collectionName);
                     if (resource) {
+                        retVal.push(stage);
+                        stage = null;
                         if (resource.options?.hide?.length > 0) {
                             const hiddenLookupFields = this.generateHiddenFields(resource, false);
-                            let hiddenFieldsObj: any = {}
+                            let hiddenFieldsObj = {};
                             Object.keys(hiddenLookupFields).forEach(hf => {
                                 hiddenFieldsObj[`${lookupField}.${hf}`] = false;
-                            })
-                            retVal.push({$project: hiddenFieldsObj});
+                            });
+                            retVal.push({ $project: hiddenFieldsObj });
+                        }
+                        // Now we need to make sure that we restrict the lookup to documents we have access to
+                        if (resource.options.findFunc) {
+                            let allowNulls = false;
+                            // If the next stage is an $unwind
+                            let nextStageIsUnwind = false;
+                            if (array.length >= pipelineSection) {
+                                const nextStage = array[pipelineSection + 1];
+                                let nextKeys = Object.keys(nextStage);
+                                if (nextKeys.length !== 1) {
+                                    throw new Error('Invalid pipeline instruction');
+                                }
+                                if (nextKeys[0] === '$unwind') {
+                                    if (nextStage["$unwind"] === "$" + lookupField) {
+                                        nextStageIsUnwind = true;
+                                    }
+                                    if (nextStage["$unwind"] && nextStage["$unwind"].path === "$" + lookupField) {
+                                        nextStageIsUnwind = true;
+                                        if (nextStage["$unwind"].preserveNullAndEmptyArrays) {
+                                            allowNulls = true;
+                                        }
+                                    }
+                                }
+                            }
+                            if (!nextStageIsUnwind) {
+                                throw new Error('No support for $lookup where the next stage is not an $unwind and the resources has a findFunc');
+                            }
+                            // Push the $unwind, add our own findFunc, and increment the pipelineStage counter
+                            retVal.push(array[pipelineSection + 1]);
+                            let lookedUpFindQry: FilterQuery<any> = await this.doFindFuncPromise(req, resource);
+                            if (lookedUpFindQry) {
+                                // Now we need to put the lookup base into the criteria
+                                for (const prop in lookedUpFindQry) {
+                                    if (lookedUpFindQry.hasOwnProperty(prop)) {
+                                        lookedUpFindQry[`${lookupField}.${prop}`] = lookedUpFindQry[prop];
+                                        delete lookedUpFindQry[prop];
+                                    }
+                                }
+                                if (allowNulls) {
+                                    lookedUpFindQry = {$or: [lookedUpFindQry, {[lookupField]: {$exists: false}}]};
+                                }
+                                retVal.push({$match: lookedUpFindQry});
+                            }
+                            pipelineSection++;
                         }
                     }
                     break;
                 default:
-                    // nothing
-                    break;
+                    // anything else is either known to be dangerous, not yet needed or we don't know what it is
+                    throw new Error('Unsupported pipeline instruction ' + keys[0])
             }
             if (stage) {
                 retVal.push(stage);
@@ -1018,7 +1133,6 @@ export class FormsAngular {
         }
         return retVal;
     }
-
 
     reportInternal(req, resource, schema, callback) {
         let runPipelineStr: string;
@@ -1072,14 +1186,19 @@ export class FormsAngular {
 
                 let toDo: any = {
                     runAggregation: function (cb) {
-                        runPipelineObj = self.sanitisePipeline(runPipelineObj, hiddenFields, queryObj);
-                        resource.model.aggregate(runPipelineObj)
-                            .then((results) => {
-                                cb(null, results);
-                            })
-                            .catch((err) => {
-                                cb(err);
-                            })
+                        self.sanitisePipeline(runPipelineObj, hiddenFields, queryObj, req)
+                          .then((runPipelineObj) => {
+                              resource.model.aggregate(runPipelineObj)
+                                .then((results) => {
+                                    cb(null, results);
+                                })
+                                .catch((err) => {
+                                    cb(err);
+                                })
+                          })
+                          .catch((err) => {
+                              throw new Error('Error in sanitisePipeline ' + err)
+                          });
                     }
                 };
 
@@ -1205,7 +1324,6 @@ export class FormsAngular {
                     if (err) {
                         callback(err);
                     } else {
-                        // TODO: Could loop through schema.params and just send back the values
                         callback(null, {
                             success: true,
                             schema: schema,
@@ -1218,7 +1336,7 @@ export class FormsAngular {
         });
     };
 
-    saveAndRespond(req, res, hiddenFields? : IHiddenFields) {
+    saveAndRespond(req: Express.Request, res: Express.Response, hiddenFields? : IHiddenFields) {
 
         function internalSave(doc) {
             doc.save()
@@ -1278,7 +1396,7 @@ export class FormsAngular {
      * Renders a view with the list of docs, which may be modified by query parameters
      */
     collectionGet() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             this.processCollection(req);
             if (!req.resource) {
                 return next();
@@ -1364,7 +1482,19 @@ export class FormsAngular {
         }
     };
 
-    filteredFind(
+    async doFindFuncPromise(req: Express.Request, resource: Resource): Promise<FilterQuery<any>> {
+        return new Promise((resolve, reject) => {
+            this.doFindFunc(req, resource, (err, queryObj) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(queryObj);
+                }
+            });
+        })
+    };
+
+    async filteredFind(
         resource: Resource,
         req: Express.Request,
         aggregationParam: any,
@@ -1378,9 +1508,9 @@ export class FormsAngular {
         let hiddenFields = this.generateHiddenFields(resource, false);
         let stashAggregationResults;
 
-        function doAggregation(queryObj, cb) {
+        async function doAggregation(queryObj, cb) {
             if (aggregationParam) {
-                aggregationParam = that.sanitisePipeline(aggregationParam, hiddenFields, queryObj);
+                aggregationParam = await that.sanitisePipeline(aggregationParam, hiddenFields, queryObj, req);
                 resource.model.aggregate(aggregationParam)
                     .then((aggregationResults) => {
                         stashAggregationResults = aggregationResults;
@@ -1443,7 +1573,7 @@ export class FormsAngular {
     };
 
     collectionPost() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             this.processCollection(req);
             if (!req.resource) {
                 next();
@@ -1532,7 +1662,7 @@ export class FormsAngular {
      * Entity request goes here first
      * It retrieves the resource
      */
-    processEntity(req, res, next) {
+    processEntity(req: Express.Request, res: Express.Response, next) {
         if (!(req.resource = this.getResource(req.params.resourceName))) {
             return next();
         }
@@ -1571,7 +1701,7 @@ export class FormsAngular {
      * @return {Function} The function to use as route
      */
     entityGet() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
 
             this.processEntity(req, res, function () {
                 if (!req.resource) {
@@ -1604,7 +1734,7 @@ export class FormsAngular {
     };
 
     entityPut() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             const that = this;
 
             this.processEntity(req, res, function () {
@@ -1712,7 +1842,7 @@ export class FormsAngular {
 
     entityDelete() {
         let that = this;
-        return _.bind(async function (req, res, next) {
+        return _.bind(async function (req: Express.Request, res: Express.Response, next) {
 
 
             async function removeDoc(doc: Document, resource: Resource): Promise<any> {
@@ -1771,7 +1901,7 @@ export class FormsAngular {
     };
 
     entityList() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             const that = this;
             this.processEntity(req, res, function () {
                 if (!req.resource) {
@@ -1952,7 +2082,7 @@ export class FormsAngular {
     };
 
     entityListAll() {
-        return _.bind(function (req, res, next) {
+        return _.bind(function (req: Express.Request, res: Express.Response, next) {
             if (!(req.resource = this.getResource(req.params.resourceName))) {
                 return next();
             }
