@@ -97,7 +97,7 @@ declare module fngServer {
     }
 
     interface ListParams {
-        ref: Boolean;                           // The object is this a lookup?
+        ref: Boolean; // The object is this a lookup?
     }
 
     interface ListField {
@@ -106,9 +106,9 @@ declare module fngServer {
     }
 
     interface IFngPlugin {
-        plugin: (fng: any, expressApp: any, options: FngOptions) => Partial<IFngPlugin>;
+        plugin: (fng: any, processArgs: (options: FngOptions, array: any[]) => any[], options: any) => Partial<IFngPlugin>;
         options: any;
-        dependencyChecks? : {[resourceName: string] : DependencyList; };
+        dependencyChecks? : { [resourceName: string] : DependencyList; };
     }
 
     interface IPluginMap {
@@ -118,6 +118,7 @@ declare module fngServer {
     interface FngOptions {
         urlPrefix?: string,
         plugins?: IPluginMap,
+        authentication?: (() => void)[];
         modelFilter? : (p1: any, req: Request, resources: Resource[]) => Resource[]
     }
 
