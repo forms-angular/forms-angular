@@ -29,7 +29,7 @@ require('./lib/config/express')(app);
 const fngHandler = new FormsAngular.FormsAngular(mongoose, app, {
   urlPrefix: '/api/',
   plugins: {
-    JQMongoFileUploader:  {plugin: fngJqUpload.Controller, options: { } },
+    JQMongoFileUploader:  {plugin: fngJqUpload.controller, options: { } },
     fngAudit:             {plugin: fngAudit.controller, options:{ }}
   }
 });
