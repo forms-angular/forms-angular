@@ -171,10 +171,51 @@ module fng.services {
         return scope["$index"] !== undefined || !!options.subschema;
       }
 
+      // Text surrounded by @@ @@ is assumed to be something that can have a pseudonym.  If the sharedData object
+      // has been assigned a pseudo function, we will replace the token with a dynamic call to that.  Otherwise, if a pseudo
+      // callback has been provided in the IFng options, we will use that to perform a one-off (static) replacement.
+      // If the first character of the pseudonym token is upper case, then its replacement will use
+      // titlecase, otherwise its replacement will be in lowercase.
+      // If the last character of the pseudonym token is "s", then its replacement will be pluralised.
+      function handlePseudos(scope: fng.IFormScope, str: string): string {
+        if (!str) {
+          return str;
+        }
+        let result = str;
+        while (result.includes("@@")) {
+          const firstCharPos = result.indexOf("@@") + 2;
+          const lastCharPos = result.indexOf("@@", firstCharPos) - 1;
+          let token = result.substring(firstCharPos, lastCharPos + 1);
+          const plural = token.endsWith("s");
+          if (plural) {
+            token = token.slice(0, -1);
+          }
+          const upperStr = token[0].toUpperCase() === token[0] ? "true" : "false";
+          token = token.toLocaleLowerCase();
+          const pseudoFunc = scope?.sharedData?.pseudo;
+          let replacement: string;
+          if (typeof pseudoFunc === "function") {
+            replacement = `{{ sharedData.pseudo('${token}', ${upperStr}) }}`;
+          } else if (fng.formsAngular.pseudo) {
+            replacement = fng.formsAngular.pseudo(token, upperStr === "true");
+          }
+          if (replacement) {
+            result =
+              result.substring(0, firstCharPos - 2) +
+              replacement +
+              (plural ? "s" : "") + 
+              result.substring(lastCharPos + 3);
+          }
+        }
+        return result;
+      }
+
       return {
         isHorizontalStyle,
 
         isArrayElement,
+
+        handlePseudos,
 
         fieldChrome: function fieldChrome(scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions): { omit?: boolean, template?: string, closeTag?: string } {
           var insert = '';

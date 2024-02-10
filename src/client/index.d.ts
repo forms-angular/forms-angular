@@ -2,6 +2,7 @@ declare module fng {
   export interface IFng extends angular.IModule {
     beforeProcess?: (scope: IFormScope, cb: (err?: Error) => void) => void;
     beforeHandleIncomingDataPromises?: () => angular.IPromise<any>[];
+    pseudo?: (token: string, upperFirst: boolean) => string;
     title?: { prefix?: string; suffix?: string };
     // when provided, the named function (assumed to be present on $rootscope) will be used to determine the visibility
     // of menu items and control groups
@@ -652,7 +653,8 @@ declare module fng {
   interface IPluginHelperService {
     extractFromAttr: (
       attr: any,
-      directiveName: string
+      directiveName: string,
+      scope: fng.IFormScope
     ) => { info: IFormInstruction; options: IFormOptions; directiveOptions: any };
     buildInputMarkup: (
       scope: angular.IScope,
@@ -690,7 +692,7 @@ declare module fng {
       processedAttrs: IProcessedAttrs,
       idSuffix: string
     ) => string;
-    handlePseudos: (str: string) => string;
+    handlePseudos: (scope: fng.IFormScope, str: string) => string;
     genDisableableAncestorStr: (processedAttrs: IProcessedAttrs) => string;
   }
 
@@ -821,7 +823,8 @@ declare module fng {
     handleReadOnlyDisabled: (partialFieldInfo: { name: string, id?: string, nonUniqueId?: string, readonly?: boolean | string }, scope: fng.IFormScope) => string[];
     generateArrayElementIdString: (idString: string, info: fng.IFormInstruction, options: fng.IFormOptions) => string;
     genDisableableAncestorStr: (id: string) => string;
-    generateNgShow(showWhen: IFngShowWhen, model: string): string;
+    generateNgShow: (showWhen: IFngShowWhen, model: string) => string;
+    handlePseudos: (scope: fng.IFormScope, str: string) => string;
   }
 }
 

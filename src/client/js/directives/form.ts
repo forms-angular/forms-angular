@@ -625,6 +625,11 @@ module fng.directives {
             }
           }
           else {
+            // NB: Any changes to what properties we support @@-wrapped pseudonyms for here should be repeated in
+            // PluginHelperService.extractFromAttr
+            info.help = FormMarkupHelperService.handlePseudos(scope, info.help);
+            info.label = FormMarkupHelperService.handlePseudos(scope, info.label);
+            info.popup = FormMarkupHelperService.handlePseudos(scope, info.popup);
             // Handle arrays here
             var controlDivClasses = FormMarkupHelperService.controlDivClasses(options);
             if (info.array) {
