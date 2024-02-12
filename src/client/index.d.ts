@@ -824,7 +824,7 @@ declare module fng {
     generateArrayElementIdString: (idString: string, info: fng.IFormInstruction, options: fng.IFormOptions) => string;
     genDisableableAncestorStr: (id: string) => string;
     generateNgShow: (showWhen: IFngShowWhen, model: string) => string;
-    handlePseudos: (scope: fng.IFormScope, str: string) => string;
+    handlePseudos: (scope: fng.IFormScope, str: string, dynamicFuncName?: string) => string;
   }
 }
 

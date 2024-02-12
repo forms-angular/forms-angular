@@ -171,43 +171,67 @@ module fng.services {
         return scope["$index"] !== undefined || !!options.subschema;
       }
 
-      // Text surrounded by @@ @@ is assumed to be something that can have a pseudonym.  If the sharedData object
-      // has been assigned a pseudo function, we will replace the token with a dynamic call to that.  Otherwise, if a pseudo
-      // callback has been provided in the IFng options, we will use that to perform a one-off (static) replacement.
-      // If the first character of the pseudonym token is upper case, then its replacement will use
-      // titlecase, otherwise its replacement will be in lowercase.
-      // If the last character of the pseudonym token is "s", then its replacement will be pluralised.
-      function handlePseudos(scope: fng.IFormScope, str: string): string {
-        if (!str) {
-          return str;
-        }
-        let result = str;
-        while (result.includes("@@")) {
-          const firstCharPos = result.indexOf("@@") + 2;
-          const lastCharPos = result.indexOf("@@", firstCharPos) - 1;
-          let token = result.substring(firstCharPos, lastCharPos + 1);
+      function performPseudoReplacements(scope: fng.IFormScope, str: string, substitutionSrc: "global" | "scopeStatic" | "scopeDynamic" | "none"): string {
+        while (str.includes("@@")) {
+          const firstCharPos = str.indexOf("@@") + 2;
+          const lastCharPos = str.indexOf("@@", firstCharPos) - 1;
+          let token = str.substring(firstCharPos, lastCharPos + 1);
           const plural = token.endsWith("s");
           if (plural) {
             token = token.slice(0, -1);
           }
           const upperStr = token[0].toUpperCase() === token[0] ? "true" : "false";
-          token = token.toLocaleLowerCase();
-          const pseudoFunc = scope?.sharedData?.pseudo;
+          token = token.toLocaleLowerCase();          
           let replacement: string;
-          if (typeof pseudoFunc === "function") {
-            replacement = `{{ sharedData.pseudo('${token}', ${upperStr}) }}`;
-          } else if (fng.formsAngular.pseudo) {
+          if (substitutionSrc === "global") {
             replacement = fng.formsAngular.pseudo(token, upperStr === "true");
+          } else if (substitutionSrc === "scopeStatic") {
+            replacement = scope.sharedData.pseudo(token, upperStr === "true");
+          } else if (substitutionSrc === "scopeDynamic") {
+            replacement = `{{ sharedData.pseudo('${token}', ${upperStr}) }}`;
+          } else {
+            replacement = "";
           }
-          if (replacement) {
-            result =
-              result.substring(0, firstCharPos - 2) +
-              replacement +
-              (plural ? "s" : "") + 
-              result.substring(lastCharPos + 3);
-          }
+          str =
+            str.substring(0, firstCharPos - 2) +
+            replacement +
+            (plural ? "s" : "") + 
+            str.substring(lastCharPos + 3);
         }
-        return result;
+        return str;
+      }
+
+      // Text surrounded by @@ @@ is assumed to be something that can have a pseudonym:
+      //   - If the sharedData object has been assigned a pseudo() function:
+      //        - then if dynamicFuncName has a value, we will set up a function on scope that will call that function to perform
+      //          the necessary substitutions.  This would be useful for directives that use a template where labels, hints etc. already use {{ }}
+      //          notation (which would prevent any additional {{ }} that we nested in our result from working as intended).
+      //        - otherwise, we will set up the necessary dynamic calls to that sharedData.pseudo function using {{ }} notation
+      //   - Otherwise, if a pseudo callback has been provided in the IFng options, we will use that to perform a one-off (static) replacement.
+      //   - Otherwise (though not expected to happen), we will just remove the @@ tags, leaving the token(s) unchanged.
+      // If the first character of the pseudonym token is upper case, then its replacement will use
+      // titlecase, otherwise its replacement will be in lowercase.
+      // If the last character of the pseudonym token is "s", then its replacement will be pluralised.
+      function handlePseudos(scope: fng.IFormScope, str: string, dynamicFuncName?: string): string {
+        if (!str?.includes("@@")) {
+          return str;
+        }
+        let substitutionSrc: "global" | "scopeStatic" | "scopeDynamic" | "none";
+        if (typeof scope?.sharedData?.pseudo === "function") {
+          if (dynamicFuncName) {
+            scope[dynamicFuncName] = function(): string {
+              return performPseudoReplacements(scope, str, "scopeStatic");
+            }
+            substitutionSrc = "none"; // now the dynamic function has been set up, remove the @@ @@ tags (probably not essential, but might avoid confusion)
+          } else {
+            substitutionSrc = "scopeDynamic";
+          }
+        } else if (typeof fng.formsAngular.pseudo === "function") {
+          substitutionSrc = "global";
+        } else {
+          substitutionSrc = "none";
+        }
+        return performPseudoReplacements(scope, str, substitutionSrc);
       }
 
       return {

@@ -56,8 +56,8 @@ module fng.services {
       return internalGenDisabledAttrs(scope, id, processedAttrs, idSuffix, params).join(" ");
     }
 
-    function handlePseudos(scope: fng.IFormScope, str: string): string {
-      return FormMarkupHelperService.handlePseudos(scope, str);
+    function handlePseudos(scope: fng.IFormScope, str: string, dynamicFuncName?: string): string {
+      return FormMarkupHelperService.handlePseudos(scope, str, dynamicFuncName);
     }
 
     function makeIdStringUniqueForArrayElements(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idString: string): string {
@@ -122,7 +122,12 @@ module fng.services {
       return disabledStr + " " + rawDisabledAttrs[1];
     }
 
-    function extractFromAttr(attr, directiveName: string, scope: fng.IFormScope): fng.IProcessedAttrs {
+    function extractFromAttr(
+      attr,
+      directiveName: string,
+      scope: fng.IFormScope,
+      opts?: { setUpDynamicLabelFunc?: boolean, setUpDynamicHelpFunc?: boolean }
+    ): fng.IProcessedAttrs {
       function deserialize(str: string) {
         var retVal = str.replace(/&quot;/g, '"');
         if (retVal === "true") {
@@ -157,8 +162,8 @@ module fng.services {
         }
       }
       const result = { info: info as IFormInstruction, options: options as IFormOptions, directiveOptions };
-      result.info.help = handlePseudos(scope, result.info.help);
-      result.info.label = handlePseudos(scope, result.info.label);
+      result.info.help = handlePseudos(scope, result.info.help, opts?.setUpDynamicHelpFunc ? "help" : undefined);
+      result.info.label = handlePseudos(scope, result.info.label, opts?.setUpDynamicLabelFunc ? "label" : undefined);
       result.info.popup = handlePseudos(scope, result.info.popup);
       return result;
     }
