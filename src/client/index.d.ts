@@ -308,7 +308,7 @@ declare module fng {
       anything else will be used as a paragraph stype
      */
     titleTagOrClass?: string;
-    content: IFormInstruction[];
+    content: IFormSchemaElement[];
   }
 
   export type IFormSchemaElement = IFormInstruction | IContainer;
