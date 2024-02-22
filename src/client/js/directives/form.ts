@@ -829,186 +829,201 @@ module fng.directives {
           return result;
         };
 
+        scope.$on("regenerateForm", function (event: angular.IAngularEvent, formId: string) {
+          if (!attrs.formid || attrs.formid !== formId) {
+            return;
+          }
+          generateForm(scope[attrs.schema]);
+        });
+
         var unwatch = scope.$watch(attrs.schema, function (newValue: any) {
           if (newValue) {
             var newArrayValue: Array<any> = angular.isArray(newValue) ? newValue : [newValue];   // otherwise some old tests stop working for no real reason
             if (newArrayValue.length > 0 && typeof unwatch === "function") {
               unwatch();
               unwatch = null;
-              var elementHtml = '';
-              var recordAttribute = attrs.model || 'record'; // By default data comes from scope.record
-              var theRecord = scope[recordAttribute];
-              const hideableTabs = newArrayValue.filter((s) => s && s.containerType === "tab" && s.hideable);
-              let hiddenTabArrayProp: string;
-              let hiddenTabReintroductionMethod: HiddenTabReintroductionMethod;
-              for (const tab of hideableTabs) {
-                if (tab.hiddenTabArrayProp) {
-                  if (hiddenTabArrayProp && tab.hiddenTabArrayProp !== hiddenTabArrayProp) {
-                    throw new Error("Currently, tab sets with more than one value for hiddenTabArrayProp are not supported");
-                  }
-                  hiddenTabArrayProp = tab.hiddenTabArrayProp;
-                }
-                if (tab.hiddenTabReintroductionMethod) {
-                  if (hiddenTabReintroductionMethod && tab.hiddenTabReintroductionMethod !== hiddenTabReintroductionMethod) {
-                    throw new Error("Currently, tab sets with more than one value for hiddenTabReintroductionMethod are not supported");
-                  }
-                  hiddenTabReintroductionMethod = tab.hiddenTabReintroductionMethod;
-                }
-              }
-              // now we have established that we don't have more than one value for hiddenTabArrayProp, apply a default if no
-              // value has been provided at all...
-              if (!hiddenTabArrayProp) {
-                hiddenTabArrayProp = "record.hiddenTabs";
-              }
-              // ...and then replace all blanks with this value so the processInstructions() call made below can deal with
-              // each tab independently of the others
-              for (const tab of hideableTabs) {
-                tab.hiddenTabArrayProp = hiddenTabArrayProp;
-              }
-              if (hiddenTabReintroductionMethod === "tab") {
-                (newArrayValue as fng.IContainer[]).push({
-                  containerType: "+tab",
-                  hiddenTabArrayProp,
-                  content: []
-                })        
-              }
-              theRecord = theRecord || {};
-              if ((attrs.subschema || attrs.model) && !attrs.forceform) {
-                elementHtml = '';
-              } else {
-                scope.topLevelFormName = attrs.name || 'myForm';     // Form name defaults to myForm
-                // Copy attrs we don't process into form
-                var customAttrs = '';
-                for (var thisAttr in attrs) {
-                  if (attrs.hasOwnProperty(thisAttr)) {
-                    if (thisAttr[0] !== '$' && ['name', 'formstyle', 'schema', 'subschema', 'model', 'viewform'].indexOf(thisAttr) === -1) {
-                      customAttrs += ' ' + attrs.$attr[thisAttr] + '="' + attrs[thisAttr] + '"';
-                    }
-                  }
-                }
-                let tag = attrs.forceform ? 'ng-form' : 'form';
-                elementHtml = `<${tag} name="${scope.topLevelFormName}" class="${convertFormStyleToClass(attrs.formstyle)}" novalidate ${customAttrs}>`;
-              }
-              if (theRecord === scope.topLevelFormName) {
-                throw new Error('Model and Name must be distinct - they are both ' + theRecord);
-              }
-              elementHtml += processInstructions(newArrayValue, true, attrs);
-              if (tabsSetup === tabsSetupState.Forced) {
-                elementHtml += '</uib-tabset>';
-              }
-              elementHtml += attrs.subschema ? '' : '</form>';
-              //console.log(elementHtml);
-              element.replaceWith($compile(elementHtml)(scope));
-              // If there are subkeys we need to fix up ng-model references when record is read
-              // If we have modelControllers we need to let them know when we have form + data
-              let sharedData = scope[attrs.shared || 'sharedData'];
-              let modelControllers = sharedData ? sharedData.modelControllers : [];
-              if ((subkeys.length > 0 || modelControllers.length > 0)  && !scope.phaseWatcher){
-                var unwatch2 = scope.$watch('phase', function (newValue) {
-                  scope.phaseWatcher = true;
-                  if (newValue === 'ready' && typeof unwatch2 === "function") {
-                    unwatch2();
-                    unwatch2 = null;
+              generateForm(newArrayValue);
+            }
+          }
+        }, true);
+        
+        let formElement: JQLite;              
 
-                    // Tell the 'model controllers' that the form and data are there
-                    for (var i = 0; i < modelControllers.length; i++) {
-                      if (modelControllers[i].onAllReady) {
-                        modelControllers[i].onAllReady(scope);
+        var generateForm = function (schema: (fng.IContainer | fng.IFormInstruction)[]): void {
+          var elementHtml = '';
+          var recordAttribute = attrs.model || 'record'; // By default data comes from scope.record
+          var theRecord = scope[recordAttribute];
+          const hideableTabs = schema.filter((s) => s && s.containerType === "tab" && s.hideable);
+          let hiddenTabArrayProp: string;
+          let hiddenTabReintroductionMethod: HiddenTabReintroductionMethod;
+          for (const tab of hideableTabs) {
+            if (tab.hiddenTabArrayProp) {
+              if (hiddenTabArrayProp && tab.hiddenTabArrayProp !== hiddenTabArrayProp) {
+                throw new Error("Currently, tab sets with more than one value for hiddenTabArrayProp are not supported");
+              }
+              hiddenTabArrayProp = tab.hiddenTabArrayProp;
+            }
+            if (tab.hiddenTabReintroductionMethod) {
+              if (hiddenTabReintroductionMethod && tab.hiddenTabReintroductionMethod !== hiddenTabReintroductionMethod) {
+                throw new Error("Currently, tab sets with more than one value for hiddenTabReintroductionMethod are not supported");
+              }
+              hiddenTabReintroductionMethod = tab.hiddenTabReintroductionMethod;
+            }
+          }
+          // now we have established that we don't have more than one value for hiddenTabArrayProp, apply a default if no
+          // value has been provided at all...
+          if (!hiddenTabArrayProp) {
+            hiddenTabArrayProp = "record.hiddenTabs";
+          }
+          // ...and then replace all blanks with this value so the processInstructions() call made below can deal with
+          // each tab independently of the others
+          for (const tab of hideableTabs) {
+            tab.hiddenTabArrayProp = hiddenTabArrayProp;
+          }
+          if (hiddenTabReintroductionMethod === "tab") {
+            (schema as fng.IContainer[]).push({
+              containerType: "+tab",
+              hiddenTabArrayProp,
+              content: []
+            })        
+          }
+          theRecord = theRecord || {};
+          if ((attrs.subschema || attrs.model) && !attrs.forceform) {
+            elementHtml = '';
+          } else {
+            scope.topLevelFormName = attrs.name || 'myForm';     // Form name defaults to myForm
+            // Copy attrs we don't process into form
+            var customAttrs = '';
+            for (var thisAttr in attrs) {
+              if (attrs.hasOwnProperty(thisAttr)) {
+                if (thisAttr[0] !== '$' && ['name', 'formstyle', 'schema', 'subschema', 'model', 'viewform'].indexOf(thisAttr) === -1) {
+                  customAttrs += ' ' + attrs.$attr[thisAttr] + '="' + attrs[thisAttr] + '"';
+                }
+              }
+            }
+            let tag = attrs.forceform ? 'ng-form' : 'form';
+            elementHtml = `<${tag} name="${scope.topLevelFormName}" class="${convertFormStyleToClass(attrs.formstyle)}" novalidate ${customAttrs}>`;
+          }
+          if (theRecord === scope.topLevelFormName) {
+            throw new Error('Model and Name must be distinct - they are both ' + theRecord);
+          }
+          elementHtml += processInstructions(schema, true, attrs);
+          if (tabsSetup === tabsSetupState.Forced) {
+            elementHtml += '</uib-tabset>';
+          }
+          elementHtml += attrs.subschema ? '' : '</form>';
+          const compiledFormElement = $compile(elementHtml)(scope);
+          (formElement || element).replaceWith(compiledFormElement);
+          // remember the element that we're now represented by (which is no longer the value
+          // of element passed to our link function).  This will enable us to replace the 
+          // correct element if we are ever reinitialised.
+          formElement = compiledFormElement;
+          // If there are subkeys we need to fix up ng-model references when record is read
+          // If we have modelControllers we need to let them know when we have form + data
+          let sharedData = scope[attrs.shared || 'sharedData'];
+          let modelControllers = sharedData ? sharedData.modelControllers : [];
+          if ((subkeys.length > 0 || modelControllers.length > 0)  && !scope.phaseWatcher){
+            var unwatch2 = scope.$watch('phase', function (newValue) {
+              scope.phaseWatcher = true;
+              if (newValue === 'ready' && typeof unwatch2 === "function") {
+                unwatch2();
+                unwatch2 = null;
+
+                // Tell the 'model controllers' that the form and data are there
+                for (var i = 0; i < modelControllers.length; i++) {
+                  if (modelControllers[i].onAllReady) {
+                    modelControllers[i].onAllReady(scope);
+                  }
+                }
+
+                // For each one of the subkeys sets in the form we need to fix up ng-model references
+                for (var subkeyCtr = 0; subkeyCtr < subkeys.length; subkeyCtr++) {
+                  var info = subkeys[subkeyCtr];
+                  var arrayOffset;
+                  var matching;
+                  var arrayToProcess = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
+
+                  var parts = info.name.split('.');
+                  var dataVal = theRecord;
+                  while (parts.length > 1) {
+                    dataVal = dataVal[parts.shift()] || {};
+                  }
+                  dataVal = dataVal[parts[0]] = dataVal[parts[0]] || [];
+
+                  // For each of the required subkeys of this type
+                  for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
+
+                    if (arrayToProcess[thisOffset].selectFunc) {
+                      // Get the array offset from a function
+                      if (!scope[arrayToProcess[thisOffset].selectFunc] || typeof scope[arrayToProcess[thisOffset].selectFunc] !== 'function') {
+                        throw new Error('Subkey function ' + arrayToProcess[thisOffset].selectFunc + ' is not properly set up');
                       }
-                    }
+                      arrayOffset = scope[arrayToProcess[thisOffset].selectFunc](theRecord, info);
 
-                    // For each one of the subkeys sets in the form we need to fix up ng-model references
-                    for (var subkeyCtr = 0; subkeyCtr < subkeys.length; subkeyCtr++) {
-                      var info = subkeys[subkeyCtr];
-                      var arrayOffset;
-                      var matching;
-                      var arrayToProcess = angular.isArray(info.subkey) ? info.subkey : [info.subkey];
+                    } else if (arrayToProcess[thisOffset].keyList) {
+                      // We are choosing the array element by matching one or more keys
+                      var thisSubkeyList = arrayToProcess[thisOffset].keyList;
 
-                      var parts = info.name.split('.');
-                      var dataVal = theRecord;
-                      while (parts.length > 1) {
-                        dataVal = dataVal[parts.shift()] || {};
-                      }
-                      dataVal = dataVal[parts[0]] = dataVal[parts[0]] || [];
-
-                      // For each of the required subkeys of this type
-                      for (var thisOffset = 0; thisOffset < arrayToProcess.length; thisOffset++) {
-
-                        if (arrayToProcess[thisOffset].selectFunc) {
-                          // Get the array offset from a function
-                          if (!scope[arrayToProcess[thisOffset].selectFunc] || typeof scope[arrayToProcess[thisOffset].selectFunc] !== 'function') {
-                            throw new Error('Subkey function ' + arrayToProcess[thisOffset].selectFunc + ' is not properly set up');
-                          }
-                          arrayOffset = scope[arrayToProcess[thisOffset].selectFunc](theRecord, info);
-
-                        } else if (arrayToProcess[thisOffset].keyList) {
-                          // We are choosing the array element by matching one or more keys
-                          var thisSubkeyList = arrayToProcess[thisOffset].keyList;
-
-                          for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
-                            matching = true;
-                            for (var keyField in thisSubkeyList) {
-                              if (thisSubkeyList.hasOwnProperty(keyField)) {
-                                // Not (currently) concerned with objects here - just simple types and lookups
-                                if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField] &&
-                                  (typeof dataVal[arrayOffset][keyField] === 'undefined' || !dataVal[arrayOffset][keyField].text || dataVal[arrayOffset][keyField].text !== thisSubkeyList[keyField])) {
-                                  matching = false;
-                                  break;
-                                }
-                              }
-                            }
-                            if (matching) {
+                      for (arrayOffset = 0; arrayOffset < dataVal.length; arrayOffset++) {
+                        matching = true;
+                        for (var keyField in thisSubkeyList) {
+                          if (thisSubkeyList.hasOwnProperty(keyField)) {
+                            // Not (currently) concerned with objects here - just simple types and lookups
+                            if (dataVal[arrayOffset][keyField] !== thisSubkeyList[keyField] &&
+                              (typeof dataVal[arrayOffset][keyField] === 'undefined' || !dataVal[arrayOffset][keyField].text || dataVal[arrayOffset][keyField].text !== thisSubkeyList[keyField])) {
+                              matching = false;
                               break;
                             }
                           }
-                          if (!matching) {
-                            // There is no matching array element
-                            switch (arrayToProcess[thisOffset].onNotFound) {
-                              case 'error' :
-                                var errorMessage = 'Cannot find matching ' + (arrayToProcess[thisOffset].title || arrayToProcess[thisOffset].path);
-                                //Have to do this async as setPristine clears it
-                                $timeout(function() {
-                                  scope.showError(errorMessage, 'Unable to set up form correctly');
-                                });
-                                arrayOffset = -1;
-                                //throw new Error(scope.errorMessage);
-                                break;
-                              case 'create':
-                              default:
-                                let nameElements = info.name.split('.');
-                                let lastPart: string = nameElements.pop();
-                                let possibleArray: string = nameElements.join('.');
-                                let obj = theRecord;
-
-                                // Should loop here when / if we re-introduce nesting
-                                if (possibleArray) {
-                                  obj = obj[possibleArray];
-                                }
-                                arrayOffset = obj[lastPart].push(thisSubkeyList) - 1;
-                                break;
-                            }
-                          }
-                        } else {
-                          throw new Error('Invalid subkey setup for ' + info.name);
                         }
-                        scope['$_arrayOffset_' + info.name.replace(/\./g, '_') + '_' + thisOffset] = arrayOffset;
+                        if (matching) {
+                          break;
+                        }
                       }
+                      if (!matching) {
+                        // There is no matching array element
+                        switch (arrayToProcess[thisOffset].onNotFound) {
+                          case 'error' :
+                            var errorMessage = 'Cannot find matching ' + (arrayToProcess[thisOffset].title || arrayToProcess[thisOffset].path);
+                            //Have to do this async as setPristine clears it
+                            $timeout(function() {
+                              scope.showError(errorMessage, 'Unable to set up form correctly');
+                            });
+                            arrayOffset = -1;
+                            //throw new Error(scope.errorMessage);
+                            break;
+                          case 'create':
+                          default:
+                            let nameElements = info.name.split('.');
+                            let lastPart: string = nameElements.pop();
+                            let possibleArray: string = nameElements.join('.');
+                            let obj = theRecord;
+
+                            // Should loop here when / if we re-introduce nesting
+                            if (possibleArray) {
+                              obj = obj[possibleArray];
+                            }
+                            arrayOffset = obj[lastPart].push(thisSubkeyList) - 1;
+                            break;
+                        }
+                      }
+                    } else {
+                      throw new Error('Invalid subkey setup for ' + info.name);
                     }
+                    scope['$_arrayOffset_' + info.name.replace(/\./g, '_') + '_' + thisOffset] = arrayOffset;
                   }
-                });
+                }
               }
-
-              $rootScope.$broadcast('formInputDone', attrs.name);
-
-              if (FormGeneratorService.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
-                // If this is not a test force the data dependent updates to the DOM
-                FormGeneratorService.updateDataDependentDisplay(theRecord, null, true, scope);
-              }
-            }
+            });
           }
 
-        }, true);
+          $rootScope.$broadcast('formInputDone', attrs.name);
 
+          if (FormGeneratorService.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
+            // If this is not a test force the data dependent updates to the DOM
+            FormGeneratorService.updateDataDependentDisplay(theRecord, null, true, scope);
+          }
+        }
       }
     };
   }
