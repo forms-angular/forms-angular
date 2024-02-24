@@ -913,7 +913,14 @@ module fng.directives {
           }
           elementHtml += attrs.subschema ? '' : '</form>';
           const compiledFormElement = $compile(elementHtml)(scope);
-          (formElement || element).replaceWith(compiledFormElement);
+          if (formElement) {
+            const topLevelForm = scope[scope.topLevelFormName];
+            formElement.replaceWith(compiledFormElement);
+            // the replaceWith will cause the scope[scope.topLevelFormName] to be cleared, so we need to...:
+            scope[scope.topLevelFormName] = topLevelForm;
+          } else {
+            element.replaceWith(compiledFormElement);
+          }          
           // remember the element that we're now represented by (which is no longer the value
           // of element passed to our link function).  This will enable us to replace the 
           // correct element upon receipt of a regenerateFormMarkup request.
