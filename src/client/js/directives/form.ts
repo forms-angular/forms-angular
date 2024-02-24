@@ -829,7 +829,7 @@ module fng.directives {
           return result;
         };
 
-        scope.$on("regenerateForm", function (event: angular.IAngularEvent, formId: string) {
+        scope.$on("regenerateFormMarkup", function (event: angular.IAngularEvent, formId: string) {
           if (!attrs.formid || attrs.formid !== formId) {
             return;
           }
@@ -916,7 +916,7 @@ module fng.directives {
           (formElement || element).replaceWith(compiledFormElement);
           // remember the element that we're now represented by (which is no longer the value
           // of element passed to our link function).  This will enable us to replace the 
-          // correct element if we are ever reinitialised.
+          // correct element upon receipt of a regenerateFormMarkup request.
           formElement = compiledFormElement;
           // If there are subkeys we need to fix up ng-model references when record is read
           // If we have modelControllers we need to let them know when we have form + data
