@@ -56,33 +56,8 @@ module fng.services {
       return internalGenDisabledAttrs(scope, id, processedAttrs, idSuffix, params).join(" ");
     }
 
-    // Text surrounded by @@ @@ is assumed to be something that can have a pseudonym.  We'll rely
-    // upon the relevant controller assigning a pseudo() function to baseScope.
-    // If the first character of the pseudonym token is upper case, then its replacement will use
-    // titlecase, otherwise its replacement will be in lowercase.
-    // If the last character of the pseudonym token is "s", then its replacement will be pluralised.
-    function handlePseudos(str: string): string {
-      if (!str) {
-        return str;
-      }
-      let result = str;
-      while (result.includes("@@")) {
-        const firstCharPos = result.indexOf("@@") + 2;
-        const lastCharPos = result.indexOf("@@", firstCharPos) - 1;
-        let token = result.substring(firstCharPos, lastCharPos + 1);
-        const plural = token.endsWith("s");
-        if (plural) {
-          token = token.slice(0, -1);
-        }
-        const upperStr = token[0].toUpperCase() === token[0] ? "true" : "false";
-        token = token.toLocaleLowerCase();
-        result =
-          result.substring(0, firstCharPos - 2) +
-          `{{ baseScope.pseudo('${token}', ${upperStr}) }}` +
-          (plural ? "s" : "") + 
-          result.substring(lastCharPos + 3);
-      }
-      return result;
+    function handlePseudos(scope: fng.IFormScope, str: string, dynamicFuncName?: string): string {
+      return FormMarkupHelperService.handlePseudos(scope, str, dynamicFuncName);
     }
 
     function makeIdStringUniqueForArrayElements(scope: fng.IFormScope, processedAttrs: fng.IProcessedAttrs, idString: string): string {
@@ -147,7 +122,12 @@ module fng.services {
       return disabledStr + " " + rawDisabledAttrs[1];
     }
 
-    function extractFromAttr(attr, directiveName: string): fng.IProcessedAttrs {
+    function extractFromAttr(
+      attr,
+      directiveName: string,
+      scope: fng.IFormScope,
+      opts?: { setUpDynamicLabelFunc?: boolean, setUpDynamicHelpFunc?: boolean }
+    ): fng.IProcessedAttrs {
       function deserialize(str: string) {
         var retVal = str.replace(/&quot;/g, '"');
         if (retVal === "true") {
@@ -182,12 +162,9 @@ module fng.services {
         }
       }
       const result = { info: info as IFormInstruction, options: options as IFormOptions, directiveOptions };
-      // any part of the help text or label that is surrounded by @@ @@ is assumed to be something that can have
-      // a pseudonym.  We'll be relying upon the parent controller assigning a pseudo() function to baseScope to
-      // actually perform the translation.
-      // TODO - do this better when fng is re-written!
-      result.info.help = handlePseudos(result.info.help);
-      result.info.label = handlePseudos(result.info.label);
+      result.info.help = handlePseudos(scope, result.info.help, opts?.setUpDynamicHelpFunc ? "help" : undefined);
+      result.info.label = handlePseudos(scope, result.info.label, opts?.setUpDynamicLabelFunc ? "label" : undefined);
+      result.info.popup = handlePseudos(scope, result.info.popup);
       return result;
     }
 
@@ -229,7 +206,7 @@ module fng.services {
         },
         generateInputControl: (buildingBlocks: fng.IBuildingBlocks) => string,
       ): string {
-        const processedAttrs = params.processedAttrs || extractFromAttr(attrs, "");
+        const processedAttrs = params.processedAttrs || extractFromAttr(attrs, "", scope);
         const info: Partial<IFormInstruction> = {};
         if (!params.ignoreFieldInfoFromAttrs) {
           Object.assign(info, processedAttrs.info);
