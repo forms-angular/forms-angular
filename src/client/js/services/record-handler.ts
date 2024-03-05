@@ -566,8 +566,20 @@ module fng.services {
         $scope.$watch("record", function(newValue, oldValue) {
           if (newValue !== oldValue) {
             if (Object.keys(oldValue).length > 0 && $scope.dropConversionWatcher) {
-              $scope.dropConversionWatcher();  // Don't want to convert changed data
+              // We don't want to convert changed data, so we need to stop watching the conversions
+              // after the record has finished its initialisation and this watch has begun detecting actual changes.
+              // In some rare cases, it is possible that a "change" to the record can be made programatically
+              // before all of the directives that might need to add conversions have finished doing so.  
+              // This can happen in situations where promise resolutions interrupt the compilation process. 
+              // If we're not careful, we can end up with <select> inputs that are blank even when the underlying
+              // field does have a value.
+              // To avoid this, we'll use a $timeout to give for the digest queue to fully clear out - this should
+              // ensure that all directives have been compiled before the conversion watcher is actually dropped.
+              const dropWatcherFunc = $scope.dropConversionWatcher;
               $scope.dropConversionWatcher = null;
+              $timeout(() => {
+                dropWatcherFunc(); 
+              });
             }
             force = formGeneratorInstance.updateDataDependentDisplay(newValue, oldValue, force, $scope);
             processLookupHandlers(newValue, oldValue);
