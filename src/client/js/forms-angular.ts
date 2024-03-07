@@ -39,6 +39,8 @@ module fng {
   .controller('ModelCtrl', fng.controllers.ModelCtrl)
   .controller('NavCtrl', fng.controllers.NavCtrl)
   .directive('modelControllerDropdown',fng.directives.modelControllerDropdown)
+  .directive('dropDownItem',fng.directives.dropDownItem)
+  .directive('dropDownSubMenu',fng.directives.dropDownSubMenu)
   .directive('errorDisplay',fng.directives.errorDisplay)
   .directive('fngLink',fng.directives.fngLink)
   .directive('formInput',fng.directives.formInput)
