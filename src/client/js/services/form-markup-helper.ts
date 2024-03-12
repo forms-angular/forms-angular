@@ -343,7 +343,7 @@ module fng.services {
                 classes += ' ' + fieldInfo.labelDefaultClass;
               } else if (CssFrameworkService.framework() === 'bs3') {
                 if (fieldInfo.coloffset) {
-                  classes += ' col-sm-' + (3 + fieldInfo.coloffset).toString();
+                  classes += ' col-sm-' + (3 - fieldInfo.coloffset).toString();
                 } else {
                   classes += ' col-sm-3';
                 }
