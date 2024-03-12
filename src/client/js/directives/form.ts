@@ -631,7 +631,7 @@ module fng.directives {
             info.label = FormMarkupHelperService.handlePseudos(scope, info.label);
             info.popup = FormMarkupHelperService.handlePseudos(scope, info.popup);
             // Handle arrays here
-            var controlDivClasses = FormMarkupHelperService.controlDivClasses(options);
+            var controlDivClasses = FormMarkupHelperService.controlDivClasses(options, info);
             if (info.array) {
               controlDivClasses.push('fng-array');
               if (options.formstyle === 'inline' || options.formstyle === 'stacked') {

@@ -219,7 +219,7 @@ module fng.services {
         if (fieldChrome.omit) {
           return "";
         }
-        const controlDivClasses = FormMarkupHelperService.controlDivClasses(options);
+        const controlDivClasses = FormMarkupHelperService.controlDivClasses(options, info as IFormInstruction);
         let elementHtml = fieldChrome.template + FormMarkupHelperService.label(scope, info as IFormInstruction, params.addButtons, options);
         let idString = info.id;
         if (info.array || options.subschema) {

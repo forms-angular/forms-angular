@@ -272,6 +272,7 @@ declare module fng {
     select2?: any; // deprecated
     schema?: IFormInstruction[]; // If the field is an array of fields
     intType?: "date";
+    coloffset?: number;
     [directiveOptions: string]: any;
   }
 
@@ -823,7 +824,7 @@ declare module fng {
     allInputsVars: (scope: angular.IScope, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, modelString: string, idString: string, nameString: string) => Partial<fng.IBuildingBlocks>;
     inputChrome: (value: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, markupVars) => string;
     generateSimpleInput: (common: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions) => string;
-    controlDivClasses: (options: fng.IFormOptions) => string[];
+    controlDivClasses: (options: fng.IFormOptions, fieldInfo: fng.IFormInstruction) => string[];
     handleInputAndControlDiv: (inputMarkup: string, controlDivClasses: string[]) => string;
     handleArrayInputAndControlDiv: (inputMarkup: string, controlDivClasses: string[], scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions) => string;
     addTextInputMarkup: (allInputsVars: Partial<fng.IBuildingBlocks>, fieldInfo: fng.IFormInstruction, requiredStr: string) => string;

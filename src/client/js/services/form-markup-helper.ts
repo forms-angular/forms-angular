@@ -342,7 +342,11 @@ module fng.services {
                 // Override default label class (can be empty)
                 classes += ' ' + fieldInfo.labelDefaultClass;
               } else if (CssFrameworkService.framework() === 'bs3') {
-                classes += ' col-sm-3';
+                if (fieldInfo.coloffset) {
+                  classes += ' col-sm-' + (3 + fieldInfo.coloffset).toString();
+                } else {
+                  classes += ' col-sm-3';
+                }
               }
             } else if (['inline','stacked'].includes(options.formstyle)) {
               labelHTML += ' for="' + fieldInfo.id + '"';
@@ -461,10 +465,16 @@ module fng.services {
           return result;
         },
 
-        controlDivClasses: function controlDivClasses(options: fng.IFormOptions): string[] {
+        controlDivClasses: function controlDivClasses(options: fng.IFormOptions, fieldInfo: fng.IFormInstruction): string[] {
           const result: string[] = [];
           if (isHorizontalStyle(options.formstyle, false)) {
-            result.push(CssFrameworkService.framework() === 'bs2' ? 'controls' : 'col-sm-9');
+            if (CssFrameworkService.framework() === 'bs2') {
+              result.push('controls');
+            } else if (fieldInfo.coloffset) {
+                result.push('col-sm-' + (9 + fieldInfo.coloffset).toString());
+            } else {
+                result.push('col-sm-9');
+            }
           }
           return result;
         },
