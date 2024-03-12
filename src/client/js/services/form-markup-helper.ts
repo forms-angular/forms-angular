@@ -297,7 +297,7 @@ module fng.services {
             classes += ' form-group';
             if (options.formstyle === 'vertical' && info.size !== 'block-level') {
               template += '<div class="row">';
-              classes += ' col-sm-' + InputSizeHelperService.sizeAsNumber(info.size);
+              classes += ' col-sm-' + InputSizeHelperService.sizeAsNumber(info);
               closeTag += '</div>';
             }
 
@@ -387,7 +387,7 @@ module fng.services {
 
           if (CssFrameworkService.framework() === 'bs3') {
             compactClass = (['horizontal', 'vertical', 'inline'].indexOf(options.formstyle) === -1) ? ' input-sm' : '';
-            sizeClassBS3 = 'col-sm-' + InputSizeHelperService.sizeAsNumber(fieldInfo.size);
+            sizeClassBS3 = 'col-sm-' + InputSizeHelperService.sizeAsNumber(fieldInfo);
             formControl = ' form-control';
           } else {
             sizeClassBS2 = (fieldInfo.size ? ' input-' + fieldInfo.size : '');

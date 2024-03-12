@@ -13,8 +13,12 @@ module fng.services {
       sizeMapping: sizeMapping,
       sizeDescriptions: sizeDescriptions,
       defaultSizeOffset: defaultSizeOffset,
-      sizeAsNumber: function (fieldSizeAsText) {
-        return sizeMapping[fieldSizeAsText ? sizeDescriptions.indexOf(fieldSizeAsText) : defaultSizeOffset];
+      sizeAsNumber: function (info: fng.IFormInstruction) {
+        let result = sizeMapping[info.size ? sizeDescriptions.indexOf(info.size) : defaultSizeOffset];
+        if (info.coloffset) {
+          result += info.coloffset;
+        }
+        return result;
       }
     };
   }
