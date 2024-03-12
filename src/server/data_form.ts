@@ -438,15 +438,21 @@ export class FormsAngular {
                         indexedFields.push(field);
                     }
                 }
-                for (let path in schema.paths) {
-                    if (path !== '_id' && schema.paths.hasOwnProperty(path)) {
-                        if (schema.paths[path]._index && !schema.paths[path].options.noSearch) {
-                            if (indexedFields.indexOf(path) === -1) {
-                                indexedFields.push(path);
+                function addIndexedPaths(schema, pathSoFar) {
+                    for (let path in schema.paths) {
+                        if (path !== '_id' && schema.paths.hasOwnProperty(path)) {
+                            const qualifiedPath = pathSoFar ? pathSoFar + "." + path : path;
+                            if (schema.paths[path]._index && !schema.paths[path].options.noSearch) {
+                                if (indexedFields.indexOf(qualifiedPath) === -1) {
+                                    indexedFields.push(qualifiedPath);
+                                }
+                            } else if (schema.paths[path].schema) {
+                                addIndexedPaths(schema.paths[path].schema, qualifiedPath);
                             }
                         }
                     }
                 }
+                addIndexedPaths(schema, "");
                 if (indexedFields.length === 0) {
                     console.log('ERROR: Searching on a collection with no indexes ' + resource.resourceName);
                 }
