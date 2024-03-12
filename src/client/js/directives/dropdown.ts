@@ -22,10 +22,10 @@ module fng.directives {
       link: function (scope: any, element) {
         const parent = element[0].parentElement;
         const template =
-          ' <a ng-show="choice.text || choice.textFunc" class="dropdown-option" data-ng-mouseenter="mouseenter()">' +
+          ' <a ng-show="choice.text || choice.textFunc" class="dropdown-option open-sub-menu" data-ng-mouseenter="mouseenter()">' +
           "   {{ choice.text || choice.textFunc() }}" +
           " </a>" +
-          // for now, the remainder of this template does honour RBAC - come back to this if anyone ever reports it
+          // for now, the remainder of this template does not honour RBAC - come back to this if anyone ever reports it
           ' <ul class="uib-dropdown-menu dropdown-menu sub-menu">' +
           `  <li ng-repeat="choice in choice.items" ng-attr-id="{{choice.id}}">` + //  ${itemVisibilityStr} ${itemDisabledStr}
           '   <drop-down-item data-ng-if="::!choice.items"></drop-down-item>' +
