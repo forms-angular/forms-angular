@@ -802,7 +802,7 @@ export class FormsAngular {
             hiddenFields = [],
             listFields = [];
 
-        if (resource && resource.preprocessed && resource.preprocessed[formName || "__default"]) {
+        if (resource && !resource.options?.doNotCacheSchema && resource.preprocessed && resource.preprocessed[formName || "__default"]) {
             return resource.preprocessed[formName || "__default"].paths;
         } else {
             if (resource && resource.options && resource.options.idIsList) {
@@ -866,7 +866,7 @@ export class FormsAngular {
             if (listFields.length > 0) {
                 returnObj.listFields = listFields;
             }
-            if (resource) {
+            if (resource && !resource.options?.doNotCacheSchema) {
                 resource.preprocessed = resource.preprocessed || {};
                 resource.preprocessed[formName || "__default"] = returnObj;
             }

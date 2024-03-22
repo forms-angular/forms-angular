@@ -57,6 +57,7 @@ declare module fngServer {
         idIsList?: IIdIsList,
         searchResultFormat?: ISearchResultFormatter,
         searchOrder?: any,
+        doNotCacheSchema?: boolean,          // useful if bespoke fields can be added at runtime, for instance
         listOrder?: any,
         onAccess?: (req, cb) => void,
         searchFunc?: SearchFunc;
