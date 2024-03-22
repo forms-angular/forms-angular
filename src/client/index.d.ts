@@ -272,6 +272,7 @@ declare module fng {
     select2?: any; // deprecated
     schema?: IFormInstruction[]; // If the field is an array of fields
     intType?: "date";
+    coloffset?: number;
     [directiveOptions: string]: any;
   }
 
@@ -509,12 +510,7 @@ declare module fng {
   export interface IContextMenuDivider {
     divider: boolean;
   }
-  export interface IContextMenuOption {
-    // For it to make any sense, a menu option needs one of the next three properties
-    url?: string;
-    fn?: () => void;
-    urlFunc?: () => string;
-
+  export interface IContextMenuBaseOption {
     // provided to the security hook (see elemSecurityFuncName) - optional where that is not being used
     id?: string;
 
@@ -528,6 +524,18 @@ declare module fng {
     creating: boolean;
     editing: boolean;
   }
+  export interface IContextSubMenuOption extends IContextMenuBaseOption {
+    items: ContextMenuItem[];
+  }
+  export interface IContextMenuOption extends IContextMenuBaseOption{
+    // For it to make any sense, a menu option needs one of the next three properties
+    url?: string;
+    fn?: (...args: any) => void;
+    urlFunc?: () => string;
+    broadcast?: string;
+    args?: any[];
+  }
+  export type ContextMenuItem = IContextMenuOption | IContextSubMenuOption | IContextMenuDivider;
 
   export interface IModelCtrlService {
     loadControllerAndMenu: (sharedData: any, titleCaseModelName: string, level: number, needDivider: boolean, scope: angular.IScope) => void;
@@ -536,8 +544,8 @@ declare module fng {
   export interface IModelController extends IFormScope {
     onBaseCtrlReady?: (baseScope: IFormScope) => void; // Optional callback after form is instantiated
     onAllReady?: (baseScope: IFormScope) => void; // Optional callback after form is instantiated and populated
-    contextMenu?: Array<IContextMenuOption | IContextMenuDivider>;
-    contextMenuPromise?: Promise<Array<IContextMenuOption | IContextMenuDivider>>;
+    contextMenu?: ContextMenuItem[];
+    contextMenuPromise?: Promise<ContextMenuItem[]>;
   }
 
   export interface IBaseFormOptions {
@@ -816,7 +824,7 @@ declare module fng {
     allInputsVars: (scope: angular.IScope, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, modelString: string, idString: string, nameString: string) => Partial<fng.IBuildingBlocks>;
     inputChrome: (value: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions, markupVars) => string;
     generateSimpleInput: (common: string, fieldInfo: fng.IFormInstruction, options: fng.IFormOptions) => string;
-    controlDivClasses: (options: fng.IFormOptions) => string[];
+    controlDivClasses: (options: fng.IFormOptions, fieldInfo: fng.IFormInstruction) => string[];
     handleInputAndControlDiv: (inputMarkup: string, controlDivClasses: string[]) => string;
     handleArrayInputAndControlDiv: (inputMarkup: string, controlDivClasses: string[], scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions) => string;
     addTextInputMarkup: (allInputsVars: Partial<fng.IBuildingBlocks>, fieldInfo: fng.IFormInstruction, requiredStr: string) => string;

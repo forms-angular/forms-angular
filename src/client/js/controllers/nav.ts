@@ -140,9 +140,9 @@ module fng.controllers {
       clearContextMenu();
     });
 
-    $scope.doClick = function (index, event) {
+    $scope.doClick = function (index: number, event, item: fng.IContextMenuOption & fng.IContextMenuDivider) {
       const option = angular.element(event.target);
-      const item = $scope.items[index];
+      item = item || $scope.items[index];
       if (item.divider || option.parent().hasClass('disabled')) {
         event.preventDefault();
       } else if (item.broadcast) {

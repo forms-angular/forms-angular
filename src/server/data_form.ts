@@ -1,4 +1,4 @@
-import {Document, FilterQuery, Mongoose, Types} from "mongoose";
+import {Document, FilterQuery, Mongoose, Types, Schema} from "mongoose";
 import {Express} from "express";
 import {fngServer} from "./index";
 import Resource = fngServer.Resource;
@@ -268,7 +268,36 @@ export class FormsAngular {
             }
         }
 
-        extend(resource.options, this.preprocess(resource, resource.model.schema['paths']));
+        extend(resource.options, this.preprocess(resource, resource.model.schema.paths));
+        resource.options.searchFields = [];
+
+        // commenting this out, as we used to do this in a place where the type of resource.model.schema was any,
+        // so it was allowed, despite the fact that _indexes is not a known property of a mongoose schema.
+        // changing it to indexes does compile, but this might not be what was intended
+        //
+        // for (let j = 0; j < resource.model.schema._indexes.length; j++) {
+        //     let attributes = resource.model.schema._indexes[j][0];
+        //     let field = Object.keys(attributes)[0];
+        //     if (resource.options.searchFields.indexOf(field) === -1) {
+        //         resource.options.searchFields.push(field);
+        //     }
+        // }
+
+        function addSearchFields(schema: Schema, pathSoFar: string) {
+            for (let path in schema.paths) {
+                if (path !== '_id' && schema.paths.hasOwnProperty(path)) {
+                    const qualifiedPath = pathSoFar ? pathSoFar + "." + path : path;
+                    if (schema.paths[path].options.index && !schema.paths[path].options.noSearch) {
+                        if (resource.options.searchFields.indexOf(qualifiedPath) === -1) {
+                            resource.options.searchFields.push(qualifiedPath);
+                        }
+                    } else if (schema.paths[path].schema) {
+                        addSearchFields(schema.paths[path].schema, qualifiedPath);
+                    }
+                }
+            }
+        }
+        addSearchFields(resource.model.schema, "");
 
         if (resource.options.searchImportance) {
             this.searchFunc = async.forEachSeries;
@@ -429,32 +458,14 @@ export class FormsAngular {
         for (let i = 0; i < resourceCount; i++) {
             let resource = resourcesToSearch[i];
             if (resourceCount === 1 || (resource.options.searchImportance !== false && (!collectionName || collectionNameLower === resource.resourceNameLower || resource.options?.synonyms?.find(s => s.name === collectionNameLower)))) {
-                let schema = resource.model.schema;
-                let indexedFields = [];
-                for (let j = 0; j < schema._indexes.length; j++) {
-                    let attributes = schema._indexes[j][0];
-                    let field = Object.keys(attributes)[0];
-                    if (indexedFields.indexOf(field) === -1) {
-                        indexedFields.push(field);
-                    }
-                }
-                for (let path in schema.paths) {
-                    if (path !== '_id' && schema.paths.hasOwnProperty(path)) {
-                        if (schema.paths[path]._index && !schema.paths[path].options.noSearch) {
-                            if (indexedFields.indexOf(path) === -1) {
-                                indexedFields.push(path);
-                            }
-                        }
-                    }
-                }
-                if (indexedFields.length === 0) {
+                let searchFields = resource.options.searchFields;
+                if (searchFields.length === 0) {
                     console.log('ERROR: Searching on a collection with no indexes ' + resource.resourceName);
                 }
-
                 let synonymObj = resource.options?.synonyms?.find(s => s.name.toLowerCase() === collectionNameLower);
                 const synonymFilter = synonymObj?.filter;
-                for (let m = 0; m < indexedFields.length; m++) {
-                    let searchObj: {resource: Resource, field: string, filter?: any} = {resource: resource, field: indexedFields[m]}
+                for (let m = 0; m < searchFields.length; m++) {
+                    let searchObj: {resource: Resource, field: string, filter?: any} = {resource: resource, field: searchFields[m]}
                     if (synonymFilter) {
                         searchObj.filter = synonymFilter;
                     }
