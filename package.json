@@ -65,7 +65,7 @@
     "body-parser": "1.20.2",
     "bower": "^1.8.14",
     "del": "6.1.1",
-    "express": "4.18.2",
+    "express": "4.19.2",
     "gulp": "^4.0.2",
     "gulp-angular-templatecache": "3.0.1",
     "gulp-clean-css": "4.3.0",
