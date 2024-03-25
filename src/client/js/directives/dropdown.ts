@@ -1,6 +1,7 @@
 /// <reference path="../../../../node_modules/@types/angular/index.d.ts" />
 
 module fng.directives {
+  /*@ngInject*/
   export function dropDownItem($compile: angular.ICompileService): angular.IDirective {
     return {
       restrict: "AE",
@@ -15,6 +16,7 @@ module fng.directives {
     };
   }
 
+  /*@ngInject*/
   export function dropDownSubMenu($compile: angular.ICompileService): angular.IDirective {
     return {
       restrict: "AE",
