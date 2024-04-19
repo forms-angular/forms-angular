@@ -354,8 +354,20 @@ module fng.services {
             }
             labelHTML += AddAllService.addAll(scope, 'Label', null, options) + ' class="' + classes + '">' + fieldInfo.label;
             if (addButtonMarkup) {
+              let fieldName: string;
+              let model: string;
+              if (options.subschema) {
+                  fieldName = fieldInfo.name.replace(options.subschemaroot, "");
+                  if (fieldName.startsWith(".")) {
+                      fieldName = fieldName.substring(1);
+                  }
+                  model = "subDoc";
+              } else {
+                  fieldName = fieldInfo.name;
+                  model = "record";
+              }
               const disabledAttrs = handleReadOnlyDisabled(fieldInfo, scope);
-              labelHTML += ` <i ${disabledAttrs.join(" ")} id="add_${fieldInfo.id}" ng-click="add('${fieldInfo.name}', $event)" class="${glyphClass()}-plus-sign"></i>`;
+              labelHTML += ` <i ${disabledAttrs.join(" ")} id="add_${fieldInfo.id}" ng-click="add('${fieldName}', $event, ${model})" class="${glyphClass()}-plus-sign"></i>`;
             }
             labelHTML += '</label>';
             if (fieldInfo.linklabel) {
@@ -488,7 +500,9 @@ module fng.services {
 
         handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup: string, controlDivClasses: string[], scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions): string {
           let indentStr = CssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols($index)" ' : "";
-          const arrayStr = (options.model || 'record') + '.' + info.name;
+          const arrayStr = !!options.subschema
+            ? 'subDoc' + info.name.replace(options.subschemaroot, "")
+            : (options.model || 'record') + '.' + info.name;
           let result = "";
           result += '<div id="' + info.id + 'List" class="' + controlDivClasses.join(' ') + '" ' + indentStr + ' ng-repeat="arrayItem in ' + arrayStr + ' track by $index">';
           const disabledAttrs = handleReadOnlyDisabled(info, scope);
@@ -499,7 +513,7 @@ module fng.services {
           result += '</div>';
           indentStr = CssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols(' + arrayStr + '.length)" ' : "";
           if (info.help) {
-              result += '<div class="array-help-block ' + controlDivClasses.join(' ') + '" ' + indentStr + ' id="empty' + info.id + 'ListHelpBlock">' + info.help + '</div>';
+            result += '<div class="array-help-block ' + controlDivClasses.join(' ') + '" ' + indentStr + ' id="empty' + info.id + 'ListHelpBlock">' + info.help + '</div>';
           }
           return result;
         },
