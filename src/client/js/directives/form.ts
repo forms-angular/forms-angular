@@ -135,7 +135,7 @@ module fng.directives {
                 value = '<select ' + common + 'class="' + allInputsVars.formControl.trim() + allInputsVars.compactClass + allInputsVars.sizeClassBS2 + '" ' + requiredStr + '>';
 
                 if (!isRequired) {
-                  value += '<option></option>';
+                  value += '<option value="">' + (fieldInfo.placeHolder || "") + '</option>';
                 }
                 if (angular.isArray(fieldInfo.options)) {
                   angular.forEach(fieldInfo.options, function (optValue) {
