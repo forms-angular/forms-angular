@@ -34,7 +34,7 @@
     "cookie-parser": "1.4.6",
     "ejs": "3.1.9",
     "errorhandler": "1.5.1",
-    "express": "4.19.2",
+    "express": "4.18.2",
     "express-session": "1.17.3",
     "fng-audit": "0.12.0-beta.271",
     "fng-bootstrap-date": "0.12.0-beta.271",
