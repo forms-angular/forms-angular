@@ -1059,11 +1059,16 @@ export class FormsAngular {
                     break;
                 case '$lookup':
                 case '$graphLookup':
+                    let needFindFunc = true;
                     if (keys[0] === '$lookup') {
                         // For now at least, we only support simple $lookups with a single join field equality
                         let lookupProps = Object.keys(stage.$lookup);
                         if (lookupProps.length !== 4 || lookupProps.indexOf('from') === -1 || lookupProps.indexOf('localField') === -1 || lookupProps.indexOf('foreignField') === -1 || lookupProps.indexOf('as') === -1) {
                             throw new Error("No support for $lookup that isn't Equality Match with a Single Join Condition");
+                        }
+                        // If we are doing a lookup using an _id (so not fishing) we don't need to do the findFunc (see tkt #12399)
+                        if (stage.$lookup.foreignField === '_id') {
+                            needFindFunc = false;
                         }
                     }
                     // hide any hiddenfields in the lookup collection
@@ -1084,8 +1089,8 @@ export class FormsAngular {
                             });
                             retVal.push({ $project: hiddenFieldsObj });
                         }
-                        // Now we need to make sure that we restrict the lookup to documents we have access to
-                        if (resource.options.findFunc) {
+                        // Now we need to make sure that we restrict the lookup to documents we have access to (or can provide the _id of)
+                        if (needFindFunc && resource.options.findFunc) {
                             let allowNulls = false;
                             // If the next stage is an $unwind
                             let nextStageIsUnwind = false;
@@ -1486,7 +1491,8 @@ export class FormsAngular {
     };
 
     doFindFunc(req, resource, cb) {
-        if (resource.options.findFunc) {
+        // filter out records the user has no access to unless we are just asking for list attributes
+        if (resource.options.findFunc && req.route.path !== "/api/:resourceName/:id/list") {
             resource.options.findFunc(req, cb);
         } else {
             cb(null);
