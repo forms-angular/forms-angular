@@ -81,8 +81,8 @@ dependencies:
     specifier: 1.4.6
     version: 1.4.6
   ejs:
-    specifier: 3.1.9
-    version: 3.1.9
+    specifier: 3.1.10
+    version: 3.1.10
   errorhandler:
     specifier: 1.5.1
     version: 1.5.1
@@ -93,35 +93,35 @@ dependencies:
     specifier: 1.17.3
     version: 1.17.3
   fng-audit:
-    specifier: 0.12.0-beta.261
-    version: 0.12.0-beta.261
+    specifier: 0.12.0-beta.271
+    version: 0.12.0-beta.271
   fng-bootstrap-date:
-    specifier: 0.12.0-beta.261
-    version: 0.12.0-beta.261
+    specifier: 0.12.0-beta.271
+    version: 0.12.0-beta.271
   fng-bootstrap-datetime:
-    specifier: 0.12.0-beta.261
-    version: 0.12.0-beta.261
+    specifier: 0.12.0-beta.271
+    version: 0.12.0-beta.271
   fng-ckeditor:
-    specifier: 0.12.0-beta.261
-    version: 0.12.0-beta.261
+    specifier: 0.12.0-beta.271
+    version: 0.12.0-beta.271
   fng-colour-picker:
-    specifier: ^0.12.0-beta.261
-    version: 0.12.0-beta.261
+    specifier: ^0.12.0-beta.271
+    version: 0.12.0-beta.271
   fng-jq-upload:
-    specifier: 0.12.0-beta.261
-    version: 0.12.0-beta.261
+    specifier: 0.12.0-beta.271
+    version: 0.12.0-beta.271
   fng-reports:
-    specifier: ^0.12.0-beta.261
-    version: 0.12.0-beta.261
+    specifier: ^0.12.0-beta.271
+    version: 0.12.0-beta.271
   fng-ui-date:
-    specifier: 0.12.0-beta.261
-    version: 0.12.0-beta.261
+    specifier: 0.12.0-beta.271
+    version: 0.12.0-beta.271
   fng-ui-select:
-    specifier: 0.12.0-beta.261
-    version: 0.12.0-beta.261
+    specifier: 0.12.0-beta.271
+    version: 0.12.0-beta.271
   forms-angular:
-    specifier: 0.12.0-beta.261
-    version: 0.12.0-beta.261(express@4.18.2)(mongoose@8.2.1)
+    specifier: 0.12.0-beta.271
+    version: 0.12.0-beta.271(express@4.18.2)(mongoose@8.2.1)
   jquery:
     specifier: ^3.7.1
     version: 3.7.1
@@ -1241,11 +1241,11 @@ packages:
       run-applescript: 7.0.0
     dev: true
 
-  /busboy@0.3.1:
-    resolution: {integrity: sha512-y7tTxhGKXcyBxRKAni+awqx8uqaJKrSFSNFSeRG5CsWNdmy2BIK+6VGWEW7TZnIO/533mtMEA4rOevQV815YJw==}
-    engines: {node: '>=4.5.0'}
+  /busboy@1.6.0:
+    resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
+    engines: {node: '>=10.16.0'}
     dependencies:
-      dicer: 0.3.0
+      streamsearch: 1.1.0
     dev: false
 
   /bytes@1.0.0:
@@ -2268,13 +2268,6 @@ packages:
     resolution: {integrity: sha512-uJaamHkagcZtHPqCIHZxnFrXlunQXgBOsZSUOWwFw31QJCAbyTBoHMW75YOTur5ZNx8pIeAKgf6GWIgaqqiLhA==}
     dev: true
 
-  /dicer@0.3.0:
-    resolution: {integrity: sha512-MdceRRWqltEG2dZqO769g27N/3PXfcKl04VhYnBlo2YhH7zPi88VebsjTKclaOyiuMaGU72hTfw3VkUitGcVCA==}
-    engines: {node: '>=4.5.0'}
-    dependencies:
-      streamsearch: 0.1.2
-    dev: false
-
   /diff-match-patch@1.0.5:
     resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
     dev: false
@@ -2449,8 +2442,8 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /ejs@3.1.9:
-    resolution: {integrity: sha512-rC+QVNMJWv+MtPgkt0y+0rVEIdbtxVADApW9JXrUVlzHetgcyczP/E7DJmWJ4fJCZF2cPcBk0laWO9ZHMG3DmQ==}
+  /ejs@3.1.10:
+    resolution: {integrity: sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==}
     engines: {node: '>=0.10.0'}
     hasBin: true
     dependencies:
@@ -3135,8 +3128,8 @@ packages:
     resolution: {integrity: sha512-36yxDn5H7OFZQla0/jFJmbIKTdZAQHngCedGxiMmpNfEZM0sdEeT+WczLQrjK6D7o2aiyLYDnkw0R3JK0Qv1RQ==}
     dev: true
 
-  /fng-audit@0.12.0-beta.261:
-    resolution: {integrity: sha512-4ls68ZcoOMDz7Kobl3WjLgW7RapAPU0jGOJc3+yQ89+mRDdIhzTKDNI5LS53GC3V615X/VVKRhVZ4bpihE+bBg==}
+  /fng-audit@0.12.0-beta.271:
+    resolution: {integrity: sha512-S1XQ0/tZpRuyXrqTX7+QZa50m09PROUWlXiuNeXR0Em/N1H3tmmLk5XJoryIMZD399x2wllO0XZciQVaEBUY8w==}
     dependencies:
       async: 3.2.5
       colors: 1.4.0
@@ -3145,36 +3138,36 @@ packages:
       lodash.clonedeep: 4.5.0
     dev: false
 
-  /fng-bootstrap-date@0.12.0-beta.261:
-    resolution: {integrity: sha512-0jIVQaYW49SssZmv+/vaFR8UmNcFMI8ZNw9YidbjLRtM/qP+yBmF7sWbIGKR+9XSnz1xRoVtg6EitC0lqK5mNQ==}
+  /fng-bootstrap-date@0.12.0-beta.271:
+    resolution: {integrity: sha512-QhPPOn12GrsjWD9t6w8wMXXcvpx+QPSEGIoQ76YHRFIAqQMi5YVsrV1VWJJYNVx0dsel8sFplBC5dmyIjs09cg==}
     dev: false
 
-  /fng-bootstrap-datetime@0.12.0-beta.261:
-    resolution: {integrity: sha512-fhE/+cvu/Xv1Q1/QMdrLfN44SHNtnG6TijSpqaxkCTf4aVREI++GKMpXyvR3bdiv4RZMKwc6G8/8ACXf6uL4WQ==}
+  /fng-bootstrap-datetime@0.12.0-beta.271:
+    resolution: {integrity: sha512-dJCRcqpKL864HYyeeI//plNndCFzrHTciyOKM8FnuwGk8VRbSYzcd58u2eFqNmkEj9SgD6Gl7lsfisnlrm5SUA==}
     dev: false
 
-  /fng-ckeditor@0.12.0-beta.261:
-    resolution: {integrity: sha512-uBJhixxQAOOnAbKQEcev4N+fk1ljBnp6Iljr7FHKHsnfjhdMc79EYlVYkMxMDWzWLuxJKDJbiebBreCxn0mV/Q==}
+  /fng-ckeditor@0.12.0-beta.271:
+    resolution: {integrity: sha512-TcGc1a0yRWL6eXyDfgIcIatJgpEJMo4SBWg0WpZVIgv5QOfHyVcerAmbANHyqvJRBaJbQph9P6jXaNEo57wgiw==}
     dev: false
 
-  /fng-colour-picker@0.12.0-beta.261:
-    resolution: {integrity: sha512-Hzng+Nfk+dO0y8QHV0DW00owxxLvkKCBN8hoEqPQvIFSuEOnEgc4ya5hCK0hj5vB1t3Vl03GQnlQTLvYhD4g3A==}
+  /fng-colour-picker@0.12.0-beta.271:
+    resolution: {integrity: sha512-sJWK2E15ALlDRLBwIRwyegIVy4pIwB76Daoa4eDaB/9VuB9E2d/l0TlRwKSGtTKFn/H5ScdtDOO2k61o9iIsUQ==}
     dependencies:
       angularjs-color-picker: 3.4.8
     dev: false
 
-  /fng-jq-upload@0.12.0-beta.261:
-    resolution: {integrity: sha512-FBr1uKHYCueSZZhqARleXgZiByeRK4NX1JXNuzO6xFAdzvTCcVwNyQQoxx970xHUL0bwpUEPepDr0LAhAg/vTQ==}
+  /fng-jq-upload@0.12.0-beta.271:
+    resolution: {integrity: sha512-BMcwPvm+PhfzXzKuKGnGGnBAF8EBOQ2J5XQA5Cl0gCK0MrPcIgsuwndvc4IWxJuk5JsiK7F2zg2B1/L9KKH31w==}
     dependencies:
       blueimp-file-upload: 9.34.0
-      busboy: 0.3.1
+      busboy: 1.6.0
       imagemagick-stream: 4.1.1
       jquery: 3.6.2
       lodash: 4.17.21
     dev: false
 
-  /fng-reports@0.12.0-beta.261:
-    resolution: {integrity: sha512-B4IIMKZ9rdtufxsd4ADRo46RoG+flJxcl/GavOiCCHvH/EVtRxxuc1+RagoLF+mb4qzEtFr1hj6ePxzAWpOrNw==}
+  /fng-reports@0.12.0-beta.271:
+    resolution: {integrity: sha512-Sr2Pg+p0Z/ZjNs/TQRJaKQ8H7eOoJoa/1XRQDrov/wnwLYX8wGjdaM/IAGvTs2VPShHaNEC8WIghokNTC3/K+Q==}
     dependencies:
       angular-ui-grid: 4.11.1
       jquery: 3.7.1
@@ -3182,16 +3175,16 @@ packages:
       jspdf-autotable: 3.8.2(jspdf@2.5.1)
     dev: false
 
-  /fng-ui-date@0.12.0-beta.261:
-    resolution: {integrity: sha512-Gne6CycrQB1gN3PNVMNC1yeSiazbB+Yu9K30u8YuZLhQn84SjZQ5vJocmTxpyMHhvU7E4Df+tuWispLrDWORMA==}
+  /fng-ui-date@0.12.0-beta.271:
+    resolution: {integrity: sha512-aOFMIdMvGA00Lxdz5jJUIcOyLQHifbFnIWLv0gyi7LX2f7q+E8S85ol8ZFq6YBgj8aaVchtQ41tz1qqcNgdzqQ==}
     dependencies:
-      angular-ui-date: git@github.com+angular-ui/ui-date/bf9cedfe54a61a05270606a94ac9044efb6bdeec
+      angular-ui-date: git/github.com+angular-ui/ui-date/bf9cedfe54a61a05270606a94ac9044efb6bdeec
       jquery: 3.7.1
       jquery-ui: 1.13.2
     dev: false
 
-  /fng-ui-select@0.12.0-beta.261:
-    resolution: {integrity: sha512-+ebJysV1YVAwxXuUrH695nXyghbS+IouG0Wv/fGgqb3NJUU5QDF46CWZC0GhCfRagWF8FxuivFvOk3SuQkLcWQ==}
+  /fng-ui-select@0.12.0-beta.271:
+    resolution: {integrity: sha512-57StGUuGYu8d4TT87osQ6oXqnxZYXuyTenApMkEp9z/samndyzxE20muniPwa8OSc6m5YQUOcoVVnsGLfED4yQ==}
     engines: {node: '>=0.10.0'}
     dependencies:
       select2: 3.5.1
@@ -3259,8 +3252,8 @@ packages:
       qs: 6.11.2
     dev: true
 
-  /forms-angular@0.12.0-beta.261(express@4.18.2)(mongoose@8.2.1):
-    resolution: {integrity: sha512-1NkK5VOf6EN+1C4YN/elGATtz+MPl0P/26dEWCQ/5Y5gajCX0xuxnpx8Lt3PsJntJe5HX7UUtry1InG0Vt0vfg==}
+  /forms-angular@0.12.0-beta.271(express@4.18.2)(mongoose@8.2.1):
+    resolution: {integrity: sha512-bGrv47j0Ungn3IzW0U3AYnCZXuXLw1wT9+gFqz1IGC2uKa7ZKmmKiZUZ4X/5XqzLq+UcnSuYpaQMWA2tcY4t2A==}
     engines: {node: '>=8.x', npm: '>=5.x'}
     peerDependencies:
       express: ^4
@@ -5150,7 +5143,6 @@ packages:
       chalk: 3.0.0
       diff-match-patch: 1.0.5
     dev: false
-    bundledDependencies: []
 
   /jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
@@ -7900,9 +7892,9 @@ packages:
       - supports-color
     dev: true
 
-  /streamsearch@0.1.2:
-    resolution: {integrity: sha512-jos8u++JKm0ARcSUTAZXOVC0mSox7Bhn6sBgty73P1f3JGf7yG2clTbBNHUdde/kdvP2FESam+vM6l8jBrNxHA==}
-    engines: {node: '>=0.8.0'}
+  /streamsearch@1.1.0:
+    resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}
+    engines: {node: '>=10.0.0'}
     dev: false
 
   /strict-uri-encode@1.1.0:
@@ -9110,7 +9102,7 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  git@github.com+angular-ui/ui-date/bf9cedfe54a61a05270606a94ac9044efb6bdeec:
+  git/github.com+angular-ui/ui-date/bf9cedfe54a61a05270606a94ac9044efb6bdeec:
     resolution: {commit: bf9cedfe54a61a05270606a94ac9044efb6bdeec, repo: git@github.com:angular-ui/ui-date.git, type: git}
     name: angular-ui-date
     version: 1.1.1
