@@ -1492,7 +1492,7 @@ export class FormsAngular {
 
     doFindFunc(req, resource, cb) {
         // filter out records the user has no access to unless we are just asking for list attributes
-        if (resource.options.findFunc && req.route.path !== "/api/:resourceName/:id/list") {
+        if (resource.options.findFunc && req?.route?.path !== "/api/:resourceName/:id/list") {
             resource.options.findFunc(req, cb);
         } else {
             cb(null);
