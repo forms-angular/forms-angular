@@ -173,6 +173,17 @@ export class FormsAngular {
                         } else if (aField.params.params === 'timestamp') {
                             let date = that.extractTimestampFromMongoID(doc[aField.field]);
                             cbm(null, date.toLocaleDateString() + ' ' + date.toLocaleTimeString());
+                        } else if (!aField.params.params) {
+                            throw new Error(`Missing idIsList params for resource ${resource.resourceName}: ${JSON.stringify(aField.params)}`);
+                        } else if (typeof doc[aField.params.params] === "function") {
+                            const resultOrPromise = doc[aField.params.params]();
+                            if (typeof resultOrPromise.then === "function") {
+                                resultOrPromise.then((result: string) => cbm(null, result));
+                            } else {
+                                cbm(null, resultOrPromise);
+                            }
+                        } else {
+                            throw new Error(`No support for idIsList params for resource ${resource.resourceName}: ${JSON.stringify(aField.params)}`);
                         }
                     } else {
                         cbm(null, doc[aField.field]);
