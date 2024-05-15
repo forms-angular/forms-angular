@@ -746,7 +746,7 @@ module fng.directives {
                             if (typeof info[prop][subProp] === 'string') {
                               newElement += `${info[prop][subProp].replace(/"/g, '&quot;')}"`;
                             } else {
-                              newElement += `${JSON.stringify(info[prop][subProp]).replace(/"/g, '&quot;')}"`;
+                              newElement += `${(JSON.stringify(info[prop][subProp]) || "").replace(/"/g, '&quot;')}"`;
                             }
                           }
                         }
@@ -756,7 +756,7 @@ module fng.directives {
                           if (typeof info[prop] === 'string') {
                             newElement += ' fng-fld-' + prop + '="' + info[prop].replace(/"/g, '&quot;') + '"';
                           } else {
-                            newElement += ' fng-fld-' + prop + '="' + JSON.stringify(info[prop]).replace(/"/g, '&quot;') + '"';
+                            newElement += ' fng-fld-' + prop + '="' + (JSON.stringify(info[prop]) || "").replace(/"/g, '&quot;') + '"';
                           }
                         }
                         break;
