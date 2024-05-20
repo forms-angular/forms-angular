@@ -994,7 +994,7 @@ export class FormsAngular {
         for (const prop in obj) {
             if (obj.hasOwnProperty(prop)) {
                 if (typeof obj[prop] === 'string') {
-                    const dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3})(Z|[+ -]\d{4})$/.exec(obj[prop]);
+                    const dateTest = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(.\d{3})?)(Z|[+ -]\d{2}:?\d{2})$/.exec(obj[prop]);
                     if (dateTest) {
                         obj[prop] = new Date(dateTest[1] + 'Z');
                     } else if (prop !== "$regex") {
@@ -1209,6 +1209,7 @@ export class FormsAngular {
                 }
 
                 runPipelineObj = JSON.parse(runPipelineStr);
+                self.hackVariablesInPipeline(runPipelineObj);
                 let hiddenFields = self.generateHiddenFields(resource, false);
 
                 let toDo: any = {
