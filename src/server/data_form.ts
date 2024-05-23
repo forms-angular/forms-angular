@@ -527,7 +527,7 @@ export class FormsAngular {
 
                         // record the index of string that matched, so we don't count it against another field
                         for (let i = 0; i < searchStrings.length; i++) {
-                            if (aDoc[item.field].toLowerCase().indexOf(searchStrings[i]) === 0) {
+                            if (aDoc[item.field]?.toLowerCase().indexOf(searchStrings[i]) === 0) {
                                 resultObject.matched.push(i);
                                 break;
                             }
@@ -556,7 +556,7 @@ export class FormsAngular {
                     if (multiMatchPossible) {
                         // record the index of string that matched, so we don't count it against another field
                         for (let i = 0; i < searchStrings.length; i++) {
-                            if (!resultObject.matched.includes(i) && aDoc[item.field].toLowerCase().indexOf(searchStrings[i]) === 0) {
+                            if (!resultObject.matched.includes(i) && aDoc[item.field]?.toLowerCase().indexOf(searchStrings[i]) === 0) {
                                 resultObject.matched.push(i);
                                 resultObject.addHits = Math.max((resultObject.addHits || 9) - 1, 0);
                                 // remove it from current position
@@ -573,7 +573,7 @@ export class FormsAngular {
                     let addHits: number;
                     if (multiMatchPossible) {
                         // If they match the whole search phrase in one index they get smaller addHits (so they sort higher)
-                        if (aDoc[item.field].toLowerCase().indexOf(searchFor) === 0) {
+                        if (aDoc[item.field]?.toLowerCase().indexOf(searchFor) === 0) {
                             addHits = 7;
                         }
                     }
