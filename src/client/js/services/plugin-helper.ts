@@ -130,12 +130,17 @@ module fng.services {
     ): fng.IProcessedAttrs {
       function deserialize(str: string) {
         var retVal = str.replace(/&quot;/g, '"');
-        if (retVal === "true") {
+        if (retVal === "") {
+          // we want empty strings to be treated as truthy, because minification can replace attr="true" with just attr,
+          // and when that happens, we'll end up here with a value of "".  essentially, we're saying here that the attr
+          // should be treated as boolean if it has no value, or a value of "true" or "false".
+          return true;
+        } else if (retVal === "true") {
           return true;
         } else if (retVal === "false") {
           return false;
         } else {
-          const num = parseFloat(retVal);
+          const num = Number(retVal);
           if (!isNaN(num) && isFinite(num)) {
             return num;
           } else {
