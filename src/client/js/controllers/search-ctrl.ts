@@ -85,7 +85,7 @@ module fng.controllers {
     $scope.$watch('searchTarget', function (newValue) {
       if (newValue && newValue.length > 0) {
         lastSearchSent = $scope.testTime || new Date().valueOf();
-        $http.get('/api/search?q=' + newValue + '&sentAt=' + lastSearchSent).then(function (response) {
+        $http.get('/api/search?q=' + newValue.replaceAll('+','%2b') + '&sentAt=' + lastSearchSent).then(function (response) {
           let data: any = response.data;
           // Check that we haven't fired off a subsequent request, in which
           // case we are no longer interested in these results
