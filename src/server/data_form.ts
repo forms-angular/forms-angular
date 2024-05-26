@@ -1385,6 +1385,13 @@ export class FormsAngular {
                             }
                         }
                     }
+                    if (doc.__toClient) {
+                        /* Use this to pass anything back to the client that is not saved in the record
+                        Possible use case - sent a message saying that since this data has changed in a
+                        particular way the user should consider doing something else
+                         */
+                        saved.__toClient = doc.__toClient;
+                    }
                     res.send(saved);
                 })
                 .catch((err) => {
