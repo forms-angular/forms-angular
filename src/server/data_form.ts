@@ -1890,7 +1890,7 @@ export class FormsAngular {
                         res.status(400).send('"cascade" option not yet supported')
                         break;
                     default:
-                        return that.getDependencies(resource, doc._id)
+                        return that.getDependencies(resource, doc._id as Types.ObjectId)
                           .then((dependencies) => {
                               if (dependencies.length > 0) {
                                   throw new ForeignKeyError(resource.resourceName, dependencies);
