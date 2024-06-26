@@ -802,7 +802,7 @@ export class FormsAngular {
         function processInternalObject(obj: any) {
             return Object.keys(obj).reduce((acc, cur, ) => {
                 const curType= typeof obj[cur];
-                if (!['$','_'].includes(cur.charAt(0)) && curType !== 'function') {
+                if ((!['$', '_'].includes(cur.charAt(0)) || ["$in", "$nin", "$eq", "$ne", "$gt", "$gte", "$lt", "$lte", "$regex", "$or", "$exists"].includes(cur)) && curType !== 'function') {
                     const val = obj[cur];
                     if (val) {
                         if (Array.isArray(val)) {
