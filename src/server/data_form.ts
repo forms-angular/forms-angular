@@ -933,7 +933,11 @@ export class FormsAngular {
             let reportSchema;
 
             if (req.params.reportName) {
-                reportSchema = await req.resource.model.schema.statics['report'](req.params.reportName, req);
+                try {
+                    reportSchema = await req.resource.model.schema.statics['report'](req.params.reportName, req);
+                } catch(e) {
+                    res.send({ success: false, error: e.message || e });
+                }
             } else if (req.query.r) {
                 switch (req.query.r[0]) {
                     case '[':
