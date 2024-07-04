@@ -833,6 +833,7 @@ module fng.directives {
           if (!attrs.formid || attrs.formid !== formId) {
             return;
           }
+          tabsSetup = tabsSetupState.N;
           generateForm(scope[attrs.schema]);
         });
 
