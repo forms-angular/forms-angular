@@ -926,6 +926,7 @@ export class FormsAngular {
             }
 
             const self = this;
+            req._isReport = true;   // Can be used to modify findFunc behaviour
             if (typeof req.query === 'undefined') {
                 req.query = {};
             }
