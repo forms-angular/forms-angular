@@ -120,7 +120,7 @@
     "open": "10.1.0",
     "protractor": "^7.0.0",
     "protractor-jasmine2-screenshot-reporter": "0.5.1",
-    "requirejs": "2.3.6",
+    "requirejs": "2.3.7",
     "should": "13.2.3",
     "supertest": "7.0.0",
     "time-grunt": "2.0.0",
