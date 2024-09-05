@@ -5,7 +5,7 @@ var cSchemaDef = {
     surname: { type: String, list: {} },
     forename: { type: String, list: true },
     weight: { type: Number, form: { label: 'Weight (lbs)' } },
-    hairColour: { type: String, enum: ['Black', 'Brown', 'Blonde', 'Bald'], required: true, form: { placeHolder: 'Select hair colour (required)', directive: 'fng-ui-select' } }, // Required combo has appropriate styling
+    hairColour: { type: String, enum: ['Black', 'Brown', 'Blonde', 'Bald'], required: true, form: { placeHolder: 'Select hair colour (required)', directive: 'fng-ui-select' } },
     dateOfBirth: Date,
     accepted: Boolean,
     passwordHash: { type: String, secure: true, forms: { hidden: true } },
