@@ -19,7 +19,7 @@ const util = require('util');
 const extend = require('node.extend');
 const async = require('async');
 
-let debug = true;
+let debug = false;
 
 type IHiddenFields = { [fieldName: string]: boolean };
 
