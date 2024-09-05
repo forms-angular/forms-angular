@@ -13,7 +13,7 @@ const aSchemaDef: IFngSchemaDefinition = {
   accepted: {type: Boolean, default: true}
 };
 
-const ASchema = new Schema(aSchemaDef);
+const ASchema = new Schema(aSchemaDef, {optimisticConcurrency: true});
 
 // ASchema.pre("save", function (next) {
 //   this.set("surname", this.get("surname").replace(/[\d]/g, "") + new Date().valueOf());

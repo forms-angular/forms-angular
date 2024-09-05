@@ -19,7 +19,7 @@ const util = require('util');
 const extend = require('node.extend');
 const async = require('async');
 
-let debug = false;
+let debug = true;
 
 type IHiddenFields = { [fieldName: string]: boolean };
 
@@ -155,7 +155,6 @@ export class FormsAngular {
                                 let lookupResource = that.getResource(fieldOptions.ref);
                                 if (lookupResource) {
                                     let hiddenFields = that.generateHiddenFields(lookupResource, false);
-                                    hiddenFields.__v = false;
                                     lookupResource.model
                                         .findOne({_id: doc[aField.field]})
                                         .select(hiddenFields)
@@ -1653,7 +1652,6 @@ export class FormsAngular {
         let reqData = req.body,
             resource = req.resource;
 
-        delete reqData.__v;   // Don't mess with Mongoose internal field (https://github.com/LearnBoost/mongoose/issues/1933)
         if (typeof resource.options['hide'] === 'undefined') {
             return reqData;
         }
@@ -1673,7 +1671,6 @@ export class FormsAngular {
     generateQueryForEntity(req, resource, id, cb) {
         let that = this;
         let hiddenFields = this.generateHiddenFields(resource, false);
-        hiddenFields.__v = false;
 
         that.doFindFunc(req, resource, function (err, queryObj) {
             if (err) {

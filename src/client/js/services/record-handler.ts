@@ -847,6 +847,10 @@ module fng.services {
               $scope.showError(data);
             }
           }, function(err) {
+
+            if (err.data.message.match(/^No matching document found for id "[0-9a-f]{24}" version [\d]+ modifiedPaths "__v/)) {
+              err.data.message = "This record has been modified by somebody else since it was read.  To prevent your change overwriting theirs your update has been rejected.  You will have to refresh the form and re-do your work.  Sorry for the inconvenience.";
+            }
             $scope.handleHttpError(err);
           });
       },

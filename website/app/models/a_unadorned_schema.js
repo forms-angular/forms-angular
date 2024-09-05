@@ -12,7 +12,7 @@ var aSchemaDef = {
     dateOfBirth: Date,
     accepted: { type: Boolean, default: true }
 };
-var ASchema = new mongoose_1.Schema(aSchemaDef);
+var ASchema = new mongoose_1.Schema(aSchemaDef, { optimisticConcurrency: true });
 // ASchema.pre("save", function (next) {
 //   this.set("surname", this.get("surname").replace(/[\d]/g, "") + new Date().valueOf());
 //   next();
