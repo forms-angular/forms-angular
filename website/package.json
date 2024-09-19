@@ -24,7 +24,7 @@
     "blueimp-canvas-to-blob": "3.29.0",
     "blueimp-file-upload": "=9.34.0",
     "blueimp-load-image": "5.16.0",
-    "body-parser": "1.20.2",
+    "body-parser": "1.20.3",
     "bootstrap": "git://github.com/twbs/bootstrap#v2.3.2",
     "ckeditor": "4.12.1",
     "components-font-awesome": "=3.2.1",
