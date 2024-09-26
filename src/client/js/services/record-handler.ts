@@ -591,6 +591,10 @@ module fng.services {
               } else {
                 for (let listElm in $scope.listSchema) {
                   if ($scope.listSchema.hasOwnProperty(listElm)) {
+                    const listVal = $scope.getListData($scope.record, $scope.listSchema[listElm].name);
+                    if (typeof listVal === "object") {
+                      return;
+                    }
                     title += $scope.getListData($scope.record, $scope.listSchema[listElm].name) + ' ';
                   }
                 }
