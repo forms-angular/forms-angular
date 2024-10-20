@@ -314,6 +314,8 @@ module fng.services {
       return anObject;
     };
 
+
+
 // Convert foreign keys into their display for selects
 // Called when the model is read and when the lookups are read
 
@@ -748,6 +750,11 @@ module fng.services {
     return {
       beginReadingRecord: ($scope) => {
         $scope.readingRecord = SubmissionsService.readRecord($scope.modelName, $scope.id, $scope.formName);
+      },
+
+      convertToAngularModel: async ($scope) => {
+        const schema = await SchemasService.getSchema($scope.modelName, $scope.formName);
+        convertToAngularModel(schema, $scope.record, 0, $scope);
       },
 
       finishReadingThenProcessRecord: ($scope, ctrlState: IFngCtrlState) => {
