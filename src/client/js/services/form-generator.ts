@@ -527,29 +527,33 @@ module fng.services {
 
       hasError: function hasError(formName, name, index, $scope) {
         let result = false;
-        if ($scope) {
+        if (!$scope) {
+          console.log('hasError called with no scope! ', formName, name, index);
+        } else {
           let form = $scope[$scope.topLevelFormName];
-          if (formName !== 'null') {
-            form = form[formName.replace('$index', index)];
-          }
-          // Cannot assume that directives will use the same methods
-          if (form) {
-            let field = form[name];
-            if (field && field.$invalid && !field.$$attr.readonly) {
-              if (field.$dirty) {
-                result = true;
-              } else {
-                // with pristine fields, they have to have some sort of invalidity other than ng-invalid-required
-                angular.forEach(field.$validators, function (obj, key) {
-                  if (<any>key !== 'required' && field.$error[key]) {
-                    result = true;
-                  }
-                });
+          if (!form) {
+            console.log('hasError failed to find form! ', formName, name, index);
+          } else {
+            if (formName !== 'null') {
+              form = form[formName.replace('$index', index)];
+            }
+            // Cannot assume that directives will use the same methods
+            if (form) {
+              let field = form[name];
+              if (field && field.$invalid && !field.$$attr.readonly) {
+                if (field.$dirty) {
+                  result = true;
+                } else {
+                  // with pristine fields, they have to have some sort of invalidity other than ng-invalid-required
+                  angular.forEach(field.$validators, function (obj, key) {
+                    if (<any>key !== 'required' && field.$error[key]) {
+                      result = true;
+                    }
+                  });
+                }
               }
             }
-          }
-        } else {
-          console.log('hasError called with no scope! ', formName, name, index);
+          }          
         }
         return result;
       },
