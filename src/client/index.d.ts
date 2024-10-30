@@ -360,6 +360,7 @@ declare module fng {
     fillFormWithBackendSchema($scope: IFormScope, formGeneratorInstance, recordHandlerInstance, ctrlState);
     handleError($scope: IFormScope);
     convertToAngularModel($scope: IFormScope);
+    convertToAngularModelWithSchema(schema: IControlledFormSchema, data, $scope: IFormScope)
   }
 
   export interface IFormGeneratorService {

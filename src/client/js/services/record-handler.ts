@@ -757,6 +757,10 @@ module fng.services {
         convertToAngularModel(schema, $scope.record, 0, $scope);
       },
 
+      convertToAngularModelWithSchema: async (schema, data, $scope) => {
+        convertToAngularModel(schema, data, 0, $scope);
+      },
+
       finishReadingThenProcessRecord: ($scope, ctrlState: IFngCtrlState) => {
         const multi = typeof formsAngular.beforeHandleIncomingDataPromises === "function";
         const promise = multi ?
