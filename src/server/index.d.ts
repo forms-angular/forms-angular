@@ -52,6 +52,7 @@ declare module fngServer {
         handleRemove?: 'allow' | 'cascade';  // default behaviour is to prevent deletion if record is used as a foreign key
         searchImportance?: boolean | number,
         onSave?: (doc, req, cb) => void,
+        onSaveError?: (err:Error, req: Express.Request, res: Express.Response) => void,
         findFunc?: (req: Express.Request, cb: (err:Error, criteria?: FilterQuery<any>) => void) => void,
         getOrgCriteria?: (userOrganisation: string) => Promise<any>
         idIsList?: IIdIsList,
