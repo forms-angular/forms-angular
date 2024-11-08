@@ -12,7 +12,7 @@ module fng.controllers {
     CssFrameworkService: fng.ICssFrameworkService,
     SecurityService: fng.ISecurityService
   ) {
-    function clearContextMenu() {
+    $scope.clearContextMenu = function() {
       $scope.items = [];
       $scope.contextMenu = undefined;
       $scope.contextMenuId = undefined;
@@ -21,7 +21,7 @@ module fng.controllers {
     }
 
     $rootScope.navScope = $scope;  // Lets plugins access menus
-    clearContextMenu();
+    $scope.clearContextMenu();
 
     $scope.toggleCollapsed = function() {
       $scope.collapsed = !$scope.collapsed;
@@ -137,7 +137,7 @@ module fng.controllers {
     });
 
     $scope.$on('fngControllersUnloaded', function(evt) {
-      clearContextMenu();
+      $scope.clearContextMenu();
     });
 
     $scope.doClick = function (index: number, event, item: fng.IContextMenuOption & fng.IContextMenuDivider) {
