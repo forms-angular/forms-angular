@@ -1610,6 +1610,22 @@ module fng.services {
           }
         });
 
+        window.onbeforeunload = function (event) {
+          if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
+            if (
+              !confirm(
+                "You have unsaved changes.  Do you really want to lose them?"
+              )
+            ) {
+              event.preventDefault();
+            }
+          }
+        };
+
+        $scope.$on("$destroy", function () {
+          window.onbeforeunload = null;
+        });
+
         $scope.deleteClick = function () {
           if ($scope.record._id) {
             let confirmDelete: Promise<boolean>;
