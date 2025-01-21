@@ -737,7 +737,7 @@ export class FormsAngular {
             }
           }
 
-          resultObject.resourceObj = item.resource;
+          resultObject.resourceCollection = item.resource.resourceName;
           resultObject.searchImportance =
             item.resource.options.searchImportance || 99;
           if (item.resource.options.localisationData) {
@@ -768,7 +768,7 @@ export class FormsAngular {
         // Do we already have them in the list?
         for (resultPos = results.length - 1; resultPos >= 0; resultPos--) {
           // check for matching id and resource
-          if (results[resultPos].id.toString() === thisId && results[resultPos].resourceObj === item.resource) {
+          if (results[resultPos].id.toString() === thisId && results[resultPos].resourceCollection === item.resource.resourceName) {
             break;
           }
         }
