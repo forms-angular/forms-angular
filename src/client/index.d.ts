@@ -474,6 +474,7 @@ declare module fng {
     formSchema: IControlledFormSchema;
     baseSchema: () => Array<any>;
     setFormDirty: any;
+    dirtyChecked?: boolean;
     add: any;
     hideTab: (event, tabTitle: string, hiddenTabArrayProp: string) => void;
     addTab: (event, tabTitle: string, hiddenTabArrayProp: string) => void;

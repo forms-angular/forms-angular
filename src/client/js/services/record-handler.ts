@@ -744,6 +744,14 @@ module fng.services {
         processLookupHandlers($scope.record, {});
       }
 
+      function processDirtyFlag(resp:{dirty?: boolean, dirtyMessage?: string}) {
+        if (resp?.dirty === true) {
+          $scope.cancel();
+          setTimeout(() => {
+            $scope.showError(resp.dirtyMessage, "Record Locked");
+          })
+        }
+      }
       if (listOnly) {
         ctrlState.allowLocationChange = true;
       } else {
@@ -761,7 +769,18 @@ module fng.services {
         $scope.$watch(
           "record",
           function (newValue, oldValue) {
-            if (newValue !== oldValue) {
+              if ($scope.phase === "ready" && !$scope.dirtyChecked && Object.keys(oldValue).length > 0 && $scope.topLevelFormName && $scope[$scope.topLevelFormName].$dirty && typeof $scope.dataEventFunctions?.checkDirty === "function") {
+                $scope.dirtyChecked = true;
+                // An opportunity to ask whether we can edit this document or not - pessimistic locking can be implemented by using this
+                const checkDirty = $scope.dataEventFunctions.checkDirty(newValue, oldValue);
+                if (typeof checkDirty?.then === "function") {
+                  checkDirty.then((resp) => {
+                    processDirtyFlag(resp);
+                  })
+                } else {
+                  processDirtyFlag(checkDirty);
+                }
+              }
               if (
                 Object.keys(oldValue).length > 0 &&
                 $scope.dropConversionWatcher
@@ -814,7 +833,6 @@ module fng.services {
                 title = title.trimEnd() + (formsAngular.title.suffix || "");
                 $window.document.title = title.replace(/<\/?[^>]+(>|$)/g, "");
               }
-            }
           },
           true
         );
@@ -1441,7 +1459,7 @@ module fng.services {
             // we already have an error showing, so clear timeout and don't overwrite it
             $scope.clearTimeout();
           }
-          if ($scope.errorMessage) {
+          if ($scope.errorMessage && $scope.errorMessage.indexOf(error) === -1) {
             $scope.errorMessage += "<br /><br />";
           } else {
             $scope.errorMessage = "";
