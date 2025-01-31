@@ -1418,7 +1418,10 @@ module fng.services {
           angular.copy(ctrlState.master, $scope.record);
           $scope.$broadcast("fngCancel", $scope);
           // Let call backs etc resolve in case they dirty form, then clean it
-          $timeout($scope.setPristine);
+          $timeout(() => {
+            $scope.setPristine();
+            $scope.$broadcast("fngCancelFinished", $scope);
+          });
         };
 
         //listener for any child scopes to display messages
@@ -1628,17 +1631,31 @@ module fng.services {
           }
         });
 
-        window.onbeforeunload = function (event) {
-          if (!ctrlState.allowLocationChange && !$scope.isCancelDisabled()) {
-            if (
-              !confirm(
-                "You have unsaved changes.  Do you really want to lose them?"
-              )
-            ) {
-              event.preventDefault();
+        setTimeout(() => {
+          // Add event handlers relating to application implemented pessimistic locking
+          window.onunload = function () {
+            if (typeof $scope.dataEventFunctions?.isLocked === "function" && $scope.dataEventFunctions?.isLocked() && typeof $scope.dataEventFunctions?.releaseLock === "function") {
+                $scope.dataEventFunctions?.releaseLock();
             }
           }
-        };
+          window.onbeforeunload = function (event) {
+            if (!ctrlState.allowLocationChange && (!$scope.isCancelDisabled()) || (
+                typeof $scope.dataEventFunctions?.isLocked === "function" && $scope.dataEventFunctions?.isLocked()
+            )) {
+              if (
+                  confirm(
+                      "You have unsaved changes.  Do you really want to lose them?"
+                  )
+              ) {
+                if (typeof $scope.dataEventFunctions?.isLocked === "function" && typeof $scope.dataEventFunctions?.releaseLock === "function" && $scope.dataEventFunctions?.isLocked()) {
+                  $scope.dataEventFunctions?.releaseLock();
+                }
+              } else {
+                event.preventDefault();
+              }
+            }
+          };
+        });
 
         $scope.$on("$destroy", function () {
           window.onbeforeunload = null;
