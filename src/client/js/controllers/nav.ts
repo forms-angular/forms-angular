@@ -146,7 +146,7 @@ module fng.controllers {
       if (item.divider || option.parent().hasClass('disabled')) {
         event.preventDefault();
       } else if (item.broadcast) {
-        $rootScope.$broadcast(item.broadcast, ...(item.args || []));
+        $rootScope.$broadcast(item.broadcast, Object.assign({}, item.args));
       } else if (typeof item.fn === "function") {
         item.fn(...(item.args || []));
       } else if (item.fn) {
