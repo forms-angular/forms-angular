@@ -130,8 +130,13 @@ module fng.services {
       },
 
       // return only the list attributes for ALL records in the given collection, returning ILookupItem[]
+      // getAllPickListAttributes() is intended to be used to retrieve records for display in a picklist;
+      // getAllListAttributes() for all other use cases
       getAllListAttributes: function (ref: string): angular.IHttpPromise<ILookupItem[]> {
         return $http.get(`/api/${ref}/listAll`, { cache: expCache });
+      },
+      getAllPickListAttributes: function (ref: string): angular.IHttpPromise<ILookupItem[]> {
+        return $http.get(`/api/${ref}/picklistAll`, { cache: expCache });
       },
 
       // return only the list attributes for records in the given collection that satisfy the given query conditions (filter, limit etc.)
