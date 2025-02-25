@@ -759,6 +759,7 @@ declare module fng {
     readRecord: (modelName: string, id: string, formName?: string) => angular.IHttpPromise<any>;
     getAll: (modelName: string, _options: any) => angular.IHttpPromise<any[]>;
     getAllListAttributes: (ref: string) => angular.IHttpPromise<ILookupItem[]>;
+    getAllPickListAttributes: (ref: string) => angular.IHttpPromise<ILookupItem[]>;
     getPagedAndFilteredList: (
       modelName: string,
       options: IListQueryOptions
