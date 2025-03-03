@@ -789,7 +789,6 @@ declare module fng {
     html5hash: () => string;
     buildUrl: (path: string) => string;
     buildOperationUrl: (
-      prefix: string,
       operation: string,
       modelName: string,
       formName: string,
