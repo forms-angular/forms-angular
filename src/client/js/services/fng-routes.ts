@@ -226,7 +226,7 @@ module fng.services {
             url += (path[0] === '/' ? path.slice(1) : path);
             return url;
           },
-          buildOperationUrl: function (operation: string, modelName: string, formName: string, id: string, tab: string) {
+          buildOperationUrl: function (operation: string, modelName: string, formName: string, id: string, tab?: string) {
             return _buildOperationUrl(config.prefix, operation, modelName, formName, id, tab);
           },
           redirectTo: function () {
