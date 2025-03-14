@@ -300,6 +300,7 @@ module fng.directives {
                     }
                     attrs += SecurityService.generateDisabledAttr(idStr, scope, { attr: "disable", attrRequiresValue: true }); // uib-tab expects 'disable="true"` rather than 'disabled="true"' or just disabled
                     result.before = "";
+                    const cleanTitle = info.title.replace(/["']/g, '');
                     if (info.hideable) {
                       const templateId = `customTemplate_${idStr}.html`;
                       // $parent.hideTab is needed in the template below because the uib-tab directive has an isolated scope,
@@ -308,8 +309,8 @@ module fng.directives {
                         `<script type="text/ng-template" id="${templateId}">` + 
                         `   <li ng-class="[{active: active, disabled: disabled}, classes]" class="uib-tab nav-item">` +
                         `     <div class="hideable-tab">` +
-                        `       <span class="class="nav-link" data-ng-click="select($event)">${info.title}</span>&nbsp;` + 
-                        `       <button name="hide_${idStr}_btn" data-ng-click="$parent.hideTab($event, '${info.title}', '${info.hiddenTabArrayProp}')"` +
+                        `       <span class="class="nav-link" data-ng-click="select($event)">${cleanTitle}</span>&nbsp;` +
+                        `       <button name="hide_${idStr}_btn" data-ng-click="$parent.hideTab($event, '${cleanTitle}', '${info.hiddenTabArrayProp}')"` +
                         `         style="position: relative; z-index: 20;" type="button" class="close pull-right">` +
                         `         <span aria-hidden="true">×</span><span class="sr-only">Close</span>` +
                         `       </button>` +
@@ -317,14 +318,14 @@ module fng.directives {
                         `   </li>` +
                         `</script>`;
                       attrs += ` template-url="${templateId}"`;
-                      attrs += ` data-ng-show="!${info.hiddenTabArrayProp} || !${info.hiddenTabArrayProp}.includes('${info.title}')"`
+                      attrs += ` data-ng-show="!${info.hiddenTabArrayProp} || !${info.hiddenTabArrayProp}.includes('${cleanTitle}')"`
                     } else {
-                      attrs += ` heading="${info.title}"`;
+                      attrs += ` heading="${cleanTitle}"`;
                     }
                     if (tabNo > 0) {
                       attrs += ` active="tabs[${tabNo}].active"`;
                     }
-                    result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${info.title}')"`;
+                    result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${cleanTitle}')"`;
                     result.before += '>';
                     result.after = '</uib-tab>';
                   }
