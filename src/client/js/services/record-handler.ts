@@ -769,7 +769,7 @@ module fng.services {
         $scope.$watch(
           "record",
           function (newValue, oldValue) {
-              if ($scope.phase === "ready" && !$scope.dirtyChecked && Object.keys(oldValue).length > 0 && $scope.topLevelFormName && $scope[$scope.topLevelFormName].$dirty && typeof $scope.dataEventFunctions?.checkDirty === "function") {
+              if ($scope.phase === "ready" && !$scope.dirtyChecked && Object.keys(oldValue).length > 0 && $scope.topLevelFormName && $scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$dirty && typeof $scope.dataEventFunctions?.checkDirty === "function") {
                 $scope.dirtyChecked = true;
                 // An opportunity to ask whether we can edit this document or not - pessimistic locking can be implemented by using this
                 const checkDirty = $scope.dataEventFunctions.checkDirty(newValue, oldValue);
