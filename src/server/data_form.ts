@@ -1449,22 +1449,34 @@ export class FormsAngular {
         case "$graphLookup":
           let needFindFunc = true;
           if (keys[0] === "$lookup") {
-            // For now at least, we only support simple $lookups with a single join field equality
             let lookupProps = Object.keys(stage.$lookup);
+            // First deal with simple $lookups with a single join field equality
             if (
-              lookupProps.length !== 4 ||
-              lookupProps.indexOf("from") === -1 ||
-              lookupProps.indexOf("localField") === -1 ||
-              lookupProps.indexOf("foreignField") === -1 ||
-              lookupProps.indexOf("as") === -1
+              lookupProps.length === 4 &&
+              lookupProps.includes("from") &&
+              lookupProps.includes("localField") &&
+              lookupProps.includes("foreignField") &&
+              lookupProps.includes("as")
             ) {
+              // If we are doing a lookup using an _id (so not fishing) we don't need to do the findFunc (see tkt #12399)
+              if (stage.$lookup.foreignField === "_id") {
+                needFindFunc = false;
+              }
+            } else if (
+                lookupProps.length === 4 &&
+                lookupProps.includes("from") &&
+                lookupProps.includes("let") &&
+                lookupProps.includes("pipeline") &&
+                lookupProps.includes("as")
+            ) {
+              // can't think of a way to exploit this (if you add a findFunc) but it is the responsibility of the user
+              // to ensure that the pipeline returns fields used by the findFunc
+              console.log(`In some scenarios $lookups that use pipelines may not provide all the fields used by the 'findFunc' of a collection.
+              If you get no results returned this might be the explanation.`)
+            } else {
               throw new Error(
-                "No support for $lookup that isn't Equality Match with a Single Join Condition"
+                `No support for $lookup of with properties ${lookupProps.join(', ')}`
               );
-            }
-            // If we are doing a lookup using an _id (so not fishing) we don't need to do the findFunc (see tkt #12399)
-            if (stage.$lookup.foreignField === "_id") {
-              needFindFunc = false;
             }
           }
           // hide any hiddenfields in the lookup collection
