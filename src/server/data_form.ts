@@ -150,7 +150,9 @@ export class FormsAngular {
       processArgs(this.options, [resourceName, this.collectionGet()])
     );
 
-    // return the List attributes for all records - used by record-handler's setUpLookupOptions() method, for cases
+    // return the List attributes for all records.  two endpoints that go through the same handler so permissions
+    // can be applied differently for the two use cases.  /listAll is intended for listing records on a page;
+    // /picklistAll for listing them in a <select> or similar - used by record-handler's setUpLookupOptions() method, for cases
     // where there's a lookup that doesn't use the fngajax option
     this.app.get.apply(
       this.app,
@@ -159,6 +161,13 @@ export class FormsAngular {
         this.entityListAll(),
       ])
     );
+    this.app.get.apply(
+        this.app,
+        processArgs(this.options, [
+          resourceName + "/picklistAll",
+          this.entityListAll(),
+        ])
+      );
 
     // return the List attributes for a record - used by fng-ui-select
     this.app.get.apply(
