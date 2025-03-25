@@ -1473,6 +1473,26 @@ export class FormsAngular {
               // to ensure that the pipeline returns fields used by the findFunc
               console.log(`In some scenarios $lookups that use pipelines may not provide all the fields used by the 'findFunc' of a collection.
               If you get no results returned this might be the explanation.`)
+
+              /* Sanitise the pipeline we are doing a lookup with, removing hidden fields from that collection */
+              const lookupCollectionName = stage.$lookup.from;
+              const lookupResource =
+                  that.getResourceFromCollection(lookupCollectionName);
+              let lookupHiddenLookupFields = {};
+              if (lookupResource) {
+                if (lookupResource.options?.hide?.length > 0) {
+                  lookupHiddenLookupFields = this.generateHiddenFields(
+                      lookupResource,
+                      false
+                  );
+                }
+              }
+              stage.$lookup.pipeline = await that.sanitisePipeline(
+                  stage.$lookup.pipeline,
+                  lookupHiddenLookupFields,
+                  findFuncQry,
+                  req
+              );
             } else {
               throw new Error(
                 `No support for $lookup of with properties ${lookupProps.join(', ')}`
