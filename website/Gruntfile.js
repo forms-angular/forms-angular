@@ -15,7 +15,6 @@ module.exports = function (grunt) {
     express: 'grunt-express-server',
     useminPrepare: 'grunt-usemin',
     ngtemplates: 'grunt-angular-templates',
-    protractor: 'grunt-protractor-runner',
     buildcontrol: 'grunt-build-control'
   });
 
@@ -191,7 +190,8 @@ module.exports = function (grunt) {
     less: {
       dist: {
         options: {
-          compile: true
+          compile: true,
+          math: 'always'
         },
         files: {
           '<%= yeoman.app %>/styles/main-bs2.css': ['<%= yeoman.app %>/styles/demo-bs2.less'],
@@ -465,19 +465,6 @@ module.exports = function (grunt) {
       src: ['server/**/*.spec.js', 'test/server/**/*.spec.js']
     },
 
-    protractor: {
-      options: {
-        configFile: 'test/e2e/protractor-chrome.conf.js'
-      },
-      firefox: {
-        options: {
-          args: {
-            browser: 'chrome'
-          }
-        }
-      }
-    },
-
     env: {
       test: {
         NODE_ENV: 'test'
@@ -646,7 +633,7 @@ module.exports = function (grunt) {
         // 'wiredep',
         'autoprefixer',
         'express:dev',
-        'protractor'
+        'npx playwright test stdalone-$j*.spec.ts --project=chromium --workers 1'
       ]);
     }
 
