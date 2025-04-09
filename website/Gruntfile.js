@@ -547,7 +547,7 @@ module.exports = function (grunt) {
       makeProductionIndex: "node setUpIndexHTML.js production",
       resetDevelopmentIndex: "node setUpIndexHTML.js development",
       playwright:
-        "npx playwright test test/playwright/*.spec.ts --project=chromium",
+        "npx playwright test test/playwright/*.spec.ts --project=chromium --workers 1",
     },
   });
 
