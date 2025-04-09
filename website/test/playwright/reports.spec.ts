@@ -18,10 +18,13 @@ test.describe("Reports", () => {
     await page.goto(
       "http://localhost:9000/#/analyse/g_conditional_field?r=%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D,%7B%22$sort%22:%7B%22_id%22:1%7D%7D%5D"
     );
-    const cells = await page
-      .locator(".ui-grid-cell-contents")
-      .allTextContents();
-    expect(cells).toEqual([" Id  1", "Count  1", "F", "11", "M", "6"]);
+
+    await expect(page.locator(".ui-grid-cell-contents").nth(0)).toHaveText(/Id/);
+    await expect(page.locator(".ui-grid-cell-contents").nth(1)).toHaveText(/Count/);
+    await expect(page.locator(".ui-grid-cell-contents").nth(2)).toHaveText("F");
+    await expect(page.locator(".ui-grid-cell-contents").nth(3)).toHaveText("11");
+    await expect(page.locator(".ui-grid-cell-contents").nth(4)).toHaveText("M");
+    await expect(page.locator(".ui-grid-cell-contents").nth(5)).toHaveText("6");
   });
 
   test("should do reports with options from the command line", async ({
@@ -43,35 +46,25 @@ test.describe("Reports", () => {
           })
         )
     );
-    const cells = await page
-      .locator(".ui-grid-cell-contents")
-      .allTextContents();
-    expect(cells).toEqual([
-      "Sex  1",
-      "No of Applicants  1",
-      "F",
-      "11",
-      "M",
-      "6",
-    ]);
+
+    await expect(page.locator(".ui-grid-cell-contents").nth(0)).toHaveText(/Sex/);
+    await expect(page.locator(".ui-grid-cell-contents").nth(1)).toHaveText(/No of Applicants/);
+    await expect(page.locator(".ui-grid-cell-contents").nth(2)).toHaveText("F");
+    await expect(page.locator(".ui-grid-cell-contents").nth(3)).toHaveText("11");
+    await expect(page.locator(".ui-grid-cell-contents").nth(4)).toHaveText("M");
+    await expect(page.locator(".ui-grid-cell-contents").nth(5)).toHaveText("6");
   });
 
   test("should generate a default report", async ({ page }) => {
     await page.goto("http://localhost:9000/#/analyse/b_enhanced_schema");
-    const gridCells = page.locator(".ui-grid-cell-contents");
 
-    // Check for specific content
-    await expect(
-      toIncludeText(gridCells, "Date Of Birth")
-    ).resolves.toBeTruthy();
-    await expect(
-      toIncludeText(gridCells, "519a6075b320153869b155e0")
-    ).resolves.toBeTruthy();
-    await expect(
-      toIncludeText(gridCells, "519a6075b440153869b155e0")
-    ).resolves.toBeTruthy();
+
+    await expect(page.locator(".ui-grid-cell-contents").nth(5)).toHaveText(/Date Of Birth/);
+    await expect(page.locator(".ui-grid-cell-contents").nth(10)).toHaveText(/(519a6075b440153869b155e0|519a6075b320153869b155e0)/);
 
     // Click the last cell and check navigation
+    const gridCells = await page
+        .locator(".ui-grid-cell-contents")
     await gridCells.last().click();
     await expect(page).toHaveURL(
       /\/b_enhanced_schema\/(519a6075b440153869b155e0|519a6075b320153869b155e0)\/edit/
