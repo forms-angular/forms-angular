@@ -7172,7 +7172,8 @@ input[type="checkbox"].ng-invalid::after {
 }
 /* Delayed Absolute Center Spinner */
 /* Absolute Center Spinner */
-.loading {
+.loading,
+.spinner {
   position: fixed;
   z-index: 999;
   height: 2em;
@@ -7183,11 +7184,18 @@ input[type="checkbox"].ng-invalid::after {
   left: 0;
   bottom: 0;
   right: 0;
+}
+.loading {
   -webkit-animation: lds-ring-fadein 3.4s;
   animation: lds-ring-fadein 3.4s;
 }
+.spinner {
+  -webkit-animation: lds-ring-fadein 0.4s;
+  animation: lds-ring-fadein 0.4s;
+}
 /* Transparent Overlay */
-.loading:before {
+.loading:before,
+.spinner:before {
   content: '';
   display: block;
   position: fixed;
@@ -7198,7 +7206,8 @@ input[type="checkbox"].ng-invalid::after {
   background-color: rgba(0, 0, 0, 0.3);
 }
 /* :not(:required) hides these rules from IE9 and below */
-.loading:not(:required) {
+.loading:not(:required),
+.spinner:not(:required) {
   /* hide "loading..." text */
   font: 0/0 a;
   color: transparent;
@@ -7206,7 +7215,8 @@ input[type="checkbox"].ng-invalid::after {
   background-color: transparent;
   border: 0;
 }
-.loading:not(:required):after {
+.loading:not(:required):after,
+.spinner:not(:required):after {
   content: '';
   display: block;
   font-size: 10px;

@@ -69,6 +69,7 @@
     "grunt-contrib-less - v3 uses less 4, which breaks build process"
   ],
   "devDependencies": {
+    "@playwright/test": "^1.51.1",
     "@types/async": "^3.2.24",
     "@types/node": "^20.14.8",
     "angular-mocks": "^1.8.3",
@@ -99,7 +100,6 @@
     "grunt-ng-annotate": "4.0.0",
     "grunt-nodemon": "0.4.2",
     "grunt-open": "0.2.4",
-    "grunt-protractor-runner": "5.0.0",
     "grunt-rev": "0.1.0",
     "grunt-shell": "^4.0.0",
     "grunt-svgmin": "7.0.0",
@@ -118,7 +118,6 @@
     "minimist": "^1.2.8",
     "mocha": "10.4.0",
     "open": "10.1.0",
-    "protractor": "^7.0.0",
     "protractor-jasmine2-screenshot-reporter": "0.5.1",
     "requirejs": "2.3.6",
     "should": "13.2.3",
