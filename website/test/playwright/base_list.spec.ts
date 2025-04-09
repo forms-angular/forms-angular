@@ -10,13 +10,15 @@ test.describe("Base list", () => {
 
   test("should list all the records", async ({ page }) => {
     await page.goto("http://localhost:9000/#/a_unadorned_schema");
-    await expect(page.locator("a .list-item").first()).toContainText(/TestPerson/);
+    await expect(page.locator("a .list-item").first()).toContainText(
+      /TestPerson/
+    );
   });
 
   test("should support the listOrder option", async ({ page }) => {
     await page.goto("http://localhost:9000/#/g_conditional_field");
     const list = page.locator(".list-item");
-    await expect(list).toHaveCount({ minimum: 9 });
+    await expect(list).toHaveCount(17);
     await expect(
       page.locator(".list-item>.span6:first-child").nth(7)
     ).toContainText("Smith08");
@@ -29,7 +31,9 @@ test.describe("Base list", () => {
 
   test("should support dropdown text override", async ({ page }) => {
     await page.goto("http://localhost:9000/#/b_enhanced_schema");
-    await expect(page.locator("li.dropdown.mcdd")).toContainText("Custom Dropdown");
+    await expect(page.locator("li.dropdown.mcdd")).toContainText(
+      "Custom Dropdown"
+    );
   });
 
   test("should revert to normal model descriptions", async ({ page }) => {
@@ -40,7 +44,9 @@ test.describe("Base list", () => {
   test("should support the model name override with bespoke formschema", async ({
     page,
   }) => {
-    await page.goto("http://localhost:9000/#/b_enhanced_schema/justnameandpostcode");
+    await page.goto(
+      "http://localhost:9000/#/b_enhanced_schema/justnameandpostcode"
+    );
     await expect(page.locator("h1")).toContainText("Another override");
     await expect(page.locator("li.dropdown.mcdd")).toContainText(
       "Custom 2nd Level"

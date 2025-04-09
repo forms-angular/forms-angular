@@ -29,11 +29,14 @@ test.describe("Conditionals", () => {
     await page.goto(
       "http://localhost:9000/#/f_nested_schema/51c583d5b5c51226db418f17/edit"
     );
+    const list = page.locator(".hasDatepicker");
+    await expect(list).toHaveCount(6);
 
-    const datepickers = page.locator(".hasDatepicker").all();
-    const visibilityStates = await Promise.all(
-      (await datepickers).map((dp) => dp.isVisible())
-    );
-    expect(visibilityStates).toEqual([true, false, true, true, true, false]);
+    await expect(page.locator("input#f_exams_examDate_0")).toBeVisible();
+    await expect(page.locator("input#f_exams_retakeDate_0")).toBeHidden();
+    await expect(page.locator("input#f_exams_examDate_1")).toBeVisible();
+    await expect(page.locator("input#f_exams_retakeDate_1")).toBeVisible();
+    await expect(page.locator("input#f_exams_examDate_2")).toBeVisible();
+    await expect(page.locator("input#f_exams_retakeDate_2")).toBeHidden();
   });
 });

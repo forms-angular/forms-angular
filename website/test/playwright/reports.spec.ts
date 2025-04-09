@@ -18,8 +18,10 @@ test.describe("Reports", () => {
     await page.goto(
       "http://localhost:9000/#/analyse/g_conditional_field?r=%5B%7B%22$group%22:%7B%22_id%22:%22$sex%22,%22count%22:%7B%22$sum%22:1%7D%7D%7D,%7B%22$sort%22:%7B%22_id%22:1%7D%7D%5D"
     );
-    const cells = await page.locator(".ui-grid-cell-contents").allTextContents();
-    expect(cells).toEqual(["Id", "Count", "F", "11", "M", "6"]);
+    const cells = await page
+      .locator(".ui-grid-cell-contents")
+      .allTextContents();
+    expect(cells).toEqual([" Id  1", "Count  1", "F", "11", "M", "6"]);
   });
 
   test("should do reports with options from the command line", async ({
@@ -41,10 +43,12 @@ test.describe("Reports", () => {
           })
         )
     );
-    const cells = await page.locator(".ui-grid-cell-contents").allTextContents();
+    const cells = await page
+      .locator(".ui-grid-cell-contents")
+      .allTextContents();
     expect(cells).toEqual([
-      "Sex",
-      "No of Applicants",
+      "Sex  1",
+      "No of Applicants  1",
       "F",
       "11",
       "M",
@@ -81,10 +85,12 @@ test.describe("Reports", () => {
     await expect(page.locator("h1")).toContainText(
       "Numbers of Applicants By Sex"
     );
-    const cells = await page.locator(".ui-grid-cell-contents").allTextContents();
+    const cells = await page
+      .locator(".ui-grid-cell-contents")
+      .allTextContents();
     expect(cells).toEqual([
-      "Sex",
-      "No of Applicants",
+      "Sex  1",
+      "No of Applicants  1",
       "Female",
       "11",
       "Male",
