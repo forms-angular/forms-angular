@@ -607,11 +607,13 @@ module fng.directives {
                     if (info.noneIndicator) {
                       footer += `<span ${indicatorShowCond} class="none_indicator" id="no_${info.id}_indicator">None</span>`;
                       // hideCond for the schema-foot is if there's no add button, no custom footer and no indicator
-                      hideCond = hasCustomFooter ? "" : `${model}.length > 0`;
-                      if (info.noAdd === true) {
-                        hideCond = `ng-hide="${hideCond}"`;
-                      } else {
-                        hideCond = info.noAdd ? `ng-hide="${info.noAdd} && ${hideCond}"` : '';
+                      if (!hasCustomFooter) {
+                        hideCond = `${model}.length > 0`;
+                        if (info.noAdd === true) {
+                          hideCond = `ng-hide="${hideCond}"`;
+                        } else {
+                          hideCond = info.noAdd ? `ng-hide="${info.noAdd} && ${hideCond}"` : '';
+                        }
                       }
                     }                    
                     if (footer !== '') {
