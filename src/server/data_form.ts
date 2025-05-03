@@ -1343,8 +1343,9 @@ export class FormsAngular {
       pipelineSection < runPipeline.length;
       pipelineSection++
     ) {
-      if (runPipeline[pipelineSection]["$match"]) {
-        this.hackVariables(runPipeline[pipelineSection]["$match"]);
+      let sectionType = Object.keys(runPipeline[pipelineSection])[0];
+      if (["$match", "$group", "$project"].includes(sectionType)) {
+        this.hackVariables(runPipeline[pipelineSection][sectionType]);
       }
     }
   }
