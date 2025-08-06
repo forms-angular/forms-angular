@@ -45,8 +45,7 @@ fs.readdirSync(modelsPath).forEach(function (file) {
   }
 });
 
-// If we are starting the server to run e2e tests then add a little data
-if (app.get('env') === 'test') {
+function reseed() {
   const exec = require('child_process').exec;
   const dataPath = path.join(__dirname, 'test/e2e/e2edata');
   const dataFiles = fs.readdirSync(dataPath);
@@ -57,14 +56,28 @@ if (app.get('env') === 'test') {
     if (fs.statSync(fname).isFile()) {
       console.log('mongoimport --host ' + mongoHost + ' --db fng-test --drop --collection ' + file.slice(0, -5) + 's --jsonArray < ' + fname);
       exec('mongoimport --host ' + mongoHost + ' --db fng-test --drop --collection ' + file.slice(0, -5) + 's --jsonArray < ' + fname,
-        function (error, stdout, stderr) {
-        if (error !== null) {
-          console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
-        }
-      });
+          function (error, stdout, stderr) {
+            if (error !== null) {
+              console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
+            }
+          });
     }
   });
 }
+
+// If we are starting the server to run e2e tests then add a little data
+if (app.get('env') === 'test') {
+  reseed();
+}
+
+app.route('reseed').delete(function (req, res) {
+  if (app.get('env') === 'test') {
+    reseed();
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(403);
+  }
+})
 
 // mongoose.set('debug', true);
 

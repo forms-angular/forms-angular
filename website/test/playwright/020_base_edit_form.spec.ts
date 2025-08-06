@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { reseed } from './support-funcs';
 
 test.describe("Base edit form", () => {
   const width = 1024;
@@ -75,7 +76,9 @@ test.describe("Base edit form", () => {
   });
 
   test.describe("prompts user to save changes", () => {
+
     test.beforeEach(async ({ page }) => {
+      await reseed(page);
       await page.goto(
         "http://localhost:9000/#/b_enhanced_schema/519a6075b320153869b155e0/edit"
       );

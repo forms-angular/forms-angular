@@ -38,17 +38,16 @@ fs.readdirSync(modelsPath).forEach(function (file) {
         fngHandler.newResource(fngModelInfo.model, fngModelInfo.options);
     }
 });
-// If we are starting the server to run e2e tests then add a little data
-if (app.get('env') === 'test') {
-    var exec_1 = require('child_process').exec;
-    var dataPath_1 = path.join(__dirname, 'test/e2e/e2edata');
-    var dataFiles = fs.readdirSync(dataPath_1);
-    var mongoHost_1 = config.mongo.uri.match(/mongodb:\/\/(.*\d)/)[1];
+function reseed() {
+    var exec = require('child_process').exec;
+    var dataPath = path.join(__dirname, 'test/e2e/e2edata');
+    var dataFiles = fs.readdirSync(dataPath);
+    var mongoHost = config.mongo.uri.match(/mongodb:\/\/(.*\d)/)[1];
     dataFiles.forEach(function (file) {
-        var fname = dataPath_1 + '/' + file;
+        var fname = dataPath + '/' + file;
         if (fs.statSync(fname).isFile()) {
-            console.log('mongoimport --host ' + mongoHost_1 + ' --db fng-test --drop --collection ' + file.slice(0, -5) + 's --jsonArray < ' + fname);
-            exec_1('mongoimport --host ' + mongoHost_1 + ' --db fng-test --drop --collection ' + file.slice(0, -5) + 's --jsonArray < ' + fname, function (error, stdout, stderr) {
+            console.log('mongoimport --host ' + mongoHost + ' --db fng-test --drop --collection ' + file.slice(0, -5) + 's --jsonArray < ' + fname);
+            exec('mongoimport --host ' + mongoHost + ' --db fng-test --drop --collection ' + file.slice(0, -5) + 's --jsonArray < ' + fname, function (error, stdout, stderr) {
                 if (error !== null) {
                     console.log('Error importing models : ' + error + ' (Code = ' + error.code + '    ' + error.signal + ') : ' + stderr + ' : ' + stdout);
                 }
@@ -56,6 +55,19 @@ if (app.get('env') === 'test') {
         }
     });
 }
+// If we are starting the server to run e2e tests then add a little data
+if (app.get('env') === 'test') {
+    reseed();
+}
+app.route('reseed').delete(function (req, res) {
+    if (app.get('env') === 'test') {
+        reseed();
+        res.sendStatus(200);
+    }
+    else {
+        res.sendStatus(403);
+    }
+});
 // mongoose.set('debug', true);
 // Start server
 app.listen(config.port, config.ip, function () {
