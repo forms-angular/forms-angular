@@ -841,6 +841,18 @@ module fng.directives {
           generateForm(scope[attrs.schema]);
         });
 
+        scope.$on("selectTab", function (event: angular.IAngularEvent, tabToSelect: string) {
+          if (!Array.isArray(scope.tabs)) {
+            return;
+          }          
+          const idx = scope.tabs.findIndex((t) => t.title === tabToSelect);
+          if (idx === -1) {
+            return;
+          }
+          scope.activeTabNo = idx;
+          event.preventDefault();
+        });
+
         var unwatch = scope.$watch(attrs.schema, function (newValue: any) {
           if (newValue) {
             var newArrayValue: Array<any> = angular.isArray(newValue) ? newValue : [newValue];   // otherwise some old tests stop working for no real reason
