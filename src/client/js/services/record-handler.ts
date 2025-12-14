@@ -264,7 +264,7 @@ module fng.services {
       if (aSchema.needsX) {
         result = true;
       } else if (!aSchema.directive) {
-        if (aSchema.type === "text") {
+        if (["text","email"].includes(aSchema.type)) {
           result = true;
         } else if (aSchema.type === "select" && !aSchema.ids) {
           result = true;
