@@ -256,10 +256,15 @@ module fng.services {
       var arrayField = modelOverride || $scope.record;
       for (var i = 0, l = fieldParts.length; i < l; i++) {
         if (!arrayField[fieldParts[i]]) {
-          if (i === l - 1) {
-            arrayField[fieldParts[i]] = [];
+          if (Array.isArray(arrayField) && arrayField[0][fieldParts[i]]) {
+            // Partial support for nested arrays - only works for the first level
+            arrayField = arrayField[0];
           } else {
-            arrayField[fieldParts[i]] = {};
+            if (i === l - 1) {
+              arrayField[fieldParts[i]] = [];
+            } else {
+              arrayField[fieldParts[i]] = {};
+            }
           }
         }
         arrayField = arrayField[fieldParts[i]];
