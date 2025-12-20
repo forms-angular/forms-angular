@@ -3,6 +3,12 @@
  */
 const child = require("child_process");
 
+const logAndAlert = (msg) => {
+    console.log(msg);
+    child.exec("paplay /usr/share/sounds/freedesktop/stereo/bell.oga");
+};
+
+
 // read package.json
 const packageJson = require("./package.json");
 const mitigations = packageJson.npmAuditMitigations;
@@ -17,7 +23,7 @@ child.exec("npm audit --omit dev --json", (error, stdout, stderr) => {
             let key = vulns[i].url;
             if (key) {
                 if (!moduleMitigations) {
-                    console.log(`Need to look at new ${module} vuln: ${key} ${vulns[i].title}`);
+                    logAndAlert(`Need to look at new ${module} vuln: ${key} ${vulns[i].title}`);
                 } else {
                     let mitigation = moduleMitigations.find(o => {
                         return !!o[key];
@@ -27,11 +33,11 @@ child.exec("npm audit --omit dev --json", (error, stdout, stderr) => {
                         if (mitigation.nextReview) {
                             const reviewDate = new Date(mitigation.nextReview);
                             if (reviewDate < new Date()) {
-                                console.log(`Need to review at ${module} vuln: ${key} ${mitigation.reviewBy}`);
+                                logAndAlert(`Need to review at ${module} vuln: ${key} ${mitigation.reviewBy}`);
                             }
                         }
                     } else {
-                        console.log(`Need to look at new ${module} vuln: ${key} ${vulns[i].title}`);
+                        logAndAlert(`Need to look at new ${module} vuln: ${key} ${vulns[i].title}`);
                     }
                 }
             }
