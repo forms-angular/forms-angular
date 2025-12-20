@@ -1,42 +1,43 @@
-import { expect, test } from "@playwright/test";
+import { test, expect, type Page } from '@playwright/test';
 
-test.describe("Conditionals", () => {
-  const width = 1024;
-  const height = 768;
+test.describe('Conditionals', () => {
 
-  test.beforeEach(async ({ page }) => {
-    await page.setViewportSize({ width, height });
-  });
+    test.beforeEach(async ({ page }: { page: Page }) => {
+        await page.setViewportSize({ width: 1024, height: 768 });
+    });
 
-  test("should not show hidden fields", async ({ page }) => {
-    await page.goto(
-      "http://localhost:9000/#/g_conditional_field/51c583d5b9991226db418f00/edit"
-    );
+    test('should not show hidden fields', async ({ page }: { page: Page }) => {
+        await page.goto('/#/g_conditional_field/51c583d5b9991226db418f00/edit');
 
-    const datepickers = page.locator(".hasDatepicker");
-    await expect(datepickers.first()).toBeHidden();
+        const items = page.locator('.hasDatepicker');
+        // Protractor code was checking isDisplayed() for all items
+        // In Playwright, we can check visibility of specific elements
+        await expect(items).not.toBeVisible();
 
-    await page.getByLabel("Accepted").check();
-    await expect(datepickers.first()).toBeVisible();
-    await expect(page.locator("#cg_f_loggedInBribeBook")).toBeVisible();
+        await page.locator('#f_accepted').click();
+        await expect(page.locator('.hasDatepicker')).toBeVisible();
+        await expect(page.locator('#cg_f_loggedInBribeBook')).toBeVisible();
 
-    await page.getByLabel("Bribe Amount").clear();
-    await page.getByLabel("Bribe Amount").fill("2000");
-    await expect(page.locator("#cg_f_loggedInBribeBook")).toBeHidden();
-  });
+        const bribeField = page.locator('#f_bribeAmount');
+        await bribeField.clear();
+        await bribeField.fill('2000');
+        await expect(page.locator('#cg_f_loggedInBribeBook')).not.toBeVisible();
+    });
 
-  test("should not show hidden fields in sub schemas", async ({ page }) => {
-    await page.goto(
-      "http://localhost:9000/#/f_nested_schema/51c583d5b5c51226db418f17/edit"
-    );
-    const list = page.locator(".hasDatepicker");
-    await expect(list).toHaveCount(6);
+    test('should not show hidden fields in sub schemas', async ({ page }: { page: Page }) => {
+        await page.goto('/#/f_nested_schema/51c583d5b5c51226db418f17/edit');
+        // Note: browser.waitForAngular() is often handled by Playwright's auto-waiting, 
+        // but if needed, we'd wait for a specific state or network idle.
 
-    await expect(page.locator("input#f_exams_examDate_0")).toBeVisible();
-    await expect(page.locator("input#f_exams_retakeDate_0")).toBeHidden();
-    await expect(page.locator("input#f_exams_examDate_1")).toBeVisible();
-    await expect(page.locator("input#f_exams_retakeDate_1")).toBeVisible();
-    await expect(page.locator("input#f_exams_examDate_2")).toBeVisible();
-    await expect(page.locator("input#f_exams_retakeDate_2")).toBeHidden();
-  });
+        const items = page.locator('.hasDatepicker');
+        // Original check: expect(items).toEqual([true, false, true, true, true, false]);
+        // We can check each individually
+        await expect(items.nth(0)).toBeVisible();
+        await expect(items.nth(1)).not.toBeVisible();
+        await expect(items.nth(2)).toBeVisible();
+        await expect(items.nth(3)).toBeVisible();
+        await expect(items.nth(4)).toBeVisible();
+        await expect(items.nth(5)).not.toBeVisible();
+    });
+
 });
