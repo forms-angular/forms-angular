@@ -57,7 +57,8 @@ child.exec(auditCommand, (error, stdout, stderr) => {
         let moduleMitigations = mitigations[module];
         for (let i = 0; i < vulns.length; i++) {
             let key = (typeof vulns[i] === 'string') ? vulns[i] : vulns[i].url;
-            if (key) {
+            // We are not interested in vulns that are due to vulns in other packages we already know about
+            if (key && !mitigations[key]) {
                 if (!moduleMitigations) {
                     logAndAlert(`Need to look at new ${module} vuln: ${key} ${vulns[i].title || ''}`);
                 } else {
