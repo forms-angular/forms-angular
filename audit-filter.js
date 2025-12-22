@@ -1,7 +1,29 @@
 /*
     Script to take json output from npm audit and check that all vulnerabilities have got mitigations logged in package.json
  */
+
 const child = require("child_process");
+const path = require("path");
+const { program } = require("commander");
+
+program
+    .argument('[directory]', 'project directory to audit', '.')
+    .option('-s, --severity <level>', 'minimum severity level to include in the report', 'high')
+    .parse(process.argv);
+
+const options = program.opts();
+const pwd = path.resolve(program.args[0] || '.');
+const minSeverity = options.severity.toLowerCase();
+
+const severityHierarchy = {
+    'info': 0,
+    'low': 1,
+    'moderate': 2,
+    'high': 3,
+    'critical': 4
+};
+
+const minSeverityValue = severityHierarchy[minSeverity] !== undefined ? severityHierarchy[minSeverity] : 3;
 
 const logAndAlert = (msg) => {
     console.log(msg);
@@ -10,8 +32,14 @@ const logAndAlert = (msg) => {
 
 
 // read package.json
-const packageJson = require("./package.json");
-const mitigations = packageJson.npmAuditMitigations;
+let packageJson;
+try {
+    packageJson = require(path.join(pwd, "./package.json"));
+} catch (e) {
+    console.error(`Failed to load package.json from ${pwd}`);
+    process.exit(1);
+}
+const mitigations = packageJson.npmAuditMitigations || {};
 
 // Determine package manager and audit command
 const packageManager = (packageJson.packageManager || "npm").split("@")[0];
@@ -23,12 +51,30 @@ if (packageManager === "pnpm") {
 }
 
 // Shell out and run audit command
-child.exec(auditCommand, (error, stdout, stderr) => {
+child.exec(auditCommand, { cwd: pwd }, (error, stdout, stderr) => {
+    if (error && !stdout) {
+        console.error(`Audit command failed with error: ${error.message}`);
+        if (stderr) {
+            console.error(`stderr: ${stderr}`);
+        }
+        return;
+    }
+
     let concerns;
     try {
         concerns = JSON.parse(stdout);
     } catch (e) {
         console.error("Failed to parse audit output:", e);
+        if (stderr) {
+            console.error("stderr output from audit command:");
+            console.error(stderr);
+        }
+        if (stdout) {
+            console.error("stdout output from audit command (first 200 chars):");
+            console.error(stdout.substring(0, 200));
+        } else {
+            console.error("stdout was empty.");
+        }
         return;
     }
 
@@ -47,7 +93,8 @@ child.exec(auditCommand, (error, stdout, stderr) => {
             }
             vulnerabilities[moduleName].via.push({
                 url: advisory.url,
-                title: advisory.title
+                title: advisory.title,
+                severity: advisory.severity
             });
         }
     }
@@ -56,11 +103,19 @@ child.exec(auditCommand, (error, stdout, stderr) => {
         let vulns = vulnerabilities[module].via;
         let moduleMitigations = mitigations[module];
         for (let i = 0; i < vulns.length; i++) {
-            let key = (typeof vulns[i] === 'string') ? vulns[i] : vulns[i].url;
+            let vuln = vulns[i];
+            let key = (typeof vuln === 'string') ? vuln : vuln.url;
+            let severity = (typeof vuln === 'string') ? 'unknown' : (vuln.severity || 'unknown');
+            let severityValue = severityHierarchy[severity] !== undefined ? severityHierarchy[severity] : -1;
+
+            if (severityValue < minSeverityValue && severity !== 'unknown') {
+                continue;
+            }
+
             // We are not interested in vulns that are due to vulns in other packages we already know about
             if (key && !mitigations[key]) {
                 if (!moduleMitigations) {
-                    logAndAlert(`Need to look at new ${module} vuln: ${key} ${vulns[i].title || ''}`);
+                    logAndAlert(`Need to look at new ${severity} ${module} vuln: ${key} ${vuln.title || ''}`);
                 } else {
                     let mitigation = moduleMitigations.find(o => {
                         return !!o[key];
@@ -70,11 +125,11 @@ child.exec(auditCommand, (error, stdout, stderr) => {
                         if (mitigation.nextReview) {
                             const reviewDate = new Date(mitigation.nextReview);
                             if (reviewDate < new Date()) {
-                                logAndAlert(`Need to review at ${module} vuln: ${key} ${mitigation.reviewBy}`);
+                                logAndAlert(`Need to review ${severity} ${module} vuln at: ${key} ${mitigation.reviewBy}`);
                             }
                         }
                     } else {
-                        logAndAlert(`Need to look at new ${module} vuln: ${key} ${vulns[i].title || ''}`);
+                        logAndAlert(`Need to look at new ${severity} ${module} vuln: ${key} ${vuln.title || ''}`);
                     }
                 }
             }
