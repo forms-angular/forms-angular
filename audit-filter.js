@@ -31,15 +31,51 @@ const logAndAlert = (msg) => {
 };
 
 
+const mergeMitigations = (target, source) => {
+    for (const key in source) {
+        if (Array.isArray(source[key])) {
+            target[key] = (target[key] || []).concat(source[key]);
+            // Ensure unique entries by stringifying and parsing (basic deduplication)
+            const unique = [];
+            const seen = new Set();
+            for (const item of target[key]) {
+                const s = JSON.stringify(item);
+                if (!seen.has(s)) {
+                    seen.add(s);
+                    unique.push(item);
+                }
+            }
+            target[key] = unique;
+        } else if (typeof source[key] === 'object' && source[key] !== null) {
+            target[key] = Object.assign(target[key] || {}, source[key]);
+        } else {
+            target[key] = source[key];
+        }
+    }
+    return target;
+};
+
 // read package.json
-let packageJson;
+let projectPackageJson;
 try {
-    packageJson = require(path.join(pwd, "./package.json"));
+    projectPackageJson = require(path.join(pwd, "./package.json"));
 } catch (e) {
     console.error(`Failed to load package.json from ${pwd}`);
-    process.exit(1);
+    process.exit(projectPackageJson && projectPackageJson.name === 'forms-angular' ? 0 : 1);
 }
-const mitigations = packageJson.npmAuditMitigations || {};
+
+let modulePackageJson;
+try {
+    modulePackageJson = require(path.join(__dirname, "./package.json"));
+} catch (e) {
+    // If we can't load the module's package.json, we just continue with the project's one
+}
+
+const packageJson = projectPackageJson || modulePackageJson;
+const mitigations = mergeMitigations(
+    JSON.parse(JSON.stringify(modulePackageJson?.npmAuditMitigations || {})),
+    projectPackageJson?.npmAuditMitigations || {}
+);
 
 // Determine package manager and audit command
 const packageManager = (packageJson.packageManager || "npm").split("@")[0];
