@@ -706,6 +706,7 @@ declare module fng {
     ) => string;
     handlePseudos: (scope: fng.IFormScope, str: string) => string;
     genDisableableAncestorStr: (processedAttrs: IProcessedAttrs) => string;
+    findIdInSchemaAndFlagNeedX: (schema: any, id: any) => void;
   }
 
   interface ISecurityVisibility {

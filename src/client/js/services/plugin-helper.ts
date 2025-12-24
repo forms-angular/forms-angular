@@ -304,7 +304,28 @@ module fng.services {
 
       genDisableableAncestorStr: function genDisableableAncestorStr(processedAttrs: fng.IProcessedAttrs): string {
         return FormMarkupHelperService.genDisableableAncestorStr(processedAttrs.info.id);
-      }
+      },
+
+    // Used by fng-ui-select
+    findIdInSchemaAndFlagNeedX: function findIdInSchemaAndFlagNeedX(schema, id) {
+        // Find the entry in the schema for id and add a needsX property so string arrays are properly handled
+        var foundIt = false;
+
+        for (var i = 0; i < schema.length; i++) {
+            var element = schema[i];
+            if (element.id === id) {
+                element.needsX = true;
+                foundIt = true;
+                break;
+            } else if (element.schema) {
+                if (findIdInSchemaAndFlagNeedX(element.schema, id)) {
+                    foundIt = true;
+                    break;
+                }
+            }
+        }
+        return foundIt;
+    }
     };
   }
 }
