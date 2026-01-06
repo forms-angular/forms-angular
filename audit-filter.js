@@ -2,9 +2,14 @@
     Script to take json output from npm audit and check that all vulnerabilities have got mitigations logged in package.json
  */
 
-const child = require("child_process");
-const path = require("path");
-const { program } = require("commander");
+import child from "child_process";
+import path from "path";
+import fs from "fs";
+import { program } from "commander";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 program
     .argument('[directory]', 'project directory to audit', '.')
@@ -58,7 +63,7 @@ const mergeMitigations = (target, source) => {
 // read package.json
 let projectPackageJson;
 try {
-    projectPackageJson = require(path.join(pwd, "./package.json"));
+    projectPackageJson = JSON.parse(fs.readFileSync(path.join(pwd, "./package.json"), 'utf8'));
 } catch (e) {
     console.error(`Failed to load package.json from ${pwd}`);
     process.exit(projectPackageJson && projectPackageJson.name === 'forms-angular' ? 0 : 1);
@@ -66,7 +71,7 @@ try {
 
 let modulePackageJson;
 try {
-    modulePackageJson = require(path.join(__dirname, "./package.json"));
+    modulePackageJson = JSON.parse(fs.readFileSync(path.join(__dirname, "./package.json"), 'utf8'));
 } catch (e) {
     // If we can't load the module's package.json, we just continue with the project's one
 }
