@@ -1,9 +1,9 @@
 'use strict';
-const assert = require('assert');
-const _ = require('lodash');
-const mongoose = require('mongoose');
-const dbHelpers = require('../helpers/db-helpers');
-const async = require("async");
+import assert from 'assert';
+import _ from 'lodash';
+import mongoose from 'mongoose';
+import dbHelpers from '../helpers/db-helpers.js';
+import async from 'async';
 let fngInstance;
 before(function (done) {
     dbHelpers.setUpDB(mongoose, function (fngRet) {
@@ -996,9 +996,11 @@ describe('API tests', function () {
         it('handles complex pipeline request', function (done) {
             const mockReq = {
                 url: 'report/e_referencing_another_collection',
-                query: { r: '{"pipeline":[{"$group":{"_id":"$teacher","count":{"$' +
+                query: {
+                    r: '{"pipeline":[{"$group":{"_id":"$teacher","count":{"$' +
                         'sum":1}}}],"title":"Class Sizes","columnDefs":[{"field":"_id","displayName":"Teacher"},{"field":"' +
-                        'count","displayName":"Number in Class"}],"columnTranslations":[{"field":"_id","ref":"b_using_options"}]}' },
+                        'count","displayName":"Number in Class"}],"columnTranslations":[{"field":"_id","ref":"b_using_options"}]}'
+                },
                 params: { resourceName: 'e_referencing_another_collection' }
             };
             const mockRes = {
@@ -1089,11 +1091,13 @@ describe('API tests', function () {
         it('handles invalid lookup table error', function (done) {
             const mockReq = {
                 url: 'report/e_referencing_another_collection',
-                query: { r: '{"pipeline":[{"$group":{"' +
+                query: {
+                    r: '{"pipeline":[{"$group":{"' +
                         '_id":"$teacher","count":{"$sum":1}}}],"title":"Class Sizes","columnDefs' +
                         '":[{"field":"_id","displayName":"Teacher"},{"field":"count","displayName":"' +
                         'Number in Class"}],"columnTranslations":[{"field":"_id","ref":"b_usissng_options' +
-                        '"}]}' },
+                        '"}]}'
+                },
                 params: { resourceName: 'g_conditional_fields' }
             };
             const mockRes = {

@@ -1,6 +1,6 @@
-'use strict';
 
-var mongoose = require('mongoose');
+
+import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var ASchema = new Schema({
@@ -21,4 +21,4 @@ try {
   A = mongoose.model('A', ASchema);
 }
 
-module.exports = A;
+export default A;

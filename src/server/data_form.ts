@@ -14,10 +14,10 @@ import ForeignKeyList = fngServer.ForeignKeyList;
 // This part of forms-angular borrows from https://github.com/Alexandre-Strzelewicz/angular-bridge
 // (now https://github.com/Unitech/angular-bridge
 
-const _ = require("lodash");
-const util = require("util");
-const extend = require("node.extend");
-const async = require("async");
+import _ from "lodash";
+import util from "util";
+import extend from "node.extend";
+import async from "async";
 
 let debug = false;
 
@@ -27,12 +27,12 @@ function logTheAPICalls(req: Express.Request, res: Express.Response, next) {
   void res;
   console.log(
     "API     : " +
-      req.method +
-      " " +
-      req.url +
-      "  [ " +
-      JSON.stringify(req.body) +
-      " ]"
+    req.method +
+    " " +
+    req.url +
+    "  [ " +
+    JSON.stringify(req.body) +
+    " ]"
   );
   next();
 }
@@ -162,12 +162,12 @@ export class FormsAngular {
       ])
     );
     this.app.get.apply(
-        this.app,
-        processArgs(this.options, [
-          resourceName + "/picklistAll",
-          this.entityListAll(),
-        ])
-      );
+      this.app,
+      processArgs(this.options, [
+        resourceName + "/picklistAll",
+        this.entityListAll(),
+      ])
+    );
 
     // return the List attributes for a record - used by fng-ui-select
     this.app.get.apply(
@@ -671,7 +671,7 @@ export class FormsAngular {
         if (searchFields.length === 0) {
           console.log(
             "ERROR: Searching on a collection with no indexes " +
-              resource.resourceName
+            resource.resourceName
           );
         }
         let synonymObj = resource.options?.synonyms?.find(
@@ -1061,8 +1061,8 @@ export class FormsAngular {
             } else {
               throw new Error(
                 "No such field as " +
-                  fld +
-                  ".  Is it part of a sub-doc? If so you need the bit before the period."
+                fld +
+                ".  Is it part of a sub-doc? If so you need the bit before the period."
               );
             }
           }
@@ -1402,21 +1402,21 @@ export class FormsAngular {
       /* Sanitise the pipeline we are doing a lookup with, removing hidden fields from that collection */
       const lookupCollectionName = stage.$lookup.from;
       const lookupResource =
-          that.getResourceFromCollection(lookupCollectionName);
+        that.getResourceFromCollection(lookupCollectionName);
       let lookupHiddenLookupFields = {};
       if (lookupResource) {
         if (lookupResource.options?.hide?.length > 0) {
           lookupHiddenLookupFields = that.generateHiddenFields(
-              lookupResource,
-              false
+            lookupResource,
+            false
           );
         }
       }
       stage.$lookup.pipeline = await that.sanitisePipeline(
-          stage.$lookup.pipeline,
-          lookupHiddenLookupFields,
-          findFuncQry,
-          req
+        stage.$lookup.pipeline,
+        lookupHiddenLookupFields,
+        findFuncQry,
+        req
       );
     }
 
@@ -1491,7 +1491,7 @@ export class FormsAngular {
             let lookupProps = Object.keys(stage.$lookup);
             // First deal with simple $lookups with a single join field equality
             if (
-                (lookupProps.length === 4 || lookupProps.length === 5)&&
+              (lookupProps.length === 4 || lookupProps.length === 5) &&
               lookupProps.includes("from") &&
               lookupProps.includes("localField") &&
               lookupProps.includes("foreignField") &&
@@ -1508,11 +1508,11 @@ export class FormsAngular {
                 throw new Error("Unsupported $lookup format");
               }
             } else if (
-                lookupProps.length === 4 &&
-                lookupProps.includes("from") &&
-                lookupProps.includes("let") &&
-                lookupProps.includes("pipeline") &&
-                lookupProps.includes("as")
+              lookupProps.length === 4 &&
+              lookupProps.includes("from") &&
+              lookupProps.includes("let") &&
+              lookupProps.includes("pipeline") &&
+              lookupProps.includes("as")
             ) {
               await sanitiseLookupPipeline.call(this, stage);
             } else {
@@ -1740,9 +1740,9 @@ export class FormsAngular {
                   } else {
                     cb(
                       "Invalid ref property of " +
-                        columnTranslation.ref +
-                        " in columnTranslations " +
-                        columnTranslation.field
+                      columnTranslation.ref +
+                      " in columnTranslations " +
+                      columnTranslation.field
                     );
                   }
                 }
@@ -1819,9 +1819,9 @@ export class FormsAngular {
                 } else {
                   return callback(
                     "Invalid ref property of " +
-                      thisColumnTranslation.ref +
-                      " in columnTranslations " +
-                      thisColumnTranslation.field
+                    thisColumnTranslation.ref +
+                    " in columnTranslations " +
+                    thisColumnTranslation.field
                   );
                 }
               }
@@ -1832,8 +1832,8 @@ export class FormsAngular {
               ) {
                 return callback(
                   "A column translation needs a ref, fn or a translations property - " +
-                    thisColumnTranslation.field +
-                    " has neither"
+                  thisColumnTranslation.field +
+                  " has neither"
                 );
               }
             } else {
@@ -1888,7 +1888,7 @@ export class FormsAngular {
   ) {
     function internalSave(doc) {
       function decorateError(err) {
-        let err2: any = {status: "err"};
+        let err2: any = { status: "err" };
         if (!err.errors) {
           err2.message = err.message;
         } else {
@@ -1934,9 +1934,9 @@ export class FormsAngular {
         .catch((err) => {
           if (req.resource.options.onSaveError) {
             req.resource.options.onSaveError(err, req, res)
-                .then(() => {
-                  decorateError(err);
-                })
+              .then(() => {
+                decorateError(err);
+              })
           } else {
             decorateError(err);
           }
@@ -2622,7 +2622,7 @@ export class FormsAngular {
         if (
           items[i][disambiguationResourceNameProp] &&
           items[i][disambiguationResourceNameProp] ===
-            items[j][disambiguationResourceNameProp] &&
+          items[j][disambiguationResourceNameProp] &&
           !equalityProps.some((p) => items[i][p] !== items[j][p])
         ) {
           if (!store[items[i][disambiguationResourceNameProp]]) {
@@ -2797,3 +2797,6 @@ class ForeignKeyError extends global.Error {
     this.stack = (<any>new global.Error("")).stack;
   }
 }
+
+export default FormsAngular;
+

@@ -1,5 +1,5 @@
-'use strict';
-var mongoose = require('mongoose');
+
+import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var GSchema = new Schema({
@@ -101,7 +101,7 @@ GSchema.statics.report = function (report) {
   return reportSchema;
 };
 
-module.exports = {
+export default {
   model: G,
   searchImportance: 1,
   searchOrder: {surname: 1},

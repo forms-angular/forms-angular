@@ -1,5 +1,5 @@
-'use strict';
-var mongoose = require('mongoose');
+
+import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var ExamsSchema = new Schema({
@@ -90,7 +90,7 @@ FSchema.statics.form = function (layout) {
   return formSchema;
 };
 
-module.exports = {
+export default {
   model: F,
   synonyms: [{name:'exams'}, {name: 'retakes', filter:{'exams.result':'fail'}}],
   searchResultFormat: F.prototype.searchResultFormat

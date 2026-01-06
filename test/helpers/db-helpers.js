@@ -1,15 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const data_form_1 = require("../../src/server/data_form");
-const express = require("express");
-const asyncLib = require("async");
-const path = require("path");
-const fs = require("fs");
-const exec = require("child_process").exec;
-module.exports = {
+// Actually lines 3 imported data_form.
+import { FormsAngular } from "../../dist/server/data_form.js";
+import express from "express";
+import asyncLib from "async";
+import path from "path";
+import fs from "fs";
+import { exec } from "child_process";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
     setUpDB: function (mongoose, callback) {
         const app = express();
-        const fng = new data_form_1.FormsAngular(mongoose, app, { urlPrefix: "/api/" });
+        const fng = new FormsAngular(mongoose, app, { urlPrefix: "/api/" });
         mongoose.connect("mongodb://localhost:27017/forms-ng_test", {
             connectTimeoutMS: 30000,
         });
@@ -45,9 +49,14 @@ module.exports = {
                             function addAResource(file, cb3) {
                                 const fname = modelsPath + "/" + file;
                                 if (fs.statSync(fname).isFile()) {
-                                    fng.addResource(file.slice(0, -3), require(fname), { suppressDeprecatedMessage: true });
+                                    // Dynamic import for models
+                                    import(fname).then(module => {
+                                        fng.addResource(file.slice(0, -3), module.default || module, { suppressDeprecatedMessage: true });
+                                        cb3();
+                                    }).catch(err => cb3(err));
+                                } else {
+                                    cb3();
                                 }
-                                cb3();
                             }
                             asyncLib.each(files, addAResource, function (err) {
                                 if (err) {
@@ -64,7 +73,7 @@ module.exports = {
         });
     },
     dropDb: async function (mongoose) {
-        await mongoose.connection.db.dropDatabase;
+        await mongoose.connection.db.dropDatabase();
         await mongoose.disconnect();
     }
 };

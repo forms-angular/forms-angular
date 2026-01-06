@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "es2020",
     "target": "es2017",
     "lib": [
       "es5",
@@ -8,7 +8,10 @@
       "dom"
     ],
     "sourceMap": true,
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "esModuleInterop": true
   },
   "exclude": [
     "node_modules",

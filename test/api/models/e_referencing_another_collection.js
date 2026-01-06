@@ -1,5 +1,5 @@
-'use strict';
-var mongoose = require('mongoose');
+
+import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var ESchema = new Schema({
@@ -47,6 +47,6 @@ ESchema.statics.report = function (report) {
   return reportSchema;
 };
 
-module.exports = E;
+export default E;
 
 

@@ -8,6 +8,7 @@
   "homepage": "http://forms-angular.org",
   "version": "0.12.0-beta.322",
   "packageManager": "npm@10.2.4",
+  "type": "module",
   "engines": {
     "node": ">=8.x",
     "npm": ">=5.x"

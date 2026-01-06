@@ -1,5 +1,5 @@
-'use strict';
-var mongoose = require('mongoose');
+
+import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var BSchema = new Schema({
@@ -142,7 +142,7 @@ BSchema.statics.report = function (report) {
 };
 
 
-module.exports = {
+export default {
   model: B,                                          // pass the model in an object if you want to add options
   findFunc: BSchema.statics.findAccepted,            // this can be used to 'pre' filter selections.
     // A common use case is to restrict a user to only see their own records

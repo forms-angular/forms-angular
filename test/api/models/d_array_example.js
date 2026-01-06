@@ -1,5 +1,5 @@
-'use strict';
-var mongoose = require('mongoose');
+
+import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var DSchema = new Schema({
@@ -18,5 +18,5 @@ try {
   D = mongoose.model('D', DSchema);
 }
 
-module.exports = D;
+export default D;
 
