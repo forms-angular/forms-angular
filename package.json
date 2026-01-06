@@ -82,7 +82,7 @@
         "https://github.com/advisories/GHSA-4w4v-5hc9-xrr2": {
           "description": "angular vulnerable to super-linear runtime due to backtracking",
           "mitigation": "We do not make any use of ng-srcset",
-          "nextReview": "2026-01-01T00:00:00Z",
+          "nextReview": "2026-04-01T00:00:00Z",
           "reviewBy": "Search plait and forms-angular looking for srcset"
         }
       },
