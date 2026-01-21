@@ -19,7 +19,7 @@
   "scripts": {
     "test": "gulp  --gulpfile /home/mark/Projects/forms-angular/forms-angular/gulpfile.cjs test",
     "tidy": "find . -name '*.js' -not -path '**/node_modules/**' -and -not -path '**/website/**' -and -not -path '**/test/**' -and -not -path '**/models/**' -and -not -name 'gulpfile.js' -and -not -name 'index.js' -and -not -name 'Gruntfile.js' -and -not -name '*.conf.js' -delete && find . -name '*.map' -not -path '**/node_modules/**' -delete",
-    "build": "if [ -d 'node_modules/bower' ]; then npx bower install --config.directory=node_modules --production jquery@2.0.3 bootstrap-2-3-2=git://github.com/twbs/bootstrap.git#v2.3.2 bootstrap-3-4-0=git://github.com/twbs/bootstrap.git#v3.4.0; fi && gulp build",
+    "build": "if [ -d 'node_modules/bower' ]; then npx bower install --config.directory=node_modules --production jquery@2.0.3 bootstrap-2-3-2=git://github.com/twbs/bootstrap.git#v2.3.2 bootstrap-3-4-0=git://github.com/twbs/bootstrap.git#v3.4.0; fi && gulp -f gulpfile.cjs build",
     "reset": "cd website && rm -rf node_modules && npm install && cd .. && rm -rf node_modules && npm install && npm run build"
   },
   "files": [
