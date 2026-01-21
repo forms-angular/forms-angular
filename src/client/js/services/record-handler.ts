@@ -338,7 +338,7 @@ module fng.services {
             schemaEntry.array &&
             simpleArrayNeedsX(schemaEntry) &&
             thisField &&
-            !(thisField.length > 0 && thisField[0].x) // Don't keep on coverting
+            !(thisField.length > 0 && thisField[0]?.x) // Don't keep on coverting
           ) {
             for (var k = 0; k < thisField.length; k++) {
               thisField[k] = { x: thisField[k] };
