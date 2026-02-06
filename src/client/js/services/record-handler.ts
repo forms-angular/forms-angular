@@ -761,6 +761,7 @@ module fng.services {
             "conversions",
             function (newValue, oldValue) {
               if (newValue !== oldValue && $scope.originalData) {
+                $scope.conversionsModified = false;
                 processServerData($scope.originalData, $scope, ctrlState);
               }
             }
@@ -797,6 +798,10 @@ module fng.services {
                 const dropWatcherFunc = $scope.dropConversionWatcher;
                 $scope.dropConversionWatcher = null;
                 $timeout(() => {
+                  if ($scope.conversionsModified) {
+                    convertToAngularModel($scope.formSchema, $scope.record, 0, $scope);
+                    $scope.conversionsModified = false;
+                  }
                   dropWatcherFunc();
                 });
               }
