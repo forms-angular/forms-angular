@@ -264,7 +264,7 @@ module fng.services {
       if (aSchema.needsX) {
         result = true;
       } else if (!aSchema.directive) {
-        if (["text", "email"].includes(aSchema.type)) {
+        if (["text","email"].includes(aSchema.type)) {
           result = true;
         } else if (aSchema.type === "select" && !aSchema.ids) {
           result = true;
@@ -467,11 +467,11 @@ module fng.services {
         if (index === -1) {
           throw new Error(
             "convertListValueToId: Invalid data - value " +
-            textToConvert +
-            " not found in " +
-            valuesArray +
-            " processing " +
-            fname
+              textToConvert +
+              " not found in " +
+              valuesArray +
+              " processing " +
+              fname
           );
         }
         return idsArray[index];
@@ -508,11 +508,11 @@ module fng.services {
         if (index === -1) {
           throw new Error(
             "convertIdToListValue: Invalid data - id " +
-            id +
-            " not found in " +
-            idsArray +
-            " processing " +
-            fname
+              id +
+              " not found in " +
+              idsArray +
+              " processing " +
+              fname
           );
         }
       }
@@ -662,7 +662,7 @@ module fng.services {
                   } else {
                     h.oldId =
                       $scope[h.formInstructions.ids][
-                      $scope[h.formInstructions.options].indexOf(h.oldValue)
+                        $scope[h.formInstructions.options].indexOf(h.oldValue)
                       ];
                   }
                 });
@@ -744,7 +744,7 @@ module fng.services {
         processLookupHandlers($scope.record, {});
       }
 
-      function processDirtyFlag(resp: { dirty?: boolean, dirtyMessage?: string }) {
+      function processDirtyFlag(resp:{dirty?: boolean, dirtyMessage?: string}) {
         if (resp?.dirty === true) {
           $scope.cancel();
           setTimeout(() => {
@@ -756,72 +756,83 @@ module fng.services {
         ctrlState.allowLocationChange = true;
       } else {
         var force = true;
+        if (!$scope.newRecord) {
+          $scope.dropConversionWatcher = $scope.$watchCollection(
+            "conversions",
+            function (newValue, oldValue) {
+              if (newValue !== oldValue && $scope.originalData) {
+                processServerData($scope.originalData, $scope, ctrlState);
+              }
+            }
+          );
+        }
         $scope.$watch(
           "record",
           function (newValue, oldValue) {
-            if ($scope.phase === "ready" && !$scope.dirtyChecked && Object.keys(oldValue).length > 0 && $scope.topLevelFormName && $scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$dirty && typeof $scope.dataEventFunctions?.checkDirty === "function") {
-              $scope.dirtyChecked = true;
-              // An opportunity to ask whether we can edit this document or not - pessimistic locking can be implemented by using this
-              const checkDirty = $scope.dataEventFunctions.checkDirty(newValue, oldValue);
-              if (typeof checkDirty?.then === "function") {
-                checkDirty.then((resp) => {
-                  processDirtyFlag(resp);
-                })
-              } else {
-                processDirtyFlag(checkDirty);
-              }
-            }
-            if (Object.keys(oldValue).length > 0 && $scope.conversions) {
-              // We don't want to convert changed data, so we need to stop watching the conversions
-              // after the record has finished its initialisation and this watch has begun detecting actual changes.
-              // In some rare cases, it is possible that a "change" to the record can be made programatically
-              // before all of the directives that might need to add conversions have finished doing so.
-              // This can happen in situations where promise resolutions interrupt the compilation process.
-              // If we're not careful, we can end up with <select> inputs that are blank even when the underlying
-              // field does have a value.
-              // To avoid this, we'll use a $timeout to give for the digest queue to fully clear out - this should
-              // ensure that all directives have been compiled before the conversion watcher is actually dropped.
-              $timeout(() => {
-                // Check if late conversions were added after initial processing
-                if ($scope.conversionsModified) {
-                  convertToAngularModel($scope.formSchema, $scope.record, 0, $scope);
-                  $scope.conversionsModified = false;
+              if ($scope.phase === "ready" && !$scope.dirtyChecked && Object.keys(oldValue).length > 0 && $scope.topLevelFormName && $scope[$scope.topLevelFormName] && $scope[$scope.topLevelFormName].$dirty && typeof $scope.dataEventFunctions?.checkDirty === "function") {
+                $scope.dirtyChecked = true;
+                // An opportunity to ask whether we can edit this document or not - pessimistic locking can be implemented by using this
+                const checkDirty = $scope.dataEventFunctions.checkDirty(newValue, oldValue);
+                if (typeof checkDirty?.then === "function") {
+                  checkDirty.then((resp) => {
+                    processDirtyFlag(resp);
+                  })
+                } else {
+                  processDirtyFlag(checkDirty);
                 }
-              });
-            }
-            force = formGeneratorInstance.updateDataDependentDisplay(
-              newValue,
-              oldValue,
-              force,
-              $scope
-            );
-            processLookupHandlers(newValue, oldValue);
+              }
+              if (
+                Object.keys(oldValue).length > 0 &&
+                $scope.dropConversionWatcher
+              ) {
+                // We don't want to convert changed data, so we need to stop watching the conversions
+                // after the record has finished its initialisation and this watch has begun detecting actual changes.
+                // In some rare cases, it is possible that a "change" to the record can be made programatically
+                // before all of the directives that might need to add conversions have finished doing so.
+                // This can happen in situations where promise resolutions interrupt the compilation process.
+                // If we're not careful, we can end up with <select> inputs that are blank even when the underlying
+                // field does have a value.
+                // To avoid this, we'll use a $timeout to give for the digest queue to fully clear out - this should
+                // ensure that all directives have been compiled before the conversion watcher is actually dropped.
+                const dropWatcherFunc = $scope.dropConversionWatcher;
+                $scope.dropConversionWatcher = null;
+                $timeout(() => {
+                  dropWatcherFunc();
+                });
+              }
+              force = formGeneratorInstance.updateDataDependentDisplay(
+                newValue,
+                oldValue,
+                force,
+                $scope
+              );
+              processLookupHandlers(newValue, oldValue);
 
-            if (formsAngular.title) {
-              let title: string = formsAngular.title.prefix || "";
-              if ($scope["editFormHeader"]) {
-                title += $scope["editFormHeader"]();
-              } else {
-                for (let listElm in $scope.listSchema) {
-                  if ($scope.listSchema.hasOwnProperty(listElm)) {
-                    const listVal = $scope.getListData(
-                      $scope.record,
-                      $scope.listSchema[listElm].name
-                    );
-                    if (typeof listVal === "object") {
-                      return;
-                    }
-                    title +=
-                      $scope.getListData(
+              if (formsAngular.title) {
+                let title: string = formsAngular.title.prefix || "";
+                if ($scope["editFormHeader"]) {
+                  title += $scope["editFormHeader"]();
+                } else {
+                  for (let listElm in $scope.listSchema) {
+                    if ($scope.listSchema.hasOwnProperty(listElm)) {
+                      const listVal = $scope.getListData(
                         $scope.record,
                         $scope.listSchema[listElm].name
-                      ) + " ";
+                      );
+                      if (typeof listVal === "object") {
+                        return;
+                      }
+                      title +=
+                        $scope.getListData(
+                          $scope.record,
+                          $scope.listSchema[listElm].name
+                        ) + " ";
+                    }
                   }
                 }
+                title = title.trimEnd() + (formsAngular.title.suffix || "");
+                $window.document.title = title.replace(/<\/?[^>]+(>|$)/g, "");
               }
-              title = title.trimEnd() + (formsAngular.title.suffix || "");
-              $window.document.title = title.replace(/<\/?[^>]+(>|$)/g, "");
-            }
           },
           true
         );
@@ -971,8 +982,8 @@ module fng.services {
       let refHandler:
         | IFngInternalLookupHandlerInfo
         | IFngLookupListHandlerInfo = lookups.find((lkp) => {
-          return lkp.ref.property === ref.property && lkp.ref.value === ref.value;
-        });
+        return lkp.ref.property === ref.property && lkp.ref.value === ref.value;
+      });
 
       let thisHandler: IFngSingleLookupHandler = {
         formInstructions: formInstructions,
@@ -1020,9 +1031,9 @@ module fng.services {
           typeof formsAngular.beforeHandleIncomingDataPromises === "function";
         const promise = multi
           ? Promise.all([
-            $scope.readingRecord,
-            ...formsAngular.beforeHandleIncomingDataPromises(),
-          ])
+              $scope.readingRecord,
+              ...formsAngular.beforeHandleIncomingDataPromises(),
+            ])
           : $scope.readingRecord;
         promise
           .then((response) => {
@@ -1075,7 +1086,7 @@ module fng.services {
             } else {
               console.log(
                 "DEBUG: infinite scroll component asked for a page twice - the model was " +
-                $scope.modelName
+                  $scope.modelName
               );
             }
           } else {
@@ -1211,9 +1222,9 @@ module fng.services {
         const idList = ($scope[schemaElement.ids] = []);
         const dataRequest = !!schemaElement.filter
           ? SubmissionsService.getPagedAndFilteredList(
-            lookupCollection,
-            Object.assign({ concatenate: true }, schemaElement.filter)
-          ) // { concatenate: true } causes it to concatenate the list fields into the .text property of ILookupItem objects
+              lookupCollection,
+              Object.assign({ concatenate: true }, schemaElement.filter)
+            ) // { concatenate: true } causes it to concatenate the list fields into the .text property of ILookupItem objects
           : SubmissionsService.getAllListAttributes(lookupCollection);
         dataRequest
           .then((response: angular.IHttpResponse<fng.ILookupItem[]>) => {
@@ -1465,7 +1476,7 @@ module fng.services {
               $scope.$digest();
             },
             3500 +
-            (1000 * ($scope.alertTitle + $scope.errorMessage).length) / 50
+              (1000 * ($scope.alertTitle + $scope.errorMessage).length) / 50
           );
           $scope.errorVisible = true;
           window.setTimeout(() => {
@@ -1624,17 +1635,17 @@ module fng.services {
           // Add event handlers relating to application implemented pessimistic locking
           window.onunload = function () {
             if (typeof $scope.dataEventFunctions?.isLocked === "function" && $scope.dataEventFunctions?.isLocked() && typeof $scope.dataEventFunctions?.releaseLock === "function") {
-              $scope.dataEventFunctions?.releaseLock();
+                $scope.dataEventFunctions?.releaseLock();
             }
           }
           window.onbeforeunload = function (event) {
             if (!ctrlState.allowLocationChange && (!$scope.isCancelDisabled()) || (
-              typeof $scope.dataEventFunctions?.isLocked === "function" && $scope.dataEventFunctions?.isLocked()
+                typeof $scope.dataEventFunctions?.isLocked === "function" && $scope.dataEventFunctions?.isLocked()
             )) {
               if (
-                confirm(
-                  "You have unsaved changes.  Do you really want to lose them?"
-                )
+                  confirm(
+                      "You have unsaved changes.  Do you really want to lose them?"
+                  )
               ) {
                 if (typeof $scope.dataEventFunctions?.isLocked === "function" && typeof $scope.dataEventFunctions?.releaseLock === "function" && $scope.dataEventFunctions?.isLocked()) {
                   $scope.dataEventFunctions?.releaseLock();

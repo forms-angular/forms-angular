@@ -464,7 +464,6 @@ declare module fng {
     internalLookups: IFngInternalLookupHandlerInfo[];
     listLookups: IFngLookupListHandlerInfo[];
     conversions: any;
-    conversionsModified? : boolean;
     pageSize: any;
     pagesLoaded: any;
     redirectOptions?: { redirect?: string; allowChange?: boolean };
