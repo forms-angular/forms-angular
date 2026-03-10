@@ -1434,6 +1434,7 @@ export class FormsAngular {
         case "$project":
         case "$addFields":
         case "$count":
+        case "$facet":
         case "$group":
         case "$unset":
         case "$limit":
