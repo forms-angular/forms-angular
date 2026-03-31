@@ -93,29 +93,7 @@ module fng.services {
       return url;
     }
 
-// TODO Figure out tab history updates (check for other tab-history-todos)
-//
-//     interface ITabChange {
-//       model: string;
-//       id: string;
-//       record: any;
-//       master: any;
-//       changed: boolean;
-//     }
-//
-//     let tabChangeData: ITabChange;
-
     return {
-// TODO Figure out tab history updates (check for other tab-history-todos)
-//       setUpForTabChange: function(model: string, id: string, data: any, original: any, changed: boolean) {
-//         tabChangeData = {
-//           model: model,
-//           id: id,
-//           record: data,
-//           master: original,
-//           changed: changed
-//         };
-//       },
 
       // return only the list attributes for the given record.  where returnRaw is true, the record's
       // list attributes will be returned without transformation.  otherwise, the list attributes will be concatenated
@@ -157,21 +135,12 @@ module fng.services {
       },
 
       readRecord: function (modelName: string, id: any, formName: string): angular.IHttpPromise<any> {
-// TODO Figure out tab history updates (check for other tab-history-todos)
-//         let retVal;
-//         if (tabChangeData && tabChangeData.model === modelName && tabChangeData.id === id) {
-//           retVal = Promise.resolve({data:tabChangeData.record, changed: tabChangeData.changed, master: tabChangeData.master});
-//         } else {
           const actualId = typeof id === "string" ? id : id.id || id._id || id.x || id;
           if (typeof actualId === "object") {
             throw new Error(`readRecord doesn't expect an object but was provided with ${JSON.stringify(id)}`);
           }
           const url = generateUrl(modelName, formName, actualId);
           return $http.get(url);
-//           retVal = $http.get('/api/' + modelName + '/' + id);
-//         }
-//         tabChangeData = null;
-//         return retVal;
       },
 
       getAll: function (modelName, _options) {

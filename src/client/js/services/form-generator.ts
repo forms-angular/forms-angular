@@ -12,7 +12,7 @@ module fng.services {
   /*@ngInject*/
   import IFormInstruction = fng.IFormInstruction;
 
-  export function FormGeneratorService($filter, RoutingService: fng.IRoutingService, RecordHandlerService: fng.IRecordHandlerService, SecurityService: fng.ISecurityService) : IFormGeneratorService {
+  export function FormGeneratorService($filter, $browser, RoutingService: fng.IRoutingService, RecordHandlerService: fng.IRecordHandlerService, SecurityService: fng.ISecurityService) : IFormGeneratorService {
 
     function handleSchema(description, source, destForm, destList, prefix, doRecursion, $scope, ctrlState) {
 
@@ -716,16 +716,34 @@ module fng.services {
         $scope.baseSchema = function () {
           return ($scope.tabs.length ? $scope.tabs : $scope.formSchema);
         };
-// TODO Figure out tab history updates (check for other tab-history-todos)
-        // $scope.tabDeselect = function($event, $selectedIndex) {
-        //   if (!$scope.newRecord) {
-        //     $location.path(routingService.buildUrl($scope.modelName + '/' + ($scope.formName ? $scope.formName + '/' : '') + $scope.record._id + '/edit/' + $event.target.text));
-        //   }
-        // }
+
+        $scope.updateQueryForTab = function (tabName: string) {
+          // Update the browser URL to reflect the selected tab without triggering
+          // AngularJS route changes or controller reload.  Using $browser.url()
+          // updates both the browser URL and AngularJS's internal URL cache
+          // atomically, so $$checkUrlChange finds no mismatch and no
+          // $locationChangeStart or route change fires.
+          // Only for existing records (edit/view) — new records don't support tab
+          // deep-linking.  Also guard on phase === 'ready' because the uib-tab
+          // "select" event fires during initial rendering before the form is loaded.
+          if ($scope.phase === 'ready' && $scope.id) {
+            var currentPath = window.location.href;
+            // Find the action part (edit/view) in the URL and rebuild from there
+            var actionMatch = currentPath.match(/(\/(?:edit|view))(\/[^?#]*)?([?#].*)?$/);
+            if (actionMatch) {
+              var newPath = currentPath.slice(0, actionMatch.index) + actionMatch[1] + '/' + tabName + (actionMatch[3] || '');
+              $browser.url(newPath, true);
+            }
+          }
+        };
+
+        $scope.tabDeselect = function ($event, $selectedIndex) {
+          // no-op: tab deselection does not need to do anything
+        };
       }
     };
   }
 
-  FormGeneratorService.$inject = ["$filter", "RoutingService", "RecordHandlerService", "SecurityService"];
+  FormGeneratorService.$inject = ["$filter", "$browser", "RoutingService", "RecordHandlerService", "SecurityService"];
 
   }

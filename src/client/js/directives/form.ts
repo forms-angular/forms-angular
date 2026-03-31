@@ -285,8 +285,6 @@ module fng.directives {
                   }
                 }
                 if (tabNo >= 0) {
-                  // TODO Figure out tab history updates (check for other tab-history-todos)
-                  // result.before = '<uib-tab deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab(\'' + info.title + '\')" heading="' + info.title + '"'
                   const idStr = `${_.camelCase(info.title)}Tab`;
                   const visibility = SecurityService.considerVisibility(idStr, scope);
                   if (visibility.omit) {
