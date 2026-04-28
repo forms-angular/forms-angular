@@ -281,7 +281,7 @@ module fng.services {
     ): any {
       let conversions = scope.conversions;
       if (schemaName) {
-        conversions = getData(conversions, schemaName) || {};
+        conversions = getData(conversions, schemaName) || conversions;
       }
       return conversions[entryName];
     }
