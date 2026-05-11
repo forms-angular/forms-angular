@@ -1498,11 +1498,8 @@ export class FormsAngular {
               lookupProps.includes("foreignField") &&
               lookupProps.includes("as")
             ) {
-              // If we are doing a lookup using an _id (so not fishing) we don't need to do the findFunc (see tkt #12399)
               if (lookupProps.length === 4) {
-                if (stage.$lookup.foreignField === "_id" || stage.$lookup.localField === "_id") {
-                  needFindFunc = false;
-                }
+                // nothing to do
               } else if (lookupProps.length === 5 && lookupProps.includes("pipeline")) {
                 await sanitiseLookupPipeline.call(this, stage);
               } else {
