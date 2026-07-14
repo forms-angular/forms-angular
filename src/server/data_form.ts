@@ -2786,7 +2786,7 @@ export class FormsAngular {
   }
 }
 
-class ForeignKeyError extends global.Error {
+export class ForeignKeyError extends global.Error {
   constructor(resourceName: string, foreignKeys: ForeignKeyList) {
     super(
       `Cannot delete this ${resourceName}, as it is: ${foreignKeys.map((d) => ` the ${d.key} on ${d.resourceName} ${d.id}`).join("; ")}`
