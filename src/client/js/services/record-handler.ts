@@ -135,18 +135,27 @@ module fng.services {
         ($scope[$scope.topLevelFormName] &&
           (ignoreDirty || $scope[$scope.topLevelFormName].$pristine))
       ) {
-        updateObject(schemaElement.name, ctrlState.master, function (value) {
-          if (typeof value == "object" && value.id) {
-            return value;
-          } else {
-            return convertForeignKeys(
-              schemaElement,
-              value,
-              $scope[suffixCleanId(schemaElement, "Options")],
-              $scope[suffixCleanId(schemaElement, "_ids")]
-            );
+        try {
+          updateObject(schemaElement.name, ctrlState.master, function (
+            value
+          ) {
+            if (typeof value == "object" && value.id) {
+              return value;
+            } else {
+              return convertForeignKeys(
+                schemaElement,
+                value,
+                $scope[suffixCleanId(schemaElement, "Options")],
+                $scope[suffixCleanId(schemaElement, "_ids")]
+              );
+            }
+          });
+        } catch (e) {
+          if ($scope.showError) {
+            $scope.showError(e, "Error converting " + schemaElement.name);
           }
-        });
+          return;
+        }
         // Then copy the converted keys from master into record
         var newVal = getData(ctrlState.master, schemaElement.name);
         if (newVal) {
