@@ -134,7 +134,12 @@ module fng.services {
             RecordHandlerService.handleInternalLookup($scope, formInstructions, mongooseOptions.internalRef);
             formInstructions.internalRef = mongooseOptions.internalRef;
           } else if (mongooseOptions.customLookupOptions) {
-              // nothing to do - call setUpCustomLookupOptions() when ready to provide id and option arrays
+            // The options aren't known yet - the application calls setUpCustomLookupOptions() once it
+            // is ready to provide the id and option arrays.  Seed them empty so that the field can be
+            // rendered in the meantime: without this the select generation below has no array to
+            // repeat over and throws, taking the whole form down with it.
+            $scope[formInstructions.options] = $scope[formInstructions.options] || [];
+            $scope[formInstructions.ids] = $scope[formInstructions.ids] || [];
           } else {
             throw new Error(`No supported select lookup type found in ${formInstructions.name}`);
           }
