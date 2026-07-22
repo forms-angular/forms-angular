@@ -599,7 +599,10 @@ declare module fng {
     // level, 1 inside a sub-schema array, 2 inside an array nested within one, and so on.  This
     // determines the ng-repeat loop variable used for each level (subDoc, subDoc2, ...) so that a
     // nested array does not shadow its parent's row - see subDocVarForDepth() in form.ts.
-    subschemaDepth?: number;
+    // Deliberately all lower case, like subschemaroot: options are round-tripped through DOM
+    // attributes (fng-opt-*) and extractFromAttr() lower cases every name it reads back, so a
+    // camelCase key here would not survive the trip out to a plugin directive and back.
+    subschemadepth?: number;
     viewform?: boolean;
     suppressNestingWarning?: boolean;
   }

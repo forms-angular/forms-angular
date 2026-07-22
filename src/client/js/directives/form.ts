@@ -107,7 +107,7 @@ module fng.directives {
                 if (options.subkey) {
                   idString = modelString.slice(modelBase.length).replace(/\./g, '-') + '-subkey' + options.subkeyno + '-' + lastPart;
                   modelString += '[' + '$_arrayOffset_' + root.replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
-                } else if ((options.subschemaDepth || 1) > 1) {
+                } else if ((options.subschemadepth || 1) > 1) {
                   // Nested sub-schema (an array within an array): an absolute "record.<root>[$index]"
                   // path cannot address it, because $index here is the INNER repeat's index and the
                   // outer row's index is no longer in scope.  Bind relative to the row's own loop
@@ -119,7 +119,7 @@ module fng.directives {
                   const relativeFieldName = compoundName.startsWith(`${rootLastSegment}.`)
                     ? compoundName.slice(rootLastSegment.length + 1)
                     : lastPart;
-                  modelString = `${FormMarkupHelperService.subDocVarForDepth(options.subschemaDepth)}.${relativeFieldName}`;
+                  modelString = `${FormMarkupHelperService.subDocVarForDepth(options.subschemadepth)}.${relativeFieldName}`;
                   nameString = compoundName.replace(/\./g, '-');
                 } else {
                   modelString += '[$index].' + lastPart;
@@ -484,7 +484,7 @@ module fng.directives {
                     subkey: schemaDefName + '_subkey',
                     subkeyno: arraySel,
                     subschemaroot: info.name,
-                    subschemaDepth: (options.subschemaDepth || 0) + 1,
+                    subschemadepth: (options.subschemadepth || 0) + 1,
                     suppressNestingWarning: info.suppressNestingWarning
                   });
                   template += topAndTail.after;
@@ -495,7 +495,7 @@ module fng.directives {
                   // How deeply nested this array is: 1 for an array on the record itself, 2 for an
                   // array inside one of those rows, and so on.  Each level repeats over its own loop
                   // variable (subDoc, subDoc2, ...) so an inner array does not shadow its parent row.
-                  const arrayDepth: number = (options.subschemaDepth || 0) + 1;
+                  const arrayDepth: number = (options.subschemadepth || 0) + 1;
                   // An array at depth 1 hangs off the record (or an explicit model); deeper ones hang
                   // off the row of the array containing them, addressed relative to that row's loop
                   // variable, with the containing array's path stripped from the field name.
@@ -504,7 +504,7 @@ module fng.directives {
                   // which take a path relative to their modelOverride)
                   let relativeArrayName: string = info.name;
                   if (options.subschema) {
-                    const parentVar = FormMarkupHelperService.subDocVarForDepth(options.subschemaDepth || 1);
+                    const parentVar = FormMarkupHelperService.subDocVarForDepth(options.subschemadepth || 1);
                     relativeArrayName = options.subschemaroot ? info.name.replace(options.subschemaroot, "") : info.name;
                     if (relativeArrayName.startsWith(".")) {
                       relativeArrayName = relativeArrayName.substring(1);
@@ -517,7 +517,7 @@ module fng.directives {
                   // resolve it against.  A nested array must be addressed relative to the row that
                   // holds it, since its absolute path cannot identify which row is meant.
                   const arrayFnArgs: string = options.subschema
-                    ? `'${relativeArrayName}',$event,${FormMarkupHelperService.subDocVarForDepth(options.subschemaDepth || 1)}`
+                    ? `'${relativeArrayName}',$event,${FormMarkupHelperService.subDocVarForDepth(options.subschemadepth || 1)}`
                     : `'${info.name}',$event`;
                   /* Array header */
                   if (typeof info.customHeader == 'string') {
@@ -584,7 +584,7 @@ module fng.directives {
                       // belongs to (its parent's loop variable), not to the top-level record - the
                       // field name alone is ambiguous once the same schema can appear at any depth.
                       const removeArgs = options.subschema
-                        ? `'${relativeArrayName}', $index, $event, ${FormMarkupHelperService.subDocVarForDepth(options.subschemaDepth || 1)}`
+                        ? `'${relativeArrayName}', $index, $event, ${FormMarkupHelperService.subDocVarForDepth(options.subschemadepth || 1)}`
                         : `'${info.name}', $index, $event`;
                       template += `<button ${disableCond} ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove(${removeArgs})"`;
                       if (info.remove) {
@@ -617,7 +617,7 @@ module fng.directives {
                     subschemaroot: info.name,
                     // tell the next level down how deeply nested it is, so its fields bind to this
                     // array's loop variable rather than shadowing an outer one
-                    subschemaDepth: arrayDepth,
+                    subschemadepth: arrayDepth,
                     suppressNestingWarning: info.suppressNestingWarning
                   });
                   if (parts?.after) {
@@ -743,7 +743,12 @@ module fng.directives {
               if (info.directive) {
                 var directiveName = info.directive;
                 var newElement = info.customHeader || "";
-                newElement += '<' + directiveName + ' model="' + (options.model || 'record') + '"';
+                // Within a nested sub-schema the row is addressed by its ng-repeat loop variable
+                // rather than by an absolute path from the record - see subDocVarForDepth().
+                var directiveModel = (options.subschemadepth || 1) > 1
+                  ? FormMarkupHelperService.subDocVarForDepth(options.subschemadepth)
+                  : (options.model || 'record');
+                newElement += '<' + directiveName + ' model="' + directiveModel + '"';
                 var thisElement = element[0];
                 inferMissingProperties(info, options);
                 for (var i = 0; i < thisElement.attributes.length; i++) {

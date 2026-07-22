@@ -188,7 +188,7 @@ module fng.services {
           return `${options.model || "record"}.${info.name}`;
         }
         const relativeName = options.subschemaroot ? info.name.replace(options.subschemaroot, "") : info.name;
-        return subDocVarForDepth(options.subschemaDepth || 1) + relativeName;
+        return subDocVarForDepth(options.subschemadepth || 1) + relativeName;
       }
 
       function performPseudoReplacements(scope: fng.IFormScope, str: string, substitutionSrc: "global" | "scopeStatic" | "scopeDynamic" | "none"): string {
@@ -387,7 +387,7 @@ module fng.services {
                   }
                   // the row this field belongs to, which add() uses as its modelOverride so the
                   // array is resolved relative to it rather than to the top-level record
-                  model = subDocVarForDepth(options.subschemaDepth || 1);
+                  model = subDocVarForDepth(options.subschemadepth || 1);
               } else {
                   fieldName = fieldInfo.name;
                   model = "record";

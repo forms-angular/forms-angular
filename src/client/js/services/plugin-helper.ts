@@ -243,6 +243,19 @@ module fng.services {
           if (options.subkey) {
             idString = modelString.slice(modelBase.length).replace(/\./g, "-") + "-subkey" + options.subkeyno + "-" + lastPart;
             modelString += "[" + "$_arrayOffset_" + root.replace(/\./g, "_") + "_" + options.subkeyno + "]." + lastPart;
+          } else if ((options.subschemadepth || 1) > 1) {
+            // Nested sub-schema (an array within an array).  As in the equivalent handling in the form
+            // directive, an absolute "<model>.<root>[$index]" path cannot address this: $index here
+            // belongs to the inner ng-repeat, and the outer row's index is no longer in scope.  Bind
+            // relative to the row's own loop variable instead.  info.name is relative to the nested
+            // array (e.g. "workflows.workflowId") whereas root is the full path, so strip only the
+            // array's own final segment.
+            const rootLastSegment = root.split(".").pop();
+            const relativeFieldName = info.name.startsWith(`${rootLastSegment}.`)
+              ? info.name.slice(rootLastSegment.length + 1)
+              : lastPart;
+            modelString = `${FormMarkupHelperService.subDocVarForDepth(options.subschemadepth)}.${relativeFieldName}`;
+            nameString = info.name.replace(/\./g, "-");
           } else {
             modelString += "[$index]." + lastPart;
             nameString = info.name.replace(/\./g, "-");
