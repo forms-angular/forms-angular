@@ -1,0 +1,28 @@
+[
+    {
+        "_id": {
+            "$oid": "54c98b797c627d258d04d66a"
+        },
+        "surname": "Deeply",
+        "forename": "Nested",
+        "teams": [
+            {
+                "team": "Physics",
+                "members": [
+                    {
+                        "role": "Head of Dept",
+                        "deepAjax": {
+                            "$oid": "519a6075b320153869b155e0"
+                        }
+                    },
+                    {
+                        "role": "Technician",
+                        "deepAjax": {
+                            "$oid": "519a6075b440153869b155e0"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]
