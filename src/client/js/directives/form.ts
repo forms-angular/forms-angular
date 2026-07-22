@@ -107,6 +107,20 @@ module fng.directives {
                 if (options.subkey) {
                   idString = modelString.slice(modelBase.length).replace(/\./g, '-') + '-subkey' + options.subkeyno + '-' + lastPart;
                   modelString += '[' + '$_arrayOffset_' + root.replace(/\./g, '_') + '_' + options.subkeyno + '].' + lastPart;
+                } else if ((options.subschemaDepth || 1) > 1) {
+                  // Nested sub-schema (an array within an array): an absolute "record.<root>[$index]"
+                  // path cannot address it, because $index here is the INNER repeat's index and the
+                  // outer row's index is no longer in scope.  Bind relative to the row's own loop
+                  // variable instead - angular resolves it within the ng-repeat that declared it.
+                  // At this level the field name is relative to the nested array (e.g.
+                  // "teachers.teacher"), while subschemaroot is the full path ("studies.courses.teachers"),
+                  // so strip only the array's own final segment rather than the whole root.
+                  const rootLastSegment = root.split('.').pop();
+                  const relativeFieldName = compoundName.startsWith(`${rootLastSegment}.`)
+                    ? compoundName.slice(rootLastSegment.length + 1)
+                    : lastPart;
+                  modelString = `${FormMarkupHelperService.subDocVarForDepth(options.subschemaDepth)}.${relativeFieldName}`;
+                  nameString = compoundName.replace(/\./g, '-');
                 } else {
                   modelString += '[$index].' + lastPart;
                   nameString = compoundName.replace(/\./g, '-');
@@ -470,25 +484,48 @@ module fng.directives {
                     subkey: schemaDefName + '_subkey',
                     subkeyno: arraySel,
                     subschemaroot: info.name,
+                    subschemaDepth: (options.subschemaDepth || 0) + 1,
                     suppressNestingWarning: info.suppressNestingWarning
                   });
                   template += topAndTail.after;
                 }
                 subkeys.push(info);
               } else {
-                if (options.subschema) {
-                  if (!options.suppressNestingWarning) {
-                    console.log('Attempts at supporting deep nesting have been removed - will hopefully be re-introduced at a later date');
+                {
+                  // How deeply nested this array is: 1 for an array on the record itself, 2 for an
+                  // array inside one of those rows, and so on.  Each level repeats over its own loop
+                  // variable (subDoc, subDoc2, ...) so an inner array does not shadow its parent row.
+                  const arrayDepth: number = (options.subschemaDepth || 0) + 1;
+                  // An array at depth 1 hangs off the record (or an explicit model); deeper ones hang
+                  // off the row of the array containing them, addressed relative to that row's loop
+                  // variable, with the containing array's path stripped from the field name.
+                  let model: string;
+                  // this array's name relative to the row that holds it (used for add / remove,
+                  // which take a path relative to their modelOverride)
+                  let relativeArrayName: string = info.name;
+                  if (options.subschema) {
+                    const parentVar = FormMarkupHelperService.subDocVarForDepth(options.subschemaDepth || 1);
+                    relativeArrayName = options.subschemaroot ? info.name.replace(options.subschemaroot, "") : info.name;
+                    if (relativeArrayName.startsWith(".")) {
+                      relativeArrayName = relativeArrayName.substring(1);
+                    }
+                    model = `${parentVar}.${relativeArrayName}`;
+                  } else {
+                    model = (options.model || 'record') + '.' + info.name;
                   }
-                } else {
-                  let model: string = (options.model || 'record') + '.' + info.name;
+                  // add() / unshift() / remove() take a field path plus an optional modelOverride to
+                  // resolve it against.  A nested array must be addressed relative to the row that
+                  // holds it, since its absolute path cannot identify which row is meant.
+                  const arrayFnArgs: string = options.subschema
+                    ? `'${relativeArrayName}',$event,${FormMarkupHelperService.subDocVarForDepth(options.subschemaDepth || 1)}`
+                    : `'${info.name}',$event`;
                   /* Array header */
                   if (typeof info.customHeader == 'string') {
                     template += info.customHeader;
                   } else {
                     let topButton: string = '';
                     if (info.unshift) {
-                      topButton = '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(\'' + info.name + '\',$event)">' +
+                      topButton = '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(' + arrayFnArgs + ')">' +
                         '<i class="' + FormMarkupHelperService.glyphClass() + '-plus"></i> Add</button>';
                     }
 
@@ -519,14 +556,17 @@ module fng.directives {
                   // fields in the list sub-schema, along with the remove and add buttons for this list.  the following
                   // string will be added to the list items and the add and remove buttons to identify this fact.
                   const disableableAncestorStr = FormMarkupHelperService.genDisableableAncestorStr(info.id);
+                  // the loop variable for THIS array's rows (subDoc at the first level, subDoc2
+                  // inside that, ...) so that a nested array can still see its parent's row
+                  const subDocVar = FormMarkupHelperService.subDocVarForDepth(arrayDepth);
                   template +=
-                    `<li ng-form id="${info.id}List_{{$index}}" name="form_${niceName}{{$index}}" ${disableableAncestorStr}` + 
+                    `<li ng-form id="${info.id}List_{{$index}}" name="form_${niceName}{{$index}}" ${disableableAncestorStr}` +
                     `  class="${convertFormStyleToClass(info.formStyle)}` +
                     `  ${CssFrameworkService.framework() === 'bs2' ? 'row-fluid' : ''}`  +
                     `  ${info.inlineHeaders ? 'width-controlled' : ''}` +
                     `  ${info.ngClass ? "ng-class:" + info.ngClass : ''}"` +
-                    `  ng-repeat="subDoc in ${model} track by $index"` + 
-                    `  ${info.filterable ? 'data-ng-hide="subDoc._hidden"' : ''}` + 
+                    `  ng-repeat="${subDocVar} in ${model} track by $index"` +
+                    `  ${info.filterable ? `data-ng-hide="${subDocVar}._hidden"` : ''}` +
                     `>`;
                   if (CssFrameworkService.framework() === 'bs2') {
                     template += '<div class="row-fluid sub-doc">';
@@ -539,8 +579,14 @@ module fng.directives {
                     if (typeof info.customSubDoc == 'string') {
                       template += info.customSubDoc;
                     }
-                    if (info.noRemove !== true) {                      
-                      template += `<button ${disableCond} ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove('${info.name}', $index, $event)"`;
+                    if (info.noRemove !== true) {
+                      // For a nested array, remove() must resolve the array relative to the row it
+                      // belongs to (its parent's loop variable), not to the top-level record - the
+                      // field name alone is ambiguous once the same schema can appear at any depth.
+                      const removeArgs = options.subschema
+                        ? `'${relativeArrayName}', $index, $event, ${FormMarkupHelperService.subDocVarForDepth(options.subschemaDepth || 1)}`
+                        : `'${info.name}', $index, $event`;
+                      template += `<button ${disableCond} ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove(${removeArgs})"`;
                       if (info.remove) {
                         template += ' class="remove-btn btn btn-mini btn-default btn-xs form-btn"><i class="' + FormMarkupHelperService.glyphClass() + '-minus"></i> Remove';
                       } else {
@@ -569,6 +615,9 @@ module fng.directives {
                     formstyle: info.formStyle,
                     model: options.model,
                     subschemaroot: info.name,
+                    // tell the next level down how deeply nested it is, so its fields bind to this
+                    // array's loop variable rather than shadowing an outer one
+                    subschemaDepth: arrayDepth,
                     suppressNestingWarning: info.suppressNestingWarning
                   });
                   if (parts?.after) {
@@ -598,7 +647,7 @@ module fng.directives {
                       // we need the button to have disableCond (to actually disable it, if the list is disabled)
                       // adding disableableAncestorStr seems more correct than for it to have the disableable attribute
                       footer +=
-                        `<button ${hideCond} ${disableCond} ${disableableAncestorStr} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add('${info.name}',$event)">` + 
+                        `<button ${hideCond} ${disableCond} ${disableableAncestorStr} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add(${arrayFnArgs})">` +
                         ` <i class="${FormMarkupHelperService.glyphClass()}-plus"></i> Add ` + 
                         `</button>`;
                     }

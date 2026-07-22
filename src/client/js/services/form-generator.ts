@@ -256,8 +256,10 @@ module fng.services {
       var arrayField = modelOverride || $scope.record;
       for (var i = 0, l = fieldParts.length; i < l; i++) {
         if (!arrayField[fieldParts[i]]) {
-          if (Array.isArray(arrayField) && arrayField[0][fieldParts[i]]) {
-            // Partial support for nested arrays - only works for the first level
+          // Legacy fallback for a nested array reached without a modelOverride: guess the first row.
+          // Callers that pass the owning row as modelOverride (which form.ts now does for every
+          // nested array) never need this, and it is only safe when that row actually exists.
+          if (Array.isArray(arrayField) && arrayField[0] && arrayField[0][fieldParts[i]]) {
             arrayField = arrayField[0];
           } else {
             if (i === l - 1) {
@@ -270,6 +272,33 @@ module fng.services {
         arrayField = arrayField[fieldParts[i]];
       }
       return arrayField;
+    }
+
+    // Locate the schema instruction for an array field.  A top-level array is found by its full
+    // name, but a nested array is addressed relative to the row that holds it (e.g. "teachers"
+    // within "studies.courses"), so we also search sub-schemas, matching on the last name segment.
+    // Returns undefined when there is no match, in which case the caller adds a bare {} row.
+    function findArrayFieldSchema(schema: fng.IFormInstruction[], fieldName: string): fng.IFormInstruction | undefined {
+      if (!Array.isArray(schema)) {
+        return undefined;
+      }
+      const exact = schema.find((f) => f.name === fieldName);
+      if (exact) {
+        return exact;
+      }
+      for (const field of schema) {
+        // a field's own name is fully qualified, so compare only its final segment
+        if (field.schema) {
+          if (field.name && field.name.split('.').pop() === fieldName) {
+            return field;
+          }
+          const nested = findArrayFieldSchema(field.schema, fieldName);
+          if (nested) {
+            return nested;
+          }
+        }
+      }
+      return undefined;
     }
 
     // TODO: Do this in form
@@ -484,9 +513,11 @@ module fng.services {
         if ($event.target.offsetParent) {
           var arrayField = getArrayFieldToExtend(fieldName, $scope, modelOverride);
 
-          const schemaElement = $scope.formSchema.find(f => f.name === fieldName);  // In case someone is using the formSchema directly
+          // In case someone is using the formSchema directly.  Searches sub-schemas too, so a
+          // nested array (addressed by its name relative to its parent row) still gets its defaults.
+          const schemaElement = findArrayFieldSchema($scope.formSchema, fieldName);
           const subSchema = schemaElement ? schemaElement.schema : null;
-          let obj = subSchema ? $scope.setDefaults(subSchema, fieldName + '.') : {};
+          let obj = subSchema ? $scope.setDefaults(subSchema, (schemaElement.name || fieldName) + '.') : {};
           if (typeof $scope.dataEventFunctions?.onInitialiseNewSubDoc === "function") {
             $scope.dataEventFunctions.onInitialiseNewSubDoc(fieldName, subSchema, obj);
           }          
@@ -511,9 +542,7 @@ module fng.services {
         var arrayField = getArrayFieldToExtend(fieldName, $scope, modelOverride);
         var err;
         if (typeof $scope.dataEventFunctions.onDeleteSubDoc === "function") {
-          var schemaElement = $scope.formSchema.find(function (f) {
-            return f.name === fieldName;
-          });
+          var schemaElement = findArrayFieldSchema($scope.formSchema, fieldName);
           var subSchema = schemaElement ? schemaElement.schema : null;
           err = $scope.dataEventFunctions.onDeleteSubDoc(
             fieldName,

@@ -171,6 +171,26 @@ module fng.services {
         return scope["$index"] !== undefined || !!options.subschema;
       }
 
+      // The ng-repeat loop variable for a sub-schema (Mongoose array) at the given nesting depth.
+      // Depth 1 (an array on the record itself) keeps the historic name "subDoc" so that existing
+      // schemas, directives, CSS and application code continue to work unchanged; deeper levels get
+      // a suffixed name so a nested array does not shadow the row of the array containing it.
+      function subDocVarForDepth(depth: number): string {
+        return depth > 1 ? `subDoc${depth}` : "subDoc";
+      }
+
+      // The angular expression addressing a sub-schema field's value, relative to the row it lives
+      // in.  Inside a sub-schema this is the loop variable for the current depth plus the field's
+      // name with the containing array's path ("subschemaroot") stripped off; at the top level it is
+      // the plain model path.
+      function subSchemaModelString(info: fng.IFormInstruction, options: fng.IFormOptions): string {
+        if (!options.subschema) {
+          return `${options.model || "record"}.${info.name}`;
+        }
+        const relativeName = options.subschemaroot ? info.name.replace(options.subschemaroot, "") : info.name;
+        return subDocVarForDepth(options.subschemaDepth || 1) + relativeName;
+      }
+
       function performPseudoReplacements(scope: fng.IFormScope, str: string, substitutionSrc: "global" | "scopeStatic" | "scopeDynamic" | "none"): string {
         while (str.includes("@@")) {
           const firstCharPos = str.indexOf("@@") + 2;
@@ -238,6 +258,10 @@ module fng.services {
         isHorizontalStyle,
 
         isArrayElement,
+
+        subDocVarForDepth,
+
+        subSchemaModelString,
 
         handlePseudos,
 
@@ -361,7 +385,9 @@ module fng.services {
                   if (fieldName.startsWith(".")) {
                       fieldName = fieldName.substring(1);
                   }
-                  model = "subDoc";
+                  // the row this field belongs to, which add() uses as its modelOverride so the
+                  // array is resolved relative to it rather than to the top-level record
+                  model = subDocVarForDepth(options.subschemaDepth || 1);
               } else {
                   fieldName = fieldInfo.name;
                   model = "record";
@@ -500,9 +526,7 @@ module fng.services {
 
         handleArrayInputAndControlDiv: function handleArrayInputAndControlDiv(inputMarkup: string, controlDivClasses: string[], scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions): string {
           let indentStr = CssFrameworkService.framework() === 'bs3' ? 'ng-class="skipCols($index)" ' : "";
-          const arrayStr = !!options.subschema
-            ? 'subDoc' + info.name.replace(options.subschemaroot, "")
-            : (options.model || 'record') + '.' + info.name;
+          const arrayStr = subSchemaModelString(info, options);
           let result = "";
           result += '<div id="' + info.id + 'List" class="' + controlDivClasses.join(' ') + '" ' + indentStr + ' ng-repeat="arrayItem in ' + arrayStr + ' track by $index">';
           const disabledAttrs = handleReadOnlyDisabled(info, scope);

@@ -595,6 +595,11 @@ declare module fng {
     subkeyno?: number;
     subschema?: string;
     subschemaroot?: string;
+    // How deeply nested inside sub-schema (Mongoose array) forms we are.  Absent / 0 at the top
+    // level, 1 inside a sub-schema array, 2 inside an array nested within one, and so on.  This
+    // determines the ng-repeat loop variable used for each level (subDoc, subDoc2, ...) so that a
+    // nested array does not shadow its parent's row - see subDocVarForDepth() in form.ts.
+    subschemaDepth?: number;
     viewform?: boolean;
     suppressNestingWarning?: boolean;
   }
@@ -824,6 +829,10 @@ declare module fng {
   interface IFormMarkupHelperService {
     isHorizontalStyle: (formStyle: string, includeStacked: boolean) => boolean;
     isArrayElement: (scope: angular.IScope, info: fng.IFormInstruction, options: fng.IFormOptions) => boolean;
+    // the ng-repeat loop variable for a sub-schema array at the given nesting depth (subDoc, subDoc2, ...)
+    subDocVarForDepth: (depth: number) => string;
+    // the expression addressing a sub-schema field's value relative to the row containing it
+    subSchemaModelString: (info: fng.IFormInstruction, options: fng.IFormOptions) => string;
     fieldChrome: (scope: fng.IFormScope, info: fng.IFormInstruction, options: fng.IFormOptions) => { omit?: boolean, template?: string, closeTag?: string };
     label: (scope: fng.IFormScope, fieldInfo: fng.IFormInstruction, addButtonMarkup: boolean, options: fng.IFormOptions) => string;
     glyphClass: () => string;
