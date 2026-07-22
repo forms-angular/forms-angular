@@ -61,17 +61,14 @@ describe('conversions in nested sub-schemas', function () {
   it('applies a conversion to a field two arrays deep, in the right row', function (done) {
     var converted = [];
     scope.record = makeRecord();
-    // a conversion registered the way a plugin directive registers one - as a tree keyed by path
+    // registered the way a plugin directive registers one: keyed by the field name as the directive
+    // saw it, which inside a sub-schema is relative to the array that owns it
     scope.conversions = {
-      studies: {
-        courses: {
-          teachers: {
-            teacher: {
-              fngajax: function (value, schemaEntry, callback) {
-                converted.push(value);
-                callback(schemaEntry, { id: value, text: 'Teacher ' + value.slice(-1) });
-              }
-            }
+      teachers: {
+        teacher: {
+          fngajax: function (value, schemaEntry, callback) {
+            converted.push(value);
+            callback(schemaEntry, { id: value, text: 'Teacher ' + value.slice(-1) });
           }
         }
       }
@@ -93,6 +90,7 @@ describe('conversions in nested sub-schemas', function () {
 
   it('still converts a field a single array deep', function (done) {
     scope.record = makeRecord();
+    // here registered under the full path, the other form a registration can take
     scope.conversions = {
       studies: {
         courses: {

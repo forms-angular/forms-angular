@@ -297,9 +297,22 @@ module fng.services {
       entryName: string,
       schemaName?: string
     ): any {
-      let conversions = scope.conversions;
+      const conversions = scope.conversions;
+      if (!conversions) {
+        return undefined;
+      }
       if (schemaName) {
-        conversions = getData(conversions, schemaName) || conversions;
+        // Conversions are registered under the field's name as the directive saw it, which inside a
+        // sub-schema is relative to the array that owns it (eg "teachers.headOfDept"), whereas
+        // schemaName is the full path ("studies.courses.teachers").  Try the full path first, then
+        // progressively shorter tails of it, so that either registration is found.
+        const parts = schemaName.split(".");
+        for (let i = 0; i < parts.length; i++) {
+          const branch = getData(conversions, parts.slice(i).join("."));
+          if (branch && branch[entryName]) {
+            return branch[entryName];
+          }
+        }
       }
       return conversions[entryName];
     }
