@@ -48,10 +48,17 @@ module fng.services {
       // called by getData and setData
 
       // element is used when accessing in the context of a input, as the id (like exams-2-grader)
-      // gives us the element of an array (one level down only for now).  Leaving element blank returns the whole array
+      // gives us the element of an array.  Leaving element blank returns the whole array.
+      // It may be a single value (an index, or an element whose scope carries $index), which applies
+      // to the first array encountered, or an array of such values - one per level of array nesting,
+      // applied outermost first - which is what addressing a field inside an array nested within
+      // another array requires.
       var parts = fieldname.split("."),
         higherLevels = parts.length - 1,
-        workingRec = object;
+        workingRec = object,
+        // Offsets are consumed positionally as we meet each array on the way down.
+        elements = angular.isArray(element) ? element.slice() : [element],
+        elementIdx = 0;
       for (var i = 0; i < higherLevels; i++) {
         if (!workingRec) {
           throw new Error(
@@ -68,12 +75,14 @@ module fng.services {
           }
           workingRec = workingRec[parts[i]];
         }
-        if (angular.isArray(workingRec) && typeof element !== "undefined") {
-          if (element.scope && typeof element.scope === "function") {
-            // If we come across an array we need to find the correct position, if we have an element
-            workingRec = workingRec[element.scope().$index];
-          } else if (typeof element === "number") {
-            workingRec = workingRec[element];
+        if (angular.isArray(workingRec) && typeof elements[elementIdx] !== "undefined") {
+          // If we come across an array we need to find the correct position, if we have an element.
+          // Take the next unused offset, so that each level of nesting gets its own.
+          var thisElement = elements[elementIdx++];
+          if (thisElement.scope && typeof thisElement.scope === "function") {
+            workingRec = workingRec[thisElement.scope().$index];
+          } else if (typeof thisElement === "number") {
+            workingRec = workingRec[thisElement];
           } else {
             throw new Error(
               "Unsupported element type in walkTree " + fieldname
@@ -296,7 +305,9 @@ module fng.services {
     }
 
     // Convert mongodb json to what we use in the browser, for example {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
-    // This will currently only work for a single level of nesting (conversionObject will not go down further without amendment, and offset needs to be an array, at least)
+    // Nesting is handled to arbitrary depth: offset accumulates one array index per level (see
+    // walkTree), and schemaName is the dotted path of the containing sub-schemas, so that a
+    // conversion registered for a deeply nested field can still be found.
     var convertToAngularModel = function (
       schema: IFormInstruction[],
       anObject,
@@ -304,7 +315,7 @@ module fng.services {
       $scope,
       schemaName?: string,
       master?,
-      offset?: number
+      offset?: number | number[]
     ) {
       master = master || anObject;
       for (var i = 0; i < schema.length; i++) {
@@ -312,6 +323,12 @@ module fng.services {
         var fieldName = schemaEntry.name.slice(prefixLength);
         if (!fieldName.length) {
           fieldName = schemaEntry.name.split(".").pop();
+        } else if (fieldName.startsWith(".")) {
+          // prefixLength is measured against the immediate parent, but a nested sub-schema's entries
+          // are named with their full path, so slicing can leave a leading separator (or, below, more
+          // path than belongs to this object).  Trim back to the segments that address the field
+          // within anObject.
+          fieldName = fieldName.slice(1);
         }
         var fieldValue = getData(anObject, fieldName);
         if (schemaEntry.intType === "date" && typeof fieldValue === "string") {
@@ -319,15 +336,26 @@ module fng.services {
         }
         if (schemaEntry.schema) {
           if (fieldValue) {
+            // Offsets accumulate outermost first, so that a field nested two arrays deep is addressed
+            // by both indices rather than only its own.
+            var parentOffsets =
+              typeof offset === "undefined"
+                ? []
+                : angular.isArray(offset)
+                  ? offset
+                  : [offset];
+            // Likewise the schema name has to stay fully qualified, otherwise the conversion
+            // registered against the nested field's full path cannot be found.
+            var nestedSchemaName = schemaName ? schemaName + "." + fieldName : fieldName;
             for (var j = 0; j < fieldValue.length; j++) {
               fieldValue[j] = convertToAngularModel(
                 schemaEntry.schema,
                 fieldValue[j],
                 1 + fieldName.length,
                 $scope,
-                fieldName,
+                nestedSchemaName,
                 master,
-                j
+                parentOffsets.concat([j])
               );
             }
           }
@@ -394,12 +422,19 @@ module fng.services {
               fieldValue,
               schemaEntry,
               function (updateEntry, value) {
+                // updateEntry.name is relative to the sub-schema that owns the field (eg
+                // "teachers.teacher"), but we are writing into master/record from the root, so
+                // qualify it with the path of the containing sub-schemas.  Together with the one
+                // offset per level accumulated above, this addresses the correct row at any depth.
+                var qualifiedName = schemaName
+                  ? schemaName + "." + updateEntry.name.split(".").pop()
+                  : updateEntry.name;
                 // Update the master and (preserving pristine if appropriate) the record
-                setData(master, updateEntry.name, offset, value);
+                setData(master, qualifiedName, offset, value);
                 preservePristine(
                   angular.element("#" + updateEntry.id),
                   function () {
-                    setData($scope.record, updateEntry.name, offset, value);
+                    setData($scope.record, qualifiedName, offset, value);
                   }
                 );
               }
