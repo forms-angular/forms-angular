@@ -17,6 +17,9 @@ server.js.map
 src/**/*.js
 src/**/*.js.map
 website/app/models/**/*.js.map
+website/test/playwright/**/*.js
+website/test/playwright/**/*.js.map
+website/test/**/*.map
 
 website/node_modules
 website/app/bower_components
