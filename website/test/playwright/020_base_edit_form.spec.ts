@@ -16,6 +16,19 @@ test.describe('Base edit form', () => {
 
     test('should display an error message if server validation fails', async ({ page }: { page: Page }) => {
         await page.goto('/#/b_enhanced_schema/new');
+
+        // This form includes a CKEditor field (formattedText). ng-ckeditor.js finishes its own
+        // async init by calling form.$setPristine() on the *whole* form, not just its own field -
+        // if that lands after we've already dirtied the form by filling in other fields, it wipes
+        // our $dirty state (without touching the field values) and leaves #saveButton stuck
+        // disabled with nothing left to re-enable it. CKEditor's ready timing isn't bounded, so
+        // wait for it explicitly rather than guessing at a settle delay.
+        await page.waitForFunction(() => {
+            const CKE = (window as any).CKEDITOR;
+            const names = CKE?.instances ? Object.keys(CKE.instances) : [];
+            return names.length > 0 && names.every((n) => CKE.instances[n].status === 'ready');
+        });
+
         const surnameField = page.locator('#f_surname');
         await surnameField.focus();
         await surnameField.pressSequentially('Smith', { delay: 10 });
@@ -32,14 +45,19 @@ test.describe('Base edit form', () => {
         await freeTextField.blur();
 
         const saveBtn = page.locator('#saveButton');
+        await expect(saveBtn).toBeEnabled();
         await saveBtn.click();
 
-        await expect(page.locator('#err-title')).toContainText(/Error!/);
-        await expect(page.locator('#err-msg')).toContainText(/Wash your mouth!/);
+        // The error banner auto-dismisses itself a few seconds after appearing (see
+        // record-handler.ts's showError/errorHideTimer), so don't rely on the default 5s
+        // assertion timeout to still catch it - that races the dismissal under load.
+        await expect(page.locator('#err-title')).toContainText(/Error!/, { timeout: 2000 });
+        await expect(page.locator('#err-msg')).toContainText(/Wash your mouth!/, { timeout: 2000 });
 
         await page.locator('#err-hide').click();
         await page.locator('#f_freeText').clear();
         await page.locator('#f_freeText').fill('this is polite');
+        await expect(saveBtn).toBeEnabled();
         await saveBtn.click();
         await page.waitForURL(/\/b_enhanced_schema\/[0-9a-f]{24}\/edit/);
         await expect(page.url()).toMatch('/edit');
