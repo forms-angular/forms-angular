@@ -2334,7 +2334,9 @@ export class FormsAngular {
     if (record) {
       record._replacingHiddenFields = true;
       _.each(data, function (value, name) {
-        if (_.isObject(value) && !Array.isArray(value)) {
+        // Only recurse into plain (sub-document) objects - Dates, ObjectIds etc are leaf values that
+        // must be restored as-is, otherwise a secure Date field is silently dropped on every PUT
+        if (_.isPlainObject(value)) {
           self.replaceHiddenFields(record[name], value);
         } else if (!record[name]) {
           record[name] = value;

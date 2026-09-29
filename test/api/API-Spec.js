@@ -1205,4 +1205,18 @@ describe('API tests', function () {
         it('supports lookups where the list item is a lookup', function () {
         });
     });
+    describe('replaceHiddenFields', function () {
+        it('restores hidden nested Date and ObjectId fields', function () {
+            const resetBy = new Date();
+            const id = new mongoose.Types.ObjectId();
+            const record = { sysUserData: { username: 'Gemma' } };
+            fngInstance.replaceHiddenFields(record, {
+                sysUserData: { passwordResetKey: 'abc', passwordResetBy: resetBy, secureRef: id }
+            });
+            assert.strictEqual(record.sysUserData.username, 'Gemma');
+            assert.strictEqual(record.sysUserData.passwordResetKey, 'abc');
+            assert.strictEqual(record.sysUserData.passwordResetBy, resetBy);
+            assert.strictEqual(record.sysUserData.secureRef, id);
+        });
+    });
 });
