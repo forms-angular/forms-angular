@@ -145,6 +145,12 @@ child.exec(auditCommand, { cwd: pwd }, (error, stdout, stderr) => {
         let moduleMitigations = mitigations[module];
         for (let i = 0; i < vulns.length; i++) {
             let vuln = vulns[i];
+            // A string via means this module is only vulnerable through another package.  That package has its own
+            // entry, so following the chain down eventually reaches the root advisory, which is checked (and reported
+            // or mitigated) there.  Reporting each link in the chain would just repeat it.
+            if (typeof vuln === 'string' && vulnerabilities[vuln]) {
+                continue;
+            }
             let key = (typeof vuln === 'string') ? vuln : vuln.url;
             let severity = (typeof vuln === 'string') ? 'unknown' : (vuln.severity || 'unknown');
             let severityValue = severityHierarchy[severity] !== undefined ? severityHierarchy[severity] : -1;
