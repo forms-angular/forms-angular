@@ -11,7 +11,7 @@ var replace = require('gulp-replace');
 var pump = require('pump');
 
 var browserSources = [
-  'src/client/js/controller/*.ts',
+  'src/client/js/controllers/*.ts',
   'src/client/js/directives/*.ts',
   'src/client/js/filters/*.ts',
   'src/client/js/services/*.ts',

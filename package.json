@@ -47,84 +47,14 @@
     "RESTful API"
   ],
   "dependencies": {
-    "angular": "^1.8.3",
+    "angular": "npm:@brickhouse-tech/angular-lts@^1.10.4",
     "angular-elastic": "^2.5.1",
-    "angular-messages": "^1.8.3",
-    "angular-sanitize": "^1.8.3",
     "angular-ui-bootstrap": "1.3.2 || 2.5.6",
     "angular-ui-grid": "^4.12.7",
     "async": "^3.2.5",
     "lodash": "^4.18.1",
     "ng-infinite-scroll": "^1.3.0",
     "node.extend": "^2.0.3"
-  },
-  "npmAuditMitigations": {
-    "angular": [
-      {
-        "https://github.com/advisories/GHSA-m2h2-264f-f486": {
-          "description": "angular vulnerable to regular expression denial of service (ReDoS)",
-          "mitigation": "Can't see an exploit in Plait.  Can port fix from https://github.com/continu/angular.js/commit/77b7b0c3f02ebed1c7565dc4a63abc6d96065afa"
-        }
-      },
-      {
-        "https://github.com/advisories/GHSA-prc3-vjfx-vhm9": {
-          "description": "Angular (deprecated package) Cross-site Scripting",
-          "mitigation": "Only applies to IE which is obsolete"
-        }
-      },
-      {
-        "https://github.com/advisories/GHSA-j58c-ww9w-pwp5": {
-          "description": "AngularJS improperly sanitizes SVG elements",
-          "mitigation": "See angular-sanitize https://github.com/advisories/GHSA-4p4w-6hg8-63wx"
-        }
-      },
-      {
-        "https://github.com/advisories/GHSA-4w4v-5hc9-xrr2": {
-          "description": "angular vulnerable to super-linear runtime due to backtracking",
-          "mitigation": "We do not make any use of ng-srcset",
-          "nextReview": "2026-11-01T00:00:00Z",
-          "reviewBy": "Search plait and forms-angular looking for srcset"
-        }
-      },
-      {
-        "https://github.com/advisories/GHSA-m9gf-397r-hwpg": {
-          "description": "AngularJS allows attackers to bypass common image source restrictions",
-          "mitigation": "Duplicate of https://github.com/advisories/GHSA-4w4v-5hc9-xrr2"
-        }
-      },
-      {
-        "https://github.com/advisories/GHSA-mqm9-c95h-x2p6": {
-          "description": "AngularJS allows attackers to bypass common image source restrictions",
-          "mitigation": "Another duplicate of https://github.com/advisories/GHSA-4w4v-5hc9-xrr2"
-        }
-      },
-      {
-        "https://github.com/advisories/GHSA-2vrf-hf26-jrp5": {
-          "description": "angular vulnerable to regular expression denial of service via the angular.copy() utility",
-          "mitigation": "Should not be a problem as we restrict access behind a login."
-        }
-      },
-      {
-        "https://github.com/advisories/GHSA-2qqx-w9hr-q5gx": {
-          "description": "angular vulnerable to regular expression denial of service via the $resource service",
-          "mitigation": "Should not be a problem as we restrict access behind a login."
-        }
-      },
-      {
-        "https://github.com/advisories/GHSA-qwqh-hm9m-p5hr": {
-          "description": "angular vulnerable to regular expression denial of service via the <input type='url'> element",
-          "mitigation": "Should not be a problem as we restrict access behind a login."
-        }
-      }
-    ],
-    "angular-sanitize": [
-      {
-        "https://github.com/advisories/GHSA-4p4w-6hg8-63wx": {
-          "description": "Lack of sanitization for SVG images",
-          "mitigation": "Danger of a bad actor introducing large SVG through sigs or similar, but as we son't sanitize any image types (as it would limit use of the system) this is no additional problem for us"
-        }
-      }
-    ]
   },
   "peerDependencies": {
     "express": "^4",
@@ -136,14 +66,13 @@
     "@types/mocha": "^10.0.7",
     "@types/node": "=20.0.0",
     "@types/vinyl": "^2.0.12",
-    "angular-mocks": "^1.8.3",
     "baseline-browser-mapping": "^2.9.19",
     "body-parser": "^1.20.2",
     "bower": "^1.8.14",
     "commander": "^14.0.2",
     "del": "=6.1.1",
     "express": "^4.19.2",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.1",
     "gulp-angular-templatecache": "^3.0.1",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
@@ -196,7 +125,15 @@
     "safe-regex-test": "npm:@socketregistry/safe-regex-test@^1",
     "safer-buffer": "npm:@socketregistry/safer-buffer@^1",
     "side-channel": "npm:@socketregistry/side-channel@^1",
-    "typedarray": "npm:@socketregistry/typedarray@^1"
+    "typedarray": "npm:@socketregistry/typedarray@^1",
+    "angular": "$angular",
+    "vinyl-fs": "^4.0.2",
+    "angular-sanitize": "npm:@brickhouse-tech/angular-lts@^1.10.4",
+    "angular-messages": "npm:@brickhouse-tech/angular-lts@^1.10.4",
+    "angular-route": "npm:@brickhouse-tech/angular-lts@^1.10.4",
+    "angular-cookies": "npm:@brickhouse-tech/angular-lts@^1.10.4",
+    "angular-mocks": "npm:@brickhouse-tech/angular-lts@^1.10.4",
+    "angular-animate": "npm:@brickhouse-tech/angular-lts@^1.10.4"
   },
   "resolutions": {
     "aggregate-error": "npm:@socketregistry/aggregate-error@^1",
