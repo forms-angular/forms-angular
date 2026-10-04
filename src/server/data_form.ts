@@ -22,6 +22,8 @@ import async from "async";
 let debug = false;
 
 type IHiddenFields = { [fieldName: string]: boolean };
+// One query made as part of a search: either on a single field, or (when combined) across all the search fields
+type ISearchItem = { resource: Resource; field?: string; combined?: boolean; filter?: any };
 
 function logTheAPICalls(req: Express.Request, res: Express.Response, next) {
   void res;
@@ -625,7 +627,10 @@ export class FormsAngular {
       }
 
       let sortString = "";
-      sortString += padLeft(obj.addHits || 9, 1);
+      sortString += padLeft(obj.addHits ?? 9, 1);
+      // Within the same number of hits, the more of the search string that matched the better (so in a search for
+      // "sue e", a record that only matched "sue" beats one that only matched "e")
+      sortString += padLeft(99 - Math.min(matchedChars(obj), 99), 2);
       sortString += padLeft(obj.searchImportance || 99, 2);
       sortString += padLeft(obj.weighting || 9999, 4);
       sortString += obj.text;
@@ -678,8 +683,17 @@ export class FormsAngular {
           (s) => s.name.toLowerCase() === collectionNameLower
         );
         const synonymFilter = synonymObj?.filter;
+        if (searchFields.length > 0) {
+          // A search across all the fields at once, which finds the strongest matches (every word of a multi-word
+          // search, or an exact match for a single word) even when the per-field searches below are swamped
+          let combinedObj: ISearchItem = { resource, combined: true };
+          if (synonymFilter) {
+            combinedObj.filter = synonymFilter;
+          }
+          searches.push(combinedObj);
+        }
         for (let m = 0; m < searchFields.length; m++) {
-          let searchObj: { resource: Resource; field: string; filter?: any } = {
+          let searchObj: ISearchItem = {
             resource: resource,
             field: searchFields[m],
           };
@@ -694,35 +708,96 @@ export class FormsAngular {
     let results: IInternalSearchResult[] = [];
     let moreCount = 0;
     let searchCriteria;
-    let searchStrings;
+    let combinedCriteria: (fields: string[]) => any;
+    let searchStrings: string[]; // lower case, unescaped - for comparing with field values
     let multiMatchPossible = false;
-    if (searchFor === "?") {
+    let startAnchor = "^";
+    // Support for searching anywhere in a field by starting with *
+    if (searchFor.slice(0, 1) === "*") {
+      startAnchor = "";
+      searchFor = searchFor.slice(1);
+    }
+    // Ignore empty "words" caused by leading, trailing or repeated spaces (which would otherwise match everything)
+    searchStrings = searchFor.toLowerCase().split(" ").filter((word: string) => word !== "");
+    if (searchFor === "?" || searchStrings.length === 0) {
       // interpret this as a wildcard (so there is no way to search for ?
       searchCriteria = null;
     } else {
-      // Support for searching anywhere in a field by starting with *
-      let startAnchor = "^";
-      if (searchFor.slice(0, 1) === "*") {
-        startAnchor = "";
-        searchFor = searchFor.slice(1);
-      }
+      multiMatchPossible = searchStrings.length > 1;
+      searchFor = searchStrings.join(" "); // For later case-insensitive comparison
 
-      // THe snippet to escape the special characters comes from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-      searchFor = searchFor.replace(/[.*+\-?^${}()|[\]\\]/g, "\\$&");
-      multiMatchPossible = searchFor.includes(" ");
-      if (multiMatchPossible) {
-        searchStrings = searchFor.split(" ");
-      }
-      let modifiedSearchStr = multiMatchPossible
-        ? searchStrings.join("|")
-        : searchFor;
-      searchFor = searchFor.toLowerCase(); // For later case-insensitive comparison
+      // The snippet to escape the special characters comes from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+      const escapedStrings = searchStrings.map((word) => word.replace(/[.*+\-?^${}()|[\]\\]/g, "\\$&"));
+      const regex = (pattern: string) => ({ $regex: pattern, $options: "i" });
+      const anyField = (fields: string[], pattern: string) => ({
+        $or: fields.map((field) => ({ [field]: regex(pattern) })),
+      });
 
       // Removed the logic that preserved spaces when collection was specified because Louise asked me to.
-      searchCriteria = {
-        $regex: `${startAnchor}(${modifiedSearchStr})`,
-        $options: "i",
-      };
+      searchCriteria = regex(`${startAnchor}(${escapedStrings.join("|")})`);
+      combinedCriteria = multiMatchPossible
+        ? // every word matches at least one field
+          (fields) => ({ $and: escapedStrings.map((word) => anyField(fields, `${startAnchor}${word}`)) })
+        : // a field matches the search string exactly
+          (fields) => anyField(fields, `^${escapedStrings[0]}$`);
+    }
+
+    function matchedChars(resultObject: IInternalSearchResult) {
+      return (resultObject.matched || []).reduce((total, i) => total + searchStrings[i].length, 0);
+    }
+
+    // Lower addHits sorts higher: one point for each extra word matched, two for matching the whole phrase in
+    // one field and one for an exact match
+    function calcAddHits(resultObject: IInternalSearchResult) {
+      return Math.max(
+        9 -
+          Math.max((resultObject.matched?.length || 0) - 1, 0) -
+          (resultObject.wholePhrase ? 2 : 0) -
+          (resultObject.exact ? 1 : 0),
+        0
+      );
+    }
+
+    // Record what this document matched on, and return true if the result has got stronger
+    function recordMatches(resultObject: IInternalSearchResult, aDoc: Document, item: ISearchItem): boolean {
+      const before = calcAddHits(resultObject);
+      const charsBefore = matchedChars(resultObject);
+      resultObject.matched = resultObject.matched || [];
+      if (item.combined) {
+        if (multiMatchPossible) {
+          resultObject.matched = searchStrings.map((word, i) => i);
+        } else {
+          resultObject.exact = true;
+        }
+      } else {
+        const fieldValue: string = typeof aDoc[item.field] === "string" ? aDoc[item.field].toLowerCase() : undefined;
+        if (fieldValue !== undefined) {
+          if (multiMatchPossible) {
+            // record the index of string that matched, so we don't count it against another field
+            // where more than one word matches (searching for "su sue" and finding "Susan") take the longest
+            let i = -1;
+            searchStrings.forEach((word, idx) => {
+              if (
+                !resultObject.matched.includes(idx) &&
+                fieldValue.indexOf(word) === 0 &&
+                (i === -1 || word.length > searchStrings[i].length)
+              ) {
+                i = idx;
+              }
+            });
+            if (i > -1) {
+              resultObject.matched.push(i);
+            }
+            if (fieldValue.indexOf(searchFor) === 0) {
+              resultObject.wholePhrase = true;
+            }
+          } else if (fieldValue === searchFor) {
+            resultObject.exact = true;
+          }
+        }
+      }
+      resultObject.addHits = calcAddHits(resultObject);
+      return resultObject.addHits < before || matchedChars(resultObject) > charsBefore;
     }
 
     let handleSearchResultsFromIndex = function (err, docs, item, cb) {
@@ -732,20 +807,7 @@ export class FormsAngular {
           resultPos: number;
 
         function handleResultsInList() {
-          if (multiMatchPossible) {
-            resultObject.matched = resultObject.matched || [];
-
-            // record the index of string that matched, so we don't count it against another field
-            for (let i = 0; i < searchStrings.length; i++) {
-              if (
-                aDoc[item.field]?.toLowerCase().indexOf(searchStrings[i]) === 0
-              ) {
-                resultObject.matched.push(i);
-                break;
-              }
-            }
-          }
-
+          recordMatches(resultObject, aDoc, item);
           resultObject.resourceCollection = item.resource.resourceName;
           resultObject.searchImportance =
             item.resource.options.searchImportance || 99;
@@ -783,41 +845,21 @@ export class FormsAngular {
         }
         if (resultPos >= 0) {
           resultObject = Object.assign({}, results[resultPos]);
+          resultObject.matched = [...(resultObject.matched || [])];
           // If they have already matched then improve their weighting
-          if (multiMatchPossible) {
-            // record the index of string that matched, so we don't count it against another field
-            for (let i = 0; i < searchStrings.length; i++) {
-              if (
-                !resultObject.matched.includes(i) &&
-                aDoc[item.field]?.toLowerCase().indexOf(searchStrings[i]) === 0
-              ) {
-                resultObject.matched.push(i);
-                resultObject.addHits = Math.max(
-                  (resultObject.addHits || 9) - 1,
-                  0
-                );
-                // remove it from current position
-                results.splice(resultPos, 1);
-                // and re-insert where appropriate
-                results.splice(
-                  _.sortedIndexBy(results, resultObject, calcResultValue),
-                  0,
-                  resultObject
-                );
-                break;
-              }
-            }
+          if (recordMatches(resultObject, aDoc, item)) {
+            // remove it from current position
+            results.splice(resultPos, 1);
+            // and re-insert where appropriate
+            results.splice(
+              _.sortedIndexBy(results, resultObject, calcResultValue),
+              0,
+              resultObject
+            );
           }
           cbdoc(null);
         } else {
           // Otherwise add them new...
-          let addHits: number;
-          if (multiMatchPossible) {
-            // If they match the whole search phrase in one index they get smaller addHits (so they sort higher)
-            if (aDoc[item.field]?.toLowerCase().indexOf(searchFor) === 0) {
-              addHits = 7;
-            }
-          }
           let disambiguationId: any;
           const opts = item.resource.options as fngServer.ResourceOptions;
           const disambiguationResource = opts.disambiguation?.resource;
@@ -831,7 +873,6 @@ export class FormsAngular {
           if (specialListingFormat) {
             specialListingFormat.apply(aDoc, [req]).then((resultObj) => {
               resultObject = resultObj;
-              resultObject.addHits = addHits;
               resultObject.disambiguationResource = disambiguationResource;
               resultObject.disambiguationId = disambiguationId;
               handleResultsInList();
@@ -847,7 +888,6 @@ export class FormsAngular {
                   (resultObject as any) = {
                     id: aDoc._id,
                     weighting: 9999,
-                    addHits,
                     disambiguationResource,
                     disambiguationId,
                     text: description,
@@ -873,10 +913,23 @@ export class FormsAngular {
 
     this.searchFunc(
       searches,
-      function (item, cb) {
+      function (item: ISearchItem, cb) {
         let searchDoc = {};
         let searchFilter = filter || item.filter;
-        if (searchFilter) {
+        if (item.combined) {
+          if (!combinedCriteria) {
+            // wildcard search - the per-field searches will find everything
+            return cb();
+          }
+          if (searchFilter) {
+            that.hackVariables(searchFilter);
+            extend(searchDoc, searchFilter);
+          }
+          searchDoc["$and"] = [
+            ...(searchDoc["$and"] || []),
+            combinedCriteria(item.resource.options.searchFields),
+          ];
+        } else if (searchFilter) {
           that.hackVariables(searchFilter);
           extend(searchDoc, searchFilter);
           if (searchFilter[item.field]) {
@@ -939,9 +992,11 @@ export class FormsAngular {
         if (err) {
           callback(err);
         } else {
-          // Strip weighting from the results
+          // Strip weighting and match details from the results
           results = _.map(results, function (aResult) {
             delete aResult.weighting;
+            delete aResult.wholePhrase;
+            delete aResult.exact;
             return aResult;
           });
           if (limit && results.length > limit) {

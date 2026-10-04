@@ -838,6 +838,69 @@ describe('API tests', function () {
                 fngInstance.searchAll()(mockReq, mockRes);
             });
         });
+        describe('Search API with many partial matches', function () {
+            // The per-field searches only fetch limit + 200 records each (in searchOrder - surname ascending for G),
+            // so these fillers (which all sort before the lower-case targets) swamp them
+            const fillers = [];
+            for (let i = 0; i < 230; i++) {
+                const n = String(i).padStart(3, '0');
+                fillers.push({ surname: 'Ab' + n, forename: 'Bob' }, { surname: 'Ac' + n, forename: 'Bob' });
+            }
+            const targets = [
+                { surname: 'ab', forename: 'Yan' },
+                { surname: 'ac', forename: 'Zed' },
+                { surname: 'zed', forename: 'Quin' }
+            ];
+            before(async function () {
+                await mongoose.connection.db.collection('gs').insertMany([...fillers, ...targets]);
+                await mongoose.connection.db.collection('fs').insertOne({ surname: 'Bro', forename: 'Zoe' });
+            });
+            after(async function () {
+                await mongoose.connection.db.collection('gs').deleteMany({ forename: { $in: ['Bob', 'Yan', 'Zed', 'Quin'] } });
+                await mongoose.connection.db.collection('fs').deleteMany({ surname: 'Bro' });
+            });
+            function search(q, check, done) {
+                const mockReq = { url: '/search', query: { q }, route: { path: '/api/search' } };
+                const mockRes = {
+                    send: function (data) {
+                        try {
+                            check(data);
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    }
+                };
+                fngInstance.searchAll()(mockReq, mockRes);
+            }
+            it('should put a record matching every word first even when a per-field search misses it', function (done) {
+                search('ac z', (data) => {
+                    assert.equal(data.results[0].text, 'ac Zed');
+                }, done);
+            });
+            it('should put an exact match first even when a per-field search misses it', function (done) {
+                search('ab', (data) => {
+                    assert.equal(data.results[0].text, 'ab Yan');
+                }, done);
+            });
+            it('should rank an exact match above prefix matches with a better weighting', function (done) {
+                search('bro', (data) => {
+                    assert.deepEqual(data.results.map((r) => r.text), ['Bro, Zoe', 'Brown, John', 'Brown, Jenny']);
+                }, done);
+            });
+            it('should rank records matching a longer word above those matching a shorter one', function (done) {
+                // every filler matches "b" (on forename) only, and sorts before 'zed Quin' (which matches "zed" only)
+                search('b zed', (data) => {
+                    assert.equal(data.results[0].text, 'zed Quin');
+                }, done);
+            });
+            it('should ignore repeated and trailing spaces', function (done) {
+                search('ac  z ', (data) => {
+                    assert.equal(data.results[0].text, 'ac Zed');
+                    assert(!data.results.some((r) => r.text.startsWith('Brown')), 'Matched records that match neither word');
+                }, done);
+            });
+        });
         describe('MongoDB selection', function () {
             it('Should filter', function (done) {
                 const mockReq = {

@@ -18,6 +18,8 @@ declare module fngServer {
         searchImportance? : number;
         addHits?: number;
         matched: number[];
+        wholePhrase?: boolean; // a single field starts with the whole (multi-word) search phrase
+        exact?: boolean; // a single field exactly equals the (single-word) search string
         resourceCollection: string;
         // the next two are only set where the resource options includes disambiguation instructions and multiple search results with the same text value are found...:
         disambiguationId?: any; // this will identify the record (from another resource) that will be used to disambiguate them
