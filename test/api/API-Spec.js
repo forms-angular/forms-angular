@@ -1056,6 +1056,72 @@ describe('API tests', function () {
             };
             fngInstance.report()(mockReq, mockRes);
         });
+        describe('pipeline sanitising', function () {
+            // bs (the B model) has a findFunc that only allows accepted records (2 of the 3), and secure fields
+            // send runs inside fng's promise chain, so pass assertion failures to done rather than letting them be swallowed
+            function runReport(resourceName, pipeline, send, done) {
+                fngInstance.report()(
+                    { url: '/report/' + resourceName, query: { r: JSON.stringify(pipeline) }, params: { resourceName } },
+                    {
+                        send: (data) => {
+                            try {
+                                send(data);
+                            } catch (e) {
+                                done(new Error(e.message + ' - report was ' + JSON.stringify(data)));
+                            }
+                        },
+                    }
+                );
+            }
+            it('applies the findFunc of a collection looked up inside a $facet', function (done) {
+                runReport('g_conditional_fields', [{ $limit: 1 }, { $facet: { x: [{ $lookup: { from: 'bs', let: {}, pipeline: [], as: 'b' } }, { $unwind: '$b' }] } }], function (data) {
+                    const found = data.report[0].x;
+                    assert.equal(found.length, 2);
+                    assert(found.every((f) => f.b.accepted === true && f.b.passwordHash === undefined));
+                    done();
+                }, done);
+            });
+            it('rejects a $lookup inside a $facet that could bypass the findFunc', function (done) {
+                runReport('g_conditional_fields', [{ $limit: 1 }, { $facet: { x: [{ $lookup: { from: 'bs', let: {}, pipeline: [], as: 'b' } }] } }], function (data) {
+                    assert.equal(data.success, false);
+                    done();
+                }, done);
+            });
+            it('applies the findFunc of the collection in a $unionWith', function (done) {
+                runReport('g_conditional_fields', [{ $match: { _id: null } }, { $unionWith: { coll: 'bs', pipeline: [] } }], function (data) {
+                    assert.equal(data.report.length, 2);
+                    assert(data.report.every((r) => r.accepted === true && r.passwordHash === undefined));
+                    done();
+                }, done);
+            });
+            it('rejects $where', function (done) {
+                runReport('g_conditional_fields', [{ $match: { $where: 'true' } }], function (data) {
+                    assert.equal(data.success, false);
+                    assert(data.error.includes('$where'));
+                    done();
+                }, done);
+            });
+            it('rejects $function nested in an expression', function (done) {
+                runReport('g_conditional_fields', [{ $addFields: { x: { $function: { body: 'function() {return 1}', args: [], lang: 'js' } } } }], function (data) {
+                    assert.equal(data.success, false);
+                    assert(data.error.includes('$function'));
+                    done();
+                }, done);
+            });
+            it('does not let a stage before a $match copy a hidden field', function (done) {
+                runReport('b_using_options', [{ $addFields: { copy: '$passwordHash' } }, { $match: {} }], function (data) {
+                    assert.equal(data.report.length, 2);
+                    assert(data.report.every((r) => r.copy === undefined && r.passwordHash === undefined));
+                    done();
+                }, done);
+            });
+            it('still allows a leading $match to select on a hidden field', function (done) {
+                runReport('b_using_options', [{ $match: { passwordHash: { $exists: true } } }, { $count: 'n' }], function (data) {
+                    assert.deepEqual(data.report, [{ n: 2 }]);
+                    done();
+                }, done);
+            });
+        });
         it('handles complex pipeline request', function (done) {
             const mockReq = {
                 url: 'report/e_referencing_another_collection',

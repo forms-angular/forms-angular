@@ -1432,6 +1432,23 @@ export class FormsAngular {
     }
   }
 
+  // Operators that run server-side JavaScript, which can read beyond the documents a findFunc allows.  They are
+  // rejected wherever they appear in a pipeline - as a stage, inside a $match, or nested in an expression.
+  static readonly forbiddenPipelineOperators = ["$where", "$function", "$accumulator"];
+
+  rejectForbiddenPipelineOperators(obj: any) {
+    if (Array.isArray(obj)) {
+      obj.forEach((elm) => this.rejectForbiddenPipelineOperators(elm));
+    } else if (obj && typeof obj === "object" && !(obj instanceof Types.ObjectId) && !(obj instanceof Date)) {
+      for (const key of Object.keys(obj)) {
+        if (FormsAngular.forbiddenPipelineOperators.includes(key)) {
+          throw new Error(`Unsupported pipeline operator ${key}`);
+        }
+        this.rejectForbiddenPipelineOperators(obj[key]);
+      }
+    }
+  }
+
   async sanitisePipeline(
     aggregationParam: any | any[],
     hiddenFields,
@@ -1442,37 +1459,27 @@ export class FormsAngular {
     let array = Array.isArray(aggregationParam)
       ? aggregationParam
       : [aggregationParam];
+    this.rejectForbiddenPipelineOperators(array);
     let retVal = [];
     let doneHiddenFields = false;
+    const haveHiddenFields = hiddenFields && Object.keys(hiddenFields).length > 0;
     if (findFuncQry) {
       retVal.unshift({ $match: findFuncQry });
     }
 
-    async function sanitiseLookupPipeline(stage) {
-      // can't think of a way to exploit this (if you add a findFunc) but it is the responsibility of the user
-      // to ensure that the pipeline returns fields used by the findFunc
-      console.log(`In some scenarios $lookups that use pipelines may not provide all the fields used by the 'findFunc' of a collection.
-              If you get no results returned this might be the explanation.`)
-
-      /* Sanitise the pipeline we are doing a lookup with, removing hidden fields from that collection */
-      const lookupCollectionName = stage.$lookup.from;
-      const lookupResource =
-        that.getResourceFromCollection(lookupCollectionName);
-      let lookupHiddenLookupFields = {};
-      if (lookupResource) {
-        if (lookupResource.options?.hide?.length > 0) {
-          lookupHiddenLookupFields = that.generateHiddenFields(
-            lookupResource,
-            false
-          );
+    // Sanitise a pipeline that runs against a joined collection, restricting it with that collection's own findFunc
+    // and removing that collection's hidden fields.  Collections that are not resources are assumed to hold nothing
+    // sensitive, so are not restricted.
+    async function sanitiseJoinedPipeline(pipeline: any[], resource: Resource | undefined): Promise<any[]> {
+      let joinedHiddenFields = {};
+      let joinedFindFuncQry;
+      if (resource) {
+        if (resource.options?.hide?.length > 0) {
+          joinedHiddenFields = that.generateHiddenFields(resource, false);
         }
+        joinedFindFuncQry = await that.doFindFuncPromise(req, resource);
       }
-      stage.$lookup.pipeline = await that.sanitisePipeline(
-        stage.$lookup.pipeline,
-        lookupHiddenLookupFields,
-        findFuncQry,
-        req
-      );
+      return that.sanitisePipeline(pipeline || [], joinedHiddenFields, joinedFindFuncQry, req);
     }
 
     for (
@@ -1485,11 +1492,17 @@ export class FormsAngular {
       if (keys.length !== 1) {
         throw new Error("Invalid pipeline instruction");
       }
+      if (!doneHiddenFields && keys[0] !== "$match") {
+        // Leading $match stages may select on hidden fields, but nothing after them can see those fields
+        if (haveHiddenFields) {
+          retVal.push({ $project: hiddenFields });
+        }
+        doneHiddenFields = true;
+      }
       switch (keys[0]) {
         case "$project":
         case "$addFields":
         case "$count":
-        case "$facet":
         case "$group":
         case "$unset":
         case "$limit":
@@ -1499,50 +1512,36 @@ export class FormsAngular {
         case "$unwind":
           // We don't care about these - they are all (as far as we know) safe
           break;
+        case "$facet":
+          // Each facet is a pipeline in its own right, running against the documents that reach this stage (which
+          // have already been through our findFunc and had hidden fields removed), but it can join other collections
+          for (const facetName of Object.keys(stage.$facet)) {
+            stage.$facet[facetName] = await that.sanitisePipeline(stage.$facet[facetName], {}, undefined, req);
+          }
+          break;
         case "$unionWith":
-          /*
-                    Sanitise the pipeline we are doing a union with, removing hidden fields from that collection
-                 */
           if (!stage.$unionWith.coll) {
             stage.$unionWith = { coll: stage.$unionWith, pipeline: [] };
           }
-          const unionCollectionName = stage.$unionWith.coll;
-          const unionResource =
-            that.getResourceFromCollection(unionCollectionName);
-          let unionHiddenLookupFields = {};
-          if (unionResource) {
-            if (unionResource.options?.hide?.length > 0) {
-              unionHiddenLookupFields = this.generateHiddenFields(
-                unionResource,
-                false
-              );
-            }
-          }
-          stage.$unionWith.pipeline = await that.sanitisePipeline(
+          stage.$unionWith.pipeline = await sanitiseJoinedPipeline(
             stage.$unionWith.pipeline,
-            unionHiddenLookupFields,
-            findFuncQry,
-            req
+            that.getResourceFromCollection(stage.$unionWith.coll)
           );
           break;
         case "$match":
           this.hackVariables(array[pipelineSection]["$match"]);
-          retVal.push(array[pipelineSection]);
-          if (
-            !doneHiddenFields &&
-            Object.keys(hiddenFields) &&
-            Object.keys(hiddenFields).length > 0
-          ) {
-            // We can now project out the hidden fields (we wait for the $match to make sure we don't break
-            // a select that uses a hidden field
-            retVal.push({ $project: hiddenFields });
-            doneHiddenFields = true;
-          }
-          stage = null;
           break;
         case "$lookup":
         case "$graphLookup":
           let needFindFunc = true;
+          const collectionName = stage[keys[0]].from;
+          const lookupField = stage[keys[0]].as;
+          if (typeof collectionName !== "string" || typeof lookupField !== "string" || (collectionName + lookupField).indexOf("$") !== -1) {
+            throw new Error(
+              'No support for lookups where the "from" or "as" is anything other than a simple string'
+            );
+          }
+          const resource = that.getResourceFromCollection(collectionName);
           if (keys[0] === "$lookup") {
             let lookupProps = Object.keys(stage.$lookup);
             // First deal with simple $lookups with a single join field equality
@@ -1556,7 +1555,7 @@ export class FormsAngular {
               if (lookupProps.length === 4) {
                 // nothing to do
               } else if (lookupProps.length === 5 && lookupProps.includes("pipeline")) {
-                await sanitiseLookupPipeline.call(this, stage);
+                stage.$lookup.pipeline = await sanitiseJoinedPipeline(stage.$lookup.pipeline, resource);
               } else {
                 throw new Error("Unsupported $lookup format");
               }
@@ -1567,22 +1566,13 @@ export class FormsAngular {
               lookupProps.includes("pipeline") &&
               lookupProps.includes("as")
             ) {
-              await sanitiseLookupPipeline.call(this, stage);
+              stage.$lookup.pipeline = await sanitiseJoinedPipeline(stage.$lookup.pipeline, resource);
             } else {
               throw new Error(
                 `No support for $lookup of with properties ${lookupProps.join(', ')}`
               );
             }
           }
-          // hide any hiddenfields in the lookup collection
-          const collectionName = stage[keys[0]].from;
-          const lookupField = stage[keys[0]].as;
-          if ((collectionName + lookupField).indexOf("$") !== -1) {
-            throw new Error(
-              'No support for lookups where the "from" or "as" is anything other than a simple string'
-            );
-          }
-          const resource = that.getResourceFromCollection(collectionName);
           if (resource) {
             retVal.push(stage);
             stage = null;
@@ -1602,8 +1592,8 @@ export class FormsAngular {
               let allowNulls = false;
               // If the next stage is an $unwind
               let nextStageIsUnwind = false;
-              if (array.length >= pipelineSection) {
-                const nextStage = array[pipelineSection + 1];
+              const nextStage = array[pipelineSection + 1];
+              if (nextStage) {
                 let nextKeys = Object.keys(nextStage);
                 if (nextKeys.length !== 1) {
                   throw new Error("Invalid pipeline instruction");
@@ -1663,13 +1653,9 @@ export class FormsAngular {
         retVal.push(stage);
       }
     }
-    if (
-      !doneHiddenFields &&
-      Object.keys(hiddenFields) &&
-      Object.keys(hiddenFields).length > 0
-    ) {
-      // If there was no $match we still need to hide the hidden fields
-      retVal.unshift({ $project: hiddenFields });
+    if (!doneHiddenFields && haveHiddenFields) {
+      // The pipeline was nothing but $match stages
+      retVal.push({ $project: hiddenFields });
     }
     return retVal;
   }
@@ -1748,7 +1734,7 @@ export class FormsAngular {
                   });
               })
               .catch((err) => {
-                throw new Error("Error in sanitisePipeline " + err);
+                cb(err);
               });
           },
         };
