@@ -55,7 +55,8 @@ module fng.controllers {
     };
 
     $scope.setFocus = function (index) {
-      if ($scope.focus !== null) {
+      // results may have been replaced (by a later search) since focus was set
+      if ($scope.focus !== null && $scope.results[$scope.focus]) {
         delete $scope.results[$scope.focus].focussed;
       }
       $scope.results[index].focussed = true;
