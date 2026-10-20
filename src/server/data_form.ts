@@ -746,14 +746,10 @@ export class FormsAngular {
       return (resultObject.matched || []).reduce((total, i) => total + searchStrings[i].length, 0);
     }
 
-    // Lower addHits sorts higher: one point for each extra word matched, two for matching the whole phrase in
-    // one field and one for an exact match
+    // Lower addHits sorts higher: one point for each extra word matched and one for an exact match
     function calcAddHits(resultObject: IInternalSearchResult) {
       return Math.max(
-        9 -
-          Math.max((resultObject.matched?.length || 0) - 1, 0) -
-          (resultObject.wholePhrase ? 2 : 0) -
-          (resultObject.exact ? 1 : 0),
+        9 - Math.max((resultObject.matched?.length || 0) - 1, 0) - (resultObject.exact ? 1 : 0),
         0
       );
     }
@@ -789,7 +785,9 @@ export class FormsAngular {
               resultObject.matched.push(i);
             }
             if (fieldValue.indexOf(searchFor) === 0) {
-              resultObject.wholePhrase = true;
+              // A field starting with the whole phrase covers every word, so ranks the same as matching every word
+              // across separate fields ("Tony Bates" and "Bates, Tony" both match "tony bates" equally)
+              resultObject.matched = searchStrings.map((word, i) => i);
             }
           } else if (fieldValue === searchFor) {
             resultObject.exact = true;
@@ -995,7 +993,6 @@ export class FormsAngular {
           // Strip weighting and match details from the results
           results = _.map(results, function (aResult) {
             delete aResult.weighting;
-            delete aResult.wholePhrase;
             delete aResult.exact;
             return aResult;
           });

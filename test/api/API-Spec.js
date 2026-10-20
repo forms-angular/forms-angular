@@ -901,6 +901,31 @@ describe('API tests', function () {
                 }, done);
             });
         });
+        describe('Search API ranking of whole phrase matches', function () {
+            before(async function () {
+                // C has default searchImportance (99), G has searchImportance 1
+                await mongoose.connection.db.collection('cs').insertOne({ surname: 'Quill Tern' });
+                await mongoose.connection.db.collection('gs').insertOne({ surname: 'Quill', forename: 'Tern' });
+            });
+            after(async function () {
+                await mongoose.connection.db.collection('cs').deleteMany({ surname: 'Quill Tern' });
+                await mongoose.connection.db.collection('gs').deleteMany({ surname: 'Quill' });
+            });
+            it('should rank every word matching in separate fields equally with the whole phrase matching one field', function (done) {
+                const mockReq = { url: '/search', query: { q: 'quill tern' }, route: { path: '/api/search' } };
+                const mockRes = {
+                    send: function (data) {
+                        try {
+                            assert.deepEqual(data.results.map((r) => r.resource + ' ' + r.text), ['g_conditional_fields Quill Tern', 'c_subdoc_example Quill Tern']);
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    }
+                };
+                fngInstance.searchAll()(mockReq, mockRes);
+            });
+        });
         describe('MongoDB selection', function () {
             it('Should filter', function (done) {
                 const mockReq = {
