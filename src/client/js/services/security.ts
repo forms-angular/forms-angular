@@ -37,12 +37,13 @@ module fng.services {
       )
     }
 
+    // the host app can remove these functions (e.g., when the user logs out) while a form's watchers are still running
     function isSecurelyHidden(elemId: string, pseudoUrl?: string): boolean {
-      return $rootScope[formsAngular.hiddenSecurityFuncName](elemId, pseudoUrl);
+      return $rootScope[formsAngular.hiddenSecurityFuncName]?.(elemId, pseudoUrl);
     }
 
     function getSecureDisabledState(elemId: string, pseudoUrl?: string): fng.DisabledOutcome {
-      return $rootScope[formsAngular.disabledSecurityFuncName](elemId, pseudoUrl);
+      return $rootScope[formsAngular.disabledSecurityFuncName]?.(elemId, pseudoUrl);
     }
 
     function isSecurelyDisabled(elemId: string, pseudoUrl?: string): boolean {
