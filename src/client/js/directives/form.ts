@@ -525,7 +525,7 @@ module fng.directives {
                   } else {
                     let topButton: string = '';
                     if (info.unshift) {
-                      topButton = '<button id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(' + arrayFnArgs + ')">' +
+                      topButton = '<button type="button" id="unshift_' + info.id + '_btn" class="add-btn btn btn-default btn-xs btn-mini form-btn" ng-click="unshift(' + arrayFnArgs + ')">' +
                         '<i class="' + FormMarkupHelperService.glyphClass() + '-plus"></i> Add</button>';
                     }
 
@@ -586,7 +586,7 @@ module fng.directives {
                       const removeArgs = options.subschema
                         ? `'${relativeArrayName}', $index, $event, ${FormMarkupHelperService.subDocVarForDepth(options.subschemadepth || 1)}`
                         : `'${info.name}', $index, $event`;
-                      template += `<button ${disableCond} ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove(${removeArgs})"`;
+                      template += `<button type="button" ${disableCond} ${info.noRemove ? 'ng-hide="' + info.noRemove + '"' : ''} name="remove_${info.id}_btn" ng-click="remove(${removeArgs})"`;
                       if (info.remove) {
                         template += ' class="remove-btn btn btn-mini btn-default btn-xs form-btn"><i class="' + FormMarkupHelperService.glyphClass() + '-minus"></i> Remove';
                       } else {
@@ -647,7 +647,7 @@ module fng.directives {
                       // we need the button to have disableCond (to actually disable it, if the list is disabled)
                       // adding disableableAncestorStr seems more correct than for it to have the disableable attribute
                       footer +=
-                        `<button ${hideCond} ${disableCond} ${disableableAncestorStr} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add(${arrayFnArgs})">` +
+                        `<button type="button" ${hideCond} ${disableCond} ${disableableAncestorStr} id="add_${info.id}_btn" class="add-btn btn btn-default btn-xs btn-mini" ng-click="add(${arrayFnArgs})">` +
                         ` <i class="${FormMarkupHelperService.glyphClass()}-plus"></i> Add ` + 
                         `</button>`;
                     }

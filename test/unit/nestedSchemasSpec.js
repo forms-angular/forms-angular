@@ -91,6 +91,18 @@ describe('formInput', function () {
       expect(angular.element(input[8]).val()).toBe('67');
     });
 
+    it('should not submit the form from the array buttons', function () {
+      var buttons = elm.find('button');
+      var arrayButtons = 0;
+      angular.forEach(buttons, function (btn) {
+        if (/^(add|remove|unshift)_/.test(btn.id || btn.name)) {
+          arrayButtons++;
+          expect(btn.getAttribute('type')).toBe('button');
+        }
+      });
+      expect(arrayButtons).toBeGreaterThan(0);
+    });
+
   });
 
 });
