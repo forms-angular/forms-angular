@@ -37,16 +37,14 @@ module fng.services {
         }
       }
 
+      // Walk up the scope chain directly.  (This used to do a for...in over each scope, which also enumerates every
+      // property each scope inherits from its ancestors - very slow for a large form.)
       function getAllOptions(obj) {
-
-        for (var key in obj) {
-          if (key === type) {
-            addAllOptions.push(obj[key]);
+        while (obj) {
+          if (type in obj) {
+            addAllOptions.push(obj[type]);
           }
-
-          if (key === '$parent') {
-            getAllOptions(obj[key]);
-          }
+          obj = obj.$parent;
         }
       }
 
