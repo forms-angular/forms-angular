@@ -1621,13 +1621,7 @@ export class FormsAngular {
                 await this.doFindFuncPromise(req, resource);
               if (lookedUpFindQry) {
                 // Now we need to put the lookup base into the criteria
-                for (const prop in lookedUpFindQry) {
-                  if (lookedUpFindQry.hasOwnProperty(prop)) {
-                    lookedUpFindQry[`${lookupField}.${prop}`] =
-                      lookedUpFindQry[prop];
-                    delete lookedUpFindQry[prop];
-                  }
-                }
+                lookedUpFindQry = this.prefixQuery(lookedUpFindQry, lookupField);
                 if (allowNulls) {
                   lookedUpFindQry = {
                     $or: [
@@ -1653,6 +1647,26 @@ export class FormsAngular {
     if (!doneHiddenFields && haveHiddenFields) {
       // The pipeline was nothing but $match stages
       retVal.push({ $project: hiddenFields });
+    }
+    return retVal;
+  }
+
+  // Return a copy of query with every field path prefixed, so that it applies to a sub-document (such as the result of a
+  // $lookup) rather than the document itself.  The logical operators are followed into their clauses (prefixing them
+  // would give a field path such as "b.$or", which silently matches nothing); any other top-level operator ($expr,
+  // $text...) can't be made to apply to the sub-document like this, so is refused.
+  prefixQuery(query: FilterQuery<any>, prefix: string): FilterQuery<any> {
+    const retVal: FilterQuery<any> = {};
+    for (const prop of Object.keys(query)) {
+      if (["$and", "$or", "$nor"].includes(prop)) {
+        retVal[prop] = query[prop].map((clause) => this.prefixQuery(clause, prefix));
+      } else if (prop === "$comment") {
+        retVal[prop] = query[prop];
+      } else if (prop.startsWith("$")) {
+        throw new Error(`No support for a findFunc using ${prop} on a looked-up collection`);
+      } else {
+        retVal[`${prefix}.${prop}`] = query[prop];
+      }
     }
     return retVal;
   }
@@ -2171,8 +2185,10 @@ export class FormsAngular {
             if (idArray.length > 0) {
               query = query.where("_id").in(idArray);
             }
-            if (findParam) {
-              query = query.find(findParam);
+            if (findParam && Object.keys(findParam).length > 0) {
+              // and, not find: find merges the conditions, so a key in findParam (which can come from the client)
+              // would replace the same key in the findFunc's query rather than further restricting it
+              query = query.and([findParam]);
             }
             query = query.select(
               that.generateProjection(hiddenFields, projectParam)

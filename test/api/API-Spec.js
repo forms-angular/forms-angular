@@ -296,6 +296,43 @@ describe('API tests', function () {
             it('should filter out records that do not match the find func', function () {
                 assert.equal(bData.length, 2);
             });
+            it('should not let a filter replace the find func', function (done) {
+                const mockReq = {
+                    url: '/b_using_options',
+                    params: { resourceName: 'b_using_options' },
+                    query: { f: JSON.stringify({ accepted: false }) }
+                };
+                const mockRes = {
+                    send: function (data) {
+                        try {
+                            assert.equal(data.length, 0);
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    }
+                };
+                fngInstance.collectionGet()(mockReq, mockRes);
+            });
+            it('should still apply a filter alongside the find func', function (done) {
+                const mockReq = {
+                    url: '/b_using_options',
+                    params: { resourceName: 'b_using_options' },
+                    query: { f: JSON.stringify({ surname: 'IsAccepted1' }) }
+                };
+                const mockRes = {
+                    send: function (data) {
+                        try {
+                            assert.equal(data.length, 1);
+                            assert.equal(data[0].surname, 'IsAccepted1');
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    }
+                };
+                fngInstance.collectionGet()(mockReq, mockRes);
+            });
             it('should not send secure fields of a modified schema', function () {
                 assert(bPtr.surname, 'Must send surname');
                 assert(bPtr.forename, 'Must send forename');
@@ -1118,6 +1155,18 @@ describe('API tests', function () {
                     assert(data.report.every((r) => r.accepted === true && r.passwordHash === undefined));
                     done();
                 }, done);
+            });
+            it('prefixes a looked-up findFunc inside its logical operators', function () {
+                const query = { a: 1, $or: [{ b: 2 }, { $and: [{ c: { $in: [3] } }] }], $comment: 'x' };
+                assert.deepEqual(fngInstance.prefixQuery(query, 'look'), {
+                    'look.a': 1,
+                    $or: [{ 'look.b': 2 }, { $and: [{ 'look.c': { $in: [3] } }] }],
+                    $comment: 'x'
+                });
+                assert.deepEqual(query.a, 1, 'must not change the findFunc query');
+            });
+            it('refuses to prefix a looked-up findFunc it cannot apply to the lookup', function () {
+                assert.throws(() => fngInstance.prefixQuery({ $expr: { $eq: ['$a', 1] } }, 'look'), /\$expr/);
             });
             it('rejects $where', function (done) {
                 runReport('g_conditional_fields', [{ $match: { $where: 'true' } }], function (data) {
