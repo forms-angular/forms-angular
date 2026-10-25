@@ -938,6 +938,39 @@ describe('API tests', function () {
                 }, done);
             });
         });
+        describe('Search API exact match bonus opt-out', function () {
+            before(async function () {
+                // C has default searchImportance (99), G has searchImportance 1
+                await mongoose.connection.db.collection('cs').insertOne({ surname: 'Quoll' });
+                await mongoose.connection.db.collection('gs').insertOne({ surname: 'Quollson', forename: 'Ann' });
+            });
+            after(async function () {
+                delete fngInstance.getResource('c_subdoc_example').options.searchExactBonus;
+                await mongoose.connection.db.collection('cs').deleteMany({ surname: 'Quoll' });
+                await mongoose.connection.db.collection('gs').deleteMany({ surname: 'Quollson' });
+            });
+            function search(check, done) {
+                const mockReq = { url: '/search', query: { q: 'quoll' }, route: { path: '/api/search' } };
+                const mockRes = {
+                    send: function (data) {
+                        try {
+                            check(data.results.map((r) => r.text));
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    }
+                };
+                fngInstance.searchAll()(mockReq, mockRes);
+            }
+            it('should rank an exact match above a more important resource by default', function (done) {
+                search((texts) => assert.deepEqual(texts, ['Quoll', 'Quollson Ann']), done);
+            });
+            it('should not when the resource opts out of the exact match bonus', function (done) {
+                fngInstance.getResource('c_subdoc_example').options.searchExactBonus = false;
+                search((texts) => assert.deepEqual(texts, ['Quollson Ann', 'Quoll']), done);
+            });
+        });
         describe('Search API ranking of whole phrase matches', function () {
             before(async function () {
                 // C has default searchImportance (99), G has searchImportance 1

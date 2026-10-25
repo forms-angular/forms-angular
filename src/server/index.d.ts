@@ -53,6 +53,7 @@ declare module fngServer {
         onRemove?: (doc, req, cb) => void;
         handleRemove?: 'allow' | 'cascade';  // default behaviour is to prevent deletion if record is used as a foreign key
         searchImportance?: boolean | number,
+        searchExactBonus?: boolean,     // false stops an exact match ranking this resource's results above those of more important resources
         onSave?: (doc, req, cb) => void,
         onSaveError?: (err:Error, req: Express.Request, res: Express.Response) => void,
         findFunc?: (req: Express.Request, cb: (err:Error, criteria?: FilterQuery<any>) => void) => void,

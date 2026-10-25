@@ -758,12 +758,14 @@ export class FormsAngular {
     function recordMatches(resultObject: IInternalSearchResult, aDoc: Document, item: ISearchItem): boolean {
       const before = calcAddHits(resultObject);
       const charsBefore = matchedChars(resultObject);
+      // A resource can opt out of the exact match bonus, so its exact matches never jump above resources of greater importance
+      const exactBonus = item.resource.options.searchExactBonus !== false;
       resultObject.matched = resultObject.matched || [];
       if (item.combined) {
         if (multiMatchPossible) {
           resultObject.matched = searchStrings.map((word, i) => i);
         } else {
-          resultObject.exact = true;
+          resultObject.exact = exactBonus;
         }
       } else {
         const fieldValue: string = typeof aDoc[item.field] === "string" ? aDoc[item.field].toLowerCase() : undefined;
@@ -790,7 +792,7 @@ export class FormsAngular {
               resultObject.matched = searchStrings.map((word, i) => i);
             }
           } else if (fieldValue === searchFor) {
-            resultObject.exact = true;
+            resultObject.exact = exactBonus;
           }
         }
       }
