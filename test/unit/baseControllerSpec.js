@@ -786,8 +786,73 @@ describe('BaseCtrl', function () {
         scope.save();
         $httpBackend.flush();
         expect(scope.alertTitle).toEqual('Error!');
+        expect(scope.alertType).toEqual('error');
         expect(scope.errorMessage.toString()).toEqual('There is some kind of error');
       });
+    });
+
+    describe('message types', function () {
+
+      beforeEach(function () {
+        inject(function (_$httpBackend_, $rootScope, $controller) {
+          $httpBackend = _$httpBackend_;
+          $httpBackend.whenGET('/api/schema/collection').respond({'name': {'path': 'name', 'instance': 'String'}});
+          scope = $rootScope.$new();
+          ctrl = $controller('BaseCtrl', {$scope: scope, RoutingService});
+          $httpBackend.flush();
+        });
+      });
+
+      afterEach(function () {
+        scope.dismissError();
+      });
+
+      it('defaults to error', function () {
+        scope.showError('Something broke');
+        expect(scope.alertType).toEqual('error');
+        expect(scope.alertTitle).toEqual('Error!');
+      });
+
+      it('treats an unknown type as error', function () {
+        scope.showError('Something broke', 'Oops', 'catastrophe');
+        expect(scope.alertType).toEqual('error');
+        expect(scope.alertTitle).toEqual('Oops');
+      });
+
+      it('uses a default title for each type', function () {
+        var titles = {warning: 'Warning', info: 'Information', success: 'Success'};
+        Object.keys(titles).forEach(function (type) {
+          scope.showError('Message', undefined, type);
+          expect(scope.alertType).toEqual(type);
+          expect(scope.alertTitle).toEqual(titles[type]);
+          scope.dismissError();
+        });
+      });
+
+      it('passes the type through the showErrorMessage event', function () {
+        scope.$broadcast('showErrorMessage', {title: 'Saved', body: 'All done', type: 'success'});
+        expect(scope.alertType).toEqual('success');
+        expect(scope.alertTitle).toEqual('Saved');
+      });
+
+      it('keeps the more severe type when messages are combined', function () {
+        scope.showError('First', 'Note', 'info');
+        scope.showError('Second', 'Careful', 'warning');
+        expect(scope.alertType).toEqual('warning');
+        scope.showError('Third', 'Done', 'success');
+        expect(scope.alertType).toEqual('warning');
+        expect(scope.errorMessage.toString()).toContain('First');
+        expect(scope.errorMessage.toString()).toContain('Third');
+      });
+
+      it('clears the type on dismissal', function () {
+        scope.showError('Message', 'Note', 'info');
+        scope.dismissError();
+        expect(scope.alertType).toBeUndefined();
+        scope.showError('Message');
+        expect(scope.alertType).toEqual('error');
+      });
+
     });
 
   });

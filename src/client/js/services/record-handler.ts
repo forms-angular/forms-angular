@@ -8,6 +8,26 @@ module fng.services {
    *
    */
 
+  // Most severe first
+  const MESSAGE_TYPE_SEVERITY: fng.MessageType[] = ["error", "warning", "info", "success"];
+
+  const DEFAULT_MESSAGE_TITLES: { [type in fng.MessageType]: string } = {
+    error: "Error!",
+    warning: "Warning",
+    info: "Information",
+    success: "Success",
+  };
+
+  function normaliseMessageType(type: fng.MessageType | undefined): fng.MessageType {
+    return MESSAGE_TYPE_SEVERITY.includes(type) ? type : "error";
+  }
+
+  function mostSevereMessageType(a: fng.MessageType | undefined, b: fng.MessageType | undefined): fng.MessageType {
+    const aSeverity = MESSAGE_TYPE_SEVERITY.indexOf(normaliseMessageType(a));
+    const bSeverity = MESSAGE_TYPE_SEVERITY.indexOf(normaliseMessageType(b));
+    return MESSAGE_TYPE_SEVERITY[Math.min(aSeverity, bSeverity)];
+  }
+
   /*@ngInject*/
   export function RecordHandlerService(
     $location: angular.ILocationService,
@@ -805,7 +825,7 @@ module fng.services {
         if (resp?.dirty === true) {
           $scope.cancel();
           setTimeout(() => {
-            $scope.showError(resp.dirtyMessage, "Record Locked");
+            $scope.showError(resp.dirtyMessage, "Record Locked", "warning");
           })
         }
       }
@@ -1491,14 +1511,15 @@ module fng.services {
         //    scope.$emit('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
         // or
         //    scope.$broadcast('showErrorMessage', {title: 'Your error Title', body: 'The body of the error message'});
+        // add type: 'warning' | 'info' | 'success' for messages that are not errors (the default type is 'error')
         $scope.$on("showErrorMessage", function (event, args) {
           if (!event.defaultPrevented) {
             event.defaultPrevented = true;
-            $scope.showError(args.body, args.title);
+            $scope.showError(args.body, args.title, args.type);
           }
         });
 
-        $scope.showError = function (error: any, alertTitle?: string) {
+        $scope.showError = function (error: any, alertTitle?: string, type?: fng.MessageType) {
           function generateErrorText(): string {
             $timeout(() => {
               $scope.phase = "ready";
@@ -1530,7 +1551,11 @@ module fng.services {
             $scope.errorMessage = "";
           }
           $scope.errorMessage += generateErrorText();
-          $scope.alertTitle = alertTitle ? alertTitle : "Error!";
+          // when a message is added to one that is already showing, the more severe type wins
+          $scope.alertType = $scope.errorVisible
+            ? mostSevereMessageType($scope.alertType, type)
+            : normaliseMessageType(type);
+          $scope.alertTitle = alertTitle ? alertTitle : DEFAULT_MESSAGE_TITLES[$scope.alertType];
 
           $scope.errorHideTimer = window.setTimeout(
             function () {
@@ -1558,6 +1583,7 @@ module fng.services {
           $scope.errorVisible = false;
           delete $scope.errorMessage;
           delete $scope.alertTitle;
+          delete $scope.alertType;
         };
 
         $scope.stickError = function () {

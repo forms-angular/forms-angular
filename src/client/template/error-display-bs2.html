@@ -1,5 +1,5 @@
-<div id="display-error" ng-show="errorVisible" class="row-fluid ng-hide">
-    <div class="alert alert-error offset1 span10">
+<div id="display-error" ng-show="errorVisible" class="ng-hide">
+    <div class="alert" ng-class="{'error': 'alert-error', 'warning': '', 'info': 'alert-info', 'success': 'alert-success'}[alertType || 'error']" role="{{ alertType === 'error' || alertType === 'warning' || !alertType ? 'alert' : 'status' }}">
         <button type="button" id="err-hide" class="close" ng-click="dismissError()"><i class="icon-remove"></i></button>
         <button type="button" id="err-pin" class="close" ng-click="stickError()"><i class="icon-eye-open"></i></button>
         <h4 id="err-title">{{alertTitle}}</h4>

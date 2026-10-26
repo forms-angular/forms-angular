@@ -227,8 +227,27 @@ button#saveButton[disabled]:hover + #why-disabled.showwhy {
 #display-error {
   position: fixed;
   top: 60px;
+  left: 0;
   width: 100%;
   z-index: 1090;
+  // centre a box that is only as wide as its message needs
+  display: flex;
+  justify-content: center;
+  // the container spans the window, so let clicks either side of the box through to the page
+  pointer-events: none;
+
+  > .alert {
+    pointer-events: auto;
+    min-width: ~"min(300px, calc(100% - 32px))";  // room for the title and the two buttons
+    max-width: 83.333%;  // the width of the old col-md-10 box
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 767px) {
+    > .alert {
+      max-width: calc(100% - 32px);
+    }
+  }
 }
 
 #display-error.ng-hide {

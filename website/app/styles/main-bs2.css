@@ -5739,8 +5739,23 @@ button#saveButton[disabled]:hover + #why-disabled.showwhy {
 #display-error {
   position: fixed;
   top: 60px;
+  left: 0;
   width: 100%;
   z-index: 1090;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+#display-error > .alert {
+  pointer-events: auto;
+  min-width: min(300px, calc(100% - 32px));
+  max-width: 83.333%;
+  margin-bottom: 0;
+}
+@media (max-width: 767px) {
+  #display-error > .alert {
+    max-width: calc(100% - 32px);
+  }
 }
 #display-error.ng-hide {
   opacity: 0;

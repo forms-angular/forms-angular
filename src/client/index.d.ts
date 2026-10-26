@@ -424,6 +424,11 @@ declare module fng {
   }
 
   /*
+    The style of a message shown by showError() / the showErrorMessage event
+   */
+  export type MessageType = "error" | "warning" | "info" | "success";
+
+  /*
     The scope which contains form data
    */
   export interface IFormScope extends ISecurableScope {
@@ -432,6 +437,7 @@ declare module fng {
     modelName: string;
     formName: string;
     alertTitle: any;
+    alertType?: MessageType;
     errorVisible: boolean;
     errorMessage: any;
     errorHideTimer: number;
@@ -469,7 +475,10 @@ declare module fng {
     pagesLoaded: any;
     redirectOptions?: { redirect?: string; allowChange?: boolean };
     cancel: () => any;
-    showError: (error: any, alertTitle?: string) => void;
+    /*
+      Despite the name, shows any kind of message.  type defaults to "error"
+     */
+    showError: (error: any, alertTitle?: string, type?: MessageType) => void;
     prepareForSave: (cb: (error: string, dataToSave?: any) => void) => void;
     setDefaults: (formSchema: IFormSchema, base?: string) => any;
     formSchema: IControlledFormSchema;
