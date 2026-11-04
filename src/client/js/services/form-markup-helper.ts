@@ -233,7 +233,8 @@ module fng.services {
       // titlecase, otherwise its replacement will be in lowercase.
       // If the last character of the pseudonym token is "s", then its replacement will be pluralised.
       function handlePseudos(scope: fng.IFormScope, str: string, dynamicFuncName?: string): string {
-        if (!str?.includes("@@")) {
+        // labels etc. aren't always strings - a bespoke form field can be labelled 111, which arrives as a number
+        if (typeof str !== "string" || !str.includes("@@")) {
           return str;
         }
         let substitutionSrc: "global" | "scopeStatic" | "scopeDynamic" | "none";
