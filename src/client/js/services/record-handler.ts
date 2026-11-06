@@ -1704,13 +1704,16 @@ module fng.services {
           }
         });
 
-        setTimeout(() => {
-          // Add event handlers relating to application implemented pessimistic locking
-          window.onunload = function () {
-            if (typeof $scope.dataEventFunctions?.isLocked === "function" && $scope.dataEventFunctions?.isLocked() && typeof $scope.dataEventFunctions?.releaseLock === "function") {
-                $scope.dataEventFunctions?.releaseLock();
-            }
+        // Release any application implemented pessimistic lock when the page goes away.  Use pagehide rather than
+        // unload, which browsers are withdrawing (Chrome logs a permissions policy violation for it).
+        const releaseLockOnPageHide = function () {
+          if (typeof $scope.dataEventFunctions?.isLocked === "function" && $scope.dataEventFunctions?.isLocked() && typeof $scope.dataEventFunctions?.releaseLock === "function") {
+            $scope.dataEventFunctions?.releaseLock();
           }
+        };
+        window.addEventListener("pagehide", releaseLockOnPageHide);
+
+        setTimeout(() => {
           window.onbeforeunload = function (event) {
             if (!ctrlState.allowLocationChange && (!$scope.isCancelDisabled()) || (
                 typeof $scope.dataEventFunctions?.isLocked === "function" && $scope.dataEventFunctions?.isLocked()
@@ -1732,6 +1735,7 @@ module fng.services {
 
         $scope.$on("$destroy", function () {
           window.onbeforeunload = null;
+          window.removeEventListener("pagehide", releaseLockOnPageHide);
         });
 
         $scope.deleteClick = function () {
