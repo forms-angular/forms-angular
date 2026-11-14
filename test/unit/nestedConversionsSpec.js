@@ -109,4 +109,26 @@ describe('conversions in nested sub-schemas', function () {
       done();
     }, done.fail);
   });
+
+  it('converts a field in a nested object (not an array)', function (done) {
+    // eg riskScoring.riseThreadFormId: the directive registers the conversion under each part of the
+    // dotted name, so it has to be looked up the same way rather than by the whole name
+    var objectSchema = [{ name: 'riskScoring.riseThreadFormId', id: 'f_riskScoring_riseThreadFormId', label: 'Thread Form' }];
+    scope.record = { riskScoring: { riseThreadFormId: 'aaaaaaaaaaaaaaaaaaaaaaa9' } };
+    scope.conversions = {
+      riskScoring: {
+        riseThreadFormId: {
+          fngajax: function (value, schemaEntry, callback) {
+            callback(schemaEntry, { id: value, text: 'Form ' + value.slice(-1) });
+          }
+        }
+      }
+    };
+
+    RecordHandlerService.convertToAngularModelWithSchema(objectSchema, scope.record, scope).then(function () {
+      expect(scope.record.riskScoring.riseThreadFormId.id).toBe('aaaaaaaaaaaaaaaaaaaaaaa9');
+      expect(scope.record.riskScoring.riseThreadFormId.text).toBe('Form 9');
+      done();
+    }, done.fail);
+  });
 });

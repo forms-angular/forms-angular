@@ -334,7 +334,12 @@ module fng.services {
           }
         }
       }
-      return conversions[entryName];
+      // A field in a nested object (not an array), eg "riskScoring.riseThreadFormId", is registered by
+      // plugin directives under each part of its name, so look it up the same way
+      return (
+        conversions[entryName] ||
+        (entryName.includes(".") ? getData(conversions, entryName) : undefined)
+      );
     }
 
     // Convert mongodb json to what we use in the browser, for example {_id:'xxx', array:['item 1'], lookup:'012abcde'} to {_id:'xxx', array:[{x:'item 1'}], lookup:'List description for 012abcde'}
