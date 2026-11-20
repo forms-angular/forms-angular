@@ -460,6 +460,7 @@ declare module fng {
     activeTabNo?: number;
     fngTabRendered?: { [tabTitle: string]: boolean }; // tabs whose contents have been compiled, when sharedData.lazyTabs is set
     fngSelectTab?: (tabTitle: string) => void; // tab select handler, when sharedData.lazyTabs is set
+    applyLateConversions?: () => void; // applies conversions registered after the record was initialised
     topLevelFormName: string; // The name of the form
     record: any;
     originalData: any; // the unconverted data read from the server

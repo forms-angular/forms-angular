@@ -340,10 +340,11 @@ module fng.directives {
                     if (scope.sharedData?.lazyTabs) {
                       // Only compile a tab's contents once it has been selected (and then keep them), which on a form with
                       // many big tabs saves most of the work of loading it.  Anything inside a tab must therefore cope
-                      // with being linked after the record has loaded (see fngSelectTab).
+                      // with being linked after the record has loaded (see fngSelectTab), and anything that changes the
+                      // record when it is saved must not rely on being compiled.
                       scope.fngTabRendered = scope.fngTabRendered || {};
                       result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="fngSelectTab('${cleanTitle}')"`;
-                      result.before += `><div ng-if="fngTabRendered['${cleanTitle}']">`;
+                      result.before += `><div fng-lazy-tab="fngTabRendered['${cleanTitle}']">`;
                       result.after = '</div></uib-tab>';
                     } else {
                       result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${cleanTitle}')"`;
@@ -916,7 +917,8 @@ module fng.directives {
         });
 
         // The select handler for tabs when sharedData.lazyTabs is set.  The first time a tab is selected its contents are
-        // compiled, and only once that has happened (in the next digest) do we apply showIf, broadcast fngTabRendered
+        // compiled, and only once that has happened (in the next digest) do we apply any conversions its directives
+        // registered (such as fng-ui-select's, which turn ids into text), apply showIf, broadcast fngTabRendered
         // (for anything that needs to adjust the tab's DOM) and call updateQueryForTab (which a model controller may
         // override to fetch data for the tab and tell the directives on it).
         scope.fngSelectTab = function (tabTitle: string): void {
@@ -925,6 +927,7 @@ module fng.directives {
           } else {
             scope.fngTabRendered[tabTitle] = true;
             $timeout(() => {
+              scope.applyLateConversions?.();
               const theRecord = scope[attrs.model || 'record'];
               if (FormGeneratorService.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
                 FormGeneratorService.updateDataDependentDisplay(theRecord, null, true, scope);

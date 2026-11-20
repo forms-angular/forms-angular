@@ -47,11 +47,14 @@ describe('lazy tabs', function () {
       expect(byId('eyeColourId').length).toBe(1);
     });
 
-    it('calls updateQueryForTab and broadcasts fngTabRendered only once the tab has been compiled', inject(function ($rootScope, $timeout) {
+    it('applies late conversions, broadcasts fngTabRendered and calls updateQueryForTab only once the tab has been compiled', inject(function ($rootScope, $timeout) {
       $timeout.flush(); // the initial selection of the first tab
       var seen = [];
       scope.updateQueryForTab = function (tab) {
         seen.push('update ' + tab + ' ' + byId('eyeColourId').length);
+      };
+      scope.applyLateConversions = function () {
+        seen.push('conversions ' + byId('eyeColourId').length);
       };
       $rootScope.$on('fngTabRendered', function (event, tab) {
         seen.push('rendered ' + tab + ' ' + byId('eyeColourId').length);
@@ -59,12 +62,19 @@ describe('lazy tabs', function () {
       selectTab(1);
       expect(seen).toEqual([]);
       $timeout.flush();
-      expect(seen).toEqual(['rendered Second 1', 'update Second 1']);
+      expect(seen).toEqual(['conversions 1', 'rendered Second 1', 'update Second 1']);
       selectTab(0);
       selectTab(1);
       $timeout.verifyNoPendingTasks();
-      expect(seen).toEqual(['rendered Second 1', 'update Second 1', 'update First 1', 'update Second 1']);
+      expect(seen).toEqual(['conversions 1', 'rendered Second 1', 'update Second 1', 'update First 1', 'update Second 1']);
     }));
+
+    it('compiles every tab with the same scope, as it does when all tabs are compiled up front', function () {
+      selectTab(1);
+      var firstScope = angular.element(byId('nameId')[0]).scope();
+      var secondScope = angular.element(byId('eyeColourId')[0]).scope();
+      expect(secondScope).toBe(firstScope);
+    });
 
     it('leaves the form pristine when a tab is compiled', function () {
       selectTab(1);

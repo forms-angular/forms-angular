@@ -43,6 +43,7 @@ module fng {
   .directive('dropDownSubMenu',fng.directives.dropDownSubMenu)
   .directive('errorDisplay',fng.directives.errorDisplay)
   .directive('fngLink',fng.directives.fngLink)
+  .directive('fngLazyTab',fng.directives.fngLazyTab)
   .directive('formInput',fng.directives.formInput)
   .directive('formButtons',fng.directives.formButtons)
   .directive('globalSearch',fng.directives.globalSearch)

@@ -1501,6 +1501,26 @@ module fng.services {
       ) {
         $scope.handleHttpError = handleError($scope);
 
+        // Conversions registered after the record has been initialised (and the conversions watcher dropped) - by the
+        // directives in a tab that is only compiled when it is first selected (sharedData.lazyTabs) - are applied here,
+        // to the master copy as well as the record so that cancelling keeps them.  Values that are already converted
+        // are left alone, so this doesn't depend on conversionsModified (which a directive sets on the nearest scope
+        // with a topLevelFormName of its own, and that need not be this one when there are form-inputs nested in the form).
+        $scope.applyLateConversions = function () {
+          if (!$scope.dropConversionWatcher && $scope.formSchema && $scope.record) {
+            $scope.conversionsModified = false;
+            if (ctrlState.master) {
+              // The callback that a lookup conversion (fngajax) makes writes the converted value to scope.record as
+              // well as to the object being converted, which here would undo any change the user has already made to
+              // the field, so give it a scope whose record is the master copy
+              const masterScope = Object.create($scope);
+              masterScope.record = ctrlState.master;
+              convertToAngularModel($scope.formSchema, ctrlState.master, 0, masterScope);
+            }
+            convertToAngularModel($scope.formSchema, $scope.record, 0, $scope);
+          }
+        };
+
         $scope.cancel = function () {
           angular.copy(ctrlState.master, $scope.record);
           $scope.$broadcast("fngCancel", $scope);
