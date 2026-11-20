@@ -458,6 +458,7 @@ declare module fng {
     tabs?: Array<any>; // In the case of forms that contain a tab set
     tab?: string; // title of the active tab - from the route
     activeTabNo?: number;
+    fngTabRendered?: { [tabTitle: string]: boolean }; // tabs whose contents have been compiled, when sharedData.lazyTabs is set
     topLevelFormName: string; // The name of the form
     record: any;
     originalData: any; // the unconverted data read from the server

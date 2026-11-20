@@ -337,9 +337,19 @@ module fng.directives {
                     if (tabNo > 0) {
                       attrs += ` active="tabs[${tabNo}].active"`;
                     }
-                    result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${cleanTitle}')"`;
-                    result.before += '>';
-                    result.after = '</uib-tab>';
+                    if (scope.sharedData?.lazyTabs) {
+                      // Only compile a tab's contents once it has been selected (and then keep them), which on a form with
+                      // many big tabs saves most of the work of loading it.  Anything inside a tab must therefore cope
+                      // with being linked after the record has loaded.
+                      scope.fngTabRendered = scope.fngTabRendered || {};
+                      result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="fngTabRendered['${cleanTitle}'] = true; updateQueryForTab('${cleanTitle}')"`;
+                      result.before += `><div ng-if="fngTabRendered['${cleanTitle}']">`;
+                      result.after = '</div></uib-tab>';
+                    } else {
+                      result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${cleanTitle}')"`;
+                      result.before += '>';
+                      result.after = '</uib-tab>';
+                    }
                   }
                 } else {
                   result.before = `<p>Error! Tab ${info.title} not found in tab list</p>`;
