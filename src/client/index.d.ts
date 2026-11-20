@@ -459,6 +459,7 @@ declare module fng {
     tab?: string; // title of the active tab - from the route
     activeTabNo?: number;
     fngTabRendered?: { [tabTitle: string]: boolean }; // tabs whose contents have been compiled, when sharedData.lazyTabs is set
+    fngSelectTab?: (tabTitle: string) => void; // tab select handler, when sharedData.lazyTabs is set
     topLevelFormName: string; // The name of the form
     record: any;
     originalData: any; // the unconverted data read from the server

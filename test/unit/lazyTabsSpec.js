@@ -47,6 +47,25 @@ describe('lazy tabs', function () {
       expect(byId('eyeColourId').length).toBe(1);
     });
 
+    it('calls updateQueryForTab and broadcasts fngTabRendered only once the tab has been compiled', inject(function ($rootScope, $timeout) {
+      $timeout.flush(); // the initial selection of the first tab
+      var seen = [];
+      scope.updateQueryForTab = function (tab) {
+        seen.push('update ' + tab + ' ' + byId('eyeColourId').length);
+      };
+      $rootScope.$on('fngTabRendered', function (event, tab) {
+        seen.push('rendered ' + tab + ' ' + byId('eyeColourId').length);
+      });
+      selectTab(1);
+      expect(seen).toEqual([]);
+      $timeout.flush();
+      expect(seen).toEqual(['rendered Second 1', 'update Second 1']);
+      selectTab(0);
+      selectTab(1);
+      $timeout.verifyNoPendingTasks();
+      expect(seen).toEqual(['rendered Second 1', 'update Second 1', 'update First 1', 'update Second 1']);
+    }));
+
     it('leaves the form pristine when a tab is compiled', function () {
       selectTab(1);
       expect(scope.myForm.$pristine).toBe(true);
