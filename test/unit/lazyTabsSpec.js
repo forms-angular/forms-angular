@@ -5,7 +5,7 @@ describe('lazy tabs', function () {
 
   beforeEach(angular.mock.module('formsAngular'));
 
-  function compileTabbedForm($rootScope, $compile, lazyTabs) {
+  function compileTabbedForm($rootScope, $compile, lazyTabs, secondTabAdd) {
     elm = angular.element('<div><form-input schema="formSchema"></form-input></div>');
     scope = $rootScope.$new();
     scope.sharedData = { lazyTabs: lazyTabs, modelControllers: [] };
@@ -13,7 +13,7 @@ describe('lazy tabs', function () {
     scope.tabs = [{ title: 'First' }, { title: 'Second' }];
     scope.formSchema = [
       { containerType: 'tab', title: 'First', content: [{ name: 'name', id: 'nameId', label: 'Name', type: 'text' }] },
-      { containerType: 'tab', title: 'Second', content: [{ name: 'eyeColour', id: 'eyeColourId', label: 'Eye Colour', type: 'text' }] }
+      { containerType: 'tab', title: 'Second', content: [{ name: 'eyeColour', id: 'eyeColourId', label: 'Eye Colour', type: 'text', add: secondTabAdd }] }
     ];
     $compile(elm)(scope);
     scope.$digest();
@@ -80,6 +80,40 @@ describe('lazy tabs', function () {
       selectTab(1);
       expect(scope.myForm.$pristine).toBe(true);
     });
+  });
+
+  // as angular-ui-date (which forms-angular uses for date fields) does
+  describe('when a directive on a tab makes its control dirty when it is linked', function () {
+    beforeEach(angular.mock.module(function ($compileProvider) {
+      $compileProvider.directive('dirtyOnLink', function () {
+        return {
+          require: 'ngModel',
+          link: function (scope, element, attrs, ngModel) {
+            ngModel.$setDirty();
+          }
+        };
+      });
+    }));
+
+    beforeEach(inject(function ($rootScope, $compile) {
+      compileTabbedForm($rootScope, $compile, true, 'dirty-on-link');
+    }));
+
+    it('leaves the form pristine once the tab has been compiled', inject(function ($timeout) {
+      $timeout.flush();
+      selectTab(1);
+      expect(byId('eyeColourId').length).toBe(1);
+      $timeout.flush();
+      expect(scope.myForm.$pristine).toBe(true);
+    }));
+
+    it('leaves the form dirty if it already was', inject(function ($timeout) {
+      $timeout.flush();
+      scope.myForm.$setDirty();
+      selectTab(1);
+      $timeout.flush();
+      expect(scope.myForm.$pristine).toBe(false);
+    }));
   });
 
   describe('when sharedData.lazyTabs is not set', function () {

@@ -925,12 +925,20 @@ module fng.directives {
           if (scope.fngTabRendered[tabTitle]) {
             scope.updateQueryForTab?.(tabTitle);
           } else {
+            // Some directives set their control's view value when they are linked (angular-ui-date, which date fields use,
+            // for one), which makes the form dirty.  When every tab is compiled up front that happens before the record has
+            // loaded and the form is made pristine, so here the form is put back the way it was once the tab is compiled.
+            const form = scope[scope.topLevelFormName];
+            const wasPristine = form?.$pristine;
             scope.fngTabRendered[tabTitle] = true;
             $timeout(() => {
               scope.applyLateConversions?.();
               const theRecord = scope[attrs.model || 'record'];
               if (FormGeneratorService.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
                 FormGeneratorService.updateDataDependentDisplay(theRecord, null, true, scope);
+              }
+              if (wasPristine && !form.$pristine) {
+                form.$setPristine();
               }
               $rootScope.$broadcast('fngTabRendered', tabTitle);
               scope.updateQueryForTab?.(tabTitle);
