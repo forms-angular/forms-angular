@@ -10,6 +10,7 @@ module fng.directives {
     $rootScope: angular.IRootScopeService,
     $filter,
     $timeout: angular.ITimeoutService,
+    $$rAF: (fn: () => void) => () => void,
     CssFrameworkService: fng.ICssFrameworkService,
     FormGeneratorService: fng.IFormGeneratorService,
     FormMarkupHelperService: fng.IFormMarkupHelperService,
@@ -343,8 +344,10 @@ module fng.directives {
                       // with being linked after the record has loaded (see fngSelectTab), and anything that changes the
                       // record when it is saved must not rely on being compiled.
                       scope.fngTabRendered = scope.fngTabRendered || {};
+                      scope.fngTabPending = scope.fngTabPending || {};
                       result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="fngSelectTab('${cleanTitle}')"`;
-                      result.before += `><div fng-lazy-tab="fngTabRendered['${cleanTitle}']">`;
+                      result.before += `><div class="spinner" ng-show="fngTabPending['${cleanTitle}']">Just a second&#8230;</div>`;
+                      result.before += `<div fng-lazy-tab="fngTabRendered['${cleanTitle}']">`;
                       result.after = '</div></uib-tab>';
                     } else {
                       result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="updateQueryForTab('${cleanTitle}')"`;
@@ -921,30 +924,48 @@ module fng.directives {
         // registered (such as fng-ui-select's, which turn ids into text), apply showIf, broadcast fngTabRendered
         // (for anything that needs to adjust the tab's DOM) and call updateQueryForTab (which a model controller may
         // override to fetch data for the tab and tell the directives on it).
+        //
+        // Compiling a big tab can take a few seconds, so when a tab is selected after another has been shown a spinner is
+        // put up and the browser is given the chance to paint it (a requestAnimationFrame runs just before a paint, and a
+        // timeout set from it runs after) before the tab is compiled.  The first tab shown is compiled straight away, as
+        // the form's own Loading spinner covers it.
         scope.fngSelectTab = function (tabTitle: string): void {
+          if (scope.fngTabPending[tabTitle]) {
+            return;
+          }
           if (scope.fngTabRendered[tabTitle]) {
             scope.updateQueryForTab?.(tabTitle);
-          } else {
-            // Some directives set their control's view value when they are linked (angular-ui-date, which date fields use,
-            // for one), which makes the form dirty.  When every tab is compiled up front that happens before the record has
-            // loaded and the form is made pristine, so here the form is put back the way it was once the tab is compiled.
-            const form = scope[scope.topLevelFormName];
-            const wasPristine = form?.$pristine;
-            scope.fngTabRendered[tabTitle] = true;
-            $timeout(() => {
-              scope.applyLateConversions?.();
-              const theRecord = scope[attrs.model || 'record'];
-              if (FormGeneratorService.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
-                FormGeneratorService.updateDataDependentDisplay(theRecord, null, true, scope);
-              }
-              if (wasPristine && !form.$pristine) {
-                form.$setPristine();
-              }
-              $rootScope.$broadcast('fngTabRendered', tabTitle);
-              scope.updateQueryForTab?.(tabTitle);
+          } else if (Object.keys(scope.fngTabRendered).some((t) => scope.fngTabRendered[t])) {
+            scope.fngTabPending[tabTitle] = true;
+            $$rAF(() => {
+              $timeout(() => compileTab(tabTitle));
             });
+          } else {
+            compileTab(tabTitle);
           }
         };
+
+        function compileTab(tabTitle: string): void {
+          // Some directives set their control's view value when they are linked (angular-ui-date, which date fields use,
+          // for one), which makes the form dirty.  When every tab is compiled up front that happens before the record has
+          // loaded and the form is made pristine, so here the form is put back the way it was once the tab is compiled.
+          const form = scope[scope.topLevelFormName];
+          const wasPristine = form?.$pristine;
+          scope.fngTabRendered[tabTitle] = true;
+          $timeout(() => {
+            scope.applyLateConversions?.();
+            const theRecord = scope[attrs.model || 'record'];
+            if (FormGeneratorService.updateDataDependentDisplay && theRecord && Object.keys(theRecord).length > 0) {
+              FormGeneratorService.updateDataDependentDisplay(theRecord, null, true, scope);
+            }
+            if (wasPristine && !form.$pristine) {
+              form.$setPristine();
+            }
+            $rootScope.$broadcast('fngTabRendered', tabTitle);
+            scope.updateQueryForTab?.(tabTitle);
+            delete scope.fngTabPending[tabTitle];
+          });
+        }
 
         var unwatch = scope.$watch(attrs.schema, function (newValue: any) {
           if (newValue) {

@@ -459,6 +459,7 @@ declare module fng {
     tab?: string; // title of the active tab - from the route
     activeTabNo?: number;
     fngTabRendered?: { [tabTitle: string]: boolean }; // tabs whose contents have been compiled, when sharedData.lazyTabs is set
+    fngTabPending?: { [tabTitle: string]: boolean }; // tabs selected but not yet compiled (a spinner shows meanwhile)
     fngSelectTab?: (tabTitle: string) => void; // tab select handler, when sharedData.lazyTabs is set
     applyLateConversions?: () => void; // applies conversions registered after the record was initialised
     topLevelFormName: string; // The name of the form

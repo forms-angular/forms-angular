@@ -28,6 +28,19 @@ describe('lazy tabs', function () {
     scope.$digest();
   }
 
+  // a tab selected after another has been shown is compiled once the browser has painted its spinner
+  function letTabCompile() {
+    inject(function ($$rAF, $timeout) {
+      $$rAF.flush();
+      $timeout.flush();
+    });
+  }
+
+  function spinnerShown(n) {
+    var spinner = elm[0].querySelectorAll('.tab-pane')[n].querySelector('.spinner');
+    return !angular.element(spinner).hasClass('ng-hide');
+  }
+
   describe('when sharedData.lazyTabs is set', function () {
     beforeEach(inject(function ($rootScope, $compile) {
       compileTabbedForm($rootScope, $compile, true);
@@ -40,6 +53,7 @@ describe('lazy tabs', function () {
 
     it('compiles a tab when it is first selected, and keeps it', function () {
       selectTab(1);
+      letTabCompile();
       expect(byId('eyeColourId').length).toBe(1);
       expect(byId('eyeColourId')[0].value).toBe('Blue');
       selectTab(0);
@@ -61,7 +75,7 @@ describe('lazy tabs', function () {
       });
       selectTab(1);
       expect(seen).toEqual([]);
-      $timeout.flush();
+      letTabCompile();
       expect(seen).toEqual(['conversions 1', 'rendered Second 1', 'update Second 1']);
       selectTab(0);
       selectTab(1);
@@ -69,8 +83,39 @@ describe('lazy tabs', function () {
       expect(seen).toEqual(['conversions 1', 'rendered Second 1', 'update Second 1', 'update First 1', 'update Second 1']);
     }));
 
+    it('compiles the first tab shown straight away, without a spinner', function () {
+      expect(spinnerShown(0)).toBe(false);
+    });
+
+    it('shows a spinner until a tab selected later has been compiled', inject(function ($$rAF, $timeout) {
+      $timeout.flush(); // the initial selection of the first tab
+      selectTab(1);
+      expect(spinnerShown(1)).toBe(true);
+      expect(byId('eyeColourId').length).toBe(0);
+      $$rAF.flush();
+      expect(byId('eyeColourId').length).toBe(0); // not before the browser has painted the spinner
+      $timeout.flush();
+      expect(byId('eyeColourId').length).toBe(1);
+      expect(spinnerShown(1)).toBe(false);
+    }));
+
+    it('compiles a tab once if it is selected again before it has been compiled', inject(function ($rootScope) {
+      var rendered = 0;
+      $rootScope.$on('fngTabRendered', function (event, tab) {
+        if (tab === 'Second') {
+          rendered++;
+        }
+      });
+      selectTab(1);
+      scope.fngSelectTab('Second');
+      letTabCompile();
+      expect(byId('eyeColourId').length).toBe(1);
+      expect(rendered).toBe(1);
+    }));
+
     it('compiles every tab with the same scope, as it does when all tabs are compiled up front', function () {
       selectTab(1);
+      letTabCompile();
       var firstScope = angular.element(byId('nameId')[0]).scope();
       var secondScope = angular.element(byId('eyeColourId')[0]).scope();
       expect(secondScope).toBe(firstScope);
@@ -78,6 +123,7 @@ describe('lazy tabs', function () {
 
     it('leaves the form pristine when a tab is compiled', function () {
       selectTab(1);
+      letTabCompile();
       expect(scope.myForm.$pristine).toBe(true);
     });
   });
@@ -102,8 +148,8 @@ describe('lazy tabs', function () {
     it('leaves the form pristine once the tab has been compiled', inject(function ($timeout) {
       $timeout.flush();
       selectTab(1);
+      letTabCompile();
       expect(byId('eyeColourId').length).toBe(1);
-      $timeout.flush();
       expect(scope.myForm.$pristine).toBe(true);
     }));
 
@@ -111,7 +157,7 @@ describe('lazy tabs', function () {
       $timeout.flush();
       scope.myForm.$setDirty();
       selectTab(1);
-      $timeout.flush();
+      letTabCompile();
       expect(scope.myForm.$pristine).toBe(false);
     }));
   });
