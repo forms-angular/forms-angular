@@ -346,7 +346,7 @@ module fng.directives {
                       scope.fngTabRendered = scope.fngTabRendered || {};
                       scope.fngTabPending = scope.fngTabPending || {};
                       result.before += `<uib-tab ${attrs} deselect="tabDeselect($event, $selectedIndex)" select="fngSelectTab('${cleanTitle}')"`;
-                      result.before += `><div class="spinner" ng-show="fngTabPending['${cleanTitle}']">Just a second&#8230;</div>`;
+                      result.before += `><div class="spinner fng-tab-spinner" ng-show="fngTabPending['${cleanTitle}']">Just a second&#8230;</div>`;
                       result.before += `<div fng-lazy-tab="fngTabRendered['${cleanTitle}']">`;
                       result.after = '</div></uib-tab>';
                     } else {
@@ -927,7 +927,8 @@ module fng.directives {
         //
         // Compiling a big tab can take a few seconds, so when a tab is selected after another has been shown a spinner is
         // put up and the browser is given the chance to paint it (a requestAnimationFrame runs just before a paint, and a
-        // timeout set from it runs after) before the tab is compiled.  The first tab shown is compiled straight away, as
+        // timeout set from it runs after) before the tab is compiled.  The spinner only becomes visible after 250ms (in CSS,
+        // as the compilation blocks JavaScript), so fast tabs don't flash it.  The first tab shown is compiled straight away, as
         // the form's own Loading spinner covers it.
         scope.fngSelectTab = function (tabTitle: string): void {
           if (scope.fngTabPending[tabTitle]) {
