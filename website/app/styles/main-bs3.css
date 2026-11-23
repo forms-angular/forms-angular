@@ -7208,6 +7208,22 @@ input[type="checkbox"].ng-invalid::after {
   -webkit-animation: lds-ring-fadein 0.4s;
   animation: lds-ring-fadein 0.4s;
 }
+/* The spinner put up while a lazy tab is compiled (see fngSelectTab) stays invisible for its first 250ms, so that it
+   only appears for slow tabs.  It has to be done in CSS: the compilation blocks JavaScript, but not opacity animations,
+   which the browser runs on its own.  It then fades in steadily over 0.2s (lds-ring-fadein barely shows for its first
+   half). */
+.spinner.fng-tab-spinner {
+  -webkit-animation: fng-tab-spinner-fadein 0.2s 250ms linear both;
+  animation: fng-tab-spinner-fadein 0.2s 250ms linear both;
+}
+@keyframes fng-tab-spinner-fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 /* Transparent Overlay */
 .loading:before,
 .spinner:before {
