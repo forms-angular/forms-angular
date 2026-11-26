@@ -1176,6 +1176,13 @@ describe('API tests', function () {
                     done();
                 }, done);
             });
+            it('applies the findFunc inside a $lookup pipeline that projects away the fields it selects on', function (done) {
+                runReport('g_conditional_fields', [{ $limit: 1 }, { $lookup: { from: 'bs', let: {}, pipeline: [{ $project: { surname: 1 } }], as: 'b' } }, { $unwind: '$b' }], function (data) {
+                    assert.equal(data.report.length, 2);
+                    assert(data.report.every((r) => r.b.accepted === undefined && r.b.surname !== undefined));
+                    done();
+                }, done);
+            });
             it('rejects a $lookup inside a $facet that could bypass the findFunc', function (done) {
                 runReport('g_conditional_fields', [{ $limit: 1 }, { $facet: { x: [{ $lookup: { from: 'bs', let: {}, pipeline: [], as: 'b' } }] } }], function (data) {
                     assert.equal(data.success, false);

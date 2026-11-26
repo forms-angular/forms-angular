@@ -1533,6 +1533,9 @@ export class FormsAngular {
         case "$lookup":
         case "$graphLookup":
           let needFindFunc = true;
+          // Set when the findFunc is applied inside the $lookup's own pipeline.  Applying it again after the $unwind
+          // would be redundant, and wrong if that pipeline projects away the fields the findFunc selects on.
+          let restrictedInPipeline = false;
           const collectionName = stage[keys[0]].from;
           const lookupField = stage[keys[0]].as;
           if (typeof collectionName !== "string" || typeof lookupField !== "string" || (collectionName + lookupField).indexOf("$") !== -1) {
@@ -1555,6 +1558,7 @@ export class FormsAngular {
                 // nothing to do
               } else if (lookupProps.length === 5 && lookupProps.includes("pipeline")) {
                 stage.$lookup.pipeline = await sanitiseJoinedPipeline(stage.$lookup.pipeline, resource);
+                restrictedInPipeline = true;
               } else {
                 throw new Error("Unsupported $lookup format");
               }
@@ -1566,6 +1570,7 @@ export class FormsAngular {
               lookupProps.includes("as")
             ) {
               stage.$lookup.pipeline = await sanitiseJoinedPipeline(stage.$lookup.pipeline, resource);
+              restrictedInPipeline = true;
             } else {
               throw new Error(
                 `No support for $lookup of with properties ${lookupProps.join(', ')}`
@@ -1619,8 +1624,9 @@ export class FormsAngular {
               }
               // Push the $unwind, add our own findFunc, and increment the pipelineStage counter
               retVal.push(array[pipelineSection + 1]);
-              let lookedUpFindQry: FilterQuery<any> =
-                await this.doFindFuncPromise(req, resource);
+              let lookedUpFindQry: FilterQuery<any> = restrictedInPipeline
+                ? undefined
+                : await this.doFindFuncPromise(req, resource);
               if (lookedUpFindQry) {
                 // Now we need to put the lookup base into the criteria
                 lookedUpFindQry = this.prefixQuery(lookedUpFindQry, lookupField);
