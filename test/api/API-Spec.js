@@ -1176,6 +1176,22 @@ describe('API tests', function () {
                     done();
                 }, done);
             });
+            it('treats a date in a range on _id in a $match as the time the document was created', function (done) {
+                runReport('g_conditional_fields', [{ $match: { _id: { $gte: '2000-01-01T00:00:00.000Z', $lt: '2999-01-01T00:00:00.000Z' } } }, { $count: 'n' }], function (all) {
+                    assert(all.report[0].n > 0);
+                    runReport('g_conditional_fields', [{ $match: { _id: { $gte: '2999-01-01T00:00:00.000Z' } } }, { $count: 'n' }], function (none) {
+                        assert.equal(none.report.length, 0);
+                        done();
+                    }, done);
+                }, done);
+            });
+            it('leaves dates in a $group _id as dates', function (done) {
+                runReport('g_conditional_fields', [{ $limit: 1 }, { $group: { _id: { $max: ['2000-01-01T00:00:00.000Z', '$_id'] } } }], function (data) {
+                    // An ObjectId sorts before any Date, so a Date comes back only if it was left as one
+                    assert(data.report[0]._id instanceof Date);
+                    done();
+                }, done);
+            });
             it('applies the findFunc inside a $lookup pipeline that projects away the fields it selects on', function (done) {
                 runReport('g_conditional_fields', [{ $limit: 1 }, { $lookup: { from: 'bs', let: {}, pipeline: [{ $project: { surname: 1 } }], as: 'b' } }, { $unwind: '$b' }], function (data) {
                     assert.equal(data.report.length, 2);

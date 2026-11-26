@@ -1399,14 +1399,18 @@ export class FormsAngular {
     ) {
       let sectionType = Object.keys(runPipeline[pipelineSection])[0];
       if (["$match", "$group", "$project"].includes(sectionType)) {
-        this.hackVariables(runPipeline[pipelineSection][sectionType]);
+        // In a $group or $project, _id is not a field being compared, so leave its dates alone
+        this.hackVariables(runPipeline[pipelineSection][sectionType], sectionType === "$match");
       }
     }
   }
 
-  hackVariables(obj) {
+  hackVariables(obj, idDates = true, inIdCriteria = false) {
     // Replace variables that cannot be serialised / deserialised.  Bit of a hack, but needs must...
-    // Anything formatted 1800-01-01T00:00:00.000Z or 1800-01-01T00:00:00.000+0000 is converted to a Date
+    // Anything formatted 1800-01-01T00:00:00.000Z or 1800-01-01T00:00:00.000+0000 is converted to a Date, except
+    // in a range on _id ({_id: {$gte: "2025-01-01T00:00:00.000Z"}}), where it becomes the first ObjectId of that
+    // time, so that a date (a report's date parameter, say) can select documents by when they were created using
+    // the _id index
     // Only handles the cases I need for now
     // TODO: handle arrays etc
     for (const prop in obj) {
@@ -1417,7 +1421,11 @@ export class FormsAngular {
               obj[prop]
             );
           if (dateTest) {
-            obj[prop] = new Date(dateTest[1] + "Z");
+            const date = new Date(dateTest[1] + "Z");
+            obj[prop] =
+              inIdCriteria && ["$gt", "$gte", "$lt", "$lte"].includes(prop)
+                ? Types.ObjectId.createFromTime(Math.floor(date.valueOf() / 1000))
+                : date;
           } else if (prop !== "$regex") {
             const objectIdTest = /^([0-9a-fA-F]{24})$/.exec(obj[prop]);
             if (objectIdTest) {
@@ -1425,7 +1433,7 @@ export class FormsAngular {
             }
           }
         } else if (_.isObject(obj[prop])) {
-          this.hackVariables(obj[prop]);
+          this.hackVariables(obj[prop], idDates, idDates && prop === "_id");
         }
       }
     }
