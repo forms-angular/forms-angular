@@ -8,6 +8,9 @@ module fng.services {
    *
    */
 
+  // phases during which a call to $scope.save() is ignored, because a save or delete is already under way
+  const SAVE_IN_FLIGHT_PHASES = ["saving", "updating", "deleting"];
+
   // Most severe first
   const MESSAGE_TYPE_SEVERITY: fng.MessageType[] = ["error", "warning", "info", "success"];
 
@@ -1664,12 +1667,31 @@ module fng.services {
         };
 
         $scope.save = function (options) {
+          // In-flight guard: a save (including any async onBeforeUpdate / onBeforeCreate handlers) or a delete is already
+          // under way.  The Save button is disabled then (isSaveDisabled), but save() is also called from code, which
+          // would otherwise send the request twice - creating duplicate records on a new form.  Only these phases are
+          // blocked (not "init" etc.) because some applications call save() from code on scopes whose phase never
+          // reaches "ready".
+          if (SAVE_IN_FLIGHT_PHASES.includes($scope.phase)) {
+            return;
+          }
+          const phaseBeforeSave = $scope.phase;
+          $scope.phase = "saving";
           options = options || {};
           // stash these against the scope as well, so the onBeforeUpdate or onBeforeCreate handlers that may be called from
           // prepareForSave() have knowledge of any redirection that should occur after the save has been successfully made
           $scope.redirectOptions = options;
-          $scope.prepareForSave((err, dataToSave) => {
+          try {
+            $scope.prepareForSave(afterPrepare);
+          } catch (e) {
+            $scope.phase = phaseBeforeSave;
+            throw e;
+          }
+
+          function afterPrepare(err, dataToSave) {
             if (err) {
+              // the save isn't going ahead, so it can be tried again
+              $scope.phase = phaseBeforeSave;
               if (err !== "_update_handled_") {
                 $timeout(() => {
                   $scope.showError(err);
@@ -1690,7 +1712,7 @@ module fng.services {
                 ctrlState
               );
             }
-          });
+          }
         };
 
         $scope.newClick = function () {
